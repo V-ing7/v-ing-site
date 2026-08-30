@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微影 V-ing · 我们-正在进行时 — 视频创作企划官网</title>
+<meta name="description" content="微影（V-ing）视频创作账号企划官网：内容企划、装备清单、达芬奇与 AE 工作流，哔哩哔哩与抖音双平台持续更新中。我们-正在进行时。">
+<!--
+  ============================================================
+  微影 V-ing · 账号企划官网（单文件，无外部依赖图片）
+  上线前请替换以下占位内容：
+  1. 搜索 "PROFILE_URL_BILIBILI" / "PROFILE_URL_DOUYIN" 替换为真实主页链接
+  2. 搜索 "hi@ving.media" 替换为真实商务邮箱
+  3. 各企划卡片可替换为真实作品链接
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c0f;
+    --bg-2:#121217;
+    --bg-3:#17171d;
+    --line:#26262e;
+    --line-soft:#1d1d24;
+    --text:#ede9e1;
+    --muted:#a29d92;
+    --amber:#ffb84d;
+    --amber-dim:#8a6a34;
+    --rec:#ff4b3e;
+    --bili:#fb7299;
+    --dy-cyan:#25f4ee;
+    --dy-red:#fe2c55;
+    --teal:#4dd6c1;
+    --ae:#9c8cff;
+    --font-cn:'Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei','PingFang SC','Microsoft YaHei',sans-serif;
+    --font-display:'Bebas Neue','Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei',sans-serif;
+    --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Noto Sans CJK SC',monospace;
+    --pad:clamp(20px,4vw,48px);
+    --section-pad:clamp(72px,10vw,132px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-padding-top:92px}
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-cn);
+    font-size:16px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:#141414}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+  .mono{font-family:var(--font-mono)}
+  .container{max-width:1200px;margin:0 auto;padding:0 var(--pad)}
+
+  /* ---------- 胶片颗粒 ---------- */
+  .grain{
+    position:fixed;inset:-40px;pointer-events:none;z-index:60;opacity:.055;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  /* ---------- 顶部导航 ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(12,12,15,.78);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-inner{
+    max-width:1200px;margin:0 auto;padding:0 var(--pad);
+    height:64px;display:flex;align-items:center;gap:28px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;white-space:nowrap}
+  .brand .en{font-family:var(--font-display);font-size:22px;letter-spacing:.14em;color:var(--amber)}
+  .rec-dot{
+    width:9px;height:9px;border-radius:50%;background:var(--rec);flex:none;
+    box-shadow:0 0 10px rgba(255,75,62,.8);
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .rec-dot{animation:blink 1.6s steps(1) infinite}
+    @keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.15}}
+  }
+  .nav-links{display:flex;gap:26px;margin-left:auto}
+  .nav-links a{
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;
+    color:var(--muted);padding:6px 2px;position:relative;transition:color .25s;
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+    background:var(--amber);transition:width .3s cubic-bezier(.22,1,.36,1);
+  }
+  .nav-links a:hover,.nav-links a.active{color:var(--text)}
+  .nav-links a:hover::after,.nav-links a.active::after{width:100%}
+  .nav-tc{font-family:var(--font-mono);font-size:12.5px;color:var(--amber);letter-spacing:.1em;white-space:nowrap}
+  @media (max-width:920px){.nav-links{display:none}.nav-tc{margin-left:auto}}
+
+  /* ---------- Hero 取景器 ---------- */
+  .hero{
+    min-height:100vh;min-height:100svh;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;padding:110px var(--pad) 70px;
+  }
+  .viewfinder{
+    position:absolute;inset:clamp(14px,3vw,34px);
+    pointer-events:none;
+  }
+  .vf-corner{position:absolute;width:34px;height:34px;border:2px solid rgba(237,233,225,.5)}
+  .vf-tl{top:0;left:0;border-right:none;border-bottom:none}
+  .vf-tr{top:0;right:0;border-left:none;border-bottom:none}
+  .vf-bl{bottom:0;left:0;border-right:none;border-top:none}
+  .vf-br{bottom:0;right:0;border-left:none;border-top:none}
+  .vf-hud{
+    position:absolute;left:14px;right:14px;
+    display:flex;justify-content:space-between;gap:16px;
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.16em;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .vf-hud.top{top:12px}
+  .vf-hud.bottom{bottom:12px}
+  .vf-hud .rec-flag{display:flex;align-items:center;gap:8px;color:var(--text)}
+  .vf-hud .rec-flag .tc{color:var(--rec)}
+  @media (max-width:640px){.vf-hud .hide-s{display:none}}
+  .hero-core{position:relative;text-align:center;max-width:960px}
+  .hero-kicker{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;
+    color:var(--amber);text-transform:uppercase;margin-bottom:26px;
+  }
+  .hero-title{line-height:.95}
+  .hero-cn{
+    display:block;font-weight:900;
+    font-size:clamp(76px,15vw,180px);
+    letter-spacing:.06em;
+  }
+  .hero-en{
+    display:block;font-family:var(--font-display);
+    font-size:clamp(40px,7.5vw,92px);letter-spacing:.22em;
+    color:transparent;-webkit-text-stroke:1.5px var(--amber);
+    margin-top:clamp(6px,1.2vw,14px);
+  }
+  .hero-motto{
+    margin-top:clamp(24px,3.5vw,40px);
+    font-size:clamp(17px,2.2vw,22px);font-weight:500;letter-spacing:.24em;color:var(--text);
+  }
+  .hero-motto .hy{color:var(--amber);font-family:var(--font-display);font-size:1.35em;padding:0 .18em;letter-spacing:0}
+  .hero-motto-en{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.3em;
+    color:var(--muted);text-transform:uppercase;margin-top:10px;
+  }
+  .hero-sub{
+    margin:clamp(22px,3vw,34px) auto 0;max-width:620px;
+    color:var(--muted);font-size:clamp(14px,1.6vw,16px);line-height:2;
+  }
+  .hero-sub strong{color:var(--text);font-weight:500}
+  .hero-cta{margin-top:clamp(30px,4vw,44px);display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 30px;font-size:15px;font-weight:700;letter-spacing:.08em;
+    border:1px solid var(--amber);border-radius:2px;cursor:pointer;
+    transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,background .25s,color .25s;
+  }
+  .btn-solid{background:var(--amber);color:#141414}
+  .btn-solid:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,184,77,.28)}
+  .btn-ghost{color:var(--text);border-color:var(--line);background:transparent}
+  .btn-ghost:hover{transform:translateY(-3px);border-color:var(--amber);color:var(--amber)}
+  .hero-scroll{
+    position:absolute;bottom:clamp(24px,4vw,44px);left:50%;transform:translateX(-50%);
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.3em;color:var(--muted);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .hero-scroll .bar{width:1px;height:34px;background:linear-gradient(var(--amber),transparent)}
+  @media (prefers-reduced-motion:no-preference){
+    .hero-scroll .bar{animation:drip 2s ease-in-out infinite}
+    @keyframes drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  }
+
+  /* ---------- 跑马灯 ---------- */
+  .marquee{
+    border-block:1px solid var(--line-soft);
+    background:var(--bg-2);overflow:hidden;padding:15px 0;position:relative;
+  }
+  .marquee-track{display:flex;width:max-content;gap:0}
+  @media (prefers-reduced-motion:no-preference){
+    .marquee-track{animation:marquee 30s linear infinite}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+  }
+  .marquee-seq{
+    display:flex;align-items:center;white-space:nowrap;
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:.24em;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .marquee-seq i{font-style:normal;color:var(--amber);margin:0 22px}
+
+  /* ---------- EP 筹备中横幅 ---------- */
+  .ep-now{padding:clamp(28px,4vw,44px) 0 0}
+  .ep-banner{
+    display:flex;align-items:center;gap:clamp(16px,2.6vw,28px);flex-wrap:wrap;
+    border:1px solid var(--line);border-left:3px solid var(--rec);border-radius:3px;
+    background:linear-gradient(90deg,rgba(255,75,62,.07),var(--bg-2) 45%);
+    padding:clamp(20px,3vw,30px) clamp(22px,3vw,34px);
+    transition:transform .3s cubic-bezier(.22,1,.36,1),border-color .3s;
+  }
+  .ep-banner:hover{transform:translateY(-3px);border-color:var(--amber-dim)}
+  .ep-banner .ep-tag{
+    display:flex;align-items:center;gap:10px;flex:none;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.26em;color:var(--rec);text-transform:uppercase;
+  }
+  .ep-banner .ep-name{font-size:clamp(18px,2.4vw,24px);font-weight:900;letter-spacing:.05em}
+  .ep-banner .ep-name small{
+    display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+    color:var(--muted);font-weight:400;margin-top:3px;text-transform:uppercase;
+  }
+  .ep-banner .ep-go{
+    margin-left:auto;font-weight:700;color:var(--amber);letter-spacing:.08em;
+    white-space:nowrap;display:inline-flex;gap:8px;align-items:center;transition:gap .3s;
+  }
+  .ep-banner:hover .ep-go{gap:14px}
+  .nav-links a.ep{color:var(--amber)}
+  @media (max-width:640px){.ep-banner .ep-go{margin-left:0}}
+
+  /* ---------- 通用 Section ---------- */
+  section{padding:var(--section-pad) 0;position:relative}
+  .scene-head{margin-bottom:clamp(40px,6vw,64px)}
+  .scene-no{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.3em;
+    color:var(--amber);text-transform:uppercase;
+  }
+  .scene-no::before{content:"";width:34px;height:1px;background:var(--amber)}
+  .scene-head h2{
+    margin-top:14px;font-weight:900;
+    font-size:clamp(34px,5.4vw,58px);letter-spacing:.06em;line-height:1.15;
+  }
+  .scene-latin{
+    display:block;font-family:var(--font-display);
+    font-size:clamp(15px,1.8vw,19px);letter-spacing:.34em;color:var(--muted);margin-top:8px;
+  }
+  .scene-desc{margin-top:16px;color:var(--muted);max-width:640px}
+
+  /* ---------- 作品企划 ---------- */
+  .works-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+  .work-card{
+    position:relative;overflow:hidden;
+    border:1px solid var(--line);border-radius:3px;
+    background:linear-gradient(180deg,var(--bg-3),var(--bg-2));
+    padding:clamp(24px,3vw,36px);
+    display:flex;flex-direction:column;min-height:340px;
+    transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s;
+  }
+  .work-card:hover{transform:translateY(-5px);border-color:var(--amber-dim)}
+  .work-card .ghost{
+    position:absolute;right:-8px;bottom:-26px;
+    font-family:var(--font-display);font-size:clamp(90px,10vw,150px);
+    letter-spacing:.04em;color:transparent;-webkit-text-stroke:1px rgba(237,233,225,.09);
+    line-height:1;pointer-events:none;transition:-webkit-text-stroke-color .35s;
+  }
+  .work-card:hover .ghost{-webkit-text-stroke-color:rgba(255,184,77,.28)}
+  .work-top{
+    display:flex;justify-content:space-between;gap:12px;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .work-top .tc{color:var(--amber)}
+  .work-title{margin-top:auto;padding-top:34px}
+  .work-title h3{font-size:clamp(24px,2.8vw,32px);font-weight:900;letter-spacing:.05em}
+  .work-title .en{
+    font-family:var(--font-display);font-size:14px;letter-spacing:.3em;
+    color:var(--muted);margin-top:4px;display:block;
+  }
+  .work-desc{margin-top:12px;color:var(--muted);font-size:14.5px;max-width:52ch}
+  .work-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .work-tags span{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
+    border:1px solid var(--line);border-radius:2px;padding:4px 10px;color:var(--muted);
+  }
+  .work-card .play{
+    position:absolute;top:20px;right:20px;width:34px;height:34px;
+    border:1px solid var(--amber);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--amber);font-size:11px;opacity:0;transform:scale(.8);
+    transition:opacity .3s,transform .3s;
+  }
+  .work-card:hover .play{opacity:1;transform:scale(1)}
+  .w-7{grid-column:span 7}
+  .w-5{grid-column:span 5}
+  .w-12{grid-column:span 12;min-height:0;flex-direction:row;align-items:center;gap:clamp(24px,4vw,56px)}
+  .w-12 .work-title{padding-top:0;margin-top:0;flex:none;max-width:300px}
+  .w-12 .work-body{flex:1}
+  @media (max-width:900px){
+    .w-7,.w-5{grid-column:span 12}
+    .w-12{flex-direction:column;align-items:flex-start}
+    .w-12 .work-title{max-width:none}
+  }
+
+  /* ---------- 装备清单 ---------- */
+  .gear-rows{border-top:1px solid var(--line)}
+  .gear-row{
+    display:grid;grid-template-columns:70px 1.1fr 1.6fr auto;gap:clamp(16px,3vw,40px);
+    align-items:center;padding:clamp(24px,3.4vw,38px) 8px;
+    border-bottom:1px solid var(--line);
+    transition:background .3s;
+  }
+  .gear-row:hover{background:var(--bg-2)}
+  .gear-idx{font-family:var(--font-display);font-size:30px;color:var(--amber);letter-spacing:.08em}
+  .gear-name .zh{font-size:clamp(19px,2.4vw,24px);font-weight:900;letter-spacing:.05em}
+  .gear-name .en{font-family:var(--font-display);font-size:15px;letter-spacing:.22em;color:var(--muted);margin-top:2px;display:block}
+  .gear-spec{font-family:var(--font-mono);font-size:12.5px;line-height:2;letter-spacing:.06em;color:var(--muted)}
+  .gear-role{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;color:var(--amber);
+    border:1px solid var(--amber-dim);border-radius:2px;padding:6px 12px;white-space:nowrap;
+  }
+  @media (max-width:820px){
+    .gear-row{grid-template-columns:48px 1fr;grid-template-rows:auto auto}
+    .gear-spec{grid-column:1/-1}
+    .gear-role{grid-column:1/-1;justify-self:start}
+  }
+
+  /* ---------- 工作流 ---------- */
+  .timeline-ruler{
+    height:12px;border-bottom:1px solid var(--line);
+    background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px);
+    margin-bottom:6px;
+  }
+  .timeline-strip{display:flex;gap:3px;margin-bottom:clamp(36px,5vw,56px)}
+  .tl-seg{
+    position:relative;height:52px;border-radius:2px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.18em;color:var(--text);
+    background:var(--bg-3);border-top:2px solid var(--line);
+  }
+  .tl-seg small{position:absolute;top:4px;left:8px;font-size:9px;color:var(--muted)}
+  .tl-shoot{flex-basis:20%;border-top-color:var(--muted)}
+  .tl-org{flex-basis:12%;border-top-color:var(--muted)}
+  .tl-cut{flex-basis:24%;border-top-color:var(--amber);background:rgba(255,184,77,.1)}
+  .tl-grade{flex-basis:18%;border-top-color:var(--teal);background:rgba(77,214,193,.08)}
+  .tl-fx{flex-basis:15%;border-top-color:var(--ae);background:rgba(156,140,255,.08)}
+  .tl-pub{flex-basis:11%;border-top-color:var(--rec);background:rgba(255,75,62,.08)}
+  @media (max-width:720px){
+    .timeline-strip{flex-wrap:wrap}
+    .tl-seg{flex-basis:calc(50% - 3px) !important}
+  }
+  .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .step-card{
+    border:1px solid var(--line);border-radius:3px;background:var(--bg-2);
+    padding:clamp(22px,2.6vw,30px);position:relative;
+    transition:border-color .3s,transform .3s;
+  }
+  .step-card:hover{border-color:var(--amber-dim);transform:translateY(-4px)}
+  .step-no{font-family:var(--font-display);font-size:20px;letter-spacing:.14em;color:var(--amber)}
+  .step-card h3{margin-top:10px;font-size:19px;font-weight:900;letter-spacing:.05em}
+  .step-tool{
+    display:inline-block;margin-top:8px;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;
+    padding:4px 10px;border-radius:2px;border:1px solid var(--line);color:var(--muted);
+    text-transform:uppercase;
+  }
+  .step-tool.t-dv{color:var(--amber);border-color:var(--amber-dim)}
+  .step-tool.t-ae{color:var(--ae);border-color:rgba(156,140,255,.4)}
+  .step-tool.t-cam{color:var(--teal);border-color:rgba(77,214,193,.35)}
+  .step-card p{margin-top:12px;color:var(--muted);font-size:14px}
+  @media (max-width:900px){.steps-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.steps-grid{grid-template-columns:1fr}}
+  /* ---------- 发布平台 ---------- */
+  .platforms-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .platform-card{
+    position:relative;overflow:hidden;
+    border:1px solid var(--line);border-radius:3px;background:var(--bg-2);
+    padding:clamp(28px,3.4vw,42px);
+    display:flex;flex-direction:column;gap:16px;
+    transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s;
+  }
+  .platform-card:hover{transform:translateY(-5px)}
+  .platform-tag{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.26em;
+    color:var(--muted);text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+  }
+  .platform-tag .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .platform-card h3{font-size:clamp(28px,3.4vw,38px);font-weight:900;letter-spacing:.06em;line-height:1.2}
+  .platform-card .handle{font-family:var(--font-mono);font-size:13px;letter-spacing:.12em;color:var(--muted)}
+  .platform-card p{color:var(--muted);font-size:14.5px}
+  .platform-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+  .platform-meta span{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
+    border:1px solid var(--line);border-radius:2px;padding:4px 10px;color:var(--muted);
+  }
+  .platform-link{
+    margin-top:auto;padding-top:18px;
+    font-weight:700;font-size:15px;letter-spacing:.08em;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:gap .3s;
+  }
+  .platform-link:hover{gap:14px}
+  .p-bili:hover{border-color:var(--bili)}
+  .p-bili .dot,.p-bili .platform-link{color:var(--bili)}
+  .p-bili .dot{background:var(--bili)}
+  .p-dy:hover{border-color:var(--dy-cyan)}
+  .p-dy .platform-link{color:var(--text)}
+  .p-dy .dot{background:var(--dy-cyan);box-shadow:2px 0 0 var(--dy-red)}
+  .glitch{position:relative;display:inline-block}
+  @media (prefers-reduced-motion:no-preference){
+    .p-dy:hover .glitch{animation:shake .35s steps(2) 1}
+    @keyframes shake{25%{transform:translateX(1.5px)}75%{transform:translateX(-1.5px)}}
+  }
+  .p-dy .glitch{color:var(--text);text-shadow:2px 0 0 rgba(37,244,238,.55),-2px 0 0 rgba(254,44,85,.55)}
+  @media (max-width:820px){.platforms-grid{grid-template-columns:1fr}}
+
+  /* ---------- 关于 ---------- */
+  .about-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(36px,6vw,80px);align-items:start}
+  .motto-stack{position:sticky;top:110px}
+  .motto-stack .l1{font-size:clamp(40px,5.6vw,64px);font-weight:900;letter-spacing:.1em;line-height:1.2}
+  .motto-stack .l2{
+    font-size:clamp(40px,5.6vw,64px);font-weight:900;letter-spacing:.1em;line-height:1.2;
+    color:transparent;-webkit-text-stroke:1.5px var(--amber);
+  }
+  .motto-stack .l3{
+    margin-top:20px;font-family:var(--font-mono);font-size:11.5px;
+    letter-spacing:.3em;color:var(--muted);text-transform:uppercase;
+  }
+  .slate{
+    margin-top:clamp(30px,4vw,46px);
+    border:1px solid var(--line);border-radius:3px;background:var(--bg-2);overflow:hidden;
+  }
+  .slate-clapper{
+    height:12px;
+    background:repeating-linear-gradient(-45deg,#101014 0 16px,#e8e4da 16px 32px);
+    opacity:.85;
+  }
+  .slate-body{padding:clamp(20px,2.6vw,28px)}
+  .slate-body .row{
+    display:flex;justify-content:space-between;gap:16px;
+    padding:9px 0;border-bottom:1px dashed var(--line-soft);
+    font-size:13.5px;
+  }
+  .slate-body .row:last-child{border-bottom:none}
+  .slate-body .k{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;flex:none;padding-top:2px}
+  .slate-body .v{text-align:right;font-weight:500;letter-spacing:.04em}
+  .about-copy p{color:var(--muted);margin-bottom:20px;font-size:15.5px}
+  .about-copy p strong{color:var(--text);font-weight:700}
+  .about-copy .lead{color:var(--text);font-size:clamp(18px,2.2vw,22px);font-weight:500;line-height:1.9;margin-bottom:28px}
+  @media (max-width:900px){
+    .about-grid{grid-template-columns:1fr}
+    .motto-stack{position:static}
+  }
+
+  /* ---------- 合作 ---------- */
+  .contact{background:var(--bg-2);border-block:1px solid var(--line-soft)}
+  .contact-inner{text-align:center;max-width:680px;margin:0 auto}
+  .contact h2{font-size:clamp(30px,4.6vw,50px);font-weight:900;letter-spacing:.06em;margin-top:14px}
+  .contact p{margin-top:18px;color:var(--muted)}
+  .contact-cta{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+  /* ---------- Footer ---------- */
+  footer{padding:clamp(48px,6vw,72px) 0 34px;overflow:hidden}
+  .footer-big{
+    font-family:var(--font-display);
+    font-size:clamp(70px,14vw,190px);line-height:.9;letter-spacing:.1em;
+    color:transparent;-webkit-text-stroke:1px rgba(237,233,225,.16);
+    text-align:center;user-select:none;pointer-events:none;
+  }
+  .footer-grid{
+    display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    margin-top:clamp(30px,4vw,48px);padding-top:26px;border-top:1px solid var(--line-soft);
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;color:var(--muted);
+  }
+  .footer-grid a:hover{color:var(--amber)}
+  .footer-grid .rec-line{display:flex;align-items:center;gap:8px}
+  .footer-grid .rec-line .tc{color:var(--rec)}
+
+  /* ---------- 进场动画（fail-open：无 JS 时内容直接可见） ---------- */
+  html.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1);transition-delay:var(--d,0s)}
+  html.js .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    html.js .reveal{opacity:1;transform:none;transition:none}
+    .marquee-track{animation:none}
+    *{scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ================= 导航 ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="微影 V-ing 首页">
+      <span class="rec-dot" aria-hidden="true"></span>
+      <span class="en">V-ING</span>
+      <span>微影</span>
+    </a>
+    <nav class="nav-links" aria-label="页面导航">
+      <a class="ep" href="ep01.html">EP.01 南日岛</a>
+      <a href="#works">企划</a>
+      <a href="#gear">装备</a>
+      <a href="#workflow">工作流</a>
+      <a href="#platforms">平台</a>
+      <a href="#about">关于</a>
+      <a href="#contact">合作</a>
+    </nav>
+    <span class="nav-tc" data-tc aria-hidden="true">00:00:00:00</span>
+  </div>
+</header>
+
+<!-- ================= Hero 取景器 ================= -->
+<section class="hero" id="top">
+  <div class="viewfinder" aria-hidden="true">
+    <span class="vf-corner vf-tl"></span><span class="vf-corner vf-tr"></span>
+    <span class="vf-corner vf-bl"></span><span class="vf-corner vf-br"></span>
+    <div class="vf-hud top">
+      <span class="rec-flag"><span class="rec-dot"></span>REC&nbsp;<span class="tc" data-tc>00:00:00:00</span></span>
+      <span class="hide-s">Sony ZV-E10 · 4K 25P</span>
+    </div>
+    <div class="vf-hud bottom">
+      <span>25mm F1.7 · ISO 800</span>
+      <span class="hide-s">DJI RS3 Mini · Ready</span>
+    </div>
+  </div>
+
+  <div class="hero-core">
+    <p class="hero-kicker">Now Recording · 视频创作企划站</p>
+    <h1 class="hero-title">
+      <span class="hero-cn">微影</span>
+      <span class="hero-en">V-ING</span>
+    </h1>
+    <p class="hero-motto">我们<span class="hy">-</span>正在进行时</p>
+    <p class="hero-motto-en">We · Present Continuous</p>
+    <p class="hero-sub">
+      一台 <strong>Sony ZV-E10</strong>、一颗 <strong>25mm F1.7</strong>、一台 <strong>DJI RS3 Mini</strong>，
+      把正在发生的生活，剪成正在被看见的故事。哔哩哔哩 × 抖音，持续更新中。
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="#PROFILE_URL_BILIBILI" target="_blank" rel="noopener">▶ 去哔哩哔哩看片</a>
+      <a class="btn btn-ghost" href="#PROFILE_URL_DOUYIN" target="_blank" rel="noopener">抖音关注 @微影</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <span>Scroll</span>
+    <span class="bar"></span>
+  </div>
+</section>
+
+<!-- ================= 跑马灯 ================= -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-seq">
+      <span>微影 V-ing</span><i>●</i><span>我们-正在进行时</span><i>●</i><span>Now Recording</span><i>●</i>
+      <span>哔哩哔哩</span><i>●</i><span>抖音</span><i>●</i><span>Sony ZV-E10</span><i>●</i>
+      <span>25mm F1.7</span><i>●</i><span>DJI RS3 Mini</span><i>●</i><span>DaVinci Resolve</span><i>●</i>
+      <span>After Effects</span><i>●</i>
+    </div>
+    <div class="marquee-seq">
+      <span>微影 V-ing</span><i>●</i><span>我们-正在进行时</span><i>●</i><span>Now Recording</span><i>●</i>
+      <span>哔哩哔哩</span><i>●</i><span>抖音</span><i>●</i><span>Sony ZV-E10</span><i>●</i>
+      <span>25mm F1.7</span><i>●</i><span>DJI RS3 Mini</span><i>●</i><span>DaVinci Resolve</span><i>●</i>
+      <span>After Effects</span><i>●</i>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EP.01 筹备中横幅 ================= -->
+<div class="ep-now">
+  <div class="container">
+    <a class="ep-banner reveal" href="ep01.html">
+      <span class="ep-tag"><span class="rec-dot" aria-hidden="true"></span>Now Preparing · EP.01</span>
+      <span class="ep-name">南日岛：海风吹过的地方，我们正在进行时<small>第一期拍摄企划案 · 已立项 · 点击查看完整策划</small></span>
+      <span class="ep-go">查看企划 →</span>
+    </a>
+  </div>
+</div>
+
+<!-- ================= SCENE 01 作品企划 ================= -->
+<section id="works">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">Scene 01</span>
+      <h2>作品企划</h2>
+      <span class="scene-latin">Content Series</span>
+      <p class="scene-desc">三条正在进行的系列：记录城市、记录人、记录创作本身。每一条都是进行时，没有杀青日。</p>
+    </div>
+    <div class="works-grid">
+      <article class="work-card w-7 reveal">
+        <div class="work-top"><span>Series 01 · Vlog</span><span class="tc">TC 00:24:36:12</span></div>
+        <span class="play" aria-hidden="true">▶</span>
+        <div class="work-title">
+          <h3>城市漫游中</h3>
+          <span class="en">City Roaming</span>
+        </div>
+        <p class="work-desc">手持 25mm 定焦走街串巷，记录城市里正在发生的日常：清晨的早餐摊、傍晚的江边、深夜还亮着的便利店。</p>
+        <div class="work-tags"><span>手持</span><span>25mm</span><span>同期声</span><span>横屏 16:9</span></div>
+        <span class="ghost" aria-hidden="true">ROAM</span>
+      </article>
+
+      <article class="work-card w-5 reveal" style="--d:.08s">
+        <div class="work-top"><span>Series 02 · 纪实</span><span class="tc">TC 00:18:05:03</span></div>
+        <span class="play" aria-hidden="true">▶</span>
+        <div class="work-title">
+          <h3>我们的进行时</h3>
+          <span class="en">People in Progress</span>
+        </div>
+        <p class="work-desc">把镜头对准身边的人：朋友、家人、擦肩而过的陌生人。每个人都有自己的正在进行时。</p>
+        <div class="work-tags"><span>人物</span><span>访谈</span><span>纪实</span></div>
+        <span class="ghost" aria-hidden="true">US</span>
+      </article>
+
+      <article class="work-card w-12 reveal">
+        <div class="work-title">
+          <div class="work-top" style="margin-bottom:14px"><span>Series 03</span><span class="tc">TC 00:12:48:20</span></div>
+          <h3>装备与剪辑室</h3>
+          <span class="en">Gear &amp; Edit Room</span>
+        </div>
+        <div class="work-body">
+          <p class="work-desc">ZV-E10 实战设置、RS3 Mini 运镜思路、达芬奇节点调色与 AE 包装的完整工作流拆解——把创作过程本身也剪给你看。</p>
+          <div class="work-tags"><span>教程</span><span>测评</span><span>工作流</span><span>达芬奇</span><span>AE</span></div>
+        </div>
+        <span class="play" aria-hidden="true">▶</span>
+        <span class="ghost" aria-hidden="true">EDIT</span>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- ================= SCENE 02 装备清单 ================= -->
+<section id="gear">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">Scene 02</span>
+      <h2>装备清单</h2>
+      <span class="scene-latin">Gear List</span>
+      <p class="scene-desc">轻量、单人、可手持。全部家当三件套，随时开机，随时出发。</p>
+    </div>
+    <div class="gear-rows">
+      <div class="gear-row reveal">
+        <span class="gear-idx">01</span>
+        <div class="gear-name">
+          <span class="zh">机身 · 主机位</span>
+          <span class="en">Sony ZV-E10</span>
+        </div>
+        <div class="gear-spec">APS-C 可换镜头视频机 · 4K 25P 主力规格<br>侧翻屏单人作战 · 产品展示模式开箱好用</div>
+        <span class="gear-role">A-Cam</span>
+      </div>
+      <div class="gear-row reveal" style="--d:.06s">
+        <span class="gear-idx">02</span>
+        <div class="gear-name">
+          <span class="zh">镜头 · 唯一挂头</span>
+          <span class="en">Viltrox 25mm F1.7</span>
+        </div>
+        <div class="gear-spec">等效 37.5mm 人文焦段 · F1.7 大光圈<br>暗光与虚化担当 · 挂机轻便不犹豫</div>
+        <span class="gear-role">Lens</span>
+      </div>
+      <div class="gear-row reveal" style="--d:.12s">
+        <span class="gear-idx">03</span>
+        <div class="gear-name">
+          <span class="zh">稳定 · 运镜担当</span>
+          <span class="en">DJI RS3 Mini</span>
+        </div>
+        <div class="gear-spec">2kg 负载 · 自重约 0.8kg<br>低角度与跟随运镜 · 说走就走的稳定器</div>
+        <span class="gear-role">Gimbal</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCENE 03 剪辑工作流 ================= -->
+<section id="workflow">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">Scene 03</span>
+      <h2>剪辑工作流</h2>
+      <span class="scene-latin">Post Pipeline</span>
+      <p class="scene-desc">一条片子从开机到上线的完整时间线：达芬奇负责剪与色，AE 负责包装与特效。</p>
+    </div>
+
+    <div class="reveal">
+      <div class="timeline-ruler" aria-hidden="true"></div>
+      <div class="timeline-strip" aria-hidden="true">
+        <div class="tl-seg tl-shoot"><small>V1</small>拍摄</div>
+        <div class="tl-seg tl-org"><small>V2</small>整理</div>
+        <div class="tl-seg tl-cut"><small>V3</small>剪辑</div>
+        <div class="tl-seg tl-grade"><small>V4</small>调色</div>
+        <div class="tl-seg tl-fx"><small>FX</small>包装</div>
+        <div class="tl-seg tl-pub"><small>OUT</small>发布</div>
+      </div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <span class="step-no">ST-01</span>
+        <h3>拍摄</h3>
+        <span class="step-tool t-cam">ZV-E10 + RS3 Mini</span>
+        <p>4K 25P 记录，手持与稳定器交替；同期声一并收下，现场感是第一素材。</p>
+      </div>
+      <div class="step-card reveal" style="--d:.06s">
+        <span class="step-no">ST-02</span>
+        <h3>素材整理</h3>
+        <span class="step-tool">归档 / 代理 / 备份</span>
+        <p>按系列建库、生成代理、双份备份。整理不浪漫，但它让灵感不掉线。</p>
+      </div>
+      <div class="step-card reveal" style="--d:.12s">
+        <span class="step-no">ST-03</span>
+        <h3>剪辑</h3>
+        <span class="step-tool t-dv">DaVinci Resolve</span>
+        <p>在达芬奇剪辑页搭结构、卡节奏：先讲清楚故事，再谈其他。</p>
+      </div>
+      <div class="step-card reveal">
+        <span class="step-no">ST-04</span>
+        <h3>调色</h3>
+        <span class="step-tool t-dv">DaVinci 节点调色</span>
+        <p>节点式调色统一系列色调，给每一支片子留下统一的「微影色」。</p>
+      </div>
+      <div class="step-card reveal" style="--d:.06s">
+        <span class="step-no">ST-05</span>
+        <h3>包装特效</h3>
+        <span class="step-tool t-ae">After Effects</span>
+        <p>片头字卡、字幕条与转场动效在 AE 完成，让信息也有节奏。</p>
+      </div>
+      <div class="step-card reveal" style="--d:.12s">
+        <span class="step-no">ST-06</span>
+        <h3>发布</h3>
+        <span class="step-tool">哔哩哔哩 · 抖音</span>
+        <p>横屏完整版上哔哩哔哩，竖屏切片上抖音；同一段进行时，两种打开方式。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCENE 04 发布平台 ================= -->
+<section id="platforms">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">Scene 04</span>
+      <h2>发布平台</h2>
+      <span class="scene-latin">Where to Watch</span>
+      <p class="scene-desc">双平台同步进行中：一个放完整版，一个放正在进行时的切片。</p>
+    </div>
+    <div class="platforms-grid">
+      <article class="platform-card p-bili reveal">
+        <span class="platform-tag"><span class="dot"></span>Platform 01 · Bilibili</span>
+        <h3>哔哩哔哩</h3>
+        <span class="handle">@微影</span>
+        <p>主阵地。完整系列企划、长视频 Vlog 与工作流教程都在这里，横屏观看体验最佳。</p>
+        <div class="platform-meta"><span>横屏 16:9</span><span>中长视频</span><span>完整企划</span></div>
+        <a class="platform-link" href="#PROFILE_URL_BILIBILI" target="_blank" rel="noopener">去哔哩哔哩看片 →</a>
+      </article>
+      <article class="platform-card p-dy reveal" style="--d:.08s">
+        <span class="platform-tag"><span class="dot"></span>Platform 02 · Douyin</span>
+        <h3><span class="glitch">抖音</span></h3>
+        <span class="handle">@微影</span>
+        <p>快节奏切片与灵感速记，竖屏优先。正在发生的事，第一时间送达。</p>
+        <div class="platform-meta"><span>竖屏 9:16</span><span>快节奏切片</span><span>灵感速记</span></div>
+        <a class="platform-link" href="#PROFILE_URL_DOUYIN" target="_blank" rel="noopener">抖音关注 @微影 →</a>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- ================= SCENE 05 关于微影 ================= -->
+<section id="about">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">Scene 05</span>
+      <h2>关于微影</h2>
+      <span class="scene-latin">About V-ing</span>
+    </div>
+    <div class="about-grid">
+      <div class="motto-stack reveal">
+        <div class="l1">我们</div>
+        <div class="l2">正在进行时</div>
+        <div class="l3">We · Present Continuous</div>
+        <div class="slate" role="table" aria-label="账号档案">
+          <div class="slate-clapper" aria-hidden="true"></div>
+          <div class="slate-body">
+            <div class="row"><span class="k">Account</span><span class="v">微影</span></div>
+            <div class="row"><span class="k">English</span><span class="v">V-ing</span></div>
+            <div class="row"><span class="k">Motto</span><span class="v">我们-正在进行时</span></div>
+            <div class="row"><span class="k">Platforms</span><span class="v">哔哩哔哩 · 抖音</span></div>
+            <div class="row"><span class="k">Camera</span><span class="v">Sony ZV-E10 · 25mm F1.7 · RS3 Mini</span></div>
+            <div class="row"><span class="k">Post</span><span class="v">DaVinci Resolve · After Effects</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="about-copy reveal" style="--d:.1s">
+        <p class="lead">视频不是回忆的标本，是当下的证据。</p>
+        <p><strong>「微影」</strong>，取“微小的光影”之意。再普通的一天，也有值得被记录的光：早餐摊上升起的白汽、傍晚落在墙上的那一条夕阳、朋友笑起来时眼里的亮点。我们负责看见，然后按下录制键。</p>
+        <p><strong>V-ing</strong> 是「微影」的英文写法：V 来自“微”，也是 Vlog 的 V；-ing 是英语里的进行时态。合在一起就是——微影，正在发生。</p>
+        <p>座右铭<strong>「我们-正在进行时」</strong>说的是镜头内外的所有人：你在过你的生活，我在按我的快门，我们共同拥有这段正在进行的时光。所以这里的每一支片子都不追求完美收官，只追求如实记录：此刻的我们，正在进行。</p>
+        <p>设备不贵，但够用且趁手；剪辑不炫，但每一刀都有理由。从 ZV-E10 开机，到达芬奇落版，再到你点开播放——这条进行时里，也有你。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCENE 06 合作与联络 ================= -->
+<section id="contact" class="contact">
+  <div class="container">
+    <div class="contact-inner reveal">
+      <span class="scene-no" style="justify-content:center;display:inline-flex">Scene 06 · Contact</span>
+      <h2>一起记录正在发生的时刻</h2>
+      <p>品牌合作、内容共创、装备交流，或者你也想开始记录自己的正在进行时——欢迎来信，也欢迎在平台私信。</p>
+      <div class="contact-cta">
+        <a class="btn btn-solid" href="mailto:hi@ving.media">写信给微影</a>
+        <a class="btn btn-ghost" href="#PROFILE_URL_BILIBILI" target="_blank" rel="noopener">去哔哩哔哩看片</a>
+        <a class="btn btn-ghost" href="#PROFILE_URL_DOUYIN" target="_blank" rel="noopener">抖音关注 @微影</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Footer ================= -->
+<footer>
+  <div class="container">
+    <div class="footer-big" aria-hidden="true">V-ING</div>
+    <div class="footer-grid">
+      <span>© 2026 微影 V-ing · 我们，正在进行时</span>
+      <span class="rec-line"><span class="rec-dot" aria-hidden="true"></span>REC <span class="tc" data-tc>00:00:00:00</span></span>
+      <span>剪辑于 DaVinci Resolve · 包装于 After Effects</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+
+  /* ---- 实时时间码（25fps，从访问时刻开始累计） ---- */
+  var tcEls = document.querySelectorAll('[data-tc]');
+  var start = performance.now();
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var total = Math.floor((performance.now() - start) / 40); /* 25fps */
+    var f = total % 25;
+    var s = Math.floor(total / 25) % 60;
+    var m = Math.floor(total / (25 * 60)) % 60;
+    var h = Math.floor(total / (25 * 3600)) % 24;
+    var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
+    for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str;
+    requestAnimationFrame(tick);
+  }
+  if (tcEls.length && window.requestAnimationFrame) requestAnimationFrame(tick);
+
+  /* ---- 进场揭示（fail-open：无 JS / 减动效时内容直接可见） ---- */
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---- 导航当前段落高亮 ---- */
+  var links = document.querySelectorAll('.nav-links a');
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  if ('IntersectionObserver' in window) {
+    var so = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          links.forEach(function(a){ a.classList.remove('active'); });
+          var a = map[e.target.id];
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-38% 0px -55% 0px' });
+    ['works','gear','workflow','platforms','about','contact'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) so.observe(el);
+    });
+  }
+})();
+</script>
+</body>
+</html>

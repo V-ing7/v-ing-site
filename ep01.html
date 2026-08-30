@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EP.01 南日岛：海风吹过的地方 — 微影 V-ing 第一期策划案</title>
+<meta name="description" content="微影 V-ing 第一期拍摄企划：《南日岛：海风吹过的地方，我们正在进行时》。纪实、克制、电影感，单人完成，哔哩哔哩与抖音双平台发布。">
+<!--
+  ============================================================
+  微影 V-ing · EP.01 南日岛 拍摄企划页（单文件）
+  与 index.html 共享同一设计系统（暗色剪辑室 / 时间码 / REC）
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c0f;
+    --bg-2:#121217;
+    --bg-3:#17171d;
+    --line:#26262e;
+    --line-soft:#1d1d24;
+    --text:#ede9e1;
+    --muted:#a29d92;
+    --amber:#ffb84d;
+    --amber-dim:#8a6a34;
+    --rec:#ff4b3e;
+    --bili:#fb7299;
+    --dy-cyan:#25f4ee;
+    --dy-red:#fe2c55;
+    --teal:#4dd6c1;
+    --ae:#9c8cff;
+    --sea:#5d84a6;
+    --font-cn:'Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei','PingFang SC','Microsoft YaHei',sans-serif;
+    --font-display:'Bebas Neue','Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei',sans-serif;
+    --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Noto Sans CJK SC',monospace;
+    --pad:clamp(20px,4vw,48px);
+    --section-pad:clamp(64px,8vw,110px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-padding-top:96px}
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--font-cn);font-size:16px;line-height:1.8;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:#141414}
+  a{color:inherit;text-decoration:none}
+  ul,ol{list-style:none}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+  .container{max-width:1120px;margin:0 auto;padding:0 var(--pad)}
+
+  .grain{
+    position:fixed;inset:-40px;pointer-events:none;z-index:60;opacity:.055;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  /* ---------- 导航 ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(12,12,15,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-inner{max-width:1120px;margin:0 auto;padding:0 var(--pad);height:64px;display:flex;align-items:center;gap:24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;white-space:nowrap}
+  .brand .en{font-family:var(--font-display);font-size:22px;letter-spacing:.14em;color:var(--amber)}
+  .rec-dot{width:9px;height:9px;border-radius:50%;background:var(--rec);flex:none;box-shadow:0 0 10px rgba(255,75,62,.8)}
+  @media (prefers-reduced-motion:no-preference){
+    .rec-dot{animation:blink 1.6s steps(1) infinite}
+    @keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.15}}
+  }
+  .nav-links{display:flex;gap:24px;margin-left:auto;align-items:center}
+  .nav-links a{
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;color:var(--muted);
+    padding:6px 2px;transition:color .25s;
+  }
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.home-link{color:var(--amber)}
+  .nav-tc{font-family:var(--font-mono);font-size:12.5px;color:var(--amber);letter-spacing:.1em;white-space:nowrap}
+  @media (max-width:760px){.nav-links a:not(.home-link){display:none}}
+
+  /* ---------- EP Hero（通告单风格） ---------- */
+  .ep-hero{position:relative;padding:clamp(120px,16vh,170px) 0 clamp(48px,6vw,72px);overflow:hidden}
+  .ep-ghost{
+    position:absolute;top:30px;right:-30px;z-index:0;
+    font-family:var(--font-display);font-size:clamp(140px,26vw,360px);line-height:1;
+    color:transparent;-webkit-text-stroke:1px rgba(237,233,225,.07);
+    pointer-events:none;user-select:none;letter-spacing:.04em;
+  }
+  .ep-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(32px,5vw,64px);align-items:start}
+  .ep-kicker{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
+  }
+  .ep-kicker::before{content:"";width:34px;height:1px;background:var(--amber)}
+  .ep-status{
+    display:inline-flex;align-items:center;gap:8px;margin-left:14px;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;color:var(--rec);
+    border:1px solid rgba(255,75,62,.45);border-radius:2px;padding:4px 10px;
+  }
+  .ep-title{margin-top:22px;line-height:1.08}
+  .ep-title .main{display:block;font-weight:900;font-size:clamp(56px,9vw,108px);letter-spacing:.05em}
+  .ep-title .sub{
+    display:block;margin-top:12px;font-weight:500;letter-spacing:.14em;
+    font-size:clamp(18px,2.6vw,26px);color:var(--text);
+  }
+  .ep-title .motto{
+    display:block;margin-top:10px;font-family:var(--font-mono);
+    font-size:clamp(12px,1.4vw,14px);letter-spacing:.34em;color:var(--amber);
+  }
+  .ep-logline{margin-top:26px;color:var(--muted);max-width:56ch}
+  .ep-logline strong{color:var(--text)}
+  .ep-hero-cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:13px 26px;font-size:14.5px;font-weight:700;letter-spacing:.08em;
+    border:1px solid var(--amber);border-radius:2px;cursor:pointer;
+    transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s,color .25s;
+  }
+  .btn-solid{background:var(--amber);color:#141414}
+  .btn-solid:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,184,77,.28)}
+  .btn-ghost{color:var(--text);border-color:var(--line);background:transparent}
+  .btn-ghost:hover{transform:translateY(-3px);border-color:var(--amber);color:var(--amber)}
+
+  /* 通告单卡片 */
+  .call-sheet{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);overflow:hidden}
+  .clapper{height:12px;background:repeating-linear-gradient(-45deg,#101014 0 16px,#e8e4da 16px 32px);opacity:.85}
+  .sheet-title{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 22px;border-bottom:1px solid var(--line-soft);
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase;
+  }
+  .sheet-title b{color:var(--text);font-weight:600}
+  .sheet-body{padding:8px 22px 16px}
+  .sheet-row{
+    display:flex;justify-content:space-between;gap:18px;
+    padding:10px 0;border-bottom:1px dashed var(--line-soft);font-size:13.5px;
+  }
+  .sheet-row:last-child{border-bottom:none}
+  .sheet-row .k{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;flex:none;padding-top:3px}
+  .sheet-row .v{text-align:right;font-weight:500;letter-spacing:.03em}
+
+  /* 核心问题 */
+  .core-q{
+    margin-top:clamp(36px,5vw,52px);
+    border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:3px;
+    background:linear-gradient(90deg,rgba(255,184,77,.07),transparent 55%);
+    padding:clamp(24px,3.4vw,36px);
+  }
+  .core-q .label{font-family:var(--font-mono);font-size:11px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase}
+  .core-q p{margin-top:12px;font-size:clamp(19px,2.6vw,26px);font-weight:900;letter-spacing:.05em;line-height:1.6}
+
+  /* ---------- 目录 chips ---------- */
+  .toc{border-block:1px solid var(--line-soft);background:var(--bg-2);padding:20px 0;position:sticky;top:64px;z-index:40}
+  .toc-inner{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+  .toc-inner::-webkit-scrollbar{display:none}
+  .toc a{
+    flex:none;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;
+    color:var(--muted);border:1px solid var(--line);border-radius:2px;padding:7px 14px;
+    transition:color .25s,border-color .25s,background .25s;white-space:nowrap;
+  }
+  .toc a:hover{color:var(--amber);border-color:var(--amber-dim);background:rgba(255,184,77,.05)}
+  .toc a i{font-style:normal;color:var(--amber);margin-right:8px}
+
+  /* ---------- 通用 Section ---------- */
+  section{padding:var(--section-pad) 0;position:relative}
+  section + section{border-top:1px solid var(--line-soft)}
+  .scene-head{margin-bottom:clamp(36px,5vw,56px)}
+  .scene-no{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
+  }
+  .scene-no::before{content:"";width:34px;height:1px;background:var(--amber)}
+  .scene-head h2{margin-top:12px;font-weight:900;font-size:clamp(30px,4.6vw,48px);letter-spacing:.06em;line-height:1.2}
+  .scene-latin{display:block;font-family:var(--font-display);font-size:clamp(14px,1.7vw,18px);letter-spacing:.34em;color:var(--muted);margin-top:6px}
+  .scene-desc{margin-top:14px;color:var(--muted);max-width:660px}
+
+  h4.block-label{
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.26em;color:var(--muted);
+    text-transform:uppercase;margin:clamp(30px,4vw,44px) 0 18px;
+    display:flex;align-items:center;gap:12px;
+  }
+  h4.block-label::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+  h4.block-label b{color:var(--amber);font-weight:600}
+
+  .lead-p{color:var(--muted);max-width:70ch}
+  .lead-p strong{color:var(--text)}
+
+  /* 引用 */
+  .quote{
+    border-left:2px solid var(--amber);padding:6px 0 6px clamp(18px,2.6vw,28px);
+    margin:clamp(24px,3vw,36px) 0;
+  }
+  .quote p{font-size:clamp(17px,2.1vw,21px);font-weight:700;letter-spacing:.04em;line-height:1.9}
+  .quote.small p{font-size:15.5px;font-weight:500;color:var(--text)}
+  .quote .src{display:block;margin-top:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;color:var(--muted)}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;
+    border:1px solid var(--line);border-radius:2px;padding:7px 14px;color:var(--text);
+    background:var(--bg-2);transition:border-color .25s,color .25s;
+  }
+  .chip:hover{border-color:var(--amber-dim);color:var(--amber)}
+  .chip.dim{color:var(--muted)}
+
+  /* 卡片网格 */
+  .card-grid{display:grid;gap:18px}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .cols-4{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:900px){.cols-3,.cols-4{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.cols-2,.cols-3,.cols-4{grid-template-columns:1fr}}
+  .info-card{
+    border:1px solid var(--line);border-radius:3px;background:var(--bg-2);
+    padding:clamp(20px,2.6vw,28px);position:relative;
+    transition:border-color .3s,transform .3s;
+  }
+  .info-card:hover{border-color:var(--amber-dim);transform:translateY(-3px)}
+  .info-card .idx{font-family:var(--font-display);font-size:19px;letter-spacing:.12em;color:var(--amber)}
+  .info-card h3{margin-top:8px;font-size:18px;font-weight:900;letter-spacing:.05em}
+  .info-card p{margin-top:10px;color:var(--muted);font-size:14px}
+  .info-card ul{margin-top:10px}
+  .info-card li{color:var(--muted);font-size:13.5px;padding-left:16px;position:relative;margin-top:6px}
+  .info-card li::before{content:"·";position:absolute;left:2px;color:var(--amber)}
+
+  /* 两栏对照（宜 / 忌） */
+  .dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.dd-grid{grid-template-columns:1fr}}
+  .dd-col{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:clamp(20px,2.6vw,28px)}
+  .dd-col h3{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.26em;text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  }
+  .dd-col.good h3{color:var(--teal)}
+  .dd-col.bad h3{color:var(--rec)}
+  .dd-col li{padding-left:22px;position:relative;color:var(--muted);font-size:14.5px;margin-top:9px}
+  .dd-col.good li::before{content:"+";position:absolute;left:2px;color:var(--teal);font-family:var(--font-mono)}
+  .dd-col.bad li::before{content:"−";position:absolute;left:2px;color:var(--rec);font-family:var(--font-mono)}
+  .dd-col li strong{color:var(--text);font-weight:500}
+
+  /* 结构时间线 */
+  .struct-list{border-left:1px solid var(--line);margin-left:6px}
+  .struct-item{position:relative;padding:0 0 clamp(34px,4vw,48px) clamp(24px,3.4vw,40px)}
+  .struct-item::before{
+    content:"";position:absolute;left:-5px;top:8px;width:9px;height:9px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--amber);
+  }
+  .struct-item:last-child{padding-bottom:0}
+  .s-time{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.18em;color:var(--amber);
+    display:inline-block;border:1px solid var(--amber-dim);border-radius:2px;padding:3px 10px;
+  }
+  .struct-item h3{margin-top:12px;font-size:clamp(19px,2.4vw,23px);font-weight:900;letter-spacing:.05em}
+  .struct-item .s-note{margin-top:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+  .struct-item p{margin-top:12px;color:var(--muted);font-size:14.5px;max-width:72ch}
+  .struct-item .mini-label{
+    margin-top:16px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .struct-item ul{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px}
+  .struct-item ul li{
+    font-size:12.5px;color:var(--muted);border:1px solid var(--line);border-radius:2px;
+    padding:4px 10px;background:var(--bg-2);
+  }
+  .voice{
+    margin-top:14px;border-left:2px solid var(--sea);padding:4px 0 4px 16px;
+    color:var(--text);font-size:14.5px;font-weight:500;
+  }
+  .voice .who{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;color:var(--sea);display:block;margin-bottom:4px}
+
+  /* 旁白稿面板 */
+  .script-panel{
+    border:1px solid var(--line);border-radius:3px;
+    background:linear-gradient(180deg,var(--bg-3),var(--bg-2));
+    padding:clamp(28px,4vw,52px);position:relative;overflow:hidden;
+  }
+  .script-panel::before{
+    content:"VO";position:absolute;top:14px;right:18px;
+    font-family:var(--font-display);font-size:15px;letter-spacing:.2em;color:var(--amber-dim);
+  }
+  .script-panel .ps-note{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:24px;display:block;
+  }
+  .script-panel p{
+    font-size:clamp(15.5px,1.8vw,17.5px);line-height:2.15;color:var(--text);
+    font-weight:500;letter-spacing:.03em;margin-bottom:18px;max-width:60ch;
+  }
+  .script-panel p.dim{color:var(--muted);font-weight:400;font-size:14.5px}
+  .script-panel p.end{color:var(--amber);font-weight:700}
+
+  /* 规格表 */
+  .spec-table{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:6px 24px}
+  .spec-row{
+    display:flex;justify-content:space-between;gap:20px;align-items:baseline;
+    padding:12px 0;border-bottom:1px dashed var(--line-soft);font-size:14px;
+  }
+  .spec-row:last-child{border-bottom:none}
+  .spec-row .k{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;flex:none}
+  .spec-row .v{text-align:right;color:var(--text)}
+  .spec-row .v em{font-style:normal;color:var(--amber)}
+
+  /* 景别比例条 */
+  .ratio-bar{display:flex;gap:3px;height:64px;margin-top:8px}
+  .rb-seg{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;color:#141414;
+    border-radius:2px;min-width:0;
+  }
+  .rb-seg b{font-size:15px;font-weight:600}
+  .rb-1{flex-basis:20%;background:#8a6a34}
+  .rb-2{flex-basis:50%;background:var(--amber)}
+  .rb-3{flex-basis:20%;background:#c98a4b}
+  .rb-4{flex-basis:10%;background:#5d84a6}
+  @media (max-width:640px){
+    .ratio-bar{flex-wrap:wrap;height:auto}
+    .rb-seg{flex-basis:calc(50% - 3px) !important;padding:12px 0}
+  }
+
+  /* 镜头清单 */
+  .shot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+  .shot-card{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:22px}
+  .shot-card .tag{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;
+    border-bottom:1px solid var(--line-soft);padding-bottom:12px;
+  }
+  .shot-card .tag span:last-child{color:var(--muted)}
+  .shot-card ol{margin-top:14px;counter-reset:shot}
+  .shot-card li{
+    counter-increment:shot;position:relative;padding-left:30px;
+    color:var(--muted);font-size:13.5px;margin-top:8px;line-height:1.6;
+  }
+  .shot-card li::before{
+    content:counter(shot,decimal-leading-zero);
+    position:absolute;left:0;top:1px;
+    font-family:var(--font-mono);font-size:10.5px;color:var(--amber-dim);
+  }
+
+  /* 流程步骤 */
+  .flow{display:grid;gap:0;border:1px solid var(--line);border-radius:3px;background:var(--bg-2);overflow:hidden}
+  .flow-step{
+    display:flex;gap:18px;align-items:baseline;
+    padding:16px clamp(20px,2.6vw,28px);border-bottom:1px solid var(--line-soft);
+  }
+  .flow-step:last-child{border-bottom:none}
+  .flow-step .n{font-family:var(--font-display);font-size:20px;color:var(--amber);letter-spacing:.1em;flex:none;width:34px}
+  .flow-step p{color:var(--text);font-size:14.5px}
+  .flow-step p small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+
+  /* 日程 */
+  .day-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:820px){.day-grid{grid-template-columns:1fr}}
+  .day-card{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);overflow:hidden}
+  .day-head{
+    padding:14px 24px;border-bottom:1px solid var(--line-soft);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .day-head b{font-weight:900;letter-spacing:.06em}
+  .day-head span{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase}
+  .day-part{padding:16px 24px;border-bottom:1px dashed var(--line-soft)}
+  .day-part:last-child{border-bottom:none}
+  .day-part .t{font-family:var(--font-mono);font-size:11px;letter-spacing:.24em;color:var(--amber);text-transform:uppercase}
+  .day-part ul{margin-top:8px;display:flex;flex-wrap:wrap;gap:7px}
+  .day-part li{font-size:12.5px;color:var(--muted);border:1px solid var(--line);border-radius:2px;padding:3px 10px}
+
+  /* 调色色板 */
+  .grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media (max-width:820px){.grade-grid{grid-template-columns:1fr}}
+  .grade-card{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:22px}
+  .grade-card h3{font-size:17px;font-weight:900;letter-spacing:.06em;display:flex;align-items:center;gap:10px}
+  .grade-card h3 span{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+  .sw-row{display:flex;gap:8px;margin:16px 0 14px}
+  .sw{flex:1;height:46px;border-radius:2px;position:relative}
+  .sw i{
+    position:absolute;bottom:-20px;left:0;font-style:normal;
+    font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:var(--muted);
+  }
+  .grade-card ul{margin-top:30px}
+  .grade-card li{color:var(--muted);font-size:13.5px;padding-left:16px;position:relative;margin-top:6px}
+  .grade-card li::before{content:"·";position:absolute;left:2px;color:var(--amber)}
+
+  /* 标题候选 */
+  .title-opts{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);overflow:hidden}
+  .opt{
+    display:flex;gap:16px;align-items:baseline;
+    padding:15px clamp(20px,2.6vw,28px);border-bottom:1px solid var(--line-soft);
+    color:var(--muted);font-size:14.5px;
+  }
+  .opt:last-child{border-bottom:none}
+  .opt .no{font-family:var(--font-mono);font-size:11px;color:var(--amber-dim);flex:none}
+  .opt.pick{color:var(--text);font-weight:700;background:rgba(255,184,77,.06)}
+  .opt.pick .pick-tag{
+    margin-left:auto;flex:none;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;color:#141414;
+    background:var(--amber);border-radius:2px;padding:3px 9px;
+  }
+
+  /* 切片卡片 */
+  .clip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media (max-width:900px){.clip-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.clip-grid{grid-template-columns:1fr}}
+  .clip-card{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:20px;display:flex;flex-direction:column;gap:10px}
+  .clip-card .c-no{font-family:var(--font-display);font-size:17px;letter-spacing:.14em;color:var(--amber)}
+  .clip-card .c-q{font-weight:700;font-size:15px;line-height:1.6}
+  .clip-card .c-d{margin-top:auto;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted)}
+
+  /* 执行清单 */
+  .check-progress{
+    display:flex;align-items:center;gap:16px;
+    border:1px solid var(--line);border-radius:3px;background:var(--bg-2);
+    padding:16px 24px;margin-bottom:22px;
+  }
+  .check-progress .bar{flex:1;height:6px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+  .check-progress .fill{height:100%;width:0;background:var(--amber);transition:width .4s cubic-bezier(.22,1,.36,1)}
+  .check-progress .num{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;color:var(--amber);white-space:nowrap}
+  .check-group{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);margin-bottom:18px;overflow:hidden}
+  .check-group h3{
+    padding:14px 24px;border-bottom:1px solid var(--line-soft);
+    font-size:16px;font-weight:900;letter-spacing:.06em;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .check-group h3 span{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase;font-weight:400}
+  .check-group label{
+    display:flex;gap:14px;align-items:flex-start;
+    padding:11px 24px;border-bottom:1px dashed var(--line-soft);
+    color:var(--muted);font-size:14px;cursor:pointer;transition:background .2s,color .2s;
+  }
+  .check-group label:last-child{border-bottom:none}
+  .check-group label:hover{background:rgba(255,184,77,.04)}
+  .check-group input{accent-color:var(--amber);margin-top:5px;flex:none;width:15px;height:15px}
+  .check-group label.done{color:var(--text)}
+  .check-group label.done .txt{text-decoration:line-through;text-decoration-color:var(--amber-dim)}
+
+  /* 代码/文件树 */
+  pre.code{
+    font-family:var(--font-mono);font-size:12.5px;line-height:2;letter-spacing:.04em;
+    background:#0a0a0d;border:1px solid var(--line);border-radius:3px;
+    padding:22px 26px;overflow-x:auto;color:var(--text);
+  }
+  pre.code .c{color:var(--muted)}
+  pre.code .a{color:var(--amber)}
+
+  /* 风险卡 */
+  .risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media (max-width:900px){.risk-grid{grid-template-columns:1fr}}
+  .risk-card{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:24px}
+  .risk-card .r-tag{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;color:var(--rec);
+    text-transform:uppercase;display:flex;align-items:center;gap:8px;
+  }
+  .risk-card .r-tag::before{content:"";width:8px;height:8px;background:var(--rec);border-radius:1px}
+  .risk-card h3{margin-top:10px;font-size:17px;font-weight:900;letter-spacing:.05em}
+  .risk-card li{color:var(--muted);font-size:13.5px;padding-left:16px;position:relative;margin-top:8px}
+  .risk-card li::before{content:"·";position:absolute;left:2px;color:var(--rec)}
+  .risk-card ul{margin-top:12px}
+
+  /* 结尾 */
+  .finale{background:var(--bg-2);border-top:1px solid var(--line-soft);text-align:center;padding:clamp(80px,10vw,130px) 0}
+  .finale .f-kicker{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.34em;color:var(--amber);text-transform:uppercase}
+  .finale .f-lines{margin-top:28px}
+  .finale .f-lines p{
+    font-size:clamp(18px,2.6vw,25px);font-weight:500;letter-spacing:.08em;line-height:2.1;color:var(--muted);
+  }
+  .finale .f-lines p strong{color:var(--text);font-weight:900}
+  .finale .f-sign{
+    margin-top:34px;font-weight:900;font-size:clamp(22px,3.4vw,32px);letter-spacing:.12em;
+  }
+  .finale .f-sign span{color:var(--amber)}
+  footer{padding:30px 0 36px;border-top:1px solid var(--line-soft)}
+  .footer-grid{
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;color:var(--muted);
+  }
+  .footer-grid a:hover{color:var(--amber)}
+  .footer-grid .rec-line{display:flex;align-items:center;gap:8px}
+  .footer-grid .rec-line .tc{color:var(--rec)}
+
+  /* 进场动画（fail-open） */
+  html.js .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1);transition-delay:var(--d,0s)}
+  html.js .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    html.js .reveal{opacity:1;transform:none;transition:none}
+    *{scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ================= 导航 ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html" aria-label="返回微影 V-ing 首页">
+      <span class="rec-dot" aria-hidden="true"></span>
+      <span class="en">V-ING</span>
+      <span>微影</span>
+    </a>
+    <nav class="nav-links" aria-label="页面导航">
+      <a href="#structure">成片结构</a>
+      <a href="#shots">镜头清单</a>
+      <a href="#schedule">日程</a>
+      <a href="#checklist">执行清单</a>
+      <a class="home-link" href="index.html">← 返回首页</a>
+    </nav>
+    <span class="nav-tc" data-tc aria-hidden="true">00:00:00:00</span>
+  </div>
+</header>
+
+<!-- ================= EP.01 Hero ================= -->
+<section class="ep-hero" id="top">
+  <span class="ep-ghost" aria-hidden="true">EP.01</span>
+  <div class="container">
+    <div class="ep-hero-grid">
+      <div>
+        <span class="ep-kicker">Episode 01 · 拍摄企划案</span>
+        <span class="ep-status"><span class="rec-dot" aria-hidden="true"></span>筹备中</span>
+        <h1 class="ep-title">
+          <span class="main">南日岛</span>
+          <span class="sub">海风吹过的地方，我们正在进行时</span>
+          <span class="motto">Weiying V-ing · Present Continuous</span>
+        </h1>
+        <p class="ep-logline">
+          跟随一位南日岛当地居民，从一段日常生活出发，看见海岛上的<strong>生计、记忆与变化</strong>。
+          不拍风景明信片，拍海边正在生活的人。
+        </p>
+        <div class="ep-hero-cta">
+          <a class="btn btn-solid" href="#structure">查看成片结构</a>
+          <a class="btn btn-ghost" href="#checklist">执行清单</a>
+        </div>
+      </div>
+      <div class="call-sheet reveal">
+        <div class="clapper" aria-hidden="true"></div>
+        <div class="sheet-title"><span>Call Sheet</span><b>EP.01</b></div>
+        <div class="sheet-body">
+          <div class="sheet-row"><span class="k">Account</span><span class="v">微影 V-ing</span></div>
+          <div class="sheet-row"><span class="k">Ratio</span><span class="v">16:9 横屏</span></div>
+          <div class="sheet-row"><span class="k">Style</span><span class="v">纪实 · 克制 · 电影感 · 真实人物驱动</span></div>
+          <div class="sheet-row"><span class="k">Platforms</span><span class="v">哔哩哔哩 · 抖音</span></div>
+          <div class="sheet-row"><span class="k">Crew</span><span class="v">单人完成</span></div>
+          <div class="sheet-row"><span class="k">Camera</span><span class="v">Sony ZV-E10 一代</span></div>
+          <div class="sheet-row"><span class="k">Lens</span><span class="v">唯卓仕 25mm F1.7</span></div>
+          <div class="sheet-row"><span class="k">Gimbal</span><span class="v">DJI RS3 Mini</span></div>
+          <div class="sheet-row"><span class="k">Post</span><span class="v">DaVinci Resolve · After Effects</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="core-q reveal">
+      <span class="label">Core Question · 本期核心问题</span>
+      <p>南日岛真正留住人的，究竟是海，还是海边的人？</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 目录 ================= -->
+<nav class="toc" aria-label="企划目录">
+  <div class="container">
+    <div class="toc-inner">
+      <a href="#pos"><i>01</i>账号定位</a>
+      <a href="#theme"><i>02</i>选题定位</a>
+      <a href="#people"><i>03</i>人物选择</a>
+      <a href="#structure"><i>04</i>成片结构</a>
+      <a href="#vo"><i>05</i>旁白初稿</a>
+      <a href="#shoot"><i>06</i>单兵拍摄</a>
+      <a href="#shots"><i>07</i>镜头清单</a>
+      <a href="#interview"><i>08</i>采访执行</a>
+      <a href="#schedule"><i>09</i>拍摄日程</a>
+      <a href="#edit"><i>10</i>剪辑节奏</a>
+      <a href="#look"><i>11</i>调色与声音</a>
+      <a href="#package"><i>12</i>片头字幕</a>
+      <a href="#publish"><i>13</i>发布版本</a>
+      <a href="#cover"><i>14</i>封面设计</a>
+      <a href="#checklist"><i>15</i>执行清单</a>
+      <a href="#files"><i>16</i>文件与预算</a>
+      <a href="#risk"><i>17</i>风险注意</a>
+      <a href="#judgement"><i>18</i>创作判断</a>
+      <a href="#finale"><i>19</i>成片定位</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= 01 账号定位 ================= -->
+<section id="pos">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 01</span>
+      <h2>账号定位</h2>
+      <span class="scene-latin">Positioning</span>
+    </div>
+
+    <div class="quote reveal">
+      <p>用一个人的镜头，记录正在发生的地方。</p>
+    </div>
+
+    <p class="lead-p reveal">「微影」不做单纯旅游打卡，也不只拍风景，而是关注：</p>
+    <div class="chips reveal" style="margin-top:18px">
+      <span class="chip">一个地方的人</span>
+      <span class="chip">一种正在消失或变化的生活方式</span>
+      <span class="chip">当地人如何与土地、海洋和时间相处</span>
+      <span class="chip">游客看不见的地方文化细节</span>
+      <span class="chip">普通人身上真实、朴素但有力量的故事</span>
+    </div>
+
+    <div class="quote reveal" style="margin-top:clamp(30px,4vw,42px)">
+      <p>「微影」的重点不是“我去过哪里”，而是：<br>我在这里遇见了谁？这里正在发生什么？</p>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 内容关键词 · 长期围绕展开</h4>
+    <div class="chips reveal">
+      <span class="chip">海岛纪实</span><span class="chip">地方文化</span><span class="chip">普通人的生活</span>
+      <span class="chip">年轻人与家乡</span><span class="chip">手艺与生计</span><span class="chip">渔村变化</span>
+      <span class="chip">时间感</span><span class="chip">归乡与离开</span><span class="chip">人与自然</span>
+      <span class="chip">正在消失的记忆</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 视觉定位 · 高完成度纪实影像的共性</h4>
+    <p class="lead-p reveal">不直接复制任何具体账号的表达方式，而是提取共性，形成自己的视觉标签：</p>
+    <div class="card-grid cols-4 reveal" style="margin-top:18px">
+      <div class="info-card"><h3>画面干净</h3><p>剔除干扰元素，让主体自己说话。</p></div>
+      <div class="info-card"><h3>构图简洁</h3><p>一个画面一个重点。</p></div>
+      <div class="info-card"><h3>色彩克制</h3><p>不做过度浓郁的网红旅游色。</p></div>
+      <div class="info-card"><h3>运镜不炫技</h3><p>运动为内容服务，不为展示设备。</p></div>
+      <div class="info-card"><h3>环境声真实</h3><p>现场声是本期重要的风格标签。</p></div>
+      <div class="info-card"><h3>旁白少而准确</h3><p>人物原声优先于旁白。</p></div>
+      <div class="info-card"><h3>人物与细节</h3><p>通过人物和细节建立情绪。</p></div>
+      <div class="info-card"><h3>小型纪录片</h3><p>让观众感觉像一部小型纪录片。</p></div>
+    </div>
+
+    <div class="quote reveal" style="margin-top:clamp(30px,4vw,42px)">
+      <p>大景交代空间，中景观察生活，近景捕捉细节，人物原声推动故事。</p>
+      <span class="src">微影 · 视觉标签</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 选题定位 ================= -->
+<section id="theme">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 02</span>
+      <h2>第一期选题定位</h2>
+      <span class="scene-latin">Episode Theme</span>
+    </div>
+
+    <p class="lead-p reveal"><strong>一句话概述：</strong>跟随一位南日岛当地居民，从一段日常生活出发，看见海岛上的生计、记忆与变化。</p>
+
+    <div class="quote reveal">
+      <p>南日岛不是一张风景明信片。</p>
+    </div>
+
+    <div class="card-grid cols-3 reveal" style="margin-top:8px">
+      <div class="info-card">
+        <span class="idx">A</span>
+        <h3>壮阔与凌晨</h3>
+        <p>它有壮阔的海岸线，也有每天凌晨出海的人。</p>
+      </div>
+      <div class="info-card">
+        <span class="idx">B</span>
+        <h3>宁静与现实</h3>
+        <p>有游客眼里的宁静，也有当地人面对天气、收入、离开和归来的现实。</p>
+      </div>
+      <div class="info-card">
+        <span class="idx">C</span>
+        <h3>记住与改变</h3>
+        <p>有正在被记住的传统，也有正在改变的生活。</p>
+      </div>
+    </div>
+
+    <p class="lead-p reveal" style="margin-top:26px">
+      这一期不急着介绍南日岛有多少景点，而是通过一个当地人的一天，让观众感受到：
+    </p>
+    <div class="quote reveal">
+      <p>岛上的生活没有停止，它一直在变化。</p>
+    </div>
+  </div>
+</section>
+<!-- ================= 03 人物选择 ================= -->
+<section id="people">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 03</span>
+      <h2>人物选择</h2>
+      <span class="scene-latin">The Subject</span>
+      <p class="scene-desc">只选择一个主要人物，避免单兵拍摄时内容过散。</p>
+    </div>
+
+    <div class="card-grid cols-2 reveal">
+      <div class="info-card">
+        <span class="idx">01</span>
+        <h3>当地渔民</h3>
+        <ul>
+          <li>有出海、收网、修船、卖海货等动作</li>
+          <li>画面丰富</li>
+          <li>生活状态真实</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <span class="idx">02</span>
+        <h3>岛上的年轻人</h3>
+        <ul>
+          <li>曾经离开又回到南日岛</li>
+          <li>能引出“家乡、选择、变化”等更有情绪的内容</li>
+          <li>更适合与年轻观众产生共鸣</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <span class="idx">03</span>
+        <h3>经营海岛生意的普通人</h3>
+        <ul>
+          <li>海鲜摊主、民宿老板、船老板、小卖部老板</li>
+          <li>容易建立拍摄许可</li>
+          <li>有明确的工作过程</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <span class="idx">04</span>
+        <h3>当地老人或传统手艺人</h3>
+        <ul>
+          <li>能讲述过去的南日岛</li>
+          <li>适合做“记忆正在消失”的方向</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote reveal" style="margin-top:clamp(30px,4vw,42px)">
+      <p>优先寻找：一位仍然生活在岛上的普通居民，最好有明确职业，并且每天都重复做一件事情。</p>
+      <span class="src">推荐人物设定</span>
+    </div>
+    <div class="chips reveal">
+      <span class="chip dim">每天早上出海的渔民</span>
+      <span class="chip dim">每天处理海货的阿姨</span>
+      <span class="chip dim">修补渔网的老人</span>
+      <span class="chip dim">从城里回岛经营民宿的年轻人</span>
+      <span class="chip dim">在码头等船、卖海鲜的摊主</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>C</b> 采访原则 · 先具体，后情绪</h4>
+    <div class="dd-grid reveal">
+      <div class="dd-col bad">
+        <h3>不要一开始就问</h3>
+        <ul>
+          <li>你觉得南日岛怎么样？</li>
+          <li>南日岛有什么特色？</li>
+          <li>你对家乡有什么感情？</li>
+        </ul>
+        <p style="margin-top:14px;color:var(--muted);font-size:13px">这些问题容易得到宣传式回答。</p>
+      </div>
+      <div class="dd-col good">
+        <h3>改为询问具体生活</h3>
+        <ul>
+          <li>你每天几点起床？</li>
+          <li>今天海况怎么样？</li>
+          <li>这几年岛上最大的变化是什么？</li>
+          <li>以前一天是怎么过的？</li>
+          <li>有没有想过离开这里？</li>
+          <li>如果有一天不再出海，你会做什么？</li>
+          <li>你最希望外地人了解南日岛的什么？</li>
+          <li>你觉得年轻人还会回来吗？</li>
+          <li>这里有没有什么东西正在慢慢消失？</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 成片结构 ================= -->
+<section id="structure">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 04</span>
+      <h2>成片结构</h2>
+      <span class="scene-latin">Narrative Structure</span>
+      <p class="scene-desc">
+        哔哩哔哩 8–12 分钟 · 抖音横屏 3–5 分钟 · 竖屏切片 30–90 秒。第一期不建议超过 15 分钟——单兵创作需要控制叙事密度，确保能完成。
+      </p>
+    </div>
+
+    <div class="struct-list">
+      <div class="struct-item reveal">
+        <span class="s-time">00:00 – 00:30</span>
+        <h3>结构一 · 冷开场——先让观众进入现场</h3>
+        <span class="s-note">Cold Open</span>
+        <p class="mini-label">画面</p>
+        <ul>
+          <li>黑屏</li><li>海浪声</li><li>船发动机声</li><li>手抓缆绳</li><li>海面晃动</li>
+          <li>渔网被拖上岸</li><li>人物沉默工作的脸</li><li>码头清晨的远景</li>
+        </ul>
+        <div class="voice"><span class="who">人物原声 · 备选</span>“海上讨生活，不是每天都有好天气。” 或 “我们这里的人，很多事情都要看海。”</div>
+        <div class="voice"><span class="who">旁白</span>“第一次来到南日岛，我以为这里最容易被记住的是海。后来我发现，真正让我记住的，是海边生活的人。”</div>
+        <p class="mini-label">片名出现</p>
+        <p>南日岛：海风吹过的地方<br>微影 V-ing｜我们，正在进行时</p>
+      </div>
+
+      <div class="struct-item reveal">
+        <span class="s-time">00:30 – 01:30</span>
+        <h3>结构二 · 建立空间——南日岛不是一处风景</h3>
+        <span class="s-note">Establishing Space</span>
+        <p class="mini-label">内容</p>
+        <ul>
+          <li>登岛过程</li><li>码头、道路、村落</li><li>岛上建筑</li><li>海岸线</li>
+          <li>路边晾晒的海货</li><li>船只、渔网、交通工具</li><li>当地生活声音</li>
+        </ul>
+        <div class="voice"><span class="who">旁白参考</span>“对很多人来说，岛是一次短暂的旅行。但对住在这里的人来说，岛不是风景，是每天起床之后必须面对的生活。”</div>
+        <p>注意：不要堆砌航拍感大景。没有无人机也不影响，可通过渡船上的移动镜头、车窗外的风景、码头长焦感构图、静态广角远景、人物前景与海面背景的关系来建立空间。</p>
+      </div>
+
+      <div class="struct-item reveal">
+        <span class="s-time">01:30 – 04:00</span>
+        <h3>结构三 · 跟随人物——从一天进入一座岛</h3>
+        <span class="s-note">Follow the Subject</span>
+        <div class="quote small" style="margin:14px 0"><p>核心方法：不采访为主，先跟拍人物完成一件具体的事。</p></div>
+        <p class="mini-label">跟拍动作</p>
+        <ul>
+          <li>起床</li><li>准备出海</li><li>检查船</li><li>开船</li><li>收网</li>
+          <li>处理海货</li><li>回码头</li><li>卖货或送货</li><li>回家吃饭</li>
+        </ul>
+        <p>旁白减少，让环境声和人物原声承担内容。这些话不要强行引导——关键是让人物讲“发生过什么”，而不是讲空泛观点。</p>
+        <div class="voice"><span class="who">人物可能说</span>“以前这个时间，码头上比现在热闹很多。” “年轻人基本都出去工作了。” “累是累，但海上有收成的时候还是开心。” “这个岛养大了我们，我们也不知道还能陪它多久。”</div>
+      </div>
+
+      <div class="struct-item reveal">
+        <span class="s-time">04:00 – 06:30</span>
+        <h3>结构四 · 变化——岛上的生活正在改变</h3>
+        <span class="s-note">The Change · 情绪核心</span>
+        <p>这是本片的情绪核心。可从以下角度选择一个：</p>
+        <div class="card-grid cols-3" style="margin-top:16px">
+          <div class="info-card"><span class="idx">A</span><h3>年轻人的离开</h3><ul><li>岛上年轻人减少</li><li>老人留守</li><li>工作机会有限</li><li>离开后仍想念家乡</li></ul></div>
+          <div class="info-card"><span class="idx">B</span><h3>传统生计的变化</h3><ul><li>渔业方式变化</li><li>海货价格变化</li><li>传统手艺无人继承</li><li>码头逐渐安静</li></ul></div>
+          <div class="info-card"><span class="idx">C</span><h3>旅游带来的变化</h3><ul><li>游客增加</li><li>商业设施变化</li><li>环境与生活方式改变</li><li>当地人如何看待开发</li></ul></div>
+        </div>
+        <div class="voice"><span class="who">旁白参考</span>“一座岛的变化，通常不会在某一天突然发生。它更像潮水，一点一点地退去。码头少了几条船，街上少了几个熟悉的人，年轻人开始习惯在岛外生活。”</div>
+        <p>人物原声比旁白更重要。</p>
+      </div>
+
+      <div class="struct-item reveal">
+        <span class="s-time">06:30 – 08:30</span>
+        <h3>结构五 · 人与岛——留下的人为什么留下</h3>
+        <span class="s-note">Why Stay</span>
+        <p>重点不是让人物煽情，而是让他回答具体问题：</p>
+        <p class="mini-label">问题</p>
+        <ul>
+          <li>你有没有想过离开？</li><li>为什么还留在这里？</li><li>这里最难的是什么？</li>
+          <li>这里最舍不得的是什么？</li><li>如果孩子以后不回来，你能理解吗？</li><li>你希望南日岛未来变成什么样？</li>
+        </ul>
+        <p class="mini-label">画面可拍</p>
+        <ul>
+          <li>人物独处</li><li>修网</li><li>看海</li><li>回家吃饭</li><li>收拾工具</li>
+          <li>夕阳下的背影</li><li>家中老照片</li><li>旧物件</li><li>船舶、渔网、门窗等生活痕迹</li>
+        </ul>
+        <div class="voice"><span class="who">旁白参考</span>“留下来不一定是因为这里容易生活。有时候，只是因为一个人在这里出生，父母在这里，房子在这里，海也在这里。”</div>
+      </div>
+
+      <div class="struct-item reveal">
+        <span class="s-time">08:30 – 09:30</span>
+        <h3>结构六 · 结尾——正在进行时</h3>
+        <span class="s-note">Open Ending</span>
+        <p>不要用传统旅游宣传片式结尾（南日岛欢迎您 / 这里风景优美 / 欢迎大家前来旅游）。建议用开放式结尾。</p>
+        <p class="mini-label">画面</p>
+        <ul>
+          <li>船驶向远处</li><li>码头夜晚</li><li>人物关门</li><li>清晨再次响起的发动机</li>
+          <li>海浪反复拍打岸边</li><li>岛上灯光逐渐亮起</li>
+        </ul>
+        <div class="voice"><span class="who">旁白</span>“岛上的生活没有一个标准答案。有人离开，有人回来，也有人一直留在这里。海风每天都在改变方向，南日岛也一样。但今天，这里的人还在出海，还在生活，还在把日子继续下去。”</div>
+        <div class="voice"><span class="who">片尾</span>“这里是微影 V-ing。我们，正在进行时。”</div>
+        <div class="voice"><span class="who">字幕</span>如果你生活的地方也正在发生变化，欢迎告诉我。下一次，我们继续去看一处地方，和那里的人。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 旁白初稿 ================= -->
+<section id="vo">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 05</span>
+      <h2>完整旁白初稿</h2>
+      <span class="scene-latin">Voice-Over Draft</span>
+      <p class="scene-desc">拍摄前可使用的基础旁白，后期根据实际采访内容修改，不建议完全照读。</p>
+    </div>
+    <div class="script-panel reveal">
+      <span class="ps-note">《南日岛：海风吹过的地方》旁白稿</span>
+      <p>第一次来到南日岛，我以为这里最容易被记住的是海。</p>
+      <p>海岸线、渔船、风，还有远处看起来很安静的村庄。</p>
+      <p>但对生活在这里的人来说，岛不是一处风景。它是每天醒来之后，要面对的天气、潮水、生计，还有家人。</p>
+      <p>我跟着一个生活在岛上的人，走过他普通的一天。</p>
+      <p>凌晨出门，准备工具，等待潮水，也等待今天的收成。</p>
+      <p>在这里，很多事情没有办法提前确定。海况、天气、价格，甚至明天还会不会有人继续做这份工作。</p>
+      <p>一座岛的变化，通常不会突然发生。它只是慢慢少了一些船，少了一些年轻人，也少了一些过去熟悉的声音。</p>
+      <p>有人离开这里，是为了寻找更多机会。有人留下来，是因为这里有父母、有房子，也有自己已经习惯的生活。</p>
+      <p>留下来不一定代表这里容易生活。只是有些地方，离开以后才知道，它一直在自己身上。</p>
+      <p>南日岛还在变化。海风每天改变方向，人也在做自己的选择。</p>
+      <p>但今天，这里的人还在出海，还在工作，还在把普通的日子继续下去。</p>
+      <p class="end">这里是微影 V-ing。<br>我们，正在进行时。</p>
+    </div>
+  </div>
+</section>
+<!-- ================= 06 单兵拍摄方案 ================= -->
+<section id="shoot">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 06</span>
+      <h2>单兵拍摄方案</h2>
+      <span class="scene-latin">Solo Shooting Plan</span>
+    </div>
+
+    <div class="quote reveal">
+      <p>少设备、少机位、少调度、少人物，但要多观察。</p>
+      <span class="src">单人拍摄总原则 · 不要试图拍出大型纪录片的复杂度</span>
+    </div>
+    <div class="chips reveal">
+      <span class="chip">一个主人物</span>
+      <span class="chip">一个主要事件</span>
+      <span class="chip">一个核心问题</span>
+      <span class="chip">一条清晰情绪线</span>
+      <span class="chip">一天或两天完成拍摄</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 相机设置建议 · Sony ZV-E10</h4>
+    <div class="spec-table reveal">
+      <div class="spec-row"><span class="k">Resolution</span><span class="v">4K 拍摄</span></div>
+      <div class="spec-row"><span class="k">Frame Rate</span><span class="v"><em>25fps</em> 主画面 · 50fps 少量慢动作</span></div>
+      <div class="spec-row"><span class="k">Shutter</span><span class="v">25fps → <em>1/50</em> · 50fps → <em>1/100</em></span></div>
+      <div class="spec-row"><span class="k">White Balance</span><span class="v">尽量固定，不使用自动白平衡</span></div>
+      <div class="spec-row"><span class="k">ISO</span><span class="v">尽量控制在较低范围</span></div>
+      <div class="spec-row"><span class="k">Picture Profile</span><span class="v">PP 关闭或较温和的画面模式，减少后期压力</span></div>
+      <div class="spec-row"><span class="k">Exposure</span><span class="v">宁可略微压暗，避免天空和海面过曝</span></div>
+      <div class="spec-row"><span class="k">Focus</span><span class="v">自动对焦开启，重要采访尽量锁定对焦</span></div>
+      <div class="spec-row"><span class="k">Log</span><span class="v">不熟就不强行使用——稳定完成比参数先进更重要</span></div>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 镜头使用 · 唯卓仕 25mm F1.7（APS-C 等效约 37.5mm）</h4>
+    <div class="dd-grid reveal">
+      <div class="dd-col good">
+        <h3>适合</h3>
+        <ul>
+          <li>人物半身</li>
+          <li>跟拍</li>
+          <li>环境人像</li>
+          <li>日常生活记录</li>
+          <li>中近景细节</li>
+        </ul>
+      </div>
+      <div class="dd-col bad">
+        <h3>不太适合</h3>
+        <ul>
+          <li>非常开阔的大景</li>
+          <li>狭窄室内多人合影</li>
+          <li>远距离特写</li>
+        </ul>
+        <p style="margin-top:14px;color:var(--muted);font-size:13px">因此要利用距离完成构图。</p>
+      </div>
+    </div>
+
+    <p class="lead-p reveal" style="margin-top:26px"><strong>画面比例建议：</strong></p>
+    <div class="ratio-bar reveal" role="img" aria-label="画面比例建议：环境大景 20%，人物中景 50%，人物近景 20%，物件细节 10%">
+      <div class="rb-seg rb-1"><b>20%</b><span>环境大景</span></div>
+      <div class="rb-seg rb-2"><b>50%</b><span>人物中景</span></div>
+      <div class="rb-seg rb-3"><b>20%</b><span>人物近景</span></div>
+      <div class="rb-seg rb-4"><b>10%</b><span>物件细节</span></div>
+    </div>
+
+    <h4 class="block-label reveal"><b>C</b> 云台使用 · DJI RS3 Mini 不要全程使用</h4>
+    <div class="dd-grid reveal">
+      <div class="dd-col good">
+        <h3>云台适合</h3>
+        <ul>
+          <li>登岛或走进村落</li>
+          <li>跟随人物走路</li>
+          <li>从码头进入船舱</li>
+          <li>经过街道</li>
+          <li>船靠岸时的移动镜头</li>
+          <li>一到两组有明确目的的转场</li>
+        </ul>
+      </div>
+      <div class="dd-col bad">
+        <h3>三脚或手持更适合</h3>
+        <ul>
+          <li>采访</li>
+          <li>人物工作</li>
+          <li>吃饭</li>
+          <li>修网</li>
+          <li>看海</li>
+          <li>室内生活</li>
+          <li>安静观察</li>
+        </ul>
+      </div>
+    </div>
+    <p class="lead-p reveal" style="margin-top:22px"><strong>如果没有三脚架：</strong>把相机放在桌面；使用栏杆、墙体；将云台固定在低风险位置；手持时开启机身防抖并尽量减少走动；用身体作为稳定器。</p>
+    <div class="quote small reveal">
+      <p>不要为了展示云台而频繁绕人物、推拉摇移。纪实感来自观察，而不是运动镜头数量。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 镜头清单 ================= -->
+<section id="shots">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 07</span>
+      <h2>详细镜头清单</h2>
+      <span class="scene-latin">Shot List · 57 Shots</span>
+      <p class="scene-desc">五个分组，覆盖从冷开场到片尾的全部素材需求。每个重要动作尽量拍远、中、近三个景别。</p>
+    </div>
+    <div class="shot-grid">
+      <div class="shot-card reveal">
+        <div class="tag"><span>A · 开场镜头</span><span>×10</span></div>
+        <ol>
+          <li>黑屏，海浪声</li>
+          <li>船绳摩擦的近景</li>
+          <li>手拿工具</li>
+          <li>船发动机启动</li>
+          <li>海面晃动</li>
+          <li>人物站在船头</li>
+          <li>码头远景</li>
+          <li>渔网或海货细节</li>
+          <li>人物侧脸</li>
+          <li>海浪拍岸</li>
+        </ol>
+      </div>
+      <div class="shot-card reveal" style="--d:.06s">
+        <div class="tag"><span>B · 空间建立</span><span>×10</span></div>
+        <ol>
+          <li>渡船上看向海岛</li>
+          <li>岛屿远景</li>
+          <li>码头人群</li>
+          <li>船只停泊</li>
+          <li>村庄道路</li>
+          <li>房屋外墙</li>
+          <li>晾晒的海货</li>
+          <li>路边商店</li>
+          <li>当地交通</li>
+          <li>海岸线与人物同框</li>
+        </ol>
+      </div>
+      <div class="shot-card reveal" style="--d:.12s">
+        <div class="tag"><span>C · 人物跟拍</span><span>×15</span></div>
+        <ol>
+          <li>人物开门</li>
+          <li>人物穿鞋</li>
+          <li>收拾工作工具</li>
+          <li>检查船只</li>
+          <li>手部动作</li>
+          <li>走向码头</li>
+          <li>与熟人打招呼</li>
+          <li>登船</li>
+          <li>工作过程</li>
+          <li>休息</li>
+          <li>回到岸边</li>
+          <li>处理海货</li>
+          <li>吃饭</li>
+          <li>回家</li>
+          <li>夜晚关灯</li>
+        </ol>
+      </div>
+      <div class="shot-card reveal">
+        <div class="tag"><span>D · 细节镜头</span><span>×14</span></div>
+        <ol>
+          <li>被海水打湿的衣服</li>
+          <li>手上的老茧</li>
+          <li>生锈的船</li>
+          <li>旧照片</li>
+          <li>门上的痕迹</li>
+          <li>船上的编号</li>
+          <li>渔网结</li>
+          <li>海鲜表面的水光</li>
+          <li>地面的水迹</li>
+          <li>风吹动的衣物</li>
+          <li>岛上小店的价目表</li>
+          <li>老人看海</li>
+          <li>空置的房子</li>
+          <li>夜晚亮起的窗户</li>
+        </ol>
+      </div>
+      <div class="shot-card reveal" style="--d:.06s">
+        <div class="tag"><span>E · 结尾镜头</span><span>×8</span></div>
+        <ol>
+          <li>人物背影</li>
+          <li>船离开码头</li>
+          <li>夕阳或阴天的海面</li>
+          <li>夜间码头</li>
+          <li>海浪重复拍岸</li>
+          <li>第二天清晨的船</li>
+          <li>岛屿远景</li>
+          <li>黑屏与片尾字幕</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 08 采访执行 ================= -->
+<section id="interview">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 08</span>
+      <h2>采访执行方法</h2>
+      <span class="scene-latin">Interview Field Guide</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 先拍摄，后采访 · 不要一见面就架机</h4>
+    <p class="lead-p reveal">先陪人物工作一段时间，让对方习惯镜头，人物更容易放松：</p>
+    <div class="flow reveal" style="margin-top:16px">
+      <div class="flow-step"><span class="n">01</span><p>先聊天，不拍</p></div>
+      <div class="flow-step"><span class="n">02</span><p>了解人物一天的生活</p></div>
+      <div class="flow-step"><span class="n">03</span><p>先拍手部、环境、工作细节</p></div>
+      <div class="flow-step"><span class="n">04</span><p>再开始拍人物</p></div>
+      <div class="flow-step"><span class="n">05</span><p>最后找安静地点采访</p></div>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 采访位置 · 背景说明身份，但不杂乱</h4>
+    <div class="dd-grid reveal">
+      <div class="dd-col bad">
+        <h3>避免</h3>
+        <ul>
+          <li>让人物正对大海站着说话——容易变成宣传片</li>
+        </ul>
+      </div>
+      <div class="dd-col good">
+        <h3>可以选择</h3>
+        <ul>
+          <li>船边</li>
+          <li>家门口</li>
+          <li>工作地点</li>
+          <li>码头一角</li>
+          <li>屋内靠窗位置</li>
+          <li>晾晒海货的地方</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4 class="block-label reveal"><b>C</b> 采访声音 · 单人拍摄时，声音比画面更重要</h4>
+    <div class="dd-grid reveal">
+      <div class="dd-col good">
+        <h3>建议</h3>
+        <ul>
+          <li>优先使用外接麦克风</li>
+          <li>拍摄前检查是否录音</li>
+          <li>录一段环境声</li>
+          <li>采访时尽量避开强风</li>
+          <li>让人物背对风向或使用遮挡</li>
+          <li>每次采访结束后多录 30 秒现场声音</li>
+          <li>重要回答最好让人物重复一遍</li>
+        </ul>
+      </div>
+      <div class="dd-col bad">
+        <h3>没有专业麦克风时</h3>
+        <ul>
+          <li>尽量靠近人物</li>
+          <li>让人物在相对安静处说话</li>
+          <li>使用相机自带麦克风，同时避免频繁移动</li>
+          <li>后期用环境声覆盖突兀的切点</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 09 拍摄日程 ================= -->
+<section id="schedule">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 09</span>
+      <h2>拍摄日程</h2>
+      <span class="scene-latin">Shooting Schedule</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>D-3</b> 拍摄前 3–5 天完成</h4>
+    <div class="chips reveal">
+      <span class="chip">联系当地人物</span>
+      <span class="chip">确认交通和天气</span>
+      <span class="chip">了解船期</span>
+      <span class="chip">确定拍摄许可</span>
+      <span class="chip">确认人物一天的时间表</span>
+      <span class="chip">准备采访提纲</span>
+      <span class="chip">检查存储卡、电池、充电设备</span>
+      <span class="chip">预先测试相机和云台</span>
+    </div>
+
+    <div class="day-grid" style="margin-top:clamp(30px,4vw,42px)">
+      <div class="day-card reveal">
+        <div class="day-head"><b>第一天</b><span>环境与人物建立</span></div>
+        <div class="day-part">
+          <span class="t">上午</span>
+          <ul><li>登岛过程</li><li>码头</li><li>村落</li><li>海岸</li><li>生活环境</li><li>寻找人物和拍摄位置</li></ul>
+        </div>
+        <div class="day-part">
+          <span class="t">下午</span>
+          <ul><li>与人物聊天</li><li>拍摄人物工作环境</li><li>拍摄细节</li><li>进行简单预采访</li></ul>
+        </div>
+        <div class="day-part">
+          <span class="t">傍晚</span>
+          <ul><li>拍摄环境光线</li><li>拍摄人物回家</li><li>拍摄海边或村落的安静状态</li></ul>
+        </div>
+      </div>
+      <div class="day-card reveal" style="--d:.08s">
+        <div class="day-head"><b>第二天</b><span>跟拍核心事件</span></div>
+        <div class="day-part">
+          <span class="t">清晨</span>
+          <ul><li>起床</li><li>出门</li><li>准备工具</li><li>走向码头</li><li>出海或开始工作</li></ul>
+        </div>
+        <div class="day-part">
+          <span class="t">白天</span>
+          <ul><li>工作全过程</li><li>人物原声</li><li>同行者交流</li><li>重要动作与细节</li></ul>
+        </div>
+        <div class="day-part">
+          <span class="t">下午</span>
+          <ul><li>人物采访</li><li>补拍环境</li><li>补拍静物</li><li>拍摄空镜</li></ul>
+        </div>
+        <div class="day-part">
+          <span class="t">傍晚 / 夜晚</span>
+          <ul><li>归家</li><li>吃饭</li><li>屋内生活</li><li>夜晚码头</li><li>片尾镜头</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= 10 剪辑结构与节奏 ================= -->
+<section id="edit">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 10</span>
+      <h2>剪辑结构与节奏</h2>
+      <span class="scene-latin">Edit &amp; Pacing · DaVinci Resolve</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 剪辑顺序 · 先语言，后画面</h4>
+    <div class="flow reveal">
+      <div class="flow-step"><span class="n">01</span><p>先整理人物采访</p></div>
+      <div class="flow-step"><span class="n">02</span><p>找出最重要的三句话</p></div>
+      <div class="flow-step"><span class="n">03</span><p>根据人物语言搭建故事</p></div>
+      <div class="flow-step"><span class="n">04</span><p>再用画面覆盖</p></div>
+      <div class="flow-step"><span class="n">05</span><p>最后补旁白</p></div>
+      <div class="flow-step"><span class="n">06</span><p>最后添加音乐和包装</p></div>
+    </div>
+    <div class="quote small reveal">
+      <p>不要先把风景剪成一条漂亮片子，再硬塞采访。</p>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 节奏控制</h4>
+    <div class="card-grid cols-4 reveal">
+      <div class="info-card">
+        <span class="idx">00:30</span>
+        <h3>开头 · 稍快</h3>
+        <ul>
+          <li>2–4 秒一个镜头</li>
+          <li>用声音制造吸引力</li>
+          <li>先抛出问题或人物观点</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <span class="idx">中段</span>
+        <h3>放慢</h3>
+        <ul>
+          <li>4–8 秒一个镜头</li>
+          <li>保留人物工作的完整过程</li>
+          <li>不要过度切碎真实时间</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <span class="idx">情绪</span>
+        <h3>留白</h3>
+        <ul>
+          <li>8–12 秒的固定镜头</li>
+          <li>人物沉默</li>
+          <li>环境声</li>
+          <li>空间留白</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <span class="idx">结尾</span>
+        <h3>再放慢</h3>
+        <ul>
+          <li>让观众消化情绪</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 11 调色与声音 ================= -->
+<section id="look">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 11</span>
+      <h2>调色与声音设计</h2>
+      <span class="scene-latin">Grade &amp; Sound</span>
+    </div>
+
+    <div class="quote reveal">
+      <p>自然、清透、略微克制，不做过度浓郁的网红旅游色。</p>
+      <span class="src">调色总方向 · DaVinci Resolve 节点调色</span>
+    </div>
+    <div class="chips reveal">
+      <span class="chip">海水保持真实，不过度偏青</span>
+      <span class="chip">肤色优先</span>
+      <span class="chip">阴天不强行调成晴天</span>
+      <span class="chip">保留灰、蓝、土黄与旧建筑色</span>
+      <span class="chip">高光压低</span>
+      <span class="chip">对比度适中</span>
+      <span class="chip">黑位不压死</span>
+      <span class="chip">适当降低饱和度</span>
+      <span class="chip">橙、蓝、肤色为主要视觉关系</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 三种场景色彩</h4>
+    <div class="grade-grid">
+      <div class="grade-card reveal">
+        <h3>清晨 <span>Cool · Low Sat</span></h3>
+        <div class="sw-row">
+          <div class="sw" style="background:#4a5866"><i>#4A5866</i></div>
+          <div class="sw" style="background:#6b7b8c"><i>#6B7B8C</i></div>
+          <div class="sw" style="background:#8fa3b0"><i>#8FA3B0</i></div>
+          <div class="sw" style="background:#c9d4d9"><i>#C9D4D9</i></div>
+        </div>
+        <ul>
+          <li>偏冷</li>
+          <li>低饱和</li>
+          <li>保留湿润空气感</li>
+        </ul>
+      </div>
+      <div class="grade-card reveal" style="--d:.06s">
+        <h3>正午 <span>True · Layered</span></h3>
+        <div class="sw-row">
+          <div class="sw" style="background:#4e7a96"><i>#4E7A96</i></div>
+          <div class="sw" style="background:#8c8f94"><i>#8C8F94</i></div>
+          <div class="sw" style="background:#b9a380"><i>#B9A380</i></div>
+          <div class="sw" style="background:#d9cdb8"><i>#D9CDB8</i></div>
+        </div>
+        <ul>
+          <li>真实</li>
+          <li>减少过度鲜艳</li>
+          <li>保留海水层次</li>
+        </ul>
+      </div>
+      <div class="grade-card reveal" style="--d:.12s">
+        <h3>傍晚 / 室内 <span>Warm · Lived-in</span></h3>
+        <div class="sw-row">
+          <div class="sw" style="background:#3a3f4a"><i>#3A3F4A</i></div>
+          <div class="sw" style="background:#7a5c43"><i>#7A5C43</i></div>
+          <div class="sw" style="background:#c98a4b"><i>#C98A4B</i></div>
+          <div class="sw" style="background:#e0b36a"><i>#E0B36A</i></div>
+        </div>
+        <ul>
+          <li>稍暖</li>
+          <li>增加人物生活感</li>
+          <li>不一味套橙蓝电影滤镜</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 现场声收集 · 本期的风格标签</h4>
+    <div class="chips reveal">
+      <span class="chip">海浪</span><span class="chip">船发动机</span><span class="chip">缆绳摩擦</span>
+      <span class="chip">脚步</span><span class="chip">渔网拖动</span><span class="chip">海货落地</span>
+      <span class="chip">菜刀和案板</span><span class="chip">风吹门窗</span><span class="chip">鸟叫</span>
+      <span class="chip">码头叫卖</span><span class="chip">屋内吃饭声</span><span class="chip">船靠岸的碰撞声</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>C</b> 音乐铺排 · 不要从头铺到尾</h4>
+    <div class="flow reveal">
+      <div class="flow-step"><span class="n">01</span><p>开场<small>无音乐，以现场声吸引观众</small></p></div>
+      <div class="flow-step"><span class="n">02</span><p>空间介绍<small>极简、空旷的音乐</small></p></div>
+      <div class="flow-step"><span class="n">03</span><p>人物工作<small>减少音乐，突出环境声</small></p></div>
+      <div class="flow-step"><span class="n">04</span><p>变化段落<small>加入低频或缓慢铺底</small></p></div>
+      <div class="flow-step"><span class="n">05</span><p>结尾<small>简单、克制、有余韵的音乐</small></p></div>
+    </div>
+    <div class="quote small reveal">
+      <p>音乐的作用是托住情绪，不是替观众哭。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 12 片头与字幕 ================= -->
+<section id="package">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 12</span>
+      <h2>片头与包装设计</h2>
+      <span class="scene-latin">Titles &amp; Subtitles · After Effects</span>
+    </div>
+
+    <div class="dd-grid">
+      <div class="dd-col good reveal">
+        <h3>片头 · 控制在 5–8 秒</h3>
+        <ul>
+          <li>海浪纹理</li>
+          <li>码头灯光</li>
+          <li>人物手部</li>
+          <li>文字逐渐出现：微影 V-ing · 我们，正在进行时</li>
+        </ul>
+      </div>
+      <div class="dd-col good reveal" style="--d:.06s">
+        <h3>字体建议</h3>
+        <ul>
+          <li>中文使用简洁现代的无衬线字体</li>
+          <li>英文使用干净的几何无衬线字体</li>
+          <li>不使用复杂书法字体</li>
+          <li>不要过度设计“旅游宣传片感”</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 字幕规范</h4>
+    <div class="chips reveal">
+      <span class="chip">使用简体中文</span>
+      <span class="chip">重点人物原声加轻微强调</span>
+      <span class="chip">每行不超过 15–18 个汉字</span>
+      <span class="chip">避免整段文字铺满画面</span>
+      <span class="chip">字幕保持安全边距</span>
+      <span class="chip">关键地名、职业、时间用小标题说明</span>
+    </div>
+
+    <div class="script-panel reveal" style="margin-top:clamp(26px,3.4vw,38px)">
+      <span class="ps-note">小标题示例 · Subtitle Demo</span>
+      <p class="dim" style="font-family:var(--font-mono);letter-spacing:.14em">福建 · 莆田 · 南日岛</p>
+      <p class="dim" style="font-family:var(--font-mono);letter-spacing:.14em">清晨 05:42</p>
+      <p style="font-family:var(--font-mono);letter-spacing:.14em">渔民 / 老陈</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 13 平台发布版本 ================= -->
+<section id="publish">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 13</span>
+      <h2>平台发布版本</h2>
+      <span class="scene-latin">Delivery Versions</span>
+    </div>
+
+    <div class="dd-grid" style="grid-template-columns:1fr 1fr">
+      <div class="dd-col good reveal">
+        <h3 style="color:var(--bili)">哔哩哔哩横屏版</h3>
+        <ul>
+          <li>4K 或高码率 1080P</li>
+          <li>16:9 · 8–12 分钟</li>
+          <li>标题完整</li>
+          <li>简介补充人物和拍摄背景</li>
+          <li>封面突出人物，不要只放海景</li>
+        </ul>
+      </div>
+      <div class="dd-col good reveal" style="--d:.06s">
+        <h3 style="color:var(--dy-cyan)">抖音横屏版</h3>
+        <ul>
+          <li>3–5 分钟</li>
+          <li>前 3 秒必须出现人物或冲突</li>
+          <li>开头避免长片头</li>
+          <li>画面信息密度更高</li>
+          <li>每 20–30 秒给出一次新的信息点</li>
+          <li>保留横屏构图，字幕字号适当放大</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 哔哩哔哩标题候选</h4>
+    <div class="title-opts reveal">
+      <div class="opt"><span class="no">T1</span>《南日岛：海风吹过的地方，生活还在继续》</div>
+      <div class="opt"><span class="no">T2</span>《我跟着一位渔民，记录南日岛普通的一天》</div>
+      <div class="opt pick"><span class="no">T3</span>南日岛不只有风景，还有一群正在生活的人<span class="pick-tag">推荐</span></div>
+      <div class="opt"><span class="no">T4</span>《年轻人正在离开，南日岛会变成什么样？》</div>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 抖音开头文案</h4>
+    <div class="quote small reveal" style="margin:0 0 14px">
+      <p>“来到南日岛以后，我才发现，岛上的人看海，和游客不一样。”</p>
+    </div>
+    <div class="quote small reveal" style="margin:0">
+      <p>“对游客来说，南日岛是一处风景；对他们来说，这里是每天的生活。”</p>
+    </div>
+
+    <h4 class="block-label reveal"><b>C</b> 竖屏切片 · 正片之外至少 4 条</h4>
+    <div class="clip-grid">
+      <div class="clip-card reveal">
+        <span class="c-no">Cut-01</span>
+        <span class="c-q">“为什么还留在岛上？”</span>
+        <p style="color:var(--muted);font-size:13px">人物金句</p>
+        <span class="c-d">30–60s · 9:16</span>
+      </div>
+      <div class="clip-card reveal" style="--d:.05s">
+        <span class="c-no">Cut-02</span>
+        <span class="c-q">“凌晨五点，南日岛的人已经开始工作了。”</span>
+        <p style="color:var(--muted);font-size:13px">海岛的一天</p>
+        <span class="c-d">45–90s · 9:16</span>
+      </div>
+      <div class="clip-card reveal" style="--d:.1s">
+        <span class="c-no">Cut-03</span>
+        <span class="c-q">“以前这里比现在热闹很多。”</span>
+        <p style="color:var(--muted);font-size:13px">岛的变化</p>
+        <span class="c-d">40–70s · 9:16</span>
+      </div>
+      <div class="clip-card reveal" style="--d:.15s">
+        <span class="c-no">Cut-04</span>
+        <span class="c-q">“游客看不到的南日岛。”</span>
+        <p style="color:var(--muted);font-size:13px">海岛细节</p>
+        <span class="c-d">30–60s · 9:16</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 14 封面设计 ================= -->
+<section id="cover">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 14</span>
+      <h2>封面设计</h2>
+      <span class="scene-latin">Thumbnail</span>
+    </div>
+
+    <h4 class="block-label reveal"><b>A</b> 封面构图优先顺序</h4>
+    <div class="flow reveal">
+      <div class="flow-step"><span class="n">01</span><p>人物脸或人物背影</p></div>
+      <div class="flow-step"><span class="n">02</span><p>人物与海、船、码头的关系</p></div>
+      <div class="flow-step"><span class="n">03</span><p>画面中有明确动作</p></div>
+      <div class="flow-step"><span class="n">04</span><p>文字尽量少</p></div>
+    </div>
+
+    <h4 class="block-label reveal"><b>B</b> 封面文字候选</h4>
+    <div class="chips reveal">
+      <span class="chip">南日岛的人，还在出海</span>
+      <span class="chip dim">岛上的生活没有暂停</span>
+      <span class="chip dim">南日岛不只有风景</span>
+      <span class="chip dim">他们为什么还留在岛上？</span>
+    </div>
+
+    <div class="quote reveal" style="margin-top:clamp(28px,3.6vw,40px)">
+      <p>推荐封面：人物站在码头或船上，海面作为背景，文字——南日岛的人，还在出海。</p>
+    </div>
+  </div>
+</section>
+<!-- ================= 15 执行清单 ================= -->
+<section id="checklist">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 15</span>
+      <h2>单兵执行清单</h2>
+      <span class="scene-latin">Field Checklist · 可勾选，自动保存</span>
+    </div>
+
+    <div class="check-progress reveal">
+      <span class="num" id="checkNum">0 / 27</span>
+      <div class="bar"><div class="fill" id="checkFill"></div></div>
+    </div>
+
+    <div class="check-group reveal">
+      <h3>拍摄前 <span>Pre-Shoot</span></h3>
+      <label><input type="checkbox"><span class="txt">相机电池充满</span></label>
+      <label><input type="checkbox"><span class="txt">备用电池或充电宝</span></label>
+      <label><input type="checkbox"><span class="txt">存储卡清空并格式化</span></label>
+      <label><input type="checkbox"><span class="txt">检查镜头、滤镜</span></label>
+      <label><input type="checkbox"><span class="txt">云台调平</span></label>
+      <label><input type="checkbox"><span class="txt">测试收音</span></label>
+      <label><input type="checkbox"><span class="txt">确认船期</span></label>
+      <label><input type="checkbox"><span class="txt">确认人物时间</span></label>
+      <label><input type="checkbox"><span class="txt">准备防雨、防风、防潮用品</span></label>
+      <label><input type="checkbox"><span class="txt">准备纸巾、镜头布</span></label>
+      <label><input type="checkbox"><span class="txt">准备简单三脚架或固定支撑</span></label>
+      <label><input type="checkbox"><span class="txt">准备人物授权沟通</span></label>
+    </div>
+
+    <div class="check-group reveal">
+      <h3>拍摄中 <span>On Location</span></h3>
+      <label><input type="checkbox"><span class="txt">每个地点拍至少 30 秒环境声</span></label>
+      <label><input type="checkbox"><span class="txt">每个重要动作拍远、中、近三个景别</span></label>
+      <label><input type="checkbox"><span class="txt">不要只拍人物采访</span></label>
+      <label><input type="checkbox"><span class="txt">不要连续快速移动</span></label>
+      <label><input type="checkbox"><span class="txt">拍完重要素材立刻检查</span></label>
+      <label><input type="checkbox"><span class="txt">每天备份素材</span></label>
+      <label><input type="checkbox"><span class="txt">记录人物姓名、职业、时间、地点</span></label>
+      <label><input type="checkbox"><span class="txt">对敏感信息提前确认是否可以公开</span></label>
+    </div>
+
+    <div class="check-group reveal">
+      <h3>剪辑前 <span>Pre-Edit</span></h3>
+      <label><input type="checkbox"><span class="txt">采访全部转文字</span></label>
+      <label><input type="checkbox"><span class="txt">标记人物金句</span></label>
+      <label><input type="checkbox"><span class="txt">选择故事主线</span></label>
+      <label><input type="checkbox"><span class="txt">删除无关景点介绍</span></label>
+      <label><input type="checkbox"><span class="txt">确定片名和封面</span></label>
+      <label><input type="checkbox"><span class="txt">整理现场声音</span></label>
+      <label><input type="checkbox"><span class="txt">建立素材文件夹</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 16 文件与预算 ================= -->
+<section id="files">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 16</span>
+      <h2>文件管理与预算</h2>
+      <span class="scene-latin">File Management &amp; Budget</span>
+    </div>
+
+    <div class="dd-grid" style="grid-template-columns:1fr 1fr">
+      <div class="reveal">
+        <h4 class="block-label" style="margin-top:0"><b>A</b> 文件夹结构</h4>
+        <pre class="code">南日岛_EP01
+├── <span class="a">01_采访音频</span>
+├── <span class="a">02_人物素材</span>
+├── <span class="a">03_环境空镜</span>
+├── <span class="a">04_船与码头</span>
+├── <span class="a">05_生活细节</span>
+├── <span class="a">06_音乐</span>
+├── <span class="a">07_现场声</span>
+├── <span class="a">08_工程文件</span>
+├── <span class="a">09_导出成片</span>
+└── <span class="a">10_封面与发布文案</span></pre>
+      </div>
+      <div class="reveal" style="--d:.06s">
+        <h4 class="block-label" style="margin-top:0"><b>B</b> 素材命名</h4>
+        <pre class="code"><span class="a">NRI</span>_D01_Morning_001
+<span class="a">NRI</span>_D01_Interview_001
+<span class="a">NRI</span>_D02_Fishing_003
+<span class="a">NRI</span>_D02_Ambience_Waves
+<span class="c">// NRI = NanRi Island
+// D01 / D02 = 拍摄日</span></pre>
+      </div>
+    </div>
+    <div class="quote small reveal">
+      <p>单兵创作最容易出现的问题不是拍不好，而是拍完后找不到素材。</p>
+    </div>
+
+    <h4 class="block-label reveal"><b>C</b> 预算控制 · 尽量不新增设备，把钱花在交通、沟通和时间上</h4>
+    <div class="chips reveal">
+      <span class="chip">船票及交通</span>
+      <span class="chip">住宿</span>
+      <span class="chip">电池或充电宝</span>
+      <span class="chip">防风毛衣或简易防风罩</span>
+      <span class="chip">防潮袋</span>
+      <span class="chip">存储卡</span>
+      <span class="chip">简单食物和饮水</span>
+      <span class="chip">必要的当地交通费用</span>
+    </div>
+    <div class="quote small reveal">
+      <p>如果预算有限，宁可减少拍摄地点，也不要为了“打卡更多地方”牺牲人物故事。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 17 风险与注意事项 ================= -->
+<section id="risk">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 17</span>
+      <h2>风险与注意事项</h2>
+      <span class="scene-latin">Risk &amp; Ethics</span>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-card reveal">
+        <span class="r-tag">Risk 01</span>
+        <h3>海上拍摄风险</h3>
+        <ul>
+          <li>不要为了镜头站在船舷危险位置</li>
+          <li>云台固定好，避免掉入海中</li>
+          <li>雨天和大风天气减少器材暴露</li>
+          <li>重要设备使用防潮袋</li>
+          <li>拍摄前询问当地人安全区域</li>
+          <li>不要在未经允许的情况下进入船舱或工作区域</li>
+        </ul>
+      </div>
+      <div class="risk-card reveal" style="--d:.06s">
+        <span class="r-tag">Risk 02</span>
+        <h3>人物隐私</h3>
+        <ul>
+          <li>收入</li>
+          <li>家庭矛盾</li>
+          <li>未成年人</li>
+          <li>个人联系方式</li>
+          <li>具体住址</li>
+          <li>争议性事件</li>
+          <li>宗教或敏感习俗</li>
+        </ul>
+        <p style="margin-top:14px;color:var(--muted);font-size:13px">涉及以上内容时要提前询问。纪实不是偷拍，也不是把别人的困难当作内容素材。</p>
+      </div>
+      <div class="risk-card reveal" style="--d:.12s">
+        <span class="r-tag">Risk 03</span>
+        <h3>画面真实性</h3>
+        <ul>
+          <li>不要为了镜头要求人物反复表演真实劳动过程</li>
+          <li>可以补拍动作，但不要制造不存在的事件</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 18 创作判断 ================= -->
+<section id="judgement">
+  <div class="container">
+    <div class="scene-head reveal">
+      <span class="scene-no">EP.01 · 18</span>
+      <h2>第一期最重要的创作判断</h2>
+      <span class="scene-latin">The Core Judgement</span>
+    </div>
+
+    <p class="lead-p reveal">这期不要试图证明南日岛“有多美”。应该让观众看完后产生一个感受：</p>
+    <div class="quote reveal">
+      <p>我好像真正认识了一个生活在南日岛的人。</p>
+      <span class="src">如果能做到这一点，第一期就成功了一半。</span>
+    </div>
+
+    <div class="dd-grid reveal">
+      <div class="dd-col bad">
+        <h3>本期的核心不是</h3>
+        <ul>
+          <li>景点数量</li>
+          <li>无人机大景</li>
+          <li>复杂运镜</li>
+          <li>华丽特效</li>
+          <li>旅行攻略</li>
+        </ul>
+      </div>
+      <div class="dd-col good">
+        <h3>而是</h3>
+        <ul>
+          <li>一个可信的人</li>
+          <li>一段真实的生活</li>
+          <li>一种正在变化的地方文化</li>
+          <li>一句让观众记住的话</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 19 最终成片定位 ================= -->
+<section id="finale" class="finale">
+  <div class="container">
+    <span class="f-kicker reveal">EP.01 · 19 · Final Positioning</span>
+    <div class="f-lines reveal">
+      <p style="margin-top:26px"><strong>内容定位：</strong>记录南日岛一个普通人的一天，<br>通过他的生活，看见一座海岛正在发生的变化。</p>
+    </div>
+    <div class="chips reveal" style="justify-content:center;margin-top:30px">
+      <span class="chip">海风</span><span class="chip">等待</span><span class="chip">劳作</span><span class="chip">离开</span>
+      <span class="chip">留下</span><span class="chip">记忆</span><span class="chip">变化</span><span class="chip">继续生活</span>
+    </div>
+    <div class="f-lines reveal">
+      <p style="margin-top:34px">“我们不急着给一个地方下结论，<br>只是把它正在发生的样子记录下来。”</p>
+      <p style="margin-top:26px">有些地方正在改变，有些人正在离开，有些生活仍在继续。<br>我们用一台相机，记录那些还没有结束的故事。</p>
+    </div>
+    <p class="f-sign reveal">微影 <span>V-ing</span> —— 我们，正在进行时</p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <span>© 2026 微影 V-ing · EP.01 南日岛 拍摄企划案</span>
+      <span class="rec-line"><span class="rec-dot" aria-hidden="true"></span>REC <span class="tc" data-tc>00:00:00:00</span></span>
+      <a href="index.html">← 返回首页</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+
+  /* ---- 实时时间码（25fps） ---- */
+  var tcEls = document.querySelectorAll('[data-tc]');
+  var start = performance.now();
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var total = Math.floor((performance.now() - start) / 40);
+    var f = total % 25;
+    var s = Math.floor(total / 25) % 60;
+    var m = Math.floor(total / (25 * 60)) % 60;
+    var h = Math.floor(total / (25 * 3600)) % 24;
+    var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
+    for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str;
+    requestAnimationFrame(tick);
+  }
+  if (tcEls.length && window.requestAnimationFrame) requestAnimationFrame(tick);
+
+  /* ---- 进场揭示（fail-open） ---- */
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---- 执行清单：勾选进度 + 本地保存 ---- */
+  var boxes = document.querySelectorAll('.check-group input[type="checkbox"]');
+  var fill = document.getElementById('checkFill');
+  var num = document.getElementById('checkNum');
+  var KEY = 'ving-ep01-checks';
+  if (boxes.length) {
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+    boxes.forEach(function(b, i){
+      if (saved[i]) { b.checked = true; b.closest('label').classList.add('done'); }
+      b.addEventListener('change', function(){
+        b.closest('label').classList.toggle('done', b.checked);
+        update();
+      });
+    });
+    function update(){
+      var done = 0;
+      var state = [];
+      boxes.forEach(function(b){ if (b.checked) done++; state.push(b.checked); });
+      if (fill) fill.style.width = (done / boxes.length * 100) + '%';
+      if (num) num.textContent = done + ' / ' + boxes.length;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }
+    update();
+  }
+})();
+</script>
+</body>
+</html>
