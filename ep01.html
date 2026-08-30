@@ -39,7 +39,7 @@
     --section-pad:clamp(64px,8vw,110px);
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-padding-top:96px}
+  html{scroll-padding-top:128px}
   @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
   body{
     background:var(--bg);color:var(--text);
@@ -80,6 +80,7 @@
   .nav-links a.home-link{color:var(--amber)}
   .nav-tc{font-family:var(--font-mono);font-size:12.5px;color:var(--amber);letter-spacing:.1em;white-space:nowrap}
   @media (max-width:760px){.nav-links a:not(.home-link){display:none}}
+  @media (max-width:520px){.nav-tc{display:none}}
 
   /* ---------- EP Hero（通告单风格） ---------- */
   .ep-hero{position:relative;padding:clamp(120px,16vh,170px) 0 clamp(48px,6vw,72px);overflow:hidden}
@@ -90,6 +91,7 @@
     pointer-events:none;user-select:none;letter-spacing:.04em;
   }
   .ep-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(32px,5vw,64px);align-items:start}
+  @media (max-width:960px){.ep-hero-grid{grid-template-columns:1fr}}
   .ep-kicker{
     display:inline-flex;align-items:center;gap:12px;
     font-family:var(--font-mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
@@ -479,6 +481,31 @@
   .footer-grid a:hover{color:var(--amber)}
   .footer-grid .rec-line{display:flex;align-items:center;gap:8px}
   .footer-grid .rec-line .tc{color:var(--rec)}
+
+  /* ---------- 响应式补全：手机 / 平板 / 宽屏 ---------- */
+  @media (max-width:960px){
+    .ep-ghost{top:16px;font-size:clamp(120px,28vw,240px)}
+  }
+  @media (max-width:900px){
+    .risk-grid{grid-template-columns:1fr 1fr}
+    .risk-card:last-child{grid-column:1/-1}
+  }
+  @media (max-width:640px){
+    .toc{padding:14px 0}
+    .spec-row,.sheet-row{flex-direction:column;align-items:flex-start;gap:3px}
+    .spec-row .v,.sheet-row .v{text-align:left}
+    .sheet-row .k{padding-top:0}
+    .spec-table{padding:6px 18px}
+    .check-group h3{padding:14px 18px}
+    .check-group label{padding:11px 18px}
+    .day-head{padding:14px 18px}
+    .day-part{padding:14px 18px}
+    .flow-step{padding:14px 18px}
+    pre.code{padding:18px 16px;font-size:11.5px}
+    .opt{flex-wrap:wrap}
+    .risk-grid{grid-template-columns:1fr}
+    .risk-card:last-child{grid-column:auto}
+  }
 
   /* 进场动画（fail-open） */
   html.js .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1);transition-delay:var(--d,0s)}
@@ -1433,7 +1460,7 @@
       <span class="scene-latin">Delivery Versions</span>
     </div>
 
-    <div class="dd-grid" style="grid-template-columns:1fr 1fr">
+    <div class="dd-grid">
       <div class="dd-col good reveal">
         <h3 style="color:var(--bili)">哔哩哔哩横屏版</h3>
         <ul>
@@ -1597,7 +1624,7 @@
       <span class="scene-latin">File Management &amp; Budget</span>
     </div>
 
-    <div class="dd-grid" style="grid-template-columns:1fr 1fr">
+    <div class="dd-grid">
       <div class="reveal">
         <h4 class="block-label" style="margin-top:0"><b>A</b> 文件夹结构</h4>
         <pre class="code">南日岛_EP01
