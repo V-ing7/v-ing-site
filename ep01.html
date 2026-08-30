@@ -60,7 +60,7 @@
   /* ---------- 导航 ---------- */
   .nav{
     position:fixed;top:0;left:0;right:0;z-index:50;
-    background:rgba(12,12,15,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    background:rgba(12,12,15,.94);
     border-bottom:1px solid var(--line-soft);
   }
   .nav-inner{max-width:1120px;margin:0 auto;padding:0 var(--pad);height:64px;display:flex;align-items:center;gap:24px}
@@ -1793,6 +1793,7 @@
   /* ---- 实时时间码（30fps） ---- */
   var tcEls = document.querySelectorAll('[data-tc]');
   var start = performance.now();
+  var lastTc = '';
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function tick(){
     var total = Math.floor((performance.now() - start) / 1000 * 30);
@@ -1801,7 +1802,7 @@
     var m = Math.floor(total / (30 * 60)) % 60;
     var h = Math.floor(total / (30 * 3600)) % 24;
     var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
-    for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str;
+    if (str !== lastTc) { lastTc = str; for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str; }
     requestAnimationFrame(tick);
   }
   if (tcEls.length && window.requestAnimationFrame) requestAnimationFrame(tick);
