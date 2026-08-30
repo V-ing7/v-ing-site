@@ -825,16 +825,16 @@
 (function(){
   document.documentElement.classList.add('js');
 
-  /* ---- 实时时间码（25fps，从访问时刻开始累计） ---- */
+  /* ---- 实时时间码（30fps，从访问时刻开始累计） ---- */
   var tcEls = document.querySelectorAll('[data-tc]');
   var start = performance.now();
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function tick(){
-    var total = Math.floor((performance.now() - start) / 40); /* 25fps */
-    var f = total % 25;
-    var s = Math.floor(total / 25) % 60;
-    var m = Math.floor(total / (25 * 60)) % 60;
-    var h = Math.floor(total / (25 * 3600)) % 24;
+    var total = Math.floor((performance.now() - start) / 1000 * 30); /* 30fps */
+    var f = total % 30;
+    var s = Math.floor(total / 30) % 60;
+    var m = Math.floor(total / (30 * 60)) % 60;
+    var h = Math.floor(total / (30 * 3600)) % 24;
     var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
     for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str;
     requestAnimationFrame(tick);

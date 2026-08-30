@@ -950,8 +950,8 @@
     <h4 class="block-label reveal"><b>A</b> 相机设置建议 · Sony ZV-E10</h4>
     <div class="spec-table reveal">
       <div class="spec-row"><span class="k">Resolution</span><span class="v">4K 拍摄</span></div>
-      <div class="spec-row"><span class="k">Frame Rate</span><span class="v"><em>25fps</em> 主画面 · 50fps 少量慢动作</span></div>
-      <div class="spec-row"><span class="k">Shutter</span><span class="v">25fps → <em>1/50</em> · 50fps → <em>1/100</em></span></div>
+      <div class="spec-row"><span class="k">Frame Rate</span><span class="v"><em>30fps</em> 主画面 · 60fps 少量慢动作</span></div>
+      <div class="spec-row"><span class="k">Shutter</span><span class="v">30fps → <em>1/60</em> · 60fps → <em>1/120</em></span></div>
       <div class="spec-row"><span class="k">White Balance</span><span class="v">尽量固定，不使用自动白平衡</span></div>
       <div class="spec-row"><span class="k">ISO</span><span class="v">尽量控制在较低范围</span></div>
       <div class="spec-row"><span class="k">Picture Profile</span><span class="v">PP 关闭或较温和的画面模式，减少后期压力</span></div>
@@ -1789,16 +1789,16 @@
 (function(){
   document.documentElement.classList.add('js');
 
-  /* ---- 实时时间码（25fps） ---- */
+  /* ---- 实时时间码（30fps） ---- */
   var tcEls = document.querySelectorAll('[data-tc]');
   var start = performance.now();
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function tick(){
-    var total = Math.floor((performance.now() - start) / 40);
-    var f = total % 25;
-    var s = Math.floor(total / 25) % 60;
-    var m = Math.floor(total / (25 * 60)) % 60;
-    var h = Math.floor(total / (25 * 3600)) % 24;
+    var total = Math.floor((performance.now() - start) / 1000 * 30);
+    var f = total % 30;
+    var s = Math.floor(total / 30) % 60;
+    var m = Math.floor(total / (30 * 60)) % 60;
+    var h = Math.floor(total / (30 * 3600)) % 24;
     var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
     for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str;
     requestAnimationFrame(tick);
