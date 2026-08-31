@@ -82,26 +82,27 @@
   @media (max-width:760px){.nav-links a:not(.home-link){display:none}}
   @media (max-width:520px){.nav-tc{display:none}}
 
-  /* ---------- 置顶：执行清单 ---------- */
+  /* ---------- 置顶：执行清单 + 拍摄备忘录 ---------- */
   .pin-bar{
-    position:sticky;top:64px;z-index:40;display:block;
+    position:sticky;top:64px;z-index:40;
     background:rgba(23,23,29,.97);
     border-bottom:1px solid var(--line);
-    transition:background .25s;
   }
-  .pin-bar:hover{background:rgba(31,30,38,.97)}
-  .pin-inner{display:flex;align-items:center;gap:14px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+  .pin-inner{display:flex;align-items:center;gap:20px;padding-top:9px;padding-bottom:9px;flex-wrap:wrap}
   .pin-tag{
     display:inline-flex;align-items:center;gap:7px;flex:none;
     font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;color:var(--rec);
     border:1px solid rgba(255,75,62,.45);border-radius:2px;padding:3px 9px;
   }
-  .pin-txt{font-size:14px;font-weight:700;letter-spacing:.04em}
-  .pin-txt em{font-style:normal;font-weight:400;color:var(--muted);font-size:12.5px;margin-left:6px}
-  .pin-go{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;color:var(--amber);white-space:nowrap}
+  .pin-link{
+    display:inline-flex;align-items:baseline;gap:8px;
+    font-size:14px;font-weight:700;letter-spacing:.04em;transition:color .25s;
+  }
+  .pin-link:hover{color:var(--amber)}
+  .pin-link em{font-style:normal;font-weight:400;color:var(--muted);font-size:12px}
   @media (max-width:640px){
-    .pin-go{display:none}
-    .pin-txt em{display:block;margin-left:0}
+    .pin-inner{gap:12px}
+    .pin-link em{display:none}
   }
 
   /* ---------- EP Hero（通告单风格） ---------- */
@@ -525,20 +526,21 @@
       <a href="#shots">镜头清单</a>
       <a href="#schedule">日程</a>
       <a href="checklist.html">执行清单</a>
+      <a href="notes.html">备忘录</a>
       <a class="home-link" href="index.html">← 返回首页</a>
     </nav>
     <span class="nav-tc" data-tc aria-hidden="true">00:00:00:00</span>
   </div>
 </header>
 
-<!-- ================= 置顶：执行清单 ================= -->
-<a class="pin-bar" href="checklist.html" aria-label="打开单兵执行清单（全期通用）">
+<!-- ================= 置顶：执行清单 + 拍摄备忘录 ================= -->
+<div class="pin-bar">
   <div class="container pin-inner">
     <span class="pin-tag"><span class="rec-dot" aria-hidden="true"></span>PINNED</span>
-    <span class="pin-txt">单兵执行清单<em>全期通用 · 可勾选 · 自动保存</em></span>
-    <span class="pin-go">打开清单 →</span>
+    <a class="pin-link" href="checklist.html">单兵执行清单<em>全期通用 · 可勾选</em></a>
+    <a class="pin-link" href="notes.html">拍摄备忘录<em>标题候选 · 规则 · 导演日记</em></a>
   </div>
-</a>
+</div>
 
 <!-- ================= EP.01 Hero ================= -->
 <section class="ep-hero" id="top">

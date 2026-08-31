@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拍摄备忘录 · 导演日记 — 微影 V-ing</title>
+<meta name="description" content="微影 V-ing 拍摄备忘录：壳理论标题候选、现场类内容规则、导演日记。全期通用，自动保存。我们-正在进行时。">
+<!--
+  ============================================================
+  微影 V-ing · 拍摄备忘录 / 导演日记（独立页 · 全期通用）
+  编导方法论：先定标题（壳理论）→ 设定规则（现场类）→ 写导演日记
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c0f;
+    --bg-2:#121217;
+    --bg-3:#17171d;
+    --line:#26262e;
+    --line-soft:#1d1d24;
+    --text:#ede9e1;
+    --muted:#a29d92;
+    --amber:#ffb84d;
+    --amber-dim:#8a6a34;
+    --rec:#ff4b3e;
+    --teal:#4dd6c1;
+    --font-cn:'Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei','PingFang SC','Microsoft YaHei',sans-serif;
+    --font-display:'Bebas Neue','Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei',sans-serif;
+    --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Noto Sans CJK SC',monospace;
+    --pad:clamp(20px,4vw,48px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-padding-top:92px}
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--font-cn);font-size:16px;line-height:1.8;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:#141414}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+  .container{max-width:880px;margin:0 auto;padding:0 var(--pad)}
+
+  .grain{
+    position:fixed;inset:-40px;pointer-events:none;z-index:60;opacity:.055;transform:translateZ(0);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  /* ---------- 导航 ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(12,12,15,.9);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-inner{max-width:880px;margin:0 auto;padding:0 var(--pad);height:64px;display:flex;align-items:center;gap:24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;white-space:nowrap}
+  .brand .en{font-family:var(--font-display);font-size:22px;letter-spacing:.14em;color:var(--amber)}
+  .rec-dot{width:9px;height:9px;border-radius:50%;background:var(--rec);flex:none;box-shadow:0 0 10px rgba(255,75,62,.8)}
+  @media (prefers-reduced-motion:no-preference){
+    .rec-dot{animation:blink 1.6s steps(1) infinite}
+    @keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.15}}
+  }
+  .nav-links{display:flex;gap:24px;margin-left:auto;align-items:center}
+  .nav-links a{
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;color:var(--muted);
+    padding:6px 2px;transition:color .25s;
+  }
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.home-link{color:var(--amber)}
+  .nav-tc{font-family:var(--font-mono);font-size:12.5px;color:var(--amber);letter-spacing:.1em;white-space:nowrap}
+  @media (max-width:760px){.nav-links a:not(.home-link){display:none}}
+  @media (max-width:520px){.nav-tc{display:none}}
+
+  /* ---------- 页头 ---------- */
+  .nt-hero{position:relative;padding:clamp(120px,16vh,170px) 0 clamp(36px,5vw,56px);overflow:hidden}
+  .nt-ghost{
+    position:absolute;top:24px;right:-20px;z-index:0;
+    font-family:var(--font-display);font-size:clamp(110px,20vw,260px);line-height:1;
+    color:transparent;-webkit-text-stroke:1px rgba(237,233,225,.07);
+    pointer-events:none;user-select:none;letter-spacing:.04em;
+  }
+  .nt-hero .container{position:relative;z-index:1}
+  .nt-kicker{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
+  }
+  .nt-kicker::before{content:"";width:34px;height:1px;background:var(--amber)}
+  .nt-title{margin-top:20px;font-weight:900;font-size:clamp(44px,7vw,76px);letter-spacing:.05em;line-height:1.1}
+  .nt-sub{margin-top:14px;color:var(--muted);max-width:62ch}
+  .nt-sub strong{color:var(--text)}
+
+  /* ---------- 板块 ---------- */
+  .nt-sec{margin-top:clamp(40px,6vw,64px)}
+  .nt-head{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .nt-head h2{font-size:clamp(22px,3vw,28px);font-weight:900;letter-spacing:.04em}
+  .nt-head .latin{font-family:var(--font-mono);font-size:11px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase}
+  .nt-desc{color:var(--muted);font-size:14.5px;margin-bottom:20px;max-width:64ch}
+  .nt-desc strong{color:var(--text)}
+
+  .card{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);padding:clamp(20px,3vw,28px)}
+
+  /* ---------- 壳理论：标题候选 ---------- */
+  .field{margin-bottom:16px}
+  .field:last-child{margin-bottom:0}
+  .field label{
+    display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:7px;
+  }
+  .field label b{color:var(--amber);font-weight:500}
+  .field input,.field textarea,.field select{
+    width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;
+    color:var(--text);font-family:var(--font-cn);font-size:14.5px;line-height:1.7;
+    padding:11px 14px;transition:border-color .25s;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--amber-dim)}
+  .field input::placeholder,.field textarea::placeholder{color:#5c584f}
+  .shell-quote{
+    margin-top:18px;padding:14px 18px;border-left:2px solid var(--amber);
+    background:var(--bg-3);font-size:13.5px;color:var(--muted);
+  }
+  .shell-quote strong{color:var(--text)}
+
+  /* ---------- 规则 ---------- */
+  .rule-list{counter-reset:rule}
+  .rule-list li{
+    counter-increment:rule;
+    display:flex;gap:14px;align-items:flex-start;
+    padding:13px 0;border-bottom:1px dashed var(--line-soft);
+    font-size:14.5px;color:var(--text);
+  }
+  .rule-list li:last-child{border-bottom:none}
+  .rule-list li::before{
+    content:counter(rule,decimal-leading-zero);
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;
+    color:var(--amber);flex:none;margin-top:3px;
+  }
+  .rule-note{margin-top:16px;font-size:13px;color:var(--muted)}
+
+  /* ---------- 导演日记 ---------- */
+  .diary-form{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+  @media (max-width:720px){.diary-form{grid-template-columns:1fr}}
+  .diary-form .field{margin-bottom:0}
+  .diary-form select{min-width:170px}
+  .add-btn{
+    align-self:stretch;display:inline-flex;align-items:center;justify-content:center;
+    background:var(--amber);color:#141414;border:none;border-radius:2px;
+    font-family:var(--font-cn);font-size:14.5px;font-weight:700;letter-spacing:.08em;
+    padding:11px 26px;cursor:pointer;transition:filter .2s;white-space:nowrap;
+  }
+  .add-btn:hover{filter:brightness(1.08)}
+  @media (max-width:720px){.add-btn{padding:12px}}
+
+  .diary-list{margin-top:22px}
+  .diary-empty{
+    border:1px dashed var(--line);border-radius:3px;padding:26px;text-align:center;
+    color:var(--muted);font-size:13.5px;
+  }
+  .diary-item{
+    border:1px solid var(--line);border-radius:3px;background:var(--bg-2);
+    margin-bottom:14px;overflow:hidden;
+  }
+  .diary-top{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:11px 18px;background:var(--bg-3);border-bottom:1px solid var(--line-soft);
+  }
+  .diary-date{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--amber)}
+  .diary-slot{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.18em;
+    border:1px solid var(--line);border-radius:2px;padding:3px 9px;color:var(--muted);
+  }
+  .diary-slot.noon{color:var(--teal);border-color:rgba(77,214,193,.4)}
+  .diary-slot.wrap{color:var(--amber);border-color:rgba(255,184,77,.4)}
+  .diary-del{
+    margin-left:auto;background:none;border:none;cursor:pointer;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--muted);
+    padding:4px 6px;transition:color .2s;
+  }
+  .diary-del:hover{color:var(--rec)}
+  .diary-body{padding:14px 18px;font-size:14px;color:var(--text);white-space:pre-wrap;word-break:break-word}
+
+  /* ---------- 页脚 ---------- */
+  footer{border-top:1px solid var(--line-soft);margin-top:clamp(48px,6vw,72px)}
+  footer .container{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding-top:26px;padding-bottom:34px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;color:var(--muted);
+  }
+  footer a:hover{color:var(--amber)}
+  .rec-line{display:inline-flex;align-items:center;gap:8px;color:var(--rec)}
+  .rec-line .tc{color:var(--amber)}
+
+  /* ---------- 进场揭示 ---------- */
+  .reveal{opacity:1;transform:none}
+  html.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+  html.js .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important;transition:none !important}
+    html.js .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ================= 导航 ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html" aria-label="返回微影 V-ing 首页">
+      <span class="rec-dot" aria-hidden="true"></span>
+      <span class="en">V-ING</span>
+      <span>微影</span>
+    </a>
+    <nav class="nav-links" aria-label="页面导航">
+      <a href="ep01.html">EP.01 企划案</a>
+      <a href="checklist.html">执行清单</a>
+      <a class="home-link" href="index.html">← 返回首页</a>
+    </nav>
+    <span class="nav-tc" data-tc aria-hidden="true">00:00:00:00</span>
+  </div>
+</header>
+
+<!-- ================= 页头 ================= -->
+<section class="nt-hero">
+  <span class="nt-ghost" aria-hidden="true">NOTES</span>
+  <div class="container">
+    <span class="nt-kicker">Director's Notes · 全期通用</span>
+    <h1 class="nt-title">拍摄备忘录</h1>
+    <p class="nt-sub">
+      编导三件事：<strong>先定标题</strong>（壳理论）、<strong>设定规则</strong>（现场类内容的赛制）、
+      <strong>写导演日记</strong>（单兵最值钱的一条）。所有内容自动保存在本浏览器，每期开拍前从这里开始。
+    </p>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- ========== 01 壳理论：标题候选 ========== -->
+  <section class="nt-sec" id="shell">
+    <div class="nt-head reveal">
+      <h2>壳理论 · 标题候选</h2>
+      <span class="latin">01 · Title First</span>
+    </div>
+    <p class="nt-desc reveal">
+      先想清楚底层要讲什么，再找一个观众有共鸣、愿意点进来的「壳」——
+      <strong>壳和标题完全对齐，做视频之前先想好标题</strong>。
+      注意：壳只管标题和开场钩子，不管拍摄过程。
+    </p>
+    <div class="card reveal">
+      <div class="field">
+        <label for="shellCore">底层表达 <b>· 这一期到底在讲什么</b></label>
+        <input type="text" id="shellCore" data-shell="core" placeholder="例：仪式与体验的并置">
+      </div>
+      <div class="field">
+        <label for="shellT1">标题候选 01</label>
+        <input type="text" id="shellT1" data-shell="t1" placeholder="例：游客这一天，是她的一生">
+      </div>
+      <div class="field">
+        <label for="shellT2">标题候选 02</label>
+        <input type="text" id="shellT2" data-shell="t2" placeholder="写下第二个壳">
+      </div>
+      <div class="field">
+        <label for="shellT3">标题候选 03</label>
+        <input type="text" id="shellT3" data-shell="t3" placeholder="写下第三个壳">
+      </div>
+      <div class="field">
+        <label for="shellHook">开场钩子 <b>· 前 3 秒</b></label>
+        <input type="text" id="shellHook" data-shell="hook" placeholder="观众为什么要点进来？">
+      </div>
+      <div class="shell-quote">
+        “如果人不点，他就不看。”—— 标题不是拍完再想的事，是策划案的第一步。
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 02 现场规则 ========== -->
+  <section class="nt-sec" id="rules">
+    <div class="nt-head reveal">
+      <h2>现场规则 · 本期赛制</h2>
+      <span class="latin">02 · Field Rules</span>
+    </div>
+    <p class="nt-desc reveal">
+      微影属于「现场类」内容：<strong>先真实，后结构；不预设场景，但设定规则</strong>。
+      规则就是现场类内容的赛制——规则没定好，素材就是一盘散沙。
+    </p>
+    <div class="card reveal">
+      <ol class="rule-list">
+        <li>口播最多 3 次，每次 30 秒内</li>
+        <li>全片不出现「网红」「流量」</li>
+        <li>不请人物「再来一次」</li>
+        <li>核心长镜头 8—12 秒不切</li>
+      </ol>
+      <p class="rule-note">拍摄中一切临场决策，以不违反以上四条为前提。</p>
+    </div>
+  </section>
+
+  <!-- ========== 03 导演日记 ========== -->
+  <section class="nt-sec" id="diary">
+    <div class="nt-head reveal">
+      <h2>导演日记</h2>
+      <span class="latin">03 · Director's Diary</span>
+    </div>
+    <p class="nt-desc reveal">
+      拍摄日两个固定动作，合计不超过 8 分钟：
+      <strong>正午休息时 3 分钟</strong>——上午拍了什么、缺什么、下午补拍清单、器材状态（电量 / 存储 / 麦克风是否换过）；
+      <strong>收工后 5 分钟</strong>——全天流水账：时间、地点、人物、好镜头在哪张卡哪个文件、金句原话、遗憾点。
+      两个收益：后期技术问题有据可查，写的过程让粗剪效率光速提升。
+    </p>
+
+    <div class="card reveal">
+      <div class="diary-form">
+        <div class="field">
+          <label for="diarySlot">时段</label>
+          <select id="diarySlot">
+            <option value="noon">正午检查 · 3min</option>
+            <option value="wrap">收工流水账 · 5min</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="diaryText">记录</label>
+          <textarea id="diaryText" rows="4" placeholder="正午：上午拍了什么 / 缺什么 / 下午补拍清单 / 器材状态&#10;收工：时间 · 地点 · 人物 · 好镜头在哪个文件 · 金句原话 · 遗憾点"></textarea>
+        </div>
+        <button class="add-btn" id="diaryAdd" type="button">记一笔</button>
+      </div>
+
+      <div class="diary-list" id="diaryList">
+        <div class="diary-empty" id="diaryEmpty">还没有日记。拍摄日正午和收工，各花几分钟记一笔。</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <span>© 2026 微影 V-ing · 拍摄备忘录</span>
+    <span class="rec-line"><span class="rec-dot" aria-hidden="true"></span>REC <span class="tc" data-tc>00:00:00:00</span></span>
+    <a href="checklist.html">执行清单 →</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+
+  /* ---- 实时时间码（30fps） ---- */
+  var tcEls = document.querySelectorAll('[data-tc]');
+  var start = performance.now();
+  var lastTc = '';
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var total = Math.floor((performance.now() - start) / 1000 * 30);
+    var f = total % 30;
+    var s = Math.floor(total / 30) % 60;
+    var m = Math.floor(total / (30 * 60)) % 60;
+    var h = Math.floor(total / (30 * 3600)) % 24;
+    var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
+    if (str !== lastTc) { lastTc = str; for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str; }
+    requestAnimationFrame(tick);
+  }
+  if (tcEls.length && window.requestAnimationFrame) requestAnimationFrame(tick);
+
+  /* ---- 进场揭示（fail-open） ---- */
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---- 壳理论：标题候选（自动保存） ---- */
+  var SHELL_KEY = 'ving-notes-shell';
+  var shellInputs = document.querySelectorAll('[data-shell]');
+  var shellSaved = {};
+  try { shellSaved = JSON.parse(localStorage.getItem(SHELL_KEY) || '{}'); } catch (e) {}
+  shellInputs.forEach(function(inp){
+    var k = inp.getAttribute('data-shell');
+    if (shellSaved[k]) inp.value = shellSaved[k];
+    inp.addEventListener('input', function(){
+      shellSaved[k] = inp.value;
+      try { localStorage.setItem(SHELL_KEY, JSON.stringify(shellSaved)); } catch (e) {}
+    });
+  });
+
+  /* ---- 导演日记（本地保存） ---- */
+  var DIARY_KEY = 'ving-notes-diary';
+  var list = document.getElementById('diaryList');
+  var empty = document.getElementById('diaryEmpty');
+  var slotSel = document.getElementById('diarySlot');
+  var textArea = document.getElementById('diaryText');
+  var addBtn = document.getElementById('diaryAdd');
+  var entries = [];
+  try { entries = JSON.parse(localStorage.getItem(DIARY_KEY) || '[]'); } catch (e) {}
+
+  function saveDiary(){
+    try { localStorage.setItem(DIARY_KEY, JSON.stringify(entries)); } catch (e) {}
+  }
+  function esc(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function renderDiary(){
+    var items = list.querySelectorAll('.diary-item');
+    items.forEach(function(it){ it.remove(); });
+    if (empty) empty.style.display = entries.length ? 'none' : 'block';
+    entries.forEach(function(en, idx){
+      var div = document.createElement('div');
+      div.className = 'diary-item';
+      var slotLabel = en.slot === 'noon' ? '正午检查' : '收工流水账';
+      div.innerHTML =
+        '<div class="diary-top">' +
+          '<span class="diary-date">' + esc(en.date) + '</span>' +
+          '<span class="diary-slot ' + (en.slot === 'noon' ? 'noon' : 'wrap') + '">' + slotLabel + '</span>' +
+          '<button class="diary-del" type="button" data-del="' + idx + '">删除</button>' +
+        '</div>' +
+        '<div class="diary-body">' + esc(en.text) + '</div>';
+      list.appendChild(div);
+    });
+  }
+  if (addBtn) addBtn.addEventListener('click', function(){
+    var text = textArea.value.trim();
+    if (!text) { textArea.focus(); return; }
+    var d = new Date();
+    var date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+               ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    entries.unshift({ date: date, slot: slotSel.value, text: text });
+    textArea.value = '';
+    saveDiary();
+    renderDiary();
+  });
+  if (list) list.addEventListener('click', function(ev){
+    var btn = ev.target.closest('[data-del]');
+    if (!btn) return;
+    entries.splice(Number(btn.getAttribute('data-del')), 1);
+    saveDiary();
+    renderDiary();
+  });
+  renderDiary();
+})();
+</script>
+</body>
+</html>
