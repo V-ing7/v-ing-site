@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>单兵执行清单 — 微影 V-ing</title>
+<meta name="description" content="微影 V-ing 单兵执行清单：拍摄前、拍摄中、剪辑前 27 项检查。全期通用，可勾选，自动保存。我们-正在进行时。">
+<!--
+  ============================================================
+  微影 V-ing · 单兵执行清单（独立页 · 全期通用）
+  与 index.html / ep01.html 共享同一设计系统
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c0f;
+    --bg-2:#121217;
+    --bg-3:#17171d;
+    --line:#26262e;
+    --line-soft:#1d1d24;
+    --text:#ede9e1;
+    --muted:#a29d92;
+    --amber:#ffb84d;
+    --amber-dim:#8a6a34;
+    --rec:#ff4b3e;
+    --font-cn:'Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei','PingFang SC','Microsoft YaHei',sans-serif;
+    --font-display:'Bebas Neue','Noto Sans SC','Noto Sans CJK SC','WenQuanYi Micro Hei',sans-serif;
+    --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Noto Sans CJK SC',monospace;
+    --pad:clamp(20px,4vw,48px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-padding-top:92px}
+  @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--font-cn);font-size:16px;line-height:1.8;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:#141414}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+  .container{max-width:880px;margin:0 auto;padding:0 var(--pad)}
+
+  .grain{
+    position:fixed;inset:-40px;pointer-events:none;z-index:60;opacity:.055;transform:translateZ(0);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  /* ---------- 导航 ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(12,12,15,.9);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-inner{max-width:880px;margin:0 auto;padding:0 var(--pad);height:64px;display:flex;align-items:center;gap:24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.06em;white-space:nowrap}
+  .brand .en{font-family:var(--font-display);font-size:22px;letter-spacing:.14em;color:var(--amber)}
+  .rec-dot{width:9px;height:9px;border-radius:50%;background:var(--rec);flex:none;box-shadow:0 0 10px rgba(255,75,62,.8)}
+  @media (prefers-reduced-motion:no-preference){
+    .rec-dot{animation:blink 1.6s steps(1) infinite}
+    @keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.15}}
+  }
+  .nav-links{display:flex;gap:24px;margin-left:auto;align-items:center}
+  .nav-links a{
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;color:var(--muted);
+    padding:6px 2px;transition:color .25s;
+  }
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.home-link{color:var(--amber)}
+  .nav-tc{font-family:var(--font-mono);font-size:12.5px;color:var(--amber);letter-spacing:.1em;white-space:nowrap}
+  @media (max-width:760px){.nav-links a:not(.home-link){display:none}}
+  @media (max-width:520px){.nav-tc{display:none}}
+
+  /* ---------- 页头 ---------- */
+  .cl-hero{position:relative;padding:clamp(120px,16vh,170px) 0 clamp(36px,5vw,56px);overflow:hidden}
+  .cl-ghost{
+    position:absolute;top:24px;right:-20px;z-index:0;
+    font-family:var(--font-display);font-size:clamp(110px,20vw,260px);line-height:1;
+    color:transparent;-webkit-text-stroke:1px rgba(237,233,225,.07);
+    pointer-events:none;user-select:none;letter-spacing:.04em;
+  }
+  .cl-hero .container{position:relative;z-index:1}
+  .cl-kicker{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
+  }
+  .cl-kicker::before{content:"";width:34px;height:1px;background:var(--amber)}
+  .cl-title{margin-top:20px;font-weight:900;font-size:clamp(44px,7vw,76px);letter-spacing:.05em;line-height:1.1}
+  .cl-sub{margin-top:14px;color:var(--muted);max-width:60ch}
+  .cl-sub strong{color:var(--text)}
+
+  /* ---------- 进度与操作 ---------- */
+  .check-progress{
+    display:flex;align-items:center;gap:16px;
+    margin:clamp(28px,4vw,40px) 0 10px;
+  }
+  .check-progress .bar{flex:1;height:6px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+  .check-progress .fill{height:100%;width:0;background:var(--amber);transition:width .4s cubic-bezier(.22,1,.36,1)}
+  .check-progress .num{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;color:var(--amber);white-space:nowrap}
+  .cl-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:clamp(28px,4vw,40px)}
+  .cl-tip{font-size:13px;color:var(--muted)}
+  .reset-btn{
+    margin-left:auto;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;color:var(--muted);
+    background:none;border:1px solid var(--line);border-radius:2px;
+    padding:8px 16px;cursor:pointer;transition:color .25s,border-color .25s;
+  }
+  .reset-btn:hover{color:var(--rec);border-color:rgba(255,75,62,.5)}
+
+  /* ---------- 清单组 ---------- */
+  .check-group{border:1px solid var(--line);border-radius:3px;background:var(--bg-2);margin-bottom:18px;overflow:hidden}
+  .check-group h3{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding:16px 22px;background:var(--bg-3);border-bottom:1px solid var(--line);
+    font-size:15.5px;font-weight:700;letter-spacing:.1em;
+  }
+  .check-group h3 span{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase;font-weight:400}
+  .check-group label{
+    display:flex;gap:12px;align-items:flex-start;
+    padding:13px 22px;border-bottom:1px solid var(--line-soft);
+    cursor:pointer;transition:background .2s;font-size:14.5px;color:var(--muted);
+  }
+  .check-group label:last-child{border-bottom:none}
+  .check-group label:hover{background:rgba(255,184,77,.04)}
+  .check-group input{accent-color:var(--amber);margin-top:5px;flex:none;width:15px;height:15px}
+  .check-group label.done{color:var(--text)}
+  .check-group label.done .txt{text-decoration:line-through;text-decoration-color:var(--amber-dim)}
+
+  /* ---------- 页脚 ---------- */
+  footer{border-top:1px solid var(--line-soft);margin-top:clamp(48px,6vw,72px)}
+  footer .container{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding-top:26px;padding-bottom:34px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;color:var(--muted);
+  }
+  footer a:hover{color:var(--amber)}
+  .rec-line{display:inline-flex;align-items:center;gap:8px;color:var(--rec)}
+  .rec-line .tc{color:var(--amber)}
+
+  /* ---------- 进场揭示 ---------- */
+  .reveal{opacity:1;transform:none}
+  html.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+  html.js .reveal.in{opacity:1;transform:none}
+  @media (max-width:640px){
+    .check-group h3{padding:14px 18px}
+    .check-group label{padding:11px 18px}
+    .reset-btn{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important;transition:none !important}
+    html.js .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ================= 导航 ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html" aria-label="返回微影 V-ing 首页">
+      <span class="rec-dot" aria-hidden="true"></span>
+      <span class="en">V-ING</span>
+      <span>微影</span>
+    </a>
+    <nav class="nav-links" aria-label="页面导航">
+      <a href="ep01.html">EP.01 企划案</a>
+      <a class="home-link" href="index.html">← 返回首页</a>
+    </nav>
+    <span class="nav-tc" data-tc aria-hidden="true">00:00:00:00</span>
+  </div>
+</header>
+
+<!-- ================= 页头 ================= -->
+<section class="cl-hero">
+  <span class="cl-ghost" aria-hidden="true">CHECK</span>
+  <div class="container">
+    <span class="cl-kicker">Field Checklist · 全期通用</span>
+    <h1 class="cl-title">单兵执行清单</h1>
+    <p class="cl-sub">
+      拍摄前、拍摄中、剪辑前共 <strong>27 项</strong>。勾选状态自动保存在本浏览器，
+      <strong>每一期开拍前</strong>从这里开始；新一期开机前点「清空勾选」重新计数。
+    </p>
+
+    <div class="check-progress reveal">
+      <span class="num" id="checkNum">0 / 27</span>
+      <div class="bar"><div class="fill" id="checkFill"></div></div>
+    </div>
+    <div class="cl-actions reveal">
+      <span class="cl-tip">单兵创作最容易出现的问题不是拍不好，而是漏掉准备。</span>
+      <button class="reset-btn" id="resetBtn" type="button">清空勾选 · 新一期</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 清单 ================= -->
+<main class="container">
+  <div class="check-group reveal">
+    <h3>拍摄前 <span>Pre-Shoot</span></h3>
+    <label><input type="checkbox"><span class="txt">相机电池充满</span></label>
+    <label><input type="checkbox"><span class="txt">备用电池或充电宝</span></label>
+    <label><input type="checkbox"><span class="txt">存储卡清空并格式化</span></label>
+    <label><input type="checkbox"><span class="txt">检查镜头、滤镜</span></label>
+    <label><input type="checkbox"><span class="txt">云台调平</span></label>
+    <label><input type="checkbox"><span class="txt">测试收音</span></label>
+    <label><input type="checkbox"><span class="txt">确认船期 / 交通</span></label>
+    <label><input type="checkbox"><span class="txt">确认人物时间</span></label>
+    <label><input type="checkbox"><span class="txt">准备防雨、防风、防潮用品</span></label>
+    <label><input type="checkbox"><span class="txt">准备纸巾、镜头布</span></label>
+    <label><input type="checkbox"><span class="txt">准备简单三脚架或固定支撑</span></label>
+    <label><input type="checkbox"><span class="txt">准备人物授权沟通</span></label>
+  </div>
+
+  <div class="check-group reveal">
+    <h3>拍摄中 <span>On Location</span></h3>
+    <label><input type="checkbox"><span class="txt">每个地点拍至少 30 秒环境声</span></label>
+    <label><input type="checkbox"><span class="txt">每个重要动作拍远、中、近三个景别</span></label>
+    <label><input type="checkbox"><span class="txt">不要只拍人物采访</span></label>
+    <label><input type="checkbox"><span class="txt">不要连续快速移动</span></label>
+    <label><input type="checkbox"><span class="txt">拍完重要素材立刻检查</span></label>
+    <label><input type="checkbox"><span class="txt">每天备份素材</span></label>
+    <label><input type="checkbox"><span class="txt">记录人物姓名、职业、时间、地点</span></label>
+    <label><input type="checkbox"><span class="txt">对敏感信息提前确认是否可以公开</span></label>
+  </div>
+
+  <div class="check-group reveal">
+    <h3>剪辑前 <span>Pre-Edit</span></h3>
+    <label><input type="checkbox"><span class="txt">采访全部转文字</span></label>
+    <label><input type="checkbox"><span class="txt">标记人物金句</span></label>
+    <label><input type="checkbox"><span class="txt">选择故事主线</span></label>
+    <label><input type="checkbox"><span class="txt">删除无关景点介绍</span></label>
+    <label><input type="checkbox"><span class="txt">确定片名和封面</span></label>
+    <label><input type="checkbox"><span class="txt">整理现场声音</span></label>
+    <label><input type="checkbox"><span class="txt">建立素材文件夹</span></label>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <span>© 2026 微影 V-ing · 单兵执行清单</span>
+    <span class="rec-line"><span class="rec-dot" aria-hidden="true"></span>REC <span class="tc" data-tc>00:00:00:00</span></span>
+    <a href="ep01.html">EP.01 企划案 →</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+
+  /* ---- 实时时间码（30fps） ---- */
+  var tcEls = document.querySelectorAll('[data-tc]');
+  var start = performance.now();
+  var lastTc = '';
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var total = Math.floor((performance.now() - start) / 1000 * 30);
+    var f = total % 30;
+    var s = Math.floor(total / 30) % 60;
+    var m = Math.floor(total / (30 * 60)) % 60;
+    var h = Math.floor(total / (30 * 3600)) % 24;
+    var str = pad(h) + ':' + pad(m) + ':' + pad(s) + ':' + pad(f);
+    if (str !== lastTc) { lastTc = str; for (var i = 0; i < tcEls.length; i++) tcEls[i].textContent = str; }
+    requestAnimationFrame(tick);
+  }
+  if (tcEls.length && window.requestAnimationFrame) requestAnimationFrame(tick);
+
+  /* ---- 进场揭示（fail-open） ---- */
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---- 执行清单：勾选进度 + 本地保存 + 清空 ---- */
+  var boxes = document.querySelectorAll('.check-group input[type="checkbox"]');
+  var fill = document.getElementById('checkFill');
+  var num = document.getElementById('checkNum');
+  var resetBtn = document.getElementById('resetBtn');
+  var KEY = 'ving-checklist';
+  var LEGACY_KEY = 'ving-ep01-checks';
+
+  function update(){
+    var done = 0;
+    var state = [];
+    boxes.forEach(function(b){ if (b.checked) done++; state.push(b.checked); });
+    if (fill) fill.style.width = (done / boxes.length * 100) + '%';
+    if (num) num.textContent = done + ' / ' + boxes.length;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  if (boxes.length) {
+    var saved = [];
+    try {
+      saved = JSON.parse(localStorage.getItem(KEY) || 'null')
+        || JSON.parse(localStorage.getItem(LEGACY_KEY) || '[]'); /* 从 EP.01 旧清单迁移 */
+    } catch (e) {}
+    boxes.forEach(function(b, i){
+      if (saved[i]) { b.checked = true; b.closest('label').classList.add('done'); }
+      b.addEventListener('change', function(){
+        b.closest('label').classList.toggle('done', b.checked);
+        update();
+      });
+    });
+    if (resetBtn) resetBtn.addEventListener('click', function(){
+      boxes.forEach(function(b){ b.checked = false; b.closest('label').classList.remove('done'); });
+      update();
+    });
+    update();
+  }
+})();
+</script>
+</body>
+</html>
