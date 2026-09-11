@@ -1004,7 +1004,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .team-card-expandable.expanded .team-detail-inner > *:nth-child(3){transition-delay:.15s}
 .team-card-expandable.expanded .team-detail-inner > *:nth-child(4){transition-delay:.2s}
 .team-card-expandable.expanded .team-detail-inner > *:nth-child(5){transition-delay:.25s}
-.team-card-expandable.expanded .team-detail-inner > *:nth-child(6){transition-delay:.3s}
 .team-info-row{
   display:flex;
   justify-content:space-between;
