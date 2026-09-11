@@ -1780,30 +1780,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .collab-glow-ip{background:rgba(175,82,222,.15)}
 
 /* ---------- Unified Report Panel ---------- */
-.unified-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:16px;
-  margin-bottom:32px;
-}
-.unified-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.03em}
-.unified-sub{font-size:.88rem;color:var(--text-secondary);margin-top:6px}
-.screenshot-all-btn{
-  padding:12px 28px;
-  font-size:.92rem;
-  background:var(--text-primary);
-  color:var(--bg);
-  border:1px solid var(--text-primary);
-}
-.screenshot-all-btn:hover{
-  background:var(--accent);
-  border-color:var(--accent);
-  color:var(--bg);
-}
 .unified-report-wrap{
-  padding:28px;
+  padding:20px;
   border-radius:24px;
   background:var(--surface-glass);
   backdrop-filter:saturate(180%) blur(20px);
@@ -1811,24 +1789,72 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
 }
 
+/* Toolbar */
+.unified-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--glass-border);
+}
+.unified-toolbar-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.unified-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#FF9F0A;
+  box-shadow:0 0 8px rgba(255,159,10,.5);
+  flex-shrink:0;
+}
+.unified-toolbar-title{
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:-.01em;
+}
+.unified-toolbar-date{
+  font-size:.75rem;
+  color:var(--text-tertiary);
+}
+.unified-toolbar-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.unified-toolbar-right .edit-toggle-btn,
+.unified-toolbar-right .screenshot-all-btn{
+  padding:7px 16px;
+  font-size:.78rem;
+  border-radius:10px;
+}
+.unified-toolbar-right .screenshot-all-btn{
+  background:var(--text-primary);
+  color:var(--bg);
+  border:1px solid var(--text-primary);
+}
+
 /* Grand Total Summary */
 .unified-summary{
-  padding:28px;
-  border-radius:18px;
+  padding:20px;
+  border-radius:16px;
   background:var(--surface);
   border:1px solid var(--glass-border);
-  margin-bottom:28px;
+  margin-bottom:20px;
 }
 .unified-summary-grid{
   display:flex;
-  gap:40px;
+  gap:32px;
   flex-wrap:wrap;
   justify-content:center;
 }
 .us-ring-item{display:flex;align-items:center;justify-content:center}
 .us-ring{
   position:relative;
-  width:100px;height:100px;
+  width:88px;height:88px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1841,38 +1867,38 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   align-items:center;
   justify-content:center;
 }
-.us-ring-num{font-size:1.5rem;font-weight:800;letter-spacing:-.03em}
-.us-ring-label{font-size:.68rem;color:var(--text-tertiary);text-align:center;margin-top:2px}
+.us-ring-num{font-size:1.25rem;font-weight:800;letter-spacing:-.03em}
+.us-ring-label{font-size:.62rem;color:var(--text-tertiary);text-align:center;margin-top:2px}
 
 /* Brand section in unified view */
 .unified-brand-section{
-  margin-bottom:28px;
+  margin-bottom:20px;
 }
 .unified-brand-section:last-child{margin-bottom:0}
 .unified-brand-head{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
   flex-wrap:wrap;
-  margin-bottom:20px;
-  padding-bottom:16px;
+  margin-bottom:14px;
+  padding-bottom:12px;
   border-bottom:1px solid var(--glass-border);
 }
-.unified-brand-head h3{font-size:1.2rem;font-weight:700}
+.unified-brand-head h3{font-size:1rem;font-weight:700}
 .unified-brand-sub{
-  font-size:.78rem;
+  font-size:.72rem;
   color:var(--text-tertiary);
 }
 .collab-logo-sm{
-  width:36px;height:36px;
-  font-size:.9rem;
-  border-radius:10px;
+  width:32px;height:32px;
+  font-size:.85rem;
+  border-radius:9px;
 }
 .unified-brand-section .report-summary-row{
-  margin-bottom:20px;
+  margin-bottom:14px;
 }
 .unified-brand-section .report-summary-row .rm-label{
-  font-size:.62rem;
+  font-size:.6rem;
 }
 
 /* ---------- Edit Mode ---------- */
@@ -2099,25 +2125,24 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .report-head h3{font-size:1rem}
   .report-sub{font-size:.75rem}
   /* Unified report mobile */
-  .unified-head{margin-bottom:20px;gap:12px;flex-direction:column;align-items:flex-start}
-  .unified-head-left{width:100%}
-  .unified-title{font-size:1.3rem}
-  .unified-sub{font-size:.78rem}
-  .screenshot-all-btn,.edit-toggle-btn{font-size:.8rem;padding:10px 18px;border-radius:10px}
-  .unified-report-wrap{padding:18px;border-radius:20px}
-  .unified-summary{padding:20px;margin-bottom:20px;border-radius:14px}
-  .unified-summary-grid{gap:18px}
-  .us-ring{width:72px;height:72px}
-  .us-ring svg{width:72px;height:72px}
-  .us-ring-num{font-size:1.05rem}
-  .us-ring-label{font-size:.6rem}
-  .unified-brand-section{margin-bottom:20px}
-  .unified-brand-section:last-child{margin-bottom:0}
-  .unified-brand-head{margin-bottom:14px;padding-bottom:12px;gap:10px}
-  .unified-brand-head h3{font-size:1rem}
-  .unified-brand-sub{font-size:.72rem}
-  .collab-logo-sm{width:32px;height:32px;font-size:.8rem;border-radius:9px}
-  .unified-brand-section .report-summary-row{margin-bottom:14px}
+  .unified-toolbar{margin-bottom:14px;padding-bottom:12px}
+  .unified-toolbar-title{font-size:.9rem}
+  .unified-toolbar-date{font-size:.7rem}
+  .unified-toolbar-right .edit-toggle-btn,
+  .unified-toolbar-right .screenshot-all-btn{font-size:.72rem;padding:6px 12px;border-radius:8px}
+  .unified-report-wrap{padding:16px;border-radius:18px}
+  .unified-summary{padding:16px;margin-bottom:16px;border-radius:14px}
+  .unified-summary-grid{gap:16px}
+  .us-ring{width:64px;height:64px}
+  .us-ring svg{width:64px;height:64px}
+  .us-ring-num{font-size:1rem}
+  .us-ring-label{font-size:.58rem}
+  .unified-brand-section{margin-bottom:16px}
+  .unified-brand-head{margin-bottom:12px;padding-bottom:10px;gap:8px}
+  .unified-brand-head h3{font-size:.9rem}
+  .unified-brand-sub{font-size:.68rem}
+  .collab-logo-sm{width:28px;height:28px;font-size:.75rem;border-radius:8px}
+  .unified-brand-section .report-summary-row{margin-bottom:12px}
   .badge{font-size:.62rem;padding:3px 8px}
 }
 @media(max-width:380px){
@@ -2135,13 +2160,21 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .report-ring-mini svg{width:56px;height:56px}
   .rm-num{font-size:.9rem}
   /* Unified report - small screen */
-  .unified-summary-grid{gap:14px}
-  .us-ring{width:60px;height:60px}
-  .us-ring svg{width:60px;height:60px}
-  .us-ring-num{font-size:.95rem}
-  .unified-brand-head h3{font-size:.95rem}
+  .unified-toolbar-title{font-size:.82rem}
+  .unified-toolbar-date{font-size:.65rem}
+  .unified-toolbar-right .edit-toggle-btn,
+  .unified-toolbar-right .screenshot-all-btn{font-size:.68rem;padding:5px 10px}
+  .unified-report-wrap{padding:14px;border-radius:16px}
+  .unified-summary{padding:14px;margin-bottom:14px}
+  .unified-summary-grid{gap:12px}
+  .us-ring{width:54px;height:54px}
+  .us-ring svg{width:54px;height:54px}
+  .us-ring-num{font-size:.88rem}
+  .unified-brand-section{margin-bottom:14px}
+  .unified-brand-head{margin-bottom:10px;padding-bottom:8px}
+  .unified-brand-head h3{font-size:.85rem}
+  .unified-brand-section .report-summary-row{margin-bottom:10px}
   .seg-btn{padding:8px 10px;font-size:.72rem}
-  .screenshot-all-btn,.edit-toggle-btn{font-size:.75rem;padding:8px 14px}
 }
 
 /* ---------- Reduced Motion ---------- */

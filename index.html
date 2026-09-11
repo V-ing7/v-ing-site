@@ -1351,17 +1351,19 @@
           <!-- ====== Panel 3: Unified Daily Report ====== -->
           <div class="ws-panel" id="ws-panel-unified">
             <div class="container">
-              <!-- Unified Header & Screenshot All -->
-              <div class="unified-head reveal">
-                <div class="unified-head-left">
-                  <h2 class="unified-title" data-cn="统一日报整合" data-en="Unified Daily Report">统一日报整合</h2>
-                  <p class="unified-sub" data-cn="零跑汽车 · 中鑫之宝 · 人设IP — 全部主播拍摄剪辑数据一览" data-en="Leapmotor · Zhongxin Zhibao · Personal IP — All streamer data at a glance">零跑汽车 · 中鑫之宝 · 人设IP — 全部主播拍摄剪辑数据一览</p>
-                </div>
-                <button class="screenshot-btn screenshot-all-btn" data-report="unified-report-wrap" data-cn="一键全部截图" data-en="Screenshot All">一键全部截图</button>
-                <button class="edit-toggle-btn" id="editToggleBtn" data-cn="编辑模式" data-en="Edit Mode">编辑模式</button>
-              </div>
-
               <div class="unified-report-wrap" id="unified-report-wrap">
+                <div class="unified-toolbar reveal">
+                  <div class="unified-toolbar-left">
+                    <span class="unified-dot"></span>
+                    <span class="unified-toolbar-title" data-cn="统一日报" data-en="Unified Report">统一日报</span>
+                    <span class="unified-toolbar-date" id="unifiedToolbarDate"></span>
+                  </div>
+                  <div class="unified-toolbar-right">
+                    <button class="edit-toggle-btn" id="editToggleBtn" data-cn="编辑" data-en="Edit">编辑</button>
+                    <button class="screenshot-btn screenshot-all-btn" data-report="unified-report-wrap" data-cn="截图" data-en="Screenshot">截图</button>
+                  </div>
+                </div>
+
                 <!-- Grand Total Summary -->
                 <div class="unified-summary reveal">
                   <div class="unified-summary-grid">

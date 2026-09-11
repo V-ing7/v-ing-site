@@ -579,19 +579,22 @@
       'overflow: hidden'
     ].join(';');
 
+    var isUnified = reportId === 'unified-report-wrap';
+
     // Header
-    var header = document.createElement('div');
-    header.className = 'ss-header';
-    header.style.cssText = [
-      'display: flex',
-      'justify-content: space-between',
-      'align-items: center',
-      'padding: 28px 36px',
-      'background: ' + (isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%)' : 'linear-gradient(135deg, #FFFFFF 0%, #F2F2F7 100%)'),
-      'border-bottom: 1px solid ' + (isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)'),
-      'position: relative',
-      'overflow: hidden'
-    ].join(';');
+    if(!isUnified){
+      var header = document.createElement('div');
+      header.className = 'ss-header';
+      header.style.cssText = [
+        'display: flex',
+        'justify-content: space-between',
+        'align-items: center',
+        'padding: 28px 36px',
+        'background: ' + (isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%)' : 'linear-gradient(135deg, #FFFFFF 0%, #F2F2F7 100%)'),
+        'border-bottom: 1px solid ' + (isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)'),
+        'position: relative',
+        'overflow: hidden'
+      ].join(';');
 
     // Decorative blob
     var blob = document.createElement('div');
@@ -689,12 +692,14 @@
     header.appendChild(headerLeft);
     header.appendChild(headerRight);
     container.appendChild(header);
+    } // end of !isUnified header block
 
     // Content area
     var contentWrap = document.createElement('div');
     contentWrap.className = 'ss-content';
+    var contentPadding = isUnified ? 'padding: 0' : 'padding: 28px 36px 36px';
     contentWrap.style.cssText = [
-      'padding: 28px 36px 36px',
+      contentPadding,
       'background: ' + (isDark ? '#000000' : '#F2F2F7'),
       'position: relative'
     ].join(';');
@@ -894,6 +899,13 @@
   var unifiedPanel = document.getElementById('ws-panel-unified');
   var editModeActive = false;
   var STORAGE_KEY = 'ving-unified-report-data';
+
+  // Set unified report toolbar date
+  var toolbarDate = document.getElementById('unifiedToolbarDate');
+  if(toolbarDate){
+    var now = new Date();
+    toolbarDate.textContent = (now.getMonth()+1) + '/' + now.getDate();
+  }
 
   // Load saved data from localStorage
   function loadReportData(){
@@ -1181,7 +1193,7 @@
     if(editModeActive){
       unifiedPanel.classList.add('edit-mode');
       if(editToggleBtn){
-        editToggleBtn.textContent = lang === 'zh' ? '完成编辑' : 'Done Editing';
+        editToggleBtn.textContent = lang === 'zh' ? '完成' : 'Done';
         editToggleBtn.classList.add('edit-active');
       }
     } else {
