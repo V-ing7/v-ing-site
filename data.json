@@ -1,17 +1,17 @@
 {
   "streamers": {
     "streamer_0": {
-      "name": "可欣",
+      "name": "å¯æ¬£",
       "shoot": 60,
       "edit": 31
     },
     "streamer_1": {
-      "name": "小许",
+      "name": "å°è®¸",
       "shoot": 20,
       "edit": 6
     },
     "streamer_2": {
-      "name": "珊珊",
+      "name": "çç",
       "shoot": 15,
       "edit": 9
     },
@@ -21,12 +21,12 @@
       "edit": 9
     },
     "streamer_4": {
-      "name": "小凡",
+      "name": "å°å¡",
       "shoot": 5,
       "edit": 4
     },
     "streamer_5": {
-      "name": "东哥",
+      "name": "ä¸å¥",
       "shoot": 1,
       "edit": 1
     },
@@ -36,63 +36,63 @@
       "edit": 2
     }
   },
-  "lastUpdated": "2026-09-11T11:36:04.768Z",
+  "lastUpdated": "2026-09-11T11:41:01.061Z",
   "theme": "light",
   "lang": "zh",
   "operationLog": [
     {
       "date": "2026-09-11",
       "time": "07:20",
-      "action": "修复截图功能：从 DOM 克隆改为直接元素捕获",
-      "status": "完成"
+      "action": "ä¿®å¤æªå¾åè½ï¼ä» DOM åéæ¹ä¸ºç´æ¥åç´ æè·",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "07:25",
-      "action": "修复品牌汇总数据显示零值",
-      "status": "完成"
+      "action": "ä¿®å¤åçæ±æ»æ°æ®æ¾ç¤ºé¶å¼",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "07:28",
-      "action": "修复进度条同步问题（主播卡片/品牌汇总/总计）",
-      "status": "完成"
+      "action": "ä¿®å¤è¿åº¦æ¡åæ­¥é®é¢ï¼ä¸»æ­å¡ç/åçæ±æ»/æ»è®¡ï¼",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "07:30",
-      "action": "修复白屏：移除 Google Fonts + html2canvas 本地化",
-      "status": "完成"
+      "action": "ä¿®å¤ç½å±ï¼ç§»é¤ Google Fonts + html2canvas æ¬å°å",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "07:35",
-      "action": "部署到 Cloudflare Pages（pages.dev 域名国内可访问）",
-      "status": "完成"
+      "action": "é¨ç½²å° Cloudflare Pagesï¼pages.dev ååå½åå¯è®¿é®ï¼",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "07:45",
-      "action": "实现跨设备数据同步：通过 GitHub API 存取 data.json",
-      "status": "完成"
+      "action": "å®ç°è·¨è®¾å¤æ°æ®åæ­¥ï¼éè¿ GitHub API å­å data.json",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "07:50",
-      "action": "创建工作台指令模版区，记录项目信息和操作日志",
-      "status": "完成"
+      "action": "åå»ºå·¥ä½å°æä»¤æ¨¡çåºï¼è®°å½é¡¹ç®ä¿¡æ¯åæä½æ¥å¿",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "08:00",
-      "action": "将工作台指令模版集成到网站中，实现实时同步显示",
-      "status": "完成"
+      "action": "å°å·¥ä½å°æä»¤æ¨¡çéæå°ç½ç«ä¸­ï¼å®ç°å®æ¶åæ­¥æ¾ç¤º",
+      "status": "å®æ"
     },
     {
       "date": "2026-09-11",
       "time": "08:10",
-      "action": "修复UTF-8编码乱码：修复data.json中所有中文内容（主播名、操作日志）",
-      "status": "完成"
+      "action": "ä¿®å¤UTF-8ç¼ç ä¹±ç ï¼ä¿®å¤data.jsonä¸­ææä¸­æåå®¹ï¼ä¸»æ­åãæä½æ¥å¿ï¼",
+      "status": "å®æ"
     }
   ],
   "instructionTemplate": {
@@ -101,6 +101,6 @@
     "dataFile": "data.json",
     "siteUrl": "https://v-ing-site.pages.dev",
     "cloudflareProject": "v-ing-site",
-    "description": "网站数据存在 GitHub 仓库 data.json 中，编辑时自动同步到云端。"
+    "description": "ç½ç«æ°æ®å­å¨ GitHub ä»åº data.json ä¸­ï¼ç¼è¾æ¶èªå¨åæ­¥å°äºç«¯ã"
   }
 }
