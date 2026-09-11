@@ -486,9 +486,9 @@
 
     // Fade out current
     if(oldView){
-      oldView.style.transition='opacity .3s ease, transform .3s ease';
+      oldView.style.transition='opacity .22s ease, transform .22s ease';
       oldView.style.opacity='0';
-      oldView.style.transform='translateY(-20px)';
+      oldView.style.transform='translateY(-14px)';
     }
 
     setTimeout(function(){
@@ -502,15 +502,17 @@
 
       newView.classList.add('view-active');
       newView.style.opacity='0';
-      newView.style.transform='translateY(20px)';
+      newView.style.transform='translateY(14px)';
 
       // Force reflow
       void newView.offsetWidth;
 
-      // Animate in
-      newView.style.transition='opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.34,1.4,.64,1)';
-      newView.style.opacity='1';
-      newView.style.transform='translateY(0)';
+      // Animate in via rAF for smoother frame start
+      requestAnimationFrame(function(){
+        newView.style.transition='opacity .42s cubic-bezier(.25,.46,.45,.94), transform .42s cubic-bezier(.25,.46,.45,.94)';
+        newView.style.opacity='1';
+        newView.style.transform='translateY(0)';
+      });
 
       // Update nav active states
       document.querySelectorAll('.nav-link, .mobile-link').forEach(function(link){
@@ -530,8 +532,8 @@
         newView.style.transform='';
         checkReveals();
         isAnimating=false;
-      },500);
-    },300);
+      },420);
+    },240);
 
     currentView=target;
 
@@ -795,6 +797,15 @@
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
+    // Smooth scroll to workspace tabs area
+    var wsTabsEl=document.getElementById('wsTabs');
+    if(wsTabsEl){
+      var rect=wsTabsEl.getBoundingClientRect();
+      var targetY=window.scrollY+rect.top-80;
+      if(Math.abs(window.scrollY-targetY)>20){
+        window.scrollTo({top:targetY,behavior:'smooth'});
+      }
+    }
   }
 
   function showCollabHub(){
@@ -810,8 +821,13 @@
     var sub=document.getElementById('ws-sub-'+target);
     if(sub){
       sub.classList.add('ws-subpage-active');
-      // Scroll to top of workspace
-      sub.scrollIntoView({behavior:'smooth',block:'start',top:100});
+      // Smooth scroll to workspace tabs area with proper offset
+      var wsTabsEl=document.getElementById('wsTabs');
+      if(wsTabsEl){
+        var rect=wsTabsEl.getBoundingClientRect();
+        var targetY=window.scrollY+rect.top-80;
+        window.scrollTo({top:targetY,behavior:'smooth'});
+      }
       // Trigger reveals in sub-page
       setTimeout(function(){checkReveals()},100);
       // Animate rings in sub-page
