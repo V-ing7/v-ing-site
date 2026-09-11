@@ -21,6 +21,7 @@
   var ghLastLoadTime = 0;
   var ghSyncStatus = 'loading'; // loading | success | error | offline
   var ghSaveInProgress = false; // Prevent concurrent saves
+  var ghLastSaveTime = 0; // Timestamp of last save (ms) - prevents auto-refresh from overwriting fresh saves
 
   // Trigger Cloudflare Pages redeployment to update same-origin data.json
   // Note: This project uses direct-upload deployments. The POST endpoint
@@ -230,6 +231,9 @@
 
   // Save data to GitHub (debounced, max 3 retries)
   function ghSave(data){
+    // Immediately update local timestamp to prevent auto-refresh from overwriting
+    data.lastUpdated = new Date().toISOString();
+    ghLastSaveTime = Date.now();
     if(ghSaveInProgress){
       console.log('[V-ing] Save already in progress, queueing...');
       // Re-queue after a delay
@@ -254,7 +258,7 @@
     }
     ghSaveInProgress = true;
     setSyncStatus('saving');
-    data.lastUpdated = new Date().toISOString();
+    // lastUpdated already set by ghSave(), use it directly
     var content = JSON.stringify(data, null, 2);
     var b64 = b64Encode(content);
     var payload = {
@@ -324,13 +328,16 @@
   function startAutoRefresh(){
     if(ghAutoRefreshTimer) clearInterval(ghAutoRefreshTimer);
     ghAutoRefreshTimer = setInterval(function(){
-      // Only auto-refresh if not in edit mode, not saving, and page is visible
-      if(!editModeActive && !ghSaveInProgress && !document.hidden){
+      // Only auto-refresh if not in edit mode, not saving, page is visible,
+      // AND at least 90 seconds have passed since last save (prevents overwriting fresh saves)
+      var timeSinceSave = Date.now() - ghLastSaveTime;
+      if(!editModeActive && !ghSaveInProgress && !document.hidden && timeSinceSave > 90000){
         ghLoad().then(function(ghData){
-          // Only update if data is newer
+          // ONLY update if remote data is STRICTLY NEWER than local
+          // This prevents auto-refresh from reverting freshly saved data
           var newTime = ghData.lastUpdated || '';
           var currentTime = (window.__vingData && window.__vingData.lastUpdated) || '';
-          if(newTime && newTime !== currentTime){
+          if(newTime && newTime > currentTime){
             console.log('[V-ing] Auto-refresh: data updated remotely');
             window.__vingData = ghData;
             // Sync theme
@@ -1787,6 +1794,15 @@
     console.log('[V-ing] Manual sync triggered');
     setSyncStatus('loading');
     ghLoad().then(function(ghData){
+      // Check if remote data is newer than local
+      var newTime = ghData.lastUpdated || '';
+      var currentTime = (window.__vingData && window.__vingData.lastUpdated) || '';
+      // If local data is newer (just saved), don't overwrite with old remote data
+      if(currentTime && newTime && newTime < currentTime){
+        console.log('[V-ing] Local data is newer (saved at ' + currentTime + '), remote is ' + newTime + ' - keeping local');
+        setSyncStatus('success');
+        return;
+      }
       window.__vingData = ghData;
       // Sync theme
       if(ghData.theme){
