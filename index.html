@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" data-lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>微影 V-ing | 影视创作工作室</title>
+  <meta name="description" content="微影 V-ing - 影视创作工作室 | Film & Video Creation Studio">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <!-- ========== Animated Background ========== -->
+  <div class="bg-gradient" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- ========== Navigation ========== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#home" class="nav-logo" data-nav="home">
+        <span class="logo-mark">V</span>
+        <span class="logo-text">微影<span class="logo-dot">.</span>ing</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#home" class="nav-link active" data-nav="home" data-cn="首页" data-en="Home">首页</a>
+        <a href="#about" class="nav-link" data-nav="about" data-cn="关于" data-en="About">关于</a>
+        <a href="#works" class="nav-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
+        <a href="#workspace" class="nav-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
+        <a href="#contact" class="nav-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
+      </div>
+      <div class="nav-controls">
+        <button class="ctrl-btn lang-toggle" id="langToggle" aria-label="Toggle language">
+          <span class="lang-current" id="langCurrent">EN</span>
+        </button>
+        <button class="ctrl-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.8" y2="4.2"/></g></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="ctrl-btn menu-toggle" id="menuToggle" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#home" class="mobile-link active" data-nav="home" data-cn="首页" data-en="Home">首页</a>
+      <a href="#about" class="mobile-link" data-nav="about" data-cn="关于" data-en="About">关于</a>
+      <a href="#works" class="mobile-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
+      <a href="#workspace" class="mobile-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
+      <a href="#contact" class="mobile-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
+    </div>
+  </nav>
+
+  <!-- ========== Main Content ========== -->
+  <main class="main" id="main">
+
+    <!-- ========== HOME VIEW ========== -->
+    <section class="view view-active" id="view-home" data-view="home">
+      <!-- Hero -->
+      <div class="hero" id="hero">
+        <div class="hero-content">
+          <p class="hero-eyebrow reveal" data-cn="影视创作工作室" data-en="Film & Video Creation Studio">影视创作工作室</p>
+          <h1 class="hero-title reveal">
+            <span class="title-line">V-ing</span>
+            <span class="title-sub" data-cn="微影" data-en="V-ing">微影</span>
+          </h1>
+          <p class="hero-tagline reveal" data-cn="我们·正在进行时" data-en="We · In Present Continuous">我们·正在进行时</p>
+          <p class="hero-desc reveal" data-cn="用镜头捕捉光影，用创意定义故事。分布于哔哩哔哩与抖音平台，持续输出高质量影视内容。" data-en="Capturing light and shadow through the lens, defining stories through creativity. Distributed on Bilibili and Douyin, continuously delivering high-quality film content.">用镜头捕捉光影，用创意定义故事。分布于哔哩哔哩与抖音平台，持续输出高质量影视内容。</p>
+          <div class="hero-cta reveal">
+            <button class="btn btn-primary" data-nav="works" data-cn="探索作品" data-en="Explore Works">探索作品</button>
+            <button class="btn btn-ghost" data-nav="contact" data-cn="联系我们" data-en="Contact Us">联系我们</button>
+          </div>
+        </div>
+        <div class="hero-visual reveal">
+          <div class="visual-frame">
+            <div class="frame-inner">
+              <div class="film-strip film-strip-top">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="play-orb">
+                <svg viewBox="0 0 24 24" width="40" height="40"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+              </div>
+              <div class="film-strip film-strip-bottom">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <!-- 人设IP账号 -->
+              <div class="collab-card reveal" data-collab-target="ip">
+                <div class="collab-card-glow collab-glow-ip"></div>
+                <div class="collab-card-head">
+                  <div class="collab-logo collab-logo-ip">
+                    <span class="collab-logo-text">T</span>
+                  </div>
+                  <div class="collab-card-info">
+                    <h4 data-cn="人设IP账号" data-en="Personal IP">人设IP账号</h4>
+                    <span class="collab-tag" data-cn="主播 Tina · 暂定" data-en="Streamer Tina · Tentative">主播 Tina · 暂定</span>
+                  </div>
+                </div>
+                <div class="collab-card-body">
+                  <div class="collab-stat-row">
+                    <div class="collab-stat">
+                      <span class="cs-num">1</span>
+                      <span class="cs-label" data-cn="进行中项目" data-en="Active Projects">进行中项目</span>
+                    </div>
+                    <div class="collab-stat">
+                      <span class="cs-num">20</span>
+                      <span class="cs-label" data-cn="月度目标" data-en="Monthly Goal">月度目标</span>
+                    </div>
+                    <div class="collab-stat">
+                      <span class="cs-num">1</span>
+                      <span class="cs-label" data-cn="平台投放" data-en="Platforms">平台投放</span>
+                    </div>
+                  </div>
+                  <p class="collab-desc" data-cn="打造专属人设IP账号，以主播 Tina 为核心人物，持续输出个人风格短视频内容，建立粉丝连接与品牌人设。" data-en="Building a dedicated personal IP account centered on streamer Tina, continuously producing personality-driven short videos to build fan connections and brand persona.">打造专属人设IP账号，以主播 Tina 为核心人物，持续输出个人风格短视频内容，建立粉丝连接与品牌人设。</p>
+                  <div class="collab-platforms">
+                    <span class="badge badge-dy">抖音</span>
+                  </div>
+                </div>
+                <div class="collab-card-foot">
+                  <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
+                  <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="scroll-hint reveal">
+          <span class="scroll-line"></span>
+          <span class="scroll-text" data-cn="向下滚动" data-en="Scroll Down">向下滚动</span>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-card reveal">
+              <span class="stat-num" data-target="156" data-suffix="+">0</span>
+              <span class="stat-label" data-cn="原创作品" data-en="Original Works">原创作品</span>
+            </div>
+            <div class="stat-card reveal">
+              <span class="stat-num" data-target="2800" data-suffix="W+">0</span>
+              <span class="stat-label" data-cn="全网播放量" data-en="Total Views">全网播放量</span>
+            </div>
+            <div class="stat-card reveal">
+              <span class="stat-num" data-target="48" data-suffix="W+">0</span>
+              <span class="stat-label" data-cn="平台粉丝" data-en="Followers">平台粉丝</span>
+            </div>
+            <div class="stat-card reveal">
+              <span class="stat-num" data-target="32" data-suffix="+">0</span>
+              <span class="stat-label" data-cn="合作品牌" data-en="Brand Partners">合作品牌</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured Works (Placeholder) -->
+      <section class="featured-section">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="精选作品" data-en="Featured Works">精选作品</span>
+            <h2 class="section-title" data-cn="光影之间的故事" data-en="Stories Between Light and Shadow">光影之间的故事</h2>
+          </div>
+          <div class="works-grid">
+            <div class="work-card work-card-lg reveal" data-category="短片">
+              <div class="work-thumb">
+                <div class="work-overlay">
+                  <span class="work-play">▶</span>
+                </div>
+                <div class="work-badges">
+                  <span class="badge badge-bili">B站</span>
+                  <span class="badge badge-dy">抖音</span>
+                </div>
+              </div>
+              <div class="work-info">
+                <h3 data-cn="城市光影志" data-en="Urban Light Chronicles">城市光影志</h3>
+                <p data-cn="城市人文短片系列" data-en="Urban culture short film series">城市人文短片系列</p>
+              </div>
+            </div>
+            <div class="work-card reveal" data-category="广告">
+              <div class="work-thumb">
+                <div class="work-overlay"><span class="work-play">▶</span></div>
+                <div class="work-badges"><span class="badge badge-bili">B站</span></div>
+              </div>
+              <div class="work-info">
+                <h3 data-cn="品牌叙事" data-en="Brand Narrative">品牌叙事</h3>
+                <p data-cn="商业广告创作" data-en="Commercial production">商业广告创作</p>
+              </div>
+            </div>
+            <div class="work-card reveal" data-category="纪录">
+              <div class="work-thumb">
+                <div class="work-overlay"><span class="work-play">▶</span></div>
+                <div class="work-badges"><span class="badge badge-dy">抖音</span></div>
+              </div>
+              <div class="work-info">
+                <h3 data-cn="生活纪事" data-en="Life Chronicle">生活纪事</h3>
+                <p data-cn="日常纪录片系列" data-en="Daily documentary series">日常纪录片系列</p>
+              </div>
+            </div>
+            <div class="work-card work-card-wide reveal" data-category="MV">
+              <div class="work-thumb">
+                <div class="work-overlay"><span class="work-play">▶</span></div>
+                <div class="work-badges">
+                  <span class="badge badge-bili">B站</span>
+                  <span class="badge badge-dy">抖音</span>
+                </div>
+              </div>
+              <div class="work-info">
+                <h3 data-cn="音乐视觉" data-en="Music Visual">音乐视觉</h3>
+                <p data-cn="MV创意拍摄" data-en="Creative music video">MV创意拍摄</p>
+              </div>
+            </div>
+          </div>
+          <div class="section-cta reveal">
+            <button class="btn btn-outline" data-nav="works" data-cn="查看全部作品" data-en="View All Works">查看全部作品</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Platforms Section -->
+      <section class="platforms-section">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="内容平台" data-en="Content Platforms">内容平台</span>
+            <h2 class="section-title" data-cn="在哪里找到我们" data-en="Where to Find Us">在哪里找到我们</h2>
+          </div>
+          <div class="platforms-grid">
+            <a href="https://space.bilibili.com" target="_blank" rel="noopener" class="platform-card reveal">
+              <div class="platform-icon bilibili-icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M17.8 3L21 6.2v11.6c0 1.2-1 2.2-2.2 2.2H5.2C4 20 3 19 3 17.8V6.2L6.2 3h2.5L7 5h10l-1.7-2h2.5zM12 15.5l3-3h-6l3 3zM7 10h10v1.5H7V10z"/></svg>
+              </div>
+              <h3 data-cn="哔哩哔哩" data-en="Bilibili">哔哩哔哩</h3>
+              <p data-cn="长视频 · 短片 · 纪录片" data-en="Long video · Shorts · Documentary">长视频 · 短片 · 纪录片</p>
+              <div class="platform-stat">
+                <span class="num" data-target="26" data-suffix="W+">0</span>
+                <span class="label" data-cn="粉丝" data-en="Followers">粉丝</span>
+              </div>
+              <span class="platform-arrow" data-cn="前往关注 →" data-en="Follow →">前往关注 →</span>
+            </a>
+            <a href="https://www.douyin.com" target="_blank" rel="noopener" class="platform-card reveal">
+              <div class="platform-icon douyin-icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M19.5 7.7c-1.8 0-3.4-.9-4.4-2.3v8.6c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6c.3 0 .6 0 .9.1v3.2c-.3-.1-.6-.2-.9-.2-1.6 0-2.9 1.3-2.9 2.9s1.3 2.9 2.9 2.9 2.9-1.3 2.9-2.9V2h3.1c0 .3 0 .6.1.9.4 2.2 2.2 3.9 4.4 3.9V7.7z"/></svg>
+              </div>
+              <h3 data-cn="抖音" data-en="Douyin">抖音</h3>
+              <p data-cn="短视频 · 创意 · 热点" data-en="Short video · Creative · Trends">短视频 · 创意 · 热点</p>
+              <div class="platform-stat">
+                <span class="num" data-target="22" data-suffix="W+">0</span>
+                <span class="label" data-cn="粉丝" data-en="Followers">粉丝</span>
+              </div>
+              <span class="platform-arrow" data-cn="前往关注 →" data-en="Follow →">前往关注 →</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ========== ABOUT VIEW ========== -->
+    <section class="view" id="view-about" data-view="about">
+      <!-- Brand Story -->
+      <div class="about-hero">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="关于微影" data-en="About V-ing">关于微影</span>
+            <h2 class="section-title section-title-lg" data-cn="我们正在进行时" data-en="We Are In Present Continuous">我们正在进行时</h2>
+          </div>
+          <div class="about-narrative reveal">
+            <p data-cn="微影 V-ing 是一支年轻的影视创作团队。我们相信，最好的影像不是被「完成」的，而是被「进行」的——每一帧画面都在生长，每一个故事都在呼吸。" data-en="V-ing is a young film and video creation team. We believe the best images are not 'finished' but 'in progress' — every frame is growing, every story is breathing.">微影 V-ing 是一支年轻的影视创作团队。我们相信，最好的影像不是被「完成」的，而是被「进行」的——每一帧画面都在生长，每一个故事都在呼吸。</p>
+            <p data-cn="从城市纪实到品牌叙事，从音乐视觉到生活纪录，我们持续在哔哩哔哩与抖音平台输出原创内容，用高级感的画面语言讲述属于这个时代的故事。" data-en="From urban documentaries to brand narratives, from music visuals to life chronicles, we continuously produce original content on Bilibili and Douyin, telling stories of our era through a premium visual language.">从城市纪实到品牌叙事，从音乐视觉到生活纪录，我们持续在哔哩哔哩与抖音平台输出原创内容，用高级感的画面语言讲述属于这个时代的故事。</p>
+          </div>
+          <div class="about-values">
+            <div class="value-card reveal">
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+              <h3 data-cn="视觉先行" data-en="Visual First">视觉先行</h3>
+              <p data-cn="每一帧画面都经过精心构图与调色" data-en="Every frame is carefully composed and color-graded">每一帧画面都经过精心构图与调色</p>
+            </div>
+            <div class="value-card reveal">
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+              <h3 data-cn="叙事为本" data-en="Narrative Driven">叙事为本</h3>
+              <p data-cn="好故事是影像的灵魂所在" data-en="A good story is the soul of imagery">好故事是影像的灵魂所在</p>
+            </div>
+            <div class="value-card reveal">
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <h3 data-cn="持续生长" data-en="Always Growing">持续生长</h3>
+              <p data-cn="正在进行时，永不停歇的创作" data-en="Present continuous, never-ending creation">正在进行时，永不停歇的创作</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Section -->
+      <section class="team-section">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="核心团队" data-en="Core Team">核心团队</span>
+            <h2 class="section-title" data-cn="镜头背后的人" data-en="People Behind the Lens">镜头背后的人</h2>
+          </div>
+          <div class="team-grid">
+            <div class="team-card reveal">
+              <div class="team-avatar"><span>V</span></div>
+              <h3 data-cn="主创导演" data-en="Lead Director">主创导演</h3>
+              <p class="team-role" data-cn="创意统筹 · 剪辑" data-en="Creative Director · Editor">创意统筹 · 剪辑</p>
+              <p class="team-desc" data-cn="擅长城市人文与品牌叙事" data-en="Specializes in urban culture & brand narratives">擅长城市人文与品牌叙事</p>
+            </div>
+            <div class="team-card reveal">
+              <div class="team-avatar"><span>V</span></div>
+              <h3 data-cn="摄影指导" data-en="Cinematographer">摄影指导</h3>
+              <p class="team-role" data-cn="摄影 · 调色" data-en="Cinematography · Color Grading">摄影 · 调色</p>
+              <p class="team-desc" data-cn="追求画面质感与光影层次" data-en="Pursues texture and light layering">追求画面质感与光影层次</p>
+            </div>
+            <div class="team-card reveal">
+              <div class="team-avatar"><span>V</span></div>
+              <h3 data-cn="内容策划" data-en="Content Strategist">内容策划</h3>
+              <p class="team-role" data-cn="策划 · 文案" data-en="Strategy · Copywriting">策划 · 文案</p>
+              <p class="team-desc" data-cn="将创意转化为可执行方案" data-en="Transforms ideas into executable plans">将创意转化为可执行方案</p>
+            </div>
+            <div class="team-card reveal">
+              <div class="team-avatar"><span>V</span></div>
+              <h3 data-cn="后期制作" data-en="Post-Production">后期制作</h3>
+              <p class="team-role" data-cn="特效 · 音频" data-en="VFX · Audio">特效 · 音频</p>
+              <p class="team-desc" data-cn="把控成片质感与节奏" data-en="Controls final quality and pacing">把控成片质感与节奏</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section class="timeline-section">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="发展历程" data-en="Our Journey">发展历程</span>
+            <h2 class="section-title" data-cn="一路走来" data-en="The Road So Far">一路走来</h2>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item reveal">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="timeline-year">2023</span>
+                <h3 data-cn="微影成立" data-en="V-ing Founded">微影成立</h3>
+                <p data-cn="团队组建，发布首支作品" data-en="Team formed, first work released">团队组建，发布首支作品</p>
+              </div>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="timeline-year">2024</span>
+                <h3 data-cn="双平台运营" data-en="Dual Platform Launch">双平台运营</h3>
+                <p data-cn="入驻哔哩哔哩与抖音，粉丝突破10万" data-en="Joined Bilibili & Douyin, 100K followers">入驻哔哩哔哩与抖音，粉丝突破10万</p>
+              </div>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="timeline-year">2025</span>
+                <h3 data-cn="品牌合作" data-en="Brand Collaborations">品牌合作</h3>
+                <p data-cn="开启商业内容创作，合作品牌超30家" data-en="Commercial content creation, 30+ brand partners">开启商业内容创作，合作品牌超30家</p>
+              </div>
+            </div>
+            <div class="timeline-item reveal">
+              <div class="timeline-dot timeline-dot-active"></div>
+              <div class="timeline-content">
+                <span class="timeline-year">2026</span>
+                <h3 data-cn="正在进行时" data-en="Present Continuous">正在进行时</h3>
+                <p data-cn="持续创作中，敬请期待" data-en="Continuously creating, stay tuned">持续创作中，敬请期待</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ========== WORKS VIEW ========== -->
+    <section class="view" id="view-works" data-view="works">
+      <div class="works-hero">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="作品集" data-en="Portfolio">作品集</span>
+            <h2 class="section-title section-title-lg" data-cn="即将上线" data-en="Coming Soon">即将上线</h2>
+            <p class="section-desc reveal" data-cn="我们正在整理完整的作品集，精彩内容即将呈现。" data-en="We are curating our complete portfolio. Exciting content is on the way.">我们正在整理完整的作品集，精彩内容即将呈现。</p>
+          </div>
+          <div class="works-placeholder reveal">
+            <div class="placeholder-grid">
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+            </div>
+            <div class="placeholder-notice">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span data-cn="作品正在持续更新中，请稍后再来" data-en="Works are being updated, please check back later">作品正在持续更新中，请稍后再来</span>
+            </div>
+          </div>
+          <div class="works-cta reveal">
+            <button class="btn btn-primary" data-nav="contact" data-cn="抢先联系" data-en="Get in Touch">抢先联系</button>
+            <button class="btn btn-ghost" data-nav="home" data-cn="返回首页" data-en="Back Home">返回首页</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== WORKSPACE VIEW ========== -->
+    <section class="view" id="view-workspace" data-view="workspace">
+      <!-- Workspace Header -->
+      <div class="workspace-hero">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="个人工作台" data-en="Workspace">个人工作台</span>
+            <h2 class="section-title section-title-lg" data-cn="工作正在进行时" data-en="Work In Progress">工作正在进行时</h2>
+            <p class="section-desc reveal" data-cn="管理创作计划，追踪联动项目，让每一帧都按计划生长。" data-en="Manage creative schedules, track collaboration projects, let every frame grow on plan.">管理创作计划，追踪联动项目，让每一帧都按计划生长。</p>
+          </div>
+          <!-- iOS Segmented Control -->
+          <div class="segmented-control seg-3 reveal" id="wsTabs">
+            <button class="seg-btn active" data-ws-tab="plan" data-cn="微影个人计划表" data-en="V-ing Schedule">微影个人计划表</button>
+            <button class="seg-btn" data-ws-tab="collab" data-cn="联动" data-en="Collaborations">联动</button>
+            <button class="seg-btn" data-ws-tab="unified" data-cn="统一日报" data-en="Unified Report">统一日报</button>
+            <span class="seg-indicator seg-3-indicator" id="segIndicator"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== Panel 1: Plan Board ====== -->
+      <div class="ws-panel ws-panel-active" id="ws-panel-plan">
+        <div class="container">
+          <!-- Progress Overview -->
+          <div class="plan-overview reveal">
+            <div class="plan-progress-wrap">
+              <div class="plan-progress-ring">
+                <svg viewBox="0 0 120 120" width="120" height="120">
+                  <circle class="ring-track" cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+                  <circle class="ring-fill" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="98" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="ring-text">
+                  <span class="ring-pct">70%</span>
+                  <span class="ring-label" data-cn="本周完成率" data-en="This Week">本周完成率</span>
+                </div>
+              </div>
+              <div class="plan-stats">
+                <div class="plan-stat">
+                  <span class="ps-num">12</span>
+                  <span class="ps-label" data-cn="本周任务" data-en="Weekly Tasks">本周任务</span>
+                </div>
+                <div class="plan-stat">
+                  <span class="ps-num done">8</span>
+                  <span class="ps-label" data-cn="已完成" data-en="Completed">已完成</span>
+                </div>
+                <div class="plan-stat">
+                  <span class="ps-num wip">3</span>
+                  <span class="ps-label" data-cn="进行中" data-en="In Progress">进行中</span>
+                </div>
+                <div class="plan-stat">
+                  <span class="ps-num todo">1</span>
+                  <span class="ps-label" data-cn="待办" data-en="To Do">待办</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kanban Board -->
+          <div class="kanban-board reveal">
+            <!-- Column: To Do -->
+            <div class="kanban-col">
+              <div class="kanban-col-head">
+                <span class="col-dot col-dot-todo"></span>
+                <h3 data-cn="待办" data-en="To Do">待办</h3>
+                <span class="col-count">1</span>
+              </div>
+              <div class="kanban-cards">
+                <div class="kanban-card" data-priority="normal">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-bili">B站</span>
+                  </div>
+                  <h4 data-cn="城市光影志 EP.08 策划" data-en="Urban Light EP.08 Planning">城市光影志 EP.08 策划</h4>
+                  <p data-cn="确定拍摄地点与主题方向" data-en="Determine locations and theme">确定拍摄地点与主题方向</p>
+                  <div class="kc-foot">
+                    <span class="kc-deadline" data-cn="9/15 截止" data-en="Due 9/15">9/15 截止</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Column: In Progress -->
+            <div class="kanban-col">
+              <div class="kanban-col-head">
+                <span class="col-dot col-dot-wip"></span>
+                <h3 data-cn="进行中" data-en="In Progress">进行中</h3>
+                <span class="col-count">3</span>
+              </div>
+              <div class="kanban-cards">
+                <div class="kanban-card" data-priority="high">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-dy">抖音</span>
+                    <span class="kc-tag kc-tag-collab">联动</span>
+                  </div>
+                  <h4 data-cn="零跑汽车 · 品牌短片" data-en="Leapmotor · Brand Film">零跑汽车 · 品牌短片</h4>
+                  <p data-cn="拍摄智能驾驶场景素材" data-en="Shooting smart driving footage">拍摄智能驾驶场景素材</p>
+                  <div class="kc-foot">
+                    <span class="kc-deadline" data-cn="9/18 截止" data-en="Due 9/18">9/18 截止</span>
+                    <span class="kc-progress-bar"><span style="width:45%"></span></span>
+                  </div>
+                </div>
+                <div class="kanban-card" data-priority="high">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-dy">抖音</span>
+                    <span class="kc-tag kc-tag-wx">视频号</span>
+                    <span class="kc-tag kc-tag-collab">联动</span>
+                  </div>
+                  <h4 data-cn="中鑫之宝 · 服务宣传片" data-en="Zhongxin Zhibao · Service Film">中鑫之宝 · 服务宣传片</h4>
+                  <p data-cn="门店服务流程实拍" data-en="Filming service workflow">门店服务流程实拍</p>
+                  <div class="kc-foot">
+                    <span class="kc-deadline" data-cn="9/20 截止" data-en="Due 9/20">9/20 截止</span>
+                    <span class="kc-progress-bar"><span style="width:30%"></span></span>
+                  </div>
+                </div>
+                <div class="kanban-card" data-priority="normal">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-bili">B站</span>
+                  </div>
+                  <h4 data-cn="音乐视觉 MV 后期" data-en="Music Visual MV Post">音乐视觉 MV 后期</h4>
+                  <p data-cn="调色与特效合成" data-en="Color grading & VFX">调色与特效合成</p>
+                  <div class="kc-foot">
+                    <span class="kc-deadline" data-cn="9/14 截止" data-en="Due 9/14">9/14 截止</span>
+                    <span class="kc-progress-bar"><span style="width:70%"></span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Column: Done -->
+            <div class="kanban-col">
+              <div class="kanban-col-head">
+                <span class="col-dot col-dot-done"></span>
+                <h3 data-cn="已完成" data-en="Done">已完成</h3>
+                <span class="col-count">8</span>
+              </div>
+              <div class="kanban-cards">
+                <div class="kanban-card kanban-card-done" data-priority="normal">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-bili">B站</span>
+                    <span class="kc-tag kc-tag-dy">抖音</span>
+                  </div>
+                  <h4 data-cn="城市光影志 EP.07" data-en="Urban Light EP.07">城市光影志 EP.07</h4>
+                  <p data-cn="成片已发布，播放量12万+" data-en="Published, 120K+ views">成片已发布，播放量12万+</p>
+                  <div class="kc-foot">
+                    <span class="kc-check">✓</span>
+                    <span class="kc-date" data-cn="9/8 完成" data-en="Done 9/8">9/8 完成</span>
+                  </div>
+                </div>
+                <div class="kanban-card kanban-card-done" data-priority="normal">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-dy">抖音</span>
+                  </div>
+                  <h4 data-cn="生活纪事 #23" data-en="Life Chronicle #23">生活纪事 #23</h4>
+                  <p data-cn="已发布，互动率提升15%" data-en="Published, engagement +15%">已发布，互动率提升15%</p>
+                  <div class="kc-foot">
+                    <span class="kc-check">✓</span>
+                    <span class="kc-date" data-cn="9/5 完成" data-en="Done 9/5">9/5 完成</span>
+                  </div>
+                </div>
+                <div class="kanban-card kanban-card-done" data-priority="normal">
+                  <div class="kc-tags">
+                    <span class="kc-tag kc-tag-collab">联动</span>
+                  </div>
+                  <h4 data-cn="品牌广告 · 秋季素材" data-en="Brand Ad · Autumn">品牌广告 · 秋季素材</h4>
+                  <p data-cn="素材交付，客户确认通过" data-en="Delivered, client approved">素材交付，客户确认通过</p>
+                  <div class="kc-foot">
+                    <span class="kc-check">✓</span>
+                    <span class="kc-date" data-cn="9/3 完成" data-en="Done 9/3">9/3 完成</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Timeline -->
+          <div class="plan-timeline reveal">
+            <h3 class="plan-tl-title" data-cn="本周时间线" data-en="Weekly Timeline">本周时间线</h3>
+            <div class="plan-tl-track">
+              <div class="plan-tl-day" data-status="done">
+                <span class="ptd-label">周一</span>
+                <span class="ptd-dot ptd-dot-done"></span>
+                <span class="ptd-task" data-cn="城市光影志 EP.07 发布" data-en="Urban Light EP.07 Release">城市光影志 EP.07 发布</span>
+              </div>
+              <div class="plan-tl-day" data-status="done">
+                <span class="ptd-label">周二</span>
+                <span class="ptd-dot ptd-dot-done"></span>
+                <span class="ptd-task" data-cn="生活纪事 #23 剪辑" data-en="Life Chronicle #23 Edit">生活纪事 #23 剪辑</span>
+              </div>
+              <div class="plan-tl-day" data-status="done">
+                <span class="ptd-label">周三</span>
+                <span class="ptd-dot ptd-dot-done"></span>
+                <span class="ptd-task" data-cn="品牌广告素材整理" data-en="Brand Ad Asset Review">品牌广告素材整理</span>
+              </div>
+              <div class="plan-tl-day" data-status="wip">
+                <span class="ptd-label" data-cn="周四" data-en="Thu">周四</span>
+                <span class="ptd-dot ptd-dot-wip"></span>
+                <span class="ptd-task" data-cn="零跑品牌短片拍摄" data-en="Leapmotor Brand Film Shoot">零跑品牌短片拍摄</span>
+              </div>
+              <div class="plan-tl-day" data-status="wip">
+                <span class="ptd-label" data-cn="周五" data-en="Fri">周五</span>
+                <span class="ptd-dot ptd-dot-wip"></span>
+                <span class="ptd-task" data-cn="MV后期调色" data-en="MV Color Grading">MV后期调色</span>
+              </div>
+              <div class="plan-tl-day" data-status="todo">
+                <span class="ptd-label" data-cn="周六" data-en="Sat">周六</span>
+                <span class="ptd-dot ptd-dot-todo"></span>
+                <span class="ptd-task" data-cn="中鑫之宝门店实拍" data-en="Zhongxin Zhibao Shoot">中鑫之宝门店实拍</span>
+              </div>
+              <div class="plan-tl-day" data-status="todo">
+                <span class="ptd-label" data-cn="周日" data-en="Sun">周日</span>
+                <span class="ptd-dot ptd-dot-todo"></span>
+                <span class="ptd-task" data-cn="EP.08 策划会议" data-en="EP.08 Planning Meeting">EP.08 策划会议</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== Panel 2: Collaboration Hub ====== -->
+      <div class="ws-panel" id="ws-panel-collab">
+        <div class="container">
+          <!-- Collab Hub -->
+          <div class="collab-hub reveal" id="collabHub">
+            <div class="collab-hub-head">
+              <h3 class="collab-hub-title" data-cn="品牌联动项目" data-en="Brand Collaboration Projects">品牌联动项目</h3>
+              <p class="collab-hub-desc" data-cn="与优秀品牌伙伴共同创作影像故事" data-en="Creating visual stories with outstanding brand partners">与优秀品牌伙伴共同创作影像故事</p>
+            </div>
+            <div class="collab-cards">
+              <!-- 零跑 -->
+              <div class="collab-card reveal" data-collab-target="leap">
+                <div class="collab-card-glow collab-glow-leap"></div>
+                <div class="collab-card-head">
+                  <div class="collab-logo collab-logo-leap">
+                    <span class="collab-logo-text">L</span>
+                  </div>
+                  <div class="collab-card-info">
+                    <h4 data-cn="零跑汽车" data-en="Leapmotor">零跑汽车</h4>
+                    <span class="collab-tag" data-cn="智能电动汽车" data-en="Smart EV">智能电动汽车</span>
+                  </div>
+                </div>
+                <div class="collab-card-body">
+                  <div class="collab-stat-row">
+                    <div class="collab-stat">
+                      <span class="cs-num">3</span>
+                      <span class="cs-label" data-cn="进行中项目" data-en="Active Projects">进行中项目</span>
+                    </div>
+                    <div class="collab-stat">
+                      <span class="cs-num">8</span>
+                      <span class="cs-label" data-cn="已完成项目" data-en="Completed">已完成项目</span>
+                    </div>
+                    <div class="collab-stat">
+                      <span class="cs-num">1</span>
+                      <span class="cs-label" data-cn="平台投放" data-en="Platforms">平台投放</span>
+                    </div>
+                  </div>
+                  <p class="collab-desc" data-cn="技术驱动的智能电动汽车品牌，致力于让智能出行惠及大众。联合创作品牌短片、产品体验视觉与智能驾驶场景内容。" data-en="Technology-driven smart EV brand, making intelligent mobility accessible. Co-creating brand films, product experience visuals and smart driving content.">技术驱动的智能电动汽车品牌，致力于让智能出行惠及大众。联合创作品牌短片、产品体验视觉与智能驾驶场景内容。</p>
+                  <div class="collab-platforms">
+                    <span class="badge badge-dy">抖音</span>
+                  </div>
+                </div>
+                <div class="collab-card-foot">
+                  <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
+                  <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
+                </div>
+              </div>
+              <!-- 中鑫之宝 -->
+              <div class="collab-card reveal" data-collab-target="zxzb">
+                <div class="collab-card-glow collab-glow-zxzb"></div>
+                <div class="collab-card-head">
+                  <div class="collab-logo collab-logo-zxzb">
+                    <span class="collab-logo-text">中</span>
+                  </div>
+                  <div class="collab-card-info">
+                    <h4 data-cn="中鑫之宝" data-en="Zhongxin Zhibao">中鑫之宝</h4>
+                    <span class="collab-tag" data-cn="汽车高端服务" data-en="Premium Auto Service">汽车高端服务</span>
+                  </div>
+                </div>
+                <div class="collab-card-body">
+                  <div class="collab-stat-row">
+                    <div class="collab-stat">
+                      <span class="cs-num">2</span>
+                      <span class="cs-label" data-cn="进行中项目" data-en="Active Projects">进行中项目</span>
+                    </div>
+                    <div class="collab-stat">
+                      <span class="cs-num">5</span>
+                      <span class="cs-label" data-cn="已完成项目" data-en="Completed">已完成项目</span>
+                    </div>
+                    <div class="collab-stat">
+                      <span class="cs-num">2</span>
+                      <span class="cs-label" data-cn="平台投放" data-en="Platforms">平台投放</span>
+                    </div>
+                  </div>
+                  <p class="collab-desc" data-cn="中高端及豪华车独立售后服务品牌，覆盖维修保养、钣金喷漆、审车等全链路。联合创作服务宣传片与门店体验纪实内容。" data-en="Premium auto aftermarket service brand, covering maintenance, paint, inspection and more. Co-creating service promos and store experience documentaries.">中高端及豪华车独立售后服务品牌，覆盖维修保养、钣金喷漆、审车等全链路。联合创作服务宣传片与门店体验纪实内容。</p>
+                  <div class="collab-platforms">
+                    <span class="badge badge-dy">抖音</span>
+                    <span class="badge badge-wx">视频号</span>
+                  </div>
+                </div>
+                <div class="collab-card-foot">
+                  <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
+                  <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-page: 零跑汽车 -->
+          <div class="ws-subpage" id="ws-sub-leap">
+            <button class="ws-back-btn" data-cn="← 返回联动" data-en="← Back to Collaborations">← 返回联动</button>
+            <div class="subpage-header reveal">
+              <div class="subpage-brand">
+                <div class="collab-logo collab-logo-leap collab-logo-lg">
+                  <span class="collab-logo-text">L</span>
+                </div>
+                <div>
+                  <h2 data-cn="零跑汽车" data-en="Leapmotor">零跑汽车</h2>
+                  <span class="collab-tag" data-cn="Born Electric, Move Smart" data-en="Born Electric, Move Smart">Born Electric, Move Smart</span>
+                </div>
+              </div>
+              <div class="subpage-stats">
+                <div class="subpage-stat">
+                  <span class="ss-num">3</span>
+                  <span class="ss-label" data-cn="进行中" data-en="Active">进行中</span>
+                </div>
+                <div class="subpage-stat">
+                  <span class="ss-num">8</span>
+                  <span class="ss-label" data-cn="已完成" data-en="Done">已完成</span>
+                </div>
+                <div class="subpage-stat">
+                  <span class="ss-num">320W+</span>
+                  <span class="ss-label" data-cn="总播放量" data-en="Total Views">总播放量</span>
+                </div>
+              </div>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="合作概述" data-en="Overview">合作概述</h3>
+              <p class="subpage-sec-text" data-cn="零跑汽车是一家技术驱动的智能电动汽车公司，坚持核心技术全域自研。微影与零跑联合创作品牌短片、产品体验视觉与智能驾驶场景内容，用影像传递智能出行的温度与科技感。" data-en="Leapmotor is a technology-driven smart EV company committed to full-stack self-development. V-ing co-creates brand films, product experience visuals and smart driving content, conveying the warmth and tech feel of intelligent mobility.">零跑汽车是一家技术驱动的智能电动汽车公司，坚持核心技术全域自研。微影与零跑联合创作品牌短片、产品体验视觉与智能驾驶场景内容，用影像传递智能出行的温度与科技感。</p>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="进行中项目" data-en="Active Projects">进行中项目</h3>
+              <div class="subpage-projects">
+                <div class="subpage-project">
+                  <div class="sp-proj-head">
+                    <h4 data-cn="零跑 C16 · 品牌体验短片" data-en="Leapmotor C16 · Brand Film">零跑 C16 · 品牌体验短片</h4>
+                    <span class="sp-proj-status sp-proj-wip" data-cn="拍摄中" data-en="Shooting">拍摄中</span>
+                  </div>
+                  <p data-cn="聚焦智能驾驶与家庭出行场景，展示 C16 大五座 SUV 的空间与科技配置。" data-en="Focusing on smart driving and family travel scenarios, showcasing C16's space and tech features.">聚焦智能驾驶与家庭出行场景，展示 C16 大五座 SUV 的空间与科技配置。</p>
+                  <div class="sp-proj-meta">
+                    <span data-cn="交付：9/25" data-en="Delivery: 9/25">交付：9/25</span>
+                    <span data-cn="平台：抖音" data-en="Platform: Douyin">平台：抖音</span>
+                  </div>
+                  <div class="sp-proj-progress">
+                    <span class="sp-prog-bar"><span style="width:45%"></span></span>
+                    <span class="sp-prog-text">45%</span>
+                  </div>
+                </div>
+                <div class="subpage-project">
+                  <div class="sp-proj-head">
+                    <h4 data-cn="零跑 T03 · 城市穿行纪录" data-en="Leapmotor T03 · City Drive Doc">零跑 T03 · 城市穿行纪录</h4>
+                    <span class="sp-proj-status sp-proj-wip" data-cn="剪辑中" data-en="Editing">剪辑中</span>
+                  </div>
+                  <p data-cn="记录 T03 在城市道路中的日常穿行体验，强调小巧灵动与续航表现。" data-en="Documenting T03 daily urban driving experience, emphasizing agility and range.">记录 T03 在城市道路中的日常穿行体验，强调小巧灵动与续航表现。</p>
+                  <div class="sp-proj-meta">
+                    <span data-cn="交付：9/22" data-en="Delivery: 9/22">交付：9/22</span>
+                    <span data-cn="平台：抖音" data-en="Platform: Douyin">平台：抖音</span>
+                  </div>
+                  <div class="sp-proj-progress">
+                    <span class="sp-prog-bar"><span style="width:70%"></span></span>
+                    <span class="sp-prog-text">70%</span>
+                  </div>
+                </div>
+                <div class="subpage-project">
+                  <div class="sp-proj-head">
+                    <h4 data-cn="全域自研 · 技术科普视频" data-en="Full-Stack R&D · Tech Explainer">全域自研 · 技术科普视频</h4>
+                    <span class="sp-proj-status sp-proj-wip" data-cn="策划中" data-en="Planning">策划中</span>
+                  </div>
+                  <p data-cn="用动画与实拍结合的方式，讲解零跑全域自研技术架构。" data-en="Explaining Leapmotor's full-stack self-developed tech architecture with mixed animation and live footage.">用动画与实拍结合的方式，讲解零跑全域自研技术架构。</p>
+                  <div class="sp-proj-meta">
+                    <span data-cn="交付：10/10" data-en="Delivery: 10/10">交付：10/10</span>
+                    <span data-cn="平台：抖音" data-en="Platform: Douyin">平台：抖音</span>
+                  </div>
+                  <div class="sp-proj-progress">
+                    <span class="sp-prog-bar"><span style="width:15%"></span></span>
+                    <span class="sp-prog-text">15%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="交付清单" data-en="Deliverables">交付清单</h3>
+              <div class="deliverable-list">
+                <div class="deliverable-item done">
+                  <span class="del-check">✓</span>
+                  <span data-cn="品牌主视觉短片 ×1（60s）" data-en="Brand main film ×1 (60s)">品牌主视觉短片 ×1（60s）</span>
+                </div>
+                <div class="deliverable-item done">
+                  <span class="del-check">✓</span>
+                  <span data-cn="社交媒体竖版素材 ×5" data-en="Social vertical clips ×5">社交媒体竖版素材 ×5</span>
+                </div>
+                <div class="deliverable-item wip">
+                  <span class="del-check del-check-wip">○</span>
+                  <span data-cn="产品体验长视频 ×1" data-en="Product experience long film ×1">产品体验长视频 ×1</span>
+                </div>
+                <div class="deliverable-item wip">
+                  <span class="del-check del-check-wip">○</span>
+                  <span data-cn="技术科普动画 ×1" data-en="Tech explainer animation ×1">技术科普动画 ×1</span>
+                </div>
+                <div class="deliverable-item todo">
+                  <span class="del-check del-check-todo">□</span>
+                  <span data-cn="门店体验纪实 ×1" data-en="Store experience doc ×1">门店体验纪实 ×1</span>
+                </div>
+              </div>
+            </div>
+            <!-- 主播拍摄剪辑日报 -->
+            <div class="report-section reveal" id="report-leap">
+              <div class="report-head">
+                <div>
+                  <h3 class="subpage-sec-title" data-cn="主播拍摄剪辑日报" data-en="Streamer Shoot & Edit Daily Report">主播拍摄剪辑日报</h3>
+                  <p class="report-sub" data-cn="零跑汽车 · 月度目标：每位主播拍摄+剪辑各 40 条 · 空镜头 10 条" data-en="Leapmotor · Monthly Goal: 40 clips each (shoot+edit) · 10 B-roll clips">零跑汽车 · 月度目标：每位主播拍摄+剪辑各 40 条 · 空镜头 10 条</p>
+                </div>
+                <button class="screenshot-btn" data-report="report-leap" data-cn="一键截图" data-en="Screenshot">一键截图</button>
+              </div>
+              <div class="report-summary-row">
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-shoot" cx="50" cy="50" r="42" fill="none" stroke="#FF9F0A" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">110</span>
+                    <span class="rm-label" data-cn="拍摄总条数" data-en="Total Shot">拍摄总条数</span>
+                  </div>
+                </div>
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-edit" cx="50" cy="50" r="42" fill="none" stroke="#34C759" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">55</span>
+                    <span class="rm-label" data-cn="剪辑完成条数" data-en="Total Edited">剪辑完成条数</span>
+                  </div>
+                </div>
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-rate" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">50%</span>
+                    <span class="rm-label" data-cn="完成率" data-en="Completion Rate">完成率</span>
+                  </div>
+                </div>
+              </div>
+              <div class="streamer-grid">
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>可欣</h4>
+                    <span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="60" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">60</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="31" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">31</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">150%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:78%"></span></span><span class="sr-pct">78%</span></div>
+                  </div>
+                </div>
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>小许</h4>
+                    <span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="20" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">20</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="6" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">6</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:50%"></span></span><span class="sr-pct">50%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:15%"></span></span><span class="sr-pct">15%</span></div>
+                  </div>
+                </div>
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>珊珊</h4>
+                    <span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="15" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">15</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="9" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">9</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">38%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">23%</span></div>
+                  </div>
+                </div>
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>CC</h4>
+                    <span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="15" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">15</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="9" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">9</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">38%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">23%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-page: 中鑫之宝 -->
+          <div class="ws-subpage" id="ws-sub-zxzb">
+            <button class="ws-back-btn" data-cn="← 返回联动" data-en="← Back to Collaborations">← 返回联动</button>
+            <div class="subpage-header reveal">
+              <div class="subpage-brand">
+                <div class="collab-logo collab-logo-zxzb collab-logo-lg">
+                  <span class="collab-logo-text">中</span>
+                </div>
+                <div>
+                  <h2 data-cn="中鑫之宝" data-en="Zhongxin Zhibao">中鑫之宝</h2>
+                  <span class="collab-tag" data-cn="汽车高端独立售后服务" data-en="Premium Auto Aftermarket Service">汽车高端独立售后服务</span>
+                </div>
+              </div>
+              <div class="subpage-stats">
+                <div class="subpage-stat">
+                  <span class="ss-num">2</span>
+                  <span class="ss-label" data-cn="进行中" data-en="Active">进行中</span>
+                </div>
+                <div class="subpage-stat">
+                  <span class="ss-num">5</span>
+                  <span class="ss-label" data-cn="已完成" data-en="Done">已完成</span>
+                </div>
+                <div class="subpage-stat">
+                  <span class="ss-num">180W+</span>
+                  <span class="ss-label" data-cn="总播放量" data-en="Total Views">总播放量</span>
+                </div>
+              </div>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="合作概述" data-en="Overview">合作概述</h3>
+              <p class="subpage-sec-text" data-cn="中鑫之宝是中鑫集团旗下汽车独立售后服务品牌，覆盖奔驰、宝马、奥迪、保时捷等豪华品牌维修保养全链路，全国百余家门店。微影与中鑫之宝联合创作服务宣传片、门店体验纪实与技师故事内容，用影像传递专业与信赖。" data-en="Zhongxin Zhibao is a premium auto aftermarket service brand under Zhongxin Group, covering full-service chain for luxury brands. V-ing co-creates service promos, store experience documentaries and technician stories, conveying professionalism and trust.">中鑫之宝是中鑫集团旗下汽车独立售后服务品牌，覆盖奔驰、宝马、奥迪、保时捷等豪华品牌维修保养全链路，全国百余家门店。微影与中鑫之宝联合创作服务宣传片、门店体验纪实与技师故事内容，用影像传递专业与信赖。</p>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="进行中项目" data-en="Active Projects">进行中项目</h3>
+              <div class="subpage-projects">
+                <div class="subpage-project">
+                  <div class="sp-proj-head">
+                    <h4 data-cn="中鑫之宝 · 服务流程宣传片" data-en="Zhongxin Zhibao · Service Promo">中鑫之宝 · 服务流程宣传片</h4>
+                    <span class="sp-proj-status sp-proj-wip" data-cn="拍摄中" data-en="Shooting">拍摄中</span>
+                  </div>
+                  <p data-cn="实拍门店接待、检测、维修、交付全流程，呈现标准化服务品质。" data-en="Filming the full store workflow: reception, inspection, repair, delivery.">实拍门店接待、检测、维修、交付全流程，呈现标准化服务品质。</p>
+                  <div class="sp-proj-meta">
+                    <span data-cn="交付：9/28" data-en="Delivery: 9/28">交付：9/28</span>
+                    <span data-cn="平台：抖音 + 视频号" data-en="Platform: Douyin + WeChat Video">平台：抖音 + 视频号</span>
+                  </div>
+                  <div class="sp-proj-progress">
+                    <span class="sp-prog-bar"><span style="width:30%"></span></span>
+                    <span class="sp-prog-text">30%</span>
+                  </div>
+                </div>
+                <div class="subpage-project">
+                  <div class="sp-proj-head">
+                    <h4 data-cn="技师故事 · 匠人纪实系列" data-en="Technician Stories · Craftsman Doc">技师故事 · 匠人纪实系列</h4>
+                    <span class="sp-proj-status sp-proj-wip" data-cn="策划中" data-en="Planning">策划中</span>
+                  </div>
+                  <p data-cn="聚焦资深技师的成长故事与专业精神，打造有温度的人物纪实。" data-en="Focusing on senior technicians' growth stories and craftsmanship, creating warm human documentaries.">聚焦资深技师的成长故事与专业精神，打造有温度的人物纪实。</p>
+                  <div class="sp-proj-meta">
+                    <span data-cn="交付：10/15" data-en="Delivery: 10/15">交付：10/15</span>
+                    <span data-cn="平台：视频号" data-en="Platform: WeChat Video">平台：视频号</span>
+                  </div>
+                  <div class="sp-proj-progress">
+                    <span class="sp-prog-bar"><span style="width:10%"></span></span>
+                    <span class="sp-prog-text">10%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="交付清单" data-en="Deliverables">交付清单</h3>
+              <div class="deliverable-list">
+                <div class="deliverable-item done">
+                  <span class="del-check">✓</span>
+                  <span data-cn="门店形象宣传片 ×1（45s）" data-en="Store image promo ×1 (45s)">门店形象宣传片 ×1（45s）</span>
+                </div>
+                <div class="deliverable-item done">
+                  <span class="del-check">✓</span>
+                  <span data-cn="抖音竖版服务短视频 ×8" data-en="Douyin vertical service clips ×8">抖音竖版服务短视频 ×8</span>
+                </div>
+                <div class="deliverable-item wip">
+                  <span class="del-check del-check-wip">○</span>
+                  <span data-cn="服务流程长片 ×1" data-en="Service workflow long film ×1">服务流程长片 ×1</span>
+                </div>
+                <div class="deliverable-item wip">
+                  <span class="del-check del-check-wip">○</span>
+                  <span data-cn="技师人物纪实 ×3" data-en="Technician documentaries ×3">技师人物纪实 ×3</span>
+                </div>
+                <div class="deliverable-item todo">
+                  <span class="del-check del-check-todo">□</span>
+                  <span data-cn="年度品牌微电影 ×1" data-en="Annual brand micro-film ×1">年度品牌微电影 ×1</span>
+                </div>
+              </div>
+            </div>
+            <!-- 主播拍摄剪辑日报 -->
+            <div class="report-section reveal" id="report-zxzb">
+              <div class="report-head">
+                <div>
+                  <h3 class="subpage-sec-title" data-cn="主播拍摄剪辑日报" data-en="Streamer Shoot & Edit Daily Report">主播拍摄剪辑日报</h3>
+                  <p class="report-sub" data-cn="中鑫之宝 · 无月度拍摄条数要求" data-en="Zhongxin Zhibao · No monthly target">中鑫之宝 · 无月度拍摄条数要求</p>
+                </div>
+                <button class="screenshot-btn" data-report="report-zxzb" data-cn="一键截图" data-en="Screenshot">一键截图</button>
+              </div>
+              <div class="report-summary-row">
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-shoot" data-val="6" data-target="6" cx="50" cy="50" r="42" fill="none" stroke="#FF9F0A" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">6</span>
+                    <span class="rm-label" data-cn="拍摄总条数" data-en="Total Shot">拍摄总条数</span>
+                  </div>
+                </div>
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-edit" data-val="5" data-target="6" cx="50" cy="50" r="42" fill="none" stroke="#34C759" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">5</span>
+                    <span class="rm-label" data-cn="剪辑完成条数" data-en="Total Edited">剪辑完成条数</span>
+                  </div>
+                </div>
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-rate" data-val="83" data-target="100" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">83%</span>
+                    <span class="rm-label" data-cn="完成率" data-en="Completion Rate">完成率</span>
+                  </div>
+                </div>
+              </div>
+              <div class="streamer-grid streamer-grid-2">
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>小凡</h4>
+                    <span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="5" data-target="5" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">5</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="4" data-target="5" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">4</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">100%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:80%"></span></span><span class="sr-pct">80%</span></div>
+                  </div>
+                </div>
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>东哥</h4>
+                    <span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="1" data-target="1" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">1</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="1" data-target="1" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">1</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">100%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">100%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-page: 人设IP账号 -->
+          <div class="ws-subpage" id="ws-sub-ip">
+            <button class="ws-back-btn" data-cn="← 返回联动" data-en="← Back to Collaborations">← 返回联动</button>
+            <div class="subpage-header reveal">
+              <div class="subpage-brand">
+                <div class="collab-logo collab-logo-ip collab-logo-lg">
+                  <span class="collab-logo-text">T</span>
+                </div>
+                <div>
+                  <h2 data-cn="人设IP账号" data-en="Personal IP">人设IP账号</h2>
+                  <span class="collab-tag" data-cn="主播 Tina · 暂定名" data-en="Streamer Tina · Tentative">主播 Tina · 暂定名</span>
+                </div>
+              </div>
+              <div class="subpage-stats">
+                <div class="subpage-stat">
+                  <span class="ss-num">20</span>
+                  <span class="ss-label" data-cn="月度目标" data-en="Monthly Goal">月度目标</span>
+                </div>
+                <div class="subpage-stat">
+                  <span class="ss-num">5</span>
+                  <span class="ss-label" data-cn="已拍摄" data-en="Shot">已拍摄</span>
+                </div>
+                <div class="subpage-stat">
+                  <span class="ss-num">2</span>
+                  <span class="ss-label" data-cn="已剪辑" data-en="Edited">已剪辑</span>
+                </div>
+              </div>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="合作概述" data-en="Overview">合作概述</h3>
+              <p class="subpage-sec-text" data-cn="打造专属人设IP账号，以主播 Tina（暂定名）为核心人物，持续输出个人风格短视频内容。通过日常拍摄、主题策划与品牌植入，建立粉丝连接与稳定人设输出，为品牌矩阵建立人格化入口。" data-en="Building a dedicated personal IP account centered on streamer Tina (tentative name), continuously producing personality-driven short videos. Through daily shooting, themed planning and brand integration, establishing fan connections and stable persona output for the brand matrix.">打造专属人设IP账号，以主播 Tina（暂定名）为核心人物，持续输出个人风格短视频内容。通过日常拍摄、主题策划与品牌植入，建立粉丝连接与稳定人设输出，为品牌矩阵建立人格化入口。</p>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="进行中项目" data-en="Active Projects">进行中项目</h3>
+              <div class="subpage-projects">
+                <div class="subpage-project">
+                  <div class="sp-proj-head">
+                    <h4 data-cn="Tina 日常人设短视频" data-en="Tina Daily Persona Shorts">Tina 日常人设短视频</h4>
+                    <span class="sp-proj-status sp-proj-wip" data-cn="拍摄中" data-en="Shooting">拍摄中</span>
+                  </div>
+                  <p data-cn="围绕 Tina 个人风格与日常场景，拍摄与剪辑人设短视频内容。" data-en="Shooting and editing persona-driven short videos around Tina's personal style and daily scenarios.">围绕 Tina 个人风格与日常场景，拍摄与剪辑人设短视频内容。</p>
+                  <div class="sp-proj-meta">
+                    <span data-cn="月度目标：20 条" data-en="Monthly Goal: 20 clips">月度目标：20 条</span>
+                    <span data-cn="平台：抖音" data-en="Platform: Douyin">平台：抖音</span>
+                  </div>
+                  <div class="sp-proj-progress">
+                    <span class="sp-prog-bar"><span style="width:10%"></span></span>
+                    <span class="sp-prog-text">10%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="subpage-section reveal">
+              <h3 class="subpage-sec-title" data-cn="交付清单" data-en="Deliverables">交付清单</h3>
+              <div class="deliverable-list">
+                <div class="deliverable-item done">
+                  <span class="del-check">✓</span>
+                  <span data-cn="Tina 人设定位方案 ×1" data-en="Tina persona plan ×1">Tina 人设定位方案 ×1</span>
+                </div>
+                <div class="deliverable-item wip">
+                  <span class="del-check del-check-wip">○</span>
+                  <span data-cn="日常短视频 ×20（月度）" data-en="Daily shorts ×20 (monthly)">日常短视频 ×20（月度）</span>
+                </div>
+                <div class="deliverable-item todo">
+                  <span class="del-check del-check-todo">□</span>
+                  <span data-cn="品牌植入内容 ×5" data-en="Brand-integrated content ×5">品牌植入内容 ×5</span>
+                </div>
+                <div class="deliverable-item todo">
+                  <span class="del-check del-check-todo">□</span>
+                  <span data-cn="粉丝互动直播 ×2" data-en="Fan interactive livestream ×2">粉丝互动直播 ×2</span>
+                </div>
+              </div>
+            </div>
+            <!-- 主播拍摄剪辑日报 -->
+            <div class="report-section reveal" id="report-ip">
+              <div class="report-head">
+                <div>
+                  <h3 class="subpage-sec-title" data-cn="主播拍摄剪辑日报" data-en="Streamer Shoot & Edit Daily Report">主播拍摄剪辑日报</h3>
+                  <p class="report-sub" data-cn="人设IP账号 · 月度目标：20 条" data-en="Personal IP · Monthly Goal: 20 clips">人设IP账号 · 月度目标：20 条</p>
+                </div>
+                <button class="screenshot-btn" data-report="report-ip" data-cn="一键截图" data-en="Screenshot">一键截图</button>
+              </div>
+              <div class="report-summary-row">
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-shoot" data-val="5" data-target="20" cx="50" cy="50" r="42" fill="none" stroke="#FF9F0A" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">5</span>
+                    <span class="rm-label" data-cn="拍摄总条数" data-en="Total Shot">拍摄总条数</span>
+                  </div>
+                </div>
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-edit" data-val="2" data-target="20" cx="50" cy="50" r="42" fill="none" stroke="#34C759" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">2</span>
+                    <span class="rm-label" data-cn="剪辑完成条数" data-en="Total Edited">剪辑完成条数</span>
+                  </div>
+                </div>
+                <div class="report-ring-mini">
+                  <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                    <circle class="ring-rate" data-val="10" data-target="100" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <div class="ring-mini-text">
+                    <span class="rm-num">10%</span>
+                    <span class="rm-label" data-cn="完成率" data-en="Completion Rate">完成率</span>
+                  </div>
+                </div>
+              </div>
+              <div class="streamer-grid streamer-grid-1">
+                <div class="streamer-card">
+                  <div class="streamer-info">
+                    <h4>Tina</h4>
+                    <span class="streamer-tag" data-cn="主播 · 暂定名" data-en="Streamer · Tentative">主播 · 暂定名</span>
+                  </div>
+                  <div class="streamer-rings">
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-shoot" data-val="5" data-target="20" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">5</span>
+                        <span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="sr-ring">
+                      <svg viewBox="0 0 80 80" width="64" height="64">
+                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/>
+                        <circle class="sr-ring-edit" data-val="2" data-target="20" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+                      </svg>
+                      <div class="sr-ring-text">
+                        <span class="sr-num">2</span>
+                        <span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-progress">
+                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:25%"></span></span><span class="sr-pct">25%</span></div>
+                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:10%"></span></span><span class="sr-pct">10%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          </div>
+
+          <!-- ====== Panel 3: Unified Daily Report ====== -->
+          <div class="ws-panel" id="ws-panel-unified">
+            <div class="container">
+              <!-- Unified Header & Screenshot All -->
+              <div class="unified-head reveal">
+                <div class="unified-head-left">
+                  <h2 class="unified-title" data-cn="统一日报整合" data-en="Unified Daily Report">统一日报整合</h2>
+                  <p class="unified-sub" data-cn="零跑汽车 · 中鑫之宝 · 人设IP — 全部主播拍摄剪辑数据一览" data-en="Leapmotor · Zhongxin Zhibao · Personal IP — All streamer data at a glance">零跑汽车 · 中鑫之宝 · 人设IP — 全部主播拍摄剪辑数据一览</p>
+                </div>
+                <button class="screenshot-btn screenshot-all-btn" data-report="unified-report-wrap" data-cn="一键全部截图" data-en="Screenshot All">一键全部截图</button>
+                <button class="edit-toggle-btn" id="editToggleBtn" data-cn="编辑模式" data-en="Edit Mode">编辑模式</button>
+              </div>
+
+              <div class="unified-report-wrap" id="unified-report-wrap">
+                <!-- Grand Total Summary -->
+                <div class="unified-summary reveal">
+                  <div class="unified-summary-grid">
+                    <div class="us-ring-item">
+                      <div class="us-ring">
+                        <svg viewBox="0 0 120 120" width="100" height="100">
+                          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+                          <circle class="ring-shoot" data-val="121" data-target="160" cx="60" cy="60" r="52" fill="none" stroke="#FF9F0A" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="us-ring-text">
+                          <span class="us-ring-num">121</span>
+                          <span class="us-ring-label" data-cn="拍摄总条数" data-en="Total Shot">拍摄总条数</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="us-ring-item">
+                      <div class="us-ring">
+                        <svg viewBox="0 0 120 120" width="100" height="100">
+                          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+                          <circle class="ring-edit" data-val="62" data-target="160" cx="60" cy="60" r="52" fill="none" stroke="#34C759" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="us-ring-text">
+                          <span class="us-ring-num">62</span>
+                          <span class="us-ring-label" data-cn="剪辑完成" data-en="Total Edited">剪辑完成</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="us-ring-item">
+                      <div class="us-ring">
+                        <svg viewBox="0 0 120 120" width="100" height="100">
+                          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+                          <circle class="ring-rate" data-val="39" data-target="100" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="us-ring-text">
+                          <span class="us-ring-num">39%</span>
+                          <span class="us-ring-label" data-cn="总完成率" data-en="Completion Rate">总完成率</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Brand Sections -->
+                <div class="unified-brand-section">
+                  <div class="unified-brand-head">
+                    <div class="collab-logo collab-logo-leap collab-logo-sm"><span class="collab-logo-text">L</span></div>
+                    <h3 data-cn="零跑汽车" data-en="Leapmotor">零跑汽车</h3>
+                    <span class="unified-brand-sub" data-cn="目标 40 条/人 · 空镜 10 条" data-en="Goal: 40/person · B-roll: 10">目标 40 条/人 · 空镜 10 条</span>
+                    <span class="badge badge-dy">抖音</span>
+                  </div>
+                  <div class="report-summary-row">
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-shoot" data-val="110" data-target="160" cx="50" cy="50" r="42" fill="none" stroke="#FF9F0A" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text">
+                        <span class="rm-num">110</span>
+                        <span class="rm-label" data-cn="拍摄" data-en="Shot">拍摄</span>
+                      </div>
+                    </div>
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-edit" data-val="55" data-target="160" cx="50" cy="50" r="42" fill="none" stroke="#34C759" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text">
+                        <span class="rm-num">55</span>
+                        <span class="rm-label" data-cn="剪辑" data-en="Edited">剪辑</span>
+                      </div>
+                    </div>
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-rate" data-val="34" data-target="100" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text">
+                        <span class="rm-num">34%</span>
+                        <span class="rm-label" data-cn="完成率" data-en="Rate">完成率</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="streamer-grid">
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>可欣</h4><span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="60" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">60</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="31" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">31</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">150%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:78%"></span></span><span class="sr-pct">78%</span></div>
+                      </div>
+                    </div>
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>小许</h4><span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="20" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">20</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="6" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">6</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:50%"></span></span><span class="sr-pct">50%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:15%"></span></span><span class="sr-pct">15%</span></div>
+                      </div>
+                    </div>
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>珊珊</h4><span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="15" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">15</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="9" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">9</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">38%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">23%</span></div>
+                      </div>
+                    </div>
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>CC</h4><span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="15" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">15</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="9" data-target="40" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">9</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">38%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">23%</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 中鑫之宝 -->
+                <div class="unified-brand-section">
+                  <div class="unified-brand-head">
+                    <div class="collab-logo collab-logo-zxzb collab-logo-sm"><span class="collab-logo-text">中</span></div>
+                    <h3 data-cn="中鑫之宝" data-en="Zhongxin Zhibao">中鑫之宝</h3>
+                    <span class="unified-brand-sub" data-cn="无月度拍摄要求" data-en="No monthly target">无月度拍摄要求</span>
+                    <span class="badge badge-dy">抖音</span>
+                    <span class="badge badge-wx">视频号</span>
+                  </div>
+                  <div class="report-summary-row">
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-shoot" data-val="6" data-target="6" cx="50" cy="50" r="42" fill="none" stroke="#FF9F0A" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text"><span class="rm-num">6</span><span class="rm-label" data-cn="拍摄" data-en="Shot">拍摄</span></div>
+                    </div>
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-edit" data-val="5" data-target="6" cx="50" cy="50" r="42" fill="none" stroke="#34C759" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text"><span class="rm-num">5</span><span class="rm-label" data-cn="剪辑" data-en="Edited">剪辑</span></div>
+                    </div>
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-rate" data-val="83" data-target="100" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text"><span class="rm-num">83%</span><span class="rm-label" data-cn="完成率" data-en="Rate">完成率</span></div>
+                    </div>
+                  </div>
+                  <div class="streamer-grid streamer-grid-2">
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>小凡</h4><span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="5" data-target="5" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">5</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="4" data-target="5" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">4</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">100%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:80%"></span></span><span class="sr-pct">80%</span></div>
+                      </div>
+                    </div>
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>东哥</h4><span class="streamer-tag" data-cn="主播" data-en="Streamer">主播</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="1" data-target="1" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">1</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="1" data-target="1" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">1</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">100%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">100%</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 人设IP -->
+                <div class="unified-brand-section">
+                  <div class="unified-brand-head">
+                    <div class="collab-logo collab-logo-ip collab-logo-sm"><span class="collab-logo-text">T</span></div>
+                    <h3 data-cn="人设IP账号" data-en="Personal IP">人设IP账号</h3>
+                    <span class="unified-brand-sub" data-cn="目标 20 条/月" data-en="Goal: 20/month">目标 20 条/月</span>
+                    <span class="badge badge-dy">抖音</span>
+                  </div>
+                  <div class="report-summary-row">
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-shoot" data-val="5" data-target="20" cx="50" cy="50" r="42" fill="none" stroke="#FF9F0A" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text"><span class="rm-num">5</span><span class="rm-label" data-cn="拍摄" data-en="Shot">拍摄</span></div>
+                    </div>
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-edit" data-val="2" data-target="20" cx="50" cy="50" r="42" fill="none" stroke="#34C759" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text"><span class="rm-num">2</span><span class="rm-label" data-cn="剪辑" data-en="Edited">剪辑</span></div>
+                    </div>
+                    <div class="report-ring-mini">
+                      <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+                        <circle class="ring-rate" data-val="10" data-target="100" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                      </svg>
+                      <div class="ring-mini-text"><span class="rm-num">10%</span><span class="rm-label" data-cn="完成率" data-en="Rate">完成率</span></div>
+                    </div>
+                  </div>
+                  <div class="streamer-grid streamer-grid-1">
+                    <div class="streamer-card">
+                      <div class="streamer-info"><h4>Tina</h4><span class="streamer-tag" data-cn="主播 · 暂定名" data-en="Streamer · Tentative">主播 · 暂定名</span></div>
+                      <div class="streamer-rings">
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-shoot" data-val="5" data-target="20" cx="40" cy="40" r="32" fill="none" stroke="#FF9F0A" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">5</span><span class="sr-sub" data-cn="拍摄" data-en="Shot">拍摄</span></div></div>
+                        <div class="sr-ring"><svg viewBox="0 0 80 80" width="64" height="64"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="6"/><circle class="sr-ring-edit" data-val="2" data-target="20" cx="40" cy="40" r="32" fill="none" stroke="#34C759" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/></svg><div class="sr-ring-text"><span class="sr-num">2</span><span class="sr-sub" data-cn="剪辑" data-en="Edited">剪辑</span></div></div>
+                      </div>
+                      <div class="streamer-progress">
+                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:25%"></span></span><span class="sr-pct">25%</span></div>
+                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:10%"></span></span><span class="sr-pct">10%</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    </section>
+
+    <!-- ========== CONTACT VIEW ========== -->
+    <section class="view" id="view-contact" data-view="contact">
+      <div class="contact-wrap">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="联系我们" data-en="Contact Us">联系我们</span>
+            <h2 class="section-title section-title-lg" data-cn="让我们开始对话" data-en="Let's Start a Conversation">让我们开始对话</h2>
+            <p class="section-desc reveal" data-cn="无论是品牌合作、内容共创还是简单的问候，我们都很期待听到你的声音。" data-en="Whether it's brand collaboration, content co-creation, or just a hello, we look forward to hearing from you.">无论是品牌合作、内容共创还是简单的问候，我们都很期待听到你的声音。</p>
+          </div>
+          <div class="contact-grid">
+            <form class="contact-form reveal" id="contactForm">
+              <div class="form-group">
+                <label for="cName" data-cn="你的名字" data-en="Your Name">你的名字</label>
+                <input type="text" id="cName" name="name" data-cn-placeholder="请输入你的名字" data-en-placeholder="Enter your name" placeholder="请输入你的名字" required>
+              </div>
+              <div class="form-group">
+                <label for="cEmail" data-cn="邮箱地址" data-en="Email Address">邮箱地址</label>
+                <input type="email" id="cEmail" name="email" data-cn-placeholder="your@email.com" data-en-placeholder="your@email.com" placeholder="your@email.com" required>
+              </div>
+              <div class="form-group">
+                <label for="cType" data-cn="合作类型" data-en="Collaboration Type">合作类型</label>
+                <select id="cType" name="type">
+                  <option data-cn="品牌广告" data-en="Brand Advertising">品牌广告</option>
+                  <option data-cn="内容共创" data-en="Content Co-creation">内容共创</option>
+                  <option data-cn="影视制作" data-en="Film Production">影视制作</option>
+                  <option data-cn="其他合作" data-en="Other">其他合作</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="cMsg" data-cn="留言内容" data-en="Message">留言内容</label>
+                <textarea id="cMsg" name="message" rows="4" data-cn-placeholder="告诉我们你的想法..." data-en-placeholder="Tell us your thoughts..." placeholder="告诉我们你的想法..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full" data-cn="发送消息" data-en="Send Message">发送消息</button>
+              <p class="form-success" id="formSuccess" data-cn="✓ 消息已发送，我们将尽快回复你" data-en="✓ Message sent, we'll get back to you soon" style="display:none;"></p>
+            </form>
+            <div class="contact-info reveal">
+              <div class="info-card">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="info-text">
+                  <span class="info-label" data-cn="邮箱" data-en="Email">邮箱</span>
+                  <span class="info-value">hello@v-ing.studio</span>
+                </div>
+              </div>
+              <div class="info-card">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div class="info-text">
+                  <span class="info-label" data-cn="商务微信" data-en="WeChat">商务微信</span>
+                  <span class="info-value">V-ing_Studio</span>
+                </div>
+              </div>
+              <div class="info-card">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="info-text">
+                  <span class="info-label" data-cn="坐标" data-en="Location">坐标</span>
+                  <span class="info-value" data-cn="中国 · 上海" data-en="Shanghai, China">中国 · 上海</span>
+                </div>
+              </div>
+              <div class="contact-social">
+                <a href="https://space.bilibili.com" target="_blank" rel="noopener" class="social-pill">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.8 3L21 6.2v11.6c0 1.2-1 2.2-2.2 2.2H5.2C4 20 3 19 3 17.8V6.2L6.2 3h2.5L7 5h10l-1.7-2h2.5zM12 15.5l3-3h-6l3 3z"/></svg>
+                  <span data-cn="哔哩哔哩" data-en="Bilibili">哔哩哔哩</span>
+                </a>
+                <a href="https://www.douyin.com" target="_blank" rel="noopener" class="social-pill">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19.5 7.7c-1.8 0-3.4-.9-4.4-2.3v8.6c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6c.3 0 .6 0 .9.1v3.2c-.3-.1-.6-.2-.9-.2-1.6 0-2.9 1.3-2.9 2.9s1.3 2.9 2.9 2.9 2.9-1.3 2.9-2.9V2h3.1c0 .3 0 .6.1.9.4 2.2 2.2 3.9 4.4 3.9V7.7z"/></svg>
+                  <span data-cn="抖音" data-en="Douyin">抖音</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== Footer ========== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">微影<span class="logo-dot">.</span>ing</span>
+        <p data-cn="用镜头记录光影，用创意定义故事" data-en="Capturing light and shadow, defining stories through creativity">用镜头记录光影，用创意定义故事</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4 data-cn="导航" data-en="Navigate">导航</h4>
+          <a href="#home" data-nav="home" data-cn="首页" data-en="Home">首页</a>
+          <a href="#about" data-nav="about" data-cn="关于" data-en="About">关于</a>
+          <a href="#works" data-nav="works" data-cn="作品" data-en="Works">作品</a>
+          <a href="#workspace" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
+          <a href="#contact" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-cn="平台" data-en="Platforms">平台</h4>
+          <a href="https://space.bilibili.com" target="_blank" rel="noopener">哔哩哔哩</a>
+          <a href="https://www.douyin.com" target="_blank" rel="noopener">抖音</a>
+        </div>
+        <div class="footer-col">
+          <h4 data-cn="联系" data-en="Contact">联系</h4>
+          <a href="mailto:hello@v-ing.studio">hello@v-ing.studio</a>
+          <span data-cn="上海 · 中国" data-en="Shanghai · China">上海 · 中国</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <span>© 2026 微影 V-ing Studio. All rights reserved.</span>
+        <span data-cn="我们·正在进行时" data-en="We · In Present Continuous">我们·正在进行时</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== Page Loader ========== -->
+  <div class="loader" id="loader">
+    <div class="loader-logo">
+      <span class="loader-mark">V</span>
+    </div>
+    <div class="loader-bar"><span></span></div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
