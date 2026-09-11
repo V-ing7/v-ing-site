@@ -531,6 +531,10 @@
         newView.style.opacity='';
         newView.style.transform='';
         checkReveals();
+        // Show workspace password lock if needed
+        if(target==='workspace'&&!isWsUnlocked()){
+          showWsLock();
+        }
         isAnimating=false;
       },420);
     },240);
@@ -733,6 +737,104 @@
     if(e.key==='Escape'&&mobileMenu.classList.contains('open')){
       mobileMenu.classList.remove('open');
       menuToggle.classList.remove('active');
+    }
+  });
+
+  /* ---------- Workspace Password Lock ---------- */
+  var WS_PASSWORD='123000';
+  var WS_LOCK_KEY='v_ing_ws_unlocked';
+  var wsLockOverlay=document.getElementById('wsLockOverlay');
+  var wsLockDots=document.getElementById('wsLockDots');
+  var wsLockError=document.getElementById('wsLockError');
+  var wsLockInput='';
+
+  function isWsUnlocked(){
+    return localStorage.getItem(WS_LOCK_KEY)==='1';
+  }
+  function showWsLock(){
+    if(wsLockOverlay)wsLockOverlay.classList.add('ws-lock-active');
+    wsLockInput='';
+    updateWsLockDots();
+    hideWsLockError();
+  }
+  function hideWsLock(){
+    if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
+    localStorage.setItem(WS_LOCK_KEY,'1');
+    // Trigger reveals after unlock
+    setTimeout(function(){checkReveals()},100);
+  }
+  function updateWsLockDots(){
+    if(!wsLockDots)return;
+    var dots=wsLockDots.querySelectorAll('.ws-lock-dot');
+    dots.forEach(function(dot,i){
+      dot.classList.remove('filled','error');
+      if(i<wsLockInput.length)dot.classList.add('filled');
+    });
+  }
+  function showWsLockError(msg){
+    if(!wsLockError)return;
+    wsLockError.textContent=msg;
+    wsLockError.classList.add('show');
+    // Shake dots
+    if(wsLockDots){
+      wsLockDots.querySelectorAll('.ws-lock-dot').forEach(function(dot){
+        dot.classList.remove('filled');
+        dot.classList.add('error');
+      });
+    }
+    setTimeout(function(){
+      hideWsLockError();
+      wsLockInput='';
+      updateWsLockDots();
+    },800);
+  }
+  function hideWsLockError(){
+    if(wsLockError){
+      wsLockError.classList.remove('show');
+    }
+    if(wsLockDots){
+      wsLockDots.querySelectorAll('.ws-lock-dot').forEach(function(dot){
+        dot.classList.remove('error');
+      });
+    }
+  }
+  function handleWsLockKey(key){
+    if(key==='delete'){
+      wsLockInput=wsLockInput.slice(0,-1);
+      updateWsLockDots();
+      hideWsLockError();
+      return;
+    }
+    if(wsLockInput.length>=6)return;
+    wsLockInput+=key;
+    updateWsLockDots();
+    if(wsLockInput.length===6){
+      setTimeout(function(){
+        if(wsLockInput===WS_PASSWORD){
+          hideWsLock();
+        }else{
+          showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
+        }
+      },150);
+    }
+  }
+  // Keypad clicks
+  if(wsLockOverlay){
+    wsLockOverlay.addEventListener('click',function(e){
+      var btn=e.target.closest('.ws-lock-key');
+      if(btn&&!btn.disabled){
+        var key=btn.getAttribute('data-key');
+        if(key)handleWsLockKey(key);
+      }
+    });
+  }
+  // Physical keyboard support
+  document.addEventListener('keydown',function(e){
+    if(!wsLockOverlay||!wsLockOverlay.classList.contains('ws-lock-active'))return;
+    if(e.key>='0'&&e.key<='9'){
+      handleWsLockKey(e.key);
+    }else if(e.key==='Backspace'||e.key==='Delete'){
+      handleWsLockKey('delete');
     }
   });
 

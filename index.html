@@ -404,6 +404,48 @@
 
     <!-- ========== WORKSPACE VIEW ========== -->
     <section class="view" id="view-workspace" data-view="workspace">
+      <!-- Password Lock Overlay -->
+      <div class="ws-lock-overlay" id="wsLockOverlay">
+        <div class="ws-lock-card">
+          <div class="ws-lock-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3 class="ws-lock-title" data-cn="个人工作台" data-en="Workspace">个人工作台</h3>
+          <p class="ws-lock-desc" data-cn="请输入6位密码以访问" data-en="Enter 6-digit password to continue">请输入6位密码以访问</p>
+          <div class="ws-lock-dots" id="wsLockDots">
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+          </div>
+          <div class="ws-lock-error" id="wsLockError"></div>
+          <div class="ws-lock-keypad">
+            <button class="ws-lock-key" data-key="1"><span>1</span></button>
+            <button class="ws-lock-key" data-key="2"><span>2</span><small>ABC</small></button>
+            <button class="ws-lock-key" data-key="3"><span>3</span><small>DEF</small></button>
+            <button class="ws-lock-key" data-key="4"><span>4</span><small>GHI</small></button>
+            <button class="ws-lock-key" data-key="5"><span>5</span><small>JKL</small></button>
+            <button class="ws-lock-key" data-key="6"><span>6</span><small>MNO</small></button>
+            <button class="ws-lock-key" data-key="7"><span>7</span><small>PQRS</small></button>
+            <button class="ws-lock-key" data-key="8"><span>8</span><small>TUV</small></button>
+            <button class="ws-lock-key" data-key="9"><span>9</span><small>WXYZ</small></button>
+            <button class="ws-lock-key ws-lock-key-empty" disabled></button>
+            <button class="ws-lock-key" data-key="0"><span>0</span></button>
+            <button class="ws-lock-key ws-lock-key-delete" data-key="delete">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+                <line x1="18" y1="9" x2="12" y2="15"/>
+                <line x1="12" y1="9" x2="18" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
       <!-- Workspace Header -->
       <div class="workspace-hero">
         <div class="container">

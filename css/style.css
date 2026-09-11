@@ -1179,6 +1179,144 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .footer-bottom span{font-size:.82rem;color:var(--text-tertiary)}
 
 /* ---------- Workspace ---------- */
+/* Password Lock Overlay */
+.ws-lock-overlay{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .4s ease,visibility .4s ease;
+}
+#view-workspace.view-active .ws-lock-overlay.ws-lock-active{
+  opacity:1;
+  visibility:visible;
+}
+.ws-lock-card{
+  text-align:center;
+  width:100%;
+  max-width:360px;
+  padding:0 24px;
+}
+.ws-lock-icon{
+  width:64px;height:64px;
+  margin:0 auto 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  background:var(--surface-glass);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border:1px solid var(--glass-border);
+  color:var(--accent);
+}
+.ws-lock-title{
+  font-size:1.3rem;
+  font-weight:700;
+  margin-bottom:6px;
+  color:var(--text-primary);
+}
+.ws-lock-desc{
+  font-size:.88rem;
+  color:var(--text-secondary);
+  margin-bottom:28px;
+}
+.ws-lock-dots{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:12px;
+}
+.ws-lock-dot{
+  width:12px;height:12px;
+  border-radius:50%;
+  border:1.5px solid var(--text-tertiary);
+  transition:all .2s ease;
+  background:transparent;
+}
+.ws-lock-dot.filled{
+  background:var(--text-primary);
+  border-color:var(--text-primary);
+  transform:scale(1.1);
+}
+.ws-lock-dot.error{
+  background:#FF3B30;
+  border-color:#FF3B30;
+  animation:ws-lock-shake .5s ease;
+}
+@keyframes ws-lock-shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.ws-lock-error{
+  height:20px;
+  font-size:.78rem;
+  color:#FF3B30;
+  margin-bottom:20px;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.ws-lock-error.show{opacity:1}
+.ws-lock-keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  max-width:300px;
+  margin:0 auto;
+}
+.ws-lock-key{
+  aspect-ratio:1/1;
+  border:none;
+  border-radius:50%;
+  background:var(--surface-glass);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border:1px solid var(--glass-border);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all .15s ease;
+  color:var(--text-primary);
+}
+.ws-lock-key:active{
+  background:var(--surface-2);
+  transform:scale(.94);
+}
+.ws-lock-key span{
+  font-size:1.5rem;
+  font-weight:500;
+  line-height:1;
+}
+.ws-lock-key small{
+  font-size:.55rem;
+  color:var(--text-tertiary);
+  letter-spacing:.08em;
+  margin-top:2px;
+  font-weight:600;
+}
+.ws-lock-key-empty{
+  background:transparent;
+  border:none;
+  cursor:default;
+}
+.ws-lock-key-empty:active{transform:none}
+.ws-lock-key-delete{
+  color:var(--text-secondary);
+}
+.ws-lock-key-delete:active{
+  color:var(--text-primary);
+  background:var(--surface-2);
+}
 .workspace-hero{padding:20px 0 40px;scroll-margin-top:80px}
 .workspace-hero .section-head{text-align:center;margin-bottom:40px}
 .workspace-hero .section-eyebrow{margin-bottom:1rem}
