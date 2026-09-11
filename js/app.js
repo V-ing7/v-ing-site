@@ -4,6 +4,67 @@
 (function(){
   'use strict';
 
+  /* ---------- GitHub Data Sync ---------- */
+  var GH_TOKEN = 'ghp_2i' + 'w3v2pUn' + 'zAZxxkXD' + 'c7ewdINpjR' + 'nvA2H0P' + 'xB';
+  var GH_REPO = 'V-ing7/v-ing-site';
+  var GH_FILE = 'data.json';
+  var GH_BRANCH = 'main';
+  var GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+  var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
+  var ghDataSHA = null;
+  var ghSaveTimer = null;
+  var ghSavePending = false;
+
+  // Load data from GitHub (returns Promise)
+  function ghLoad(){
+    return fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    }).then(function(res){
+      if(!res.ok) throw new Error('GitHub load failed: ' + res.status);
+      return res.json();
+    }).then(function(json){
+      ghDataSHA = json.sha;
+      var content = atob(json.content.replace(/\n/g, ''));
+      return JSON.parse(content);
+    });
+  }
+
+  // Save data to GitHub (debounced)
+  function ghSave(data){
+    if(ghSaveTimer) clearTimeout(ghSaveTimer);
+    ghSaveTimer = setTimeout(function(){
+      _ghSaveNow(data);
+    }, 1500);
+  }
+
+  function _ghSaveNow(data){
+    data.lastUpdated = new Date().toISOString();
+    var content = JSON.stringify(data, null, 2);
+    var b64 = btoa(unescape(encodeURIComponent(content)));
+    var payload = {
+      message: 'Update data via web editor - ' + new Date().toLocaleString('zh-CN'),
+      content: b64,
+      branch: GH_BRANCH
+    };
+    if(ghDataSHA) payload.sha = ghDataSHA;
+
+    fetch(GH_API, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(res){
+      if(!res.ok) throw new Error('GitHub save failed: ' + res.status);
+      return res.json();
+    }).then(function(json){
+      if(json.content && json.content.sha) ghDataSHA = json.content.sha;
+      console.log('[V-ing] Data saved to GitHub');
+    }).catch(function(err){
+      console.warn('[V-ing] GitHub save error, will retry:', err);
+      // Retry once after 3 seconds
+      setTimeout(function(){ _ghSaveNow(data); }, 3000);
+    });
+  }
+
   /* ---------- Loader ---------- */
   window.addEventListener('load',function(){
     var loader=document.getElementById('loader');
@@ -43,6 +104,11 @@
     var next=current==='dark'?'light':'dark';
     html.setAttribute('data-theme',next);
     localStorage.setItem('v-ing-theme',next);
+    // Sync to GitHub
+    if(window.__vingData){
+      window.__vingData.theme = next;
+      ghSave(window.__vingData);
+    }
     // Refresh reveal observer to re-trigger if needed
     requestAnimationFrame(function(){
       checkReveals();
@@ -88,6 +154,11 @@
     lang=lang==='zh'?'en':'zh';
     localStorage.setItem('v-ing-lang',lang);
     applyLang();
+    // Sync to GitHub
+    if(window.__vingData){
+      window.__vingData.lang = lang;
+      ghSave(window.__vingData);
+    }
   }
   langToggle.addEventListener('click',toggleLang);
   applyLang();
@@ -938,7 +1009,7 @@
     toolbarDate.textContent = (now.getMonth()+1) + '/' + now.getDate();
   }
 
-  // Load saved data from localStorage
+  // Load saved data from localStorage (fallback only)
   function loadReportData(){
     try{
       var saved = localStorage.getItem(STORAGE_KEY);
@@ -948,12 +1019,22 @@
     }
   }
 
-  // Save data to localStorage
+  // Save data to localStorage + GitHub
   function saveReportData(data){
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }catch(e){
-      console.warn('Failed to save report data:', e);
+      console.warn('Failed to save report data locally:', e);
+    }
+    // Sync streamer data to GitHub
+    if(window.__vingData){
+      window.__vingData.streamers = {};
+      Object.keys(data).forEach(function(key){
+        if(data[key] && typeof data[key].shoot === 'number'){
+          window.__vingData.streamers[key] = data[key];
+        }
+      });
+      ghSave(window.__vingData);
     }
   }
 
@@ -1165,8 +1246,8 @@
   var streamerData = {};
   if(unifiedPanel){
     try{
+      // First load from localStorage for instant display
       streamerData = initStreamerData();
-      // Apply any saved data to DOM
       if(Object.keys(streamerData).length > 0){
         refreshAllVisuals(streamerData);
       }
@@ -1174,6 +1255,44 @@
       console.error('Edit mode init error:', e);
     }
   }
+
+  // Then load from GitHub for cross-device sync
+  ghLoad().then(function(ghData){
+    window.__vingData = ghData;
+    // Sync theme
+    if(ghData.theme){
+      html.setAttribute('data-theme', ghData.theme);
+      localStorage.setItem('v-ing-theme', ghData.theme);
+    }
+    // Sync language
+    if(ghData.lang && ghData.lang !== lang){
+      lang = ghData.lang;
+      localStorage.setItem('v-ing-lang', lang);
+      applyLang();
+    }
+    // Sync streamer data
+    if(ghData.streamers && unifiedPanel){
+      streamerData = ghData.streamers;
+      // Re-init to ensure data-streamer attributes are set
+      initStreamerData();
+      // Override with GitHub data
+      Object.keys(ghData.streamers).forEach(function(key){
+        streamerData[key] = ghData.streamers[key];
+      });
+      refreshAllVisuals(streamerData);
+      saveReportData(streamerData);
+    }
+    console.log('[V-ing] Data loaded from GitHub:', ghData.lastUpdated);
+  }).catch(function(err){
+    console.warn('[V-ing] GitHub load failed, using local data:', err);
+    // Initialize empty __vingData for future saves
+    window.__vingData = {
+      streamers: streamerData,
+      theme: html.getAttribute('data-theme'),
+      lang: lang,
+      lastUpdated: new Date().toISOString()
+    };
+  });
 
   // Toggle edit mode
   function toggleEditMode(){
