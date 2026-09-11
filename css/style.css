@@ -2611,6 +2611,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   width:100%;
 }
 .bc-qr-frame{
+  position:relative;
   width:100%;
   aspect-ratio:1/1;
   max-width:150px;
@@ -2637,6 +2638,28 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   color:var(--text-tertiary);
   background:var(--surface-2);
   border-radius:8px;
+}
+/* QR Code Center Logo */
+.bc-qr-logo{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:22%;
+  aspect-ratio:1/1;
+  background:#fff;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#231815;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  padding:6%;
+  z-index:2;
+}
+.bc-qr-logo svg{
+  width:100%;
+  height:auto;
 }
 .bc-qr-label{
   display:flex;
@@ -2976,6 +2999,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .bc-tag{padding:3px 7px;font-size:.62rem;border-radius:6px}
   .bc-qr-wrap{gap:7px}
   .bc-qr-frame{max-width:100%;border-radius:10px;padding:5px}
+  .bc-qr-logo{border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
   .bc-qr-label > span:first-child{font-size:.62rem}
   .bc-qr-url{font-size:.58rem}
   .bc-bottom{padding:10px 20px}
