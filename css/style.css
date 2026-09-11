@@ -2784,3 +2784,66 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   *{animation-duration:.01ms !important;transition-duration:.1s !important}
   .blob{animation:none}
 }
+
+/* ================================================================
+   加载动画 Loader
+   ================================================================ */
+.loader{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+.loader.hidden{
+  opacity:0;
+  visibility:hidden;
+}
+.loader-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+}
+.loader-logo{
+  width:72px;
+  height:auto;
+}
+.loader-path{
+  fill:none;
+  stroke:var(--text-primary);
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:1200;
+  stroke-dashoffset:1200;
+  animation:loader-draw 1.6s cubic-bezier(.25,.46,.45,.94) forwards,
+           loader-fill .5s ease 1.4s forwards,
+           loader-pulse 2s ease-in-out 1.9s infinite;
+}
+@keyframes loader-draw{
+  to{stroke-dashoffset:0}
+}
+@keyframes loader-fill{
+  from{fill:transparent}
+  to{fill:var(--text-primary)}
+}
+@keyframes loader-pulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.05);opacity:.85}
+}
+.loader-text{
+  font-size:.95rem;
+  font-weight:600;
+  letter-spacing:.1em;
+  color:var(--text-secondary);
+  opacity:0;
+  animation:loader-text-fade .6s ease .8s forwards;
+}
+@keyframes loader-text-fade{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}

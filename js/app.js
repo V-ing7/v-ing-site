@@ -377,14 +377,14 @@
   window.addEventListener('load',function(){
     var loader=document.getElementById('loader');
     if(loader){
-      setTimeout(function(){loader.classList.add('hidden')},600);
+      setTimeout(function(){loader.classList.add('hidden')},2200);
     }
   });
-  // Fallback: hide loader after 2s no matter what
+  // Fallback: hide loader after 3.5s no matter what
   setTimeout(function(){
     var l=document.getElementById('loader');
     if(l)l.classList.add('hidden');
-  },2000);
+  },3500);
 
   /* ---------- Element References ---------- */
   var html=document.documentElement;
