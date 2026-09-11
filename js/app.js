@@ -27,7 +27,7 @@
       return res.json();
     }).then(function(json){
       ghDataSHA = json.sha;
-      var content = atob(json.content.replace(/\n/g, ''));
+      var content = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
       return JSON.parse(content);
     });
   }
