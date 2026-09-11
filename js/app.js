@@ -724,15 +724,20 @@
       }
     }
 
-    // Also sync progress bar widths
-    var liveBars = target.querySelectorAll('.sr-bar span');
-    var clonedBars = cloned.querySelectorAll('.sr-bar span');
-    if(liveBars.length === clonedBars.length){
-      for(var j=0; j<liveBars.length; j++){
-        var liveWidth = liveBars[j].style.width;
-        if(liveWidth) clonedBars[j].style.width = liveWidth;
+    // Sync progress bar widths (all types)
+    function syncBarWidths(liveParent, clonedParent, selector){
+      var liveBars = liveParent.querySelectorAll(selector);
+      var clonedBars = clonedParent.querySelectorAll(selector);
+      if(liveBars.length === clonedBars.length && liveBars.length > 0){
+        for(var j=0; j<liveBars.length; j++){
+          var liveWidth = liveBars[j].style.width;
+          if(liveWidth) clonedBars[j].style.width = liveWidth;
+        }
       }
     }
+    syncBarWidths(target, cloned, '.sr-bar span');
+    syncBarWidths(target, cloned, '.bps-bar span');
+    syncBarWidths(target, cloned, '.ts-bar span');
 
     // For individual report sections, remove the report-head button area
     // and keep just the title info merged into the content
@@ -794,31 +799,45 @@
     var styleTag = document.createElement('style');
     var borderColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)';
     styleTag.textContent = [
+      // Unified summary (total stats row)
       '.ss-container .unified-summary{padding:24px;margin-bottom:24px;border-radius:16px}',
-      '.ss-container .us-ring{width:90px;height:90px}',
-      '.ss-container .us-ring svg{width:90px;height:90px}',
-      '.ss-container .us-ring-num{font-size:1.3rem}',
-      '.ss-container .unified-summary-grid{gap:32px}',
+      '.ss-container .total-stats-row{gap:24px;justify-content:center}',
+      '.ss-container .ts-item{flex:1;text-align:center;max-width:160px}',
+      '.ss-container .ts-num{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}',
+      '.ss-container .ts-label{font-size:.7rem;color:' + (isDark ? 'rgba(235,235,245,.3)' : 'rgba(60,60,67,.3)') + ';margin-bottom:8px}',
+      '.ss-container .ts-bar{height:4px;border-radius:2px;background:' + (isDark ? '#2C2C2E' : '#F2F2F7') + ';overflow:hidden}',
+      '.ss-container .ts-bar span{display:block;height:100%;border-radius:2px;background:#FF9F0A}',
+      '.ss-container .ts-green span{background:#34C759}',
+      '.ss-container .ts-gray span{background:' + (isDark ? '#98989D' : '#48484A') + '}',
+      // Brand sections
       '.ss-container .unified-brand-section{margin-bottom:24px}',
-      '.ss-container .unified-brand-head{margin-bottom:16px;padding-bottom:12px}',
-      '.ss-container .unified-brand-section .report-summary-row{margin-bottom:16px}',
+      '.ss-container .unified-brand-head{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid ' + borderColor + '}',
+      '.ss-container .unified-brand-head h3{font-size:1rem;font-weight:700;margin:0}',
+      '.ss-container .unified-brand-sub{font-size:.72rem;color:' + (isDark ? 'rgba(235,235,245,.3)' : 'rgba(60,60,67,.3)') + '}',
+      // Brand progress summary
+      '.ss-container .brand-progress-summary{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;padding:16px 20px;border-radius:12px;border:1px solid ' + borderColor + '}',
+      '.ss-container .bps-row{display:flex;align-items:center;gap:12px}',
+      '.ss-container .bps-label{width:32px;font-size:.78rem;color:' + (isDark ? 'rgba(235,235,245,.6)' : 'rgba(60,60,67,.6)') + ';flex-shrink:0}',
+      '.ss-container .bps-bar{flex:1;height:6px;border-radius:3px;background:' + (isDark ? '#2C2C2E' : '#F2F2F7') + ';overflow:hidden}',
+      '.ss-container .bps-bar span{display:block;height:100%;border-radius:3px;background:#FF9F0A}',
+      '.ss-container .bps-green span{background:#34C759}',
+      '.ss-container .bps-num{width:36px;text-align:right;font-size:.82rem;font-weight:700;flex-shrink:0}',
+      // Individual report sections
       '.ss-container .report-section{padding:0 !important}',
       '.ss-container .report-head{margin-bottom:20px !important;padding-bottom:16px;border-bottom:1px solid ' + borderColor + '}',
       '.ss-container .report-head h3{font-size:1.15rem !important}',
       '.ss-container .report-head .report-sub{font-size:.8rem !important}',
-      '.ss-container .report-ring-mini{width:72px;height:72px}',
-      '.ss-container .report-ring-mini svg{width:72px;height:72px}',
-      '.ss-container .rm-num{font-size:1.05rem}',
-      '.ss-container .rm-label{font-size:.62rem}',
-      '.ss-container .report-summary-row{margin-bottom:24px}',
-      '.ss-container .streamer-card{padding:20px 16px;border-radius:14px}',
-      '.ss-container .sr-ring{width:56px;height:56px}',
-      '.ss-container .sr-ring svg{width:56px;height:56px}',
-      '.ss-container .sr-num{font-size:.95rem}',
-      '.ss-container .streamer-rings{gap:16px}',
+      // Streamer cards
+      '.ss-container .streamer-card{padding:14px 16px;border-radius:12px;gap:8px}',
+      '.ss-container .streamer-info h4{font-size:.9rem;font-weight:700;margin:0}',
       '.ss-container .streamer-progress{gap:6px}',
-      '.ss-container .sr-bar-row{font-size:.75rem}',
-      '.ss-container .streamer-info h4{font-size:.95rem}'
+      '.ss-container .sr-bar-row{font-size:.75rem;display:flex;align-items:center;gap:8px;color:' + (isDark ? 'rgba(235,235,245,.6)' : 'rgba(60,60,67,.6)') + '}',
+      '.ss-container .sr-bar-row span:first-child{width:36px;text-align:right;flex-shrink:0;font-size:.7rem}',
+      '.ss-container .sr-bar{flex:1;height:5px;background:' + (isDark ? '#2C2C2E' : '#F2F2F7') + ';border-radius:3px;overflow:hidden}',
+      '.ss-container .sr-bar span{display:block;height:100%;border-radius:3px}',
+      '.ss-container .sr-bar-row:nth-child(1) .sr-bar span{background:#FF9F0A}',
+      '.ss-container .sr-bar-row:nth-child(2) .sr-bar span{background:#34C759}',
+      '.ss-container .sr-pct{font-size:.72rem;font-weight:700;color:' + (isDark ? 'rgba(235,235,245,.6)' : 'rgba(60,60,67,.6)') + ';width:36px;flex-shrink:0;text-align:right}'
     ].join(' ');
     container.appendChild(styleTag);
 
