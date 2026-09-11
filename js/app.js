@@ -740,6 +740,17 @@
     }
   });
 
+  /* ---------- Team Card Expand ---------- */
+  var teamCard=document.getElementById('teamCard');
+  var teamCardHead=document.getElementById('teamCardHead');
+  if(teamCard&&teamCardHead){
+    teamCardHead.addEventListener('click',function(e){
+      // Don't toggle when clicking the contact button inside detail
+      if(e.target.closest('.team-contact-btn'))return;
+      teamCard.classList.toggle('expanded');
+    });
+  }
+
   /* ---------- Workspace Password Lock ---------- */
   var WS_PASSWORD='123000';
   var WS_LOCK_KEY='v_ing_ws_unlocked';
