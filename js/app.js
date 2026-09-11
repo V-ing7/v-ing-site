@@ -856,6 +856,7 @@
     plan:document.getElementById('ws-panel-plan'),
     collab:document.getElementById('ws-panel-collab'),
     unified:document.getElementById('ws-panel-unified'),
+    card:document.getElementById('ws-panel-card'),
     console:document.getElementById('ws-panel-console')
   };
   var collabHub=document.getElementById('collabHub');
@@ -869,10 +870,10 @@
       btn.classList.remove('active');
       if(btn.getAttribute('data-ws-tab')===tab)btn.classList.add('active');
     });
-    // Move indicator (4-segment)
+    // Move indicator (5-segment)
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4');
-      var pos = {'plan':1,'collab':2,'unified':3,'console':4}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5');
+      var pos = {'plan':1,'collab':2,'unified':3,'card':4,'console':5}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1921,6 +1922,46 @@
             consoleCopyBtn.classList.remove('copied');
           }, 2000);
         }
+      }
+    });
+  }
+
+  // Business card save button
+  var bcSaveBtn = document.getElementById('bcSaveBtn');
+  if(bcSaveBtn){
+    bcSaveBtn.addEventListener('click', function(){
+      var businessCard = document.querySelector('.business-card');
+      if(!businessCard) return;
+      var originalText = bcSaveBtn.innerHTML;
+      if(window.html2canvas){
+        bcSaveBtn.querySelector('span').textContent = lang === 'zh' ? '生成中...' : 'Generating...';
+        bcSaveBtn.classList.add('copied');
+        setTimeout(function(){
+          html2canvas(businessCard, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true
+          }).then(function(canvas){
+            var link = document.createElement('a');
+            link.download = '林威_名片.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            bcSaveBtn.innerHTML = originalText;
+            bcSaveBtn.classList.remove('copied');
+          }).catch(function(){
+            bcSaveBtn.innerHTML = originalText;
+            bcSaveBtn.classList.remove('copied');
+          });
+        }, 300);
+      } else {
+        // Fallback: just show a message
+        var span = bcSaveBtn.querySelector('span');
+        span.textContent = lang === 'zh' ? '已保存' : 'Saved';
+        bcSaveBtn.classList.add('copied');
+        setTimeout(function(){
+          bcSaveBtn.innerHTML = originalText;
+          bcSaveBtn.classList.remove('copied');
+        }, 2000);
       }
     });
   }

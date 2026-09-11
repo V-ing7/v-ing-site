@@ -1574,6 +1574,15 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .seg-4-indicator.seg-pos-2{transform:translateX(100%)}
 .seg-4-indicator.seg-pos-3{transform:translateX(200%)}
 .seg-4-indicator.seg-pos-4{transform:translateX(300%)}
+/* 5-segment support */
+.seg-5 .seg-indicator{
+  width:calc(20% - 3.2px);
+}
+.seg-5-indicator.seg-pos-1{transform:translateX(0%)}
+.seg-5-indicator.seg-pos-2{transform:translateX(100%)}
+.seg-5-indicator.seg-pos-3{transform:translateX(200%)}
+.seg-5-indicator.seg-pos-4{transform:translateX(300%)}
+.seg-5-indicator.seg-pos-5{transform:translateX(400%)}
 
 /* Workspace Panels */
 .ws-panel{display:none;will-change:opacity,transform}
@@ -2429,6 +2438,207 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   box-shadow:0 0 0 3px var(--accent-glow);
 }
 
+/* ---------- Business Card Panel ---------- */
+.card-section{
+  max-width:520px;
+  margin:0 auto;
+  padding:8px 0 40px;
+}
+.business-card{
+  position:relative;
+  border-radius:24px;
+  overflow:hidden;
+  background:var(--surface-glass);
+  backdrop-filter:saturate(180%) blur(24px);
+  -webkit-backdrop-filter:saturate(180%) blur(24px);
+  border:1px solid var(--glass-border);
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+}
+.bc-glow{
+  position:absolute;
+  top:-80px;right:-80px;
+  width:240px;height:240px;
+  background:radial-gradient(circle,rgba(255,180,80,.15) 0%,transparent 70%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.bc-inner{
+  position:relative;
+  padding:32px 28px 24px;
+}
+.bc-header{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-bottom:22px;
+}
+.bc-avatar{
+  flex-shrink:0;
+  width:64px;height:64px;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--surface-2),var(--bg-soft));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--text-primary);
+  border:1px solid var(--glass-border);
+}
+.bc-logo{
+  width:40px;
+  height:auto;
+}
+.bc-name-wrap{
+  flex:1;
+  min-width:0;
+}
+.bc-name{
+  font-size:1.4rem;
+  font-weight:700;
+  color:var(--text-primary);
+  margin:0 0 4px;
+  line-height:1.2;
+}
+.bc-title{
+  font-size:.85rem;
+  color:var(--text-secondary);
+  margin:0 0 8px;
+  font-weight:500;
+}
+.bc-cert-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:8px;
+  background:linear-gradient(135deg,rgba(255,200,100,.12),rgba(255,170,50,.06));
+  border:1px solid rgba(255,180,80,.2);
+  color:var(--accent);
+  font-size:.7rem;
+  font-weight:600;
+}
+.bc-divider{
+  height:1px;
+  background:var(--glass-border);
+  margin:0 -4px 20px;
+}
+.bc-info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 20px;
+  margin-bottom:22px;
+}
+.bc-info-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.bc-info-icon{
+  flex-shrink:0;
+  width:32px;height:32px;
+  border-radius:10px;
+  background:var(--surface-2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--accent);
+}
+.bc-info-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+.bc-info-label{
+  font-size:.7rem;
+  color:var(--text-tertiary);
+  font-weight:500;
+}
+.bc-info-value{
+  font-size:.82rem;
+  color:var(--text-primary);
+  font-weight:600;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.bc-tags-section{
+  margin-bottom:18px;
+}
+.bc-section-label{
+  display:block;
+  font-size:.72rem;
+  color:var(--text-tertiary);
+  font-weight:600;
+  margin-bottom:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.bc-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.bc-tag{
+  padding:6px 14px;
+  border-radius:10px;
+  background:var(--accent);
+  color:#fff;
+  font-size:.75rem;
+  font-weight:600;
+}
+.bc-tags-outline{
+  gap:8px;
+}
+.bc-tag-outline{
+  padding:5px 12px;
+  border-radius:10px;
+  background:transparent;
+  color:var(--text-primary);
+  font-size:.75rem;
+  font-weight:500;
+  border:1px solid var(--glass-border);
+}
+.bc-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:18px;
+  border-top:1px solid var(--glass-border);
+  margin-top:4px;
+}
+.bc-studio-mark{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.75rem;
+  color:var(--text-tertiary);
+  font-weight:500;
+}
+.bc-mark-dot{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--accent);
+}
+.bc-save-btn{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 16px;
+  border-radius:10px;
+  background:var(--surface-2);
+  color:var(--text-primary);
+  font-size:.78rem;
+  font-weight:600;
+  border:1px solid var(--glass-border);
+  cursor:pointer;
+  transition:all .25s ease;
+}
+.bc-save-btn:hover{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
+
 /* ---------- Console Panel ---------- */
 .console-wrap{
   max-width:760px;
@@ -2633,6 +2843,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .seg-btn{padding:8px 10px;font-size:.72rem;min-width:0}
   .seg-3 .seg-indicator{width:calc(33.333% - 2px)}
   .seg-4 .seg-indicator{width:calc(25% - 1.5px)}
+  .seg-5 .seg-indicator{width:calc(20% - 2.4px)}
   /* Plan mobile */
   .plan-overview{padding:24px 20px;margin-bottom:28px}
   .plan-progress-wrap{justify-content:center;gap:24px}
@@ -2682,6 +2893,24 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .collab-logo-sm{width:28px;height:28px;font-size:.75rem;border-radius:8px}
   .unified-brand-section .report-summary-row{margin-bottom:12px}
   .badge{font-size:.62rem;padding:3px 8px}
+  /* Business card mobile */
+  .card-section{padding:4px 0 28px}
+  .bc-inner{padding:24px 20px 20px}
+  .bc-header{gap:14px;margin-bottom:18px}
+  .bc-avatar{width:56px;height:56px;border-radius:14px}
+  .bc-logo{width:34px}
+  .bc-name{font-size:1.2rem}
+  .bc-title{font-size:.8rem}
+  .bc-cert-badge{font-size:.65rem;padding:3px 8px}
+  .bc-info-grid{gap:12px 14px}
+  .bc-info-item{gap:8px}
+  .bc-info-icon{width:28px;height:28px;border-radius:8px}
+  .bc-info-icon svg{width:14px;height:14px}
+  .bc-info-value{font-size:.78rem}
+  .bc-tag{padding:5px 10px;font-size:.7rem}
+  .bc-tag-outline{padding:4px 10px;font-size:.7rem}
+  .bc-footer{padding-top:14px}
+  .bc-save-btn{padding:7px 12px;font-size:.72rem}
 }
 @media(max-width:380px){
   .placeholder-grid{grid-template-columns:1fr}
