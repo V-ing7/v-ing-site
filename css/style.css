@@ -878,6 +878,11 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   grid-template-columns:repeat(4,1fr);
   gap:20px;
 }
+.team-grid-single{
+  grid-template-columns:1fr;
+  max-width:300px;
+  margin:0 auto;
+}
 .team-card{
   text-align:center;
   padding:36px 20px;
