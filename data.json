@@ -38,5 +38,63 @@
   },
   "lastUpdated": "2026-09-11T11:27:35.481Z",
   "theme": "dark",
-  "lang": "zh"
+  "lang": "zh",
+  "operationLog": [
+    {
+      "date": "2026-09-11",
+      "time": "07:20",
+      "action": "修复截图功能：从 DOM 克隆改为直接元素捕获",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:25",
+      "action": "修复品牌汇总数据显示零值",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:28",
+      "action": "修复进度条同步问题（主播卡片/品牌汇总/总计）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:30",
+      "action": "修复白屏：移除 Google Fonts + html2canvas 本地化",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:35",
+      "action": "部署到 Cloudflare Pages（pages.dev 域名国内可访问）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:45",
+      "action": "实现跨设备数据同步：通过 GitHub API 存取 data.json",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:50",
+      "action": "创建工作台指令模版区，记录项目信息和操作日志",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "08:00",
+      "action": "将工作台指令模版集成到网站中，实现实时同步显示",
+      "status": "完成"
+    }
+  ],
+  "instructionTemplate": {
+    "repoUrl": "V-ing7/v-ing-site",
+    "branch": "main",
+    "dataFile": "data.json",
+    "siteUrl": "https://v-ing-site.pages.dev",
+    "cloudflareProject": "v-ing-site",
+    "description": "网站数据存在 GitHub 仓库 data.json 中，编辑时自动同步到云端。"
+  }
 }
