@@ -259,6 +259,59 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   align-items:center;
   gap:8px;
 }
+
+/* Sync Status Badge */
+.sync-badge{
+  font-size:.68rem;
+  font-weight:600;
+  padding:4px 10px;
+  border-radius:8px;
+  white-space:nowrap;
+  transition:all .3s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+.sync-badge::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  display:inline-block;
+}
+.sync-loading{
+  background:rgba(255,159,10,.12);
+  color:#FF9F0A;
+}
+.sync-loading::before{
+  background:#FF9F0A;
+  animation:pulse 1.2s infinite;
+}
+.sync-success{
+  background:rgba(52,199,89,.12);
+  color:#34C759;
+}
+.sync-success::before{ background:#34C759; }
+.sync-error{
+  background:rgba(255,59,48,.12);
+  color:#FF3B30;
+}
+.sync-error::before{ background:#FF3B30; }
+.sync-offline{
+  background:rgba(152,152,157,.12);
+  color:var(--text-secondary);
+}
+.sync-offline::before{ background:var(--accent); }
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(.8)}
+}
+@media (max-width:600px){
+  .sync-badge{
+    font-size:.62rem;
+    padding:3px 7px;
+  }
+}
 .ctrl-btn{
   display:flex;
   align-items:center;

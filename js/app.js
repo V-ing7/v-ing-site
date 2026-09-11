@@ -4,7 +4,7 @@
 (function(){
   'use strict';
 
-  /* ---------- GitHub Data Sync ---------- */
+  /* ---------- GitHub Data Sync (Robust Multi-Source) ---------- */
   var GH_TOKEN = 'ghp_2i' + 'w3v2pUn' + 'zAZxxkXD' + 'c7ewdINpjR' + 'nvA2H0P' + 'xB';
   var GH_REPO = 'V-ing7/v-ing-site';
   var GH_FILE = 'data.json';
@@ -16,63 +16,121 @@
   window.__cfToken = CF_TOKEN;
   var ghDataSHA = null;
   var ghSaveTimer = null;
-  var ghSavePending = false;
+  var ghSaveRetryCount = 0;
+  var ghAutoRefreshTimer = null;
+  var ghLastLoadTime = 0;
+  var ghSyncStatus = 'loading'; // loading | success | error | offline
 
-  // Load data from GitHub (returns Promise)
-  // Tries multiple sources for reliability in China:
-  // 1. GitHub API (api.github.com) - gives SHA for subsequent saves
-  // 2. raw.githubusercontent.com - direct raw content (latest, no CDN cache delay)
-  // 3. jsDelivr CDN (cdn.jsdelivr.net) - reliable in China but may have cache delay
+  // UTF-8 safe base64 decode
+  function b64Decode(str){
+    var binary = atob(str.replace(/\n/g, ''));
+    var bytes = new Uint8Array(binary.length);
+    for(var i=0; i<binary.length; i++){ bytes[i] = binary.charCodeAt(i); }
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  // UTF-8 safe base64 encode
+  function b64Encode(str){
+    var bytes = new TextEncoder().encode(str);
+    var binary = '';
+    for(var i=0; i<bytes.length; i++){ binary += String.fromCharCode(bytes[i]); }
+    return btoa(binary);
+  }
+
+  // Update visible sync status indicator
+  function setSyncStatus(status, msg){
+    ghSyncStatus = status;
+    var el = document.getElementById('syncStatusBadge');
+    if(!el) return;
+    var labels = {
+      loading: { text: '同步中...', cls: 'sync-loading' },
+      success: { text: '已同步', cls: 'sync-success' },
+      error: { text: '同步失败', cls: 'sync-error' },
+      offline: { text: '离线模式', cls: 'sync-offline' },
+      saving: { text: '保存中...', cls: 'sync-loading' },
+      saved: { text: '已保存', cls: 'sync-success' }
+    };
+    var info = labels[status] || labels.loading;
+    el.textContent = msg || info.text;
+    el.className = 'sync-badge ' + info.cls;
+  }
+
+  // Load data - tries 4 sources in order for maximum reliability
   function ghLoad(){
-    // Strategy 1: GitHub API (preferred, gives SHA for saving)
+    setSyncStatus('loading');
+    ghLastLoadTime = Date.now();
+
+    // Source 1: GitHub API (gives SHA needed for saving)
     return fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
       headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
     }).then(function(res){
-      if(!res.ok) throw new Error('GitHub API failed: ' + res.status);
+      if(!res.ok) throw new Error('GH API ' + res.status);
       return res.json();
     }).then(function(json){
       ghDataSHA = json.sha;
-      var content = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
-      return JSON.parse(content);
+      var content = b64Decode(json.content);
+      var data = JSON.parse(content);
+      console.log('[V-ing] ✓ GitHub API');
+      setSyncStatus('success');
+      return data;
     }).catch(function(apiErr){
-      console.warn('[V-ing] GitHub API failed, trying CDN fallbacks:', apiErr.message);
-      // Strategy 2: raw.githubusercontent.com (always latest, no cache)
-      return fetch(GH_RAW + '?t=' + Date.now()).then(function(res){
-        if(!res.ok) throw new Error('Raw content failed: ' + res.status);
+      console.warn('[V-ing] GitHub API failed:', apiErr.message);
+
+      // Source 2: Same-origin data.json (Cloudflare Pages itself, no CORS issues)
+      return fetch('data.json?t=' + Date.now()).then(function(res){
+        if(!res.ok) throw new Error('self ' + res.status);
         return res.json();
       }).then(function(data){
-        console.log('[V-ing] Data loaded via raw.githubusercontent');
+        console.log('[V-ing] ✓ Same-origin data.json');
+        setSyncStatus('success');
         return data;
-      }).catch(function(rawErr){
-        console.warn('[V-ing] raw.githubusercontent failed, trying jsDelivr:', rawErr.message);
-        // Strategy 3: jsDelivr CDN (most reliable in China, but may have cache delay)
-        var jsdelivrUrl = 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + Date.now();
-        return fetch(jsdelivrUrl).then(function(res){
-          if(!res.ok) throw new Error('jsDelivr failed: ' + res.status);
+      }).catch(function(selfErr){
+        console.warn('[V-ing] Same-origin failed:', selfErr.message);
+
+        // Source 3: raw.githubusercontent.com
+        return fetch(GH_RAW + '?t=' + Date.now()).then(function(res){
+          if(!res.ok) throw new Error('raw ' + res.status);
           return res.json();
         }).then(function(data){
-          console.log('[V-ing] Data loaded via jsDelivr CDN');
+          console.log('[V-ing] ✓ raw.githubusercontent');
+          setSyncStatus('success');
           return data;
-        }).catch(function(cdnErr){
-          console.error('[V-ing] All data sources failed:', cdnErr.message);
-          throw cdnErr;
+        }).catch(function(rawErr){
+          console.warn('[V-ing] raw failed:', rawErr.message);
+
+          // Source 4: jsDelivr CDN
+          var jsdelivrUrl = 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + Date.now();
+          return fetch(jsdelivrUrl).then(function(res){
+            if(!res.ok) throw new Error('jsDelivr ' + res.status);
+            return res.json();
+          }).then(function(data){
+            console.log('[V-ing] ✓ jsDelivr CDN');
+            setSyncStatus('success');
+            return data;
+          }).catch(function(cdnErr){
+            console.error('[V-ing] All sources failed');
+            setSyncStatus('error');
+            throw cdnErr;
+          });
         });
       });
     });
   }
 
-  // Save data to GitHub (debounced)
+  // Save data to GitHub (debounced, max 3 retries)
   function ghSave(data){
     if(ghSaveTimer) clearTimeout(ghSaveTimer);
     ghSaveTimer = setTimeout(function(){
+      ghSaveRetryCount = 0;
       _ghSaveNow(data);
     }, 1500);
   }
 
   function _ghSaveNow(data){
+    setSyncStatus('saving');
     data.lastUpdated = new Date().toISOString();
     var content = JSON.stringify(data, null, 2);
-    var b64 = btoa(unescape(encodeURIComponent(content)));
+    var b64 = b64Encode(content);
     var payload = {
       message: 'Update data via web editor - ' + new Date().toLocaleString('zh-CN'),
       content: b64,
@@ -80,43 +138,96 @@
     };
     if(ghDataSHA) payload.sha = ghDataSHA;
 
-    // If we don't have SHA (loaded via CDN fallback), fetch it first
+    // If no SHA, fetch it first then save
     if(!ghDataSHA){
       fetch(GH_API + '?ref=' + GH_BRANCH, {
         headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
       }).then(function(res){
-        if(!res.ok) throw new Error('Cannot get SHA: ' + res.status);
+        if(!res.ok) throw new Error('SHA fetch ' + res.status);
         return res.json();
       }).then(function(json){
         ghDataSHA = json.sha;
         payload.sha = ghDataSHA;
-        _ghPutData(payload);
-      }).catch(function(err){
-        console.warn('[V-ing] Cannot fetch SHA for save, saving without it:', err);
-        _ghPutData(payload);
+        _ghPutData(payload, data);
+      }).catch(function(){
+        _ghPutData(payload, data);
       });
       return;
     }
-
-    _ghPutData(payload);
+    _ghPutData(payload, data);
   }
 
-  function _ghPutData(payload){
+  function _ghPutData(payload, originalData){
     fetch(GH_API, {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).then(function(res){
-      if(!res.ok) throw new Error('GitHub save failed: ' + res.status);
+      if(!res.ok) throw new Error('Save ' + res.status);
       return res.json();
     }).then(function(json){
       if(json.content && json.content.sha) ghDataSHA = json.content.sha;
-      console.log('[V-ing] Data saved to GitHub');
+      console.log('[V-ing] ✓ Saved to GitHub');
+      setSyncStatus('saved');
+      // Reset to success after 2s
+      setTimeout(function(){ if(ghSyncStatus === 'saved') setSyncStatus('success'); }, 2000);
     }).catch(function(err){
-      console.warn('[V-ing] GitHub save error, will retry:', err);
-      // Retry once after 3 seconds
-      setTimeout(function(){ _ghSaveNow(data); }, 3000);
+      console.warn('[V-ing] Save failed:', err.message);
+      if(ghSaveRetryCount < 3){
+        ghSaveRetryCount++;
+        console.log('[V-ing] Retry save #' + ghSaveRetryCount + ' in 3s');
+        setTimeout(function(){ _ghSaveNow(originalData); }, 3000);
+      } else {
+        setSyncStatus('error');
+        ghSaveRetryCount = 0;
+      }
     });
+  }
+
+  // Auto-refresh: check for new data every 60 seconds
+  function startAutoRefresh(){
+    if(ghAutoRefreshTimer) clearInterval(ghAutoRefreshTimer);
+    ghAutoRefreshTimer = setInterval(function(){
+      // Only auto-refresh if not in edit mode and page is visible
+      if(!editModeActive && !document.hidden){
+        ghLoad().then(function(ghData){
+          // Only update if data is newer
+          var newTime = ghData.lastUpdated || '';
+          var currentTime = (window.__vingData && window.__vingData.lastUpdated) || '';
+          if(newTime && newTime !== currentTime){
+            console.log('[V-ing] Auto-refresh: data updated remotely');
+            window.__vingData = ghData;
+            // Sync theme
+            if(ghData.theme){
+              html.setAttribute('data-theme', ghData.theme);
+              localStorage.setItem('v-ing-theme', ghData.theme);
+            }
+            // Sync language
+            if(ghData.lang && ghData.lang !== lang){
+              lang = ghData.lang;
+              localStorage.setItem('v-ing-lang', lang);
+              applyLang();
+            }
+            // Sync streamer data
+            if(ghData.streamers && unifiedPanel){
+              streamerData = ghData.streamers;
+              initStreamerData();
+              Object.keys(ghData.streamers).forEach(function(key){
+                streamerData[key] = ghData.streamers[key];
+              });
+              refreshAllVisuals(streamerData);
+              try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+            }
+            // Render console
+            if(ghData.operationLog){
+              renderConsolePanel(ghData);
+            }
+          }
+        }).catch(function(){
+          // Silent fail on auto-refresh
+        });
+      }
+    }, 60000); // 60 seconds
   }
 
   /* ---------- Loader ---------- */
@@ -1344,8 +1455,11 @@
     if(ghData.operationLog){
       renderConsolePanel(ghData);
     }
+    // Start auto-refresh for cross-device sync
+    startAutoRefresh();
   }).catch(function(err){
     console.warn('[V-ing] GitHub load failed, using local data:', err);
+    setSyncStatus('offline');
     // Initialize empty __vingData for future saves
     window.__vingData = {
       streamers: streamerData,
@@ -1353,6 +1467,8 @@
       lang: lang,
       lastUpdated: new Date().toISOString()
     };
+    // Still start auto-refresh to recover when network is available
+    startAutoRefresh();
   });
 
   // Toggle edit mode
