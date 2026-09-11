@@ -21,8 +21,8 @@
   // Load data from GitHub (returns Promise)
   // Tries multiple sources for reliability in China:
   // 1. GitHub API (api.github.com) - gives SHA for subsequent saves
-  // 2. jsDelivr CDN (cdn.jsdelivr.net) - fast CDN mirror
-  // 3. raw.githubusercontent.com - direct raw content
+  // 2. raw.githubusercontent.com - direct raw content (latest, no CDN cache delay)
+  // 3. jsDelivr CDN (cdn.jsdelivr.net) - reliable in China but may have cache delay
   function ghLoad(){
     // Strategy 1: GitHub API (preferred, gives SHA for saving)
     return fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
@@ -36,26 +36,26 @@
       return JSON.parse(content);
     }).catch(function(apiErr){
       console.warn('[V-ing] GitHub API failed, trying CDN fallbacks:', apiErr.message);
-      // Strategy 2: jsDelivr CDN (most reliable in China)
-      var jsdelivrUrl = 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + Date.now();
-      return fetch(jsdelivrUrl).then(function(res){
-        if(!res.ok) throw new Error('jsDelivr failed: ' + res.status);
+      // Strategy 2: raw.githubusercontent.com (always latest, no cache)
+      return fetch(GH_RAW + '?t=' + Date.now()).then(function(res){
+        if(!res.ok) throw new Error('Raw content failed: ' + res.status);
         return res.json();
       }).then(function(data){
-        console.log('[V-ing] Data loaded via jsDelivr CDN');
+        console.log('[V-ing] Data loaded via raw.githubusercontent');
         return data;
-      }).catch(function(cdnErr){
-        console.warn('[V-ing] jsDelivr failed, trying raw.githubusercontent:', cdnErr.message);
-        // Strategy 3: raw.githubusercontent.com
-        return fetch(GH_RAW + '?t=' + Date.now()).then(function(res){
-          if(!res.ok) throw new Error('Raw content failed: ' + res.status);
+      }).catch(function(rawErr){
+        console.warn('[V-ing] raw.githubusercontent failed, trying jsDelivr:', rawErr.message);
+        // Strategy 3: jsDelivr CDN (most reliable in China, but may have cache delay)
+        var jsdelivrUrl = 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + Date.now();
+        return fetch(jsdelivrUrl).then(function(res){
+          if(!res.ok) throw new Error('jsDelivr failed: ' + res.status);
           return res.json();
         }).then(function(data){
-          console.log('[V-ing] Data loaded via raw.githubusercontent');
+          console.log('[V-ing] Data loaded via jsDelivr CDN');
           return data;
-        }).catch(function(rawErr){
-          console.error('[V-ing] All data sources failed:', rawErr.message);
-          throw rawErr;
+        }).catch(function(cdnErr){
+          console.error('[V-ing] All data sources failed:', cdnErr.message);
+          throw cdnErr;
         });
       });
     });
@@ -1335,7 +1335,9 @@
         streamerData[key] = ghData.streamers[key];
       });
       refreshAllVisuals(streamerData);
-      saveReportData(streamerData);
+      // Only save to localStorage, do NOT push back to GitHub
+      // (we just loaded from GitHub, no need to save it back)
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
     }
     console.log('[V-ing] Data loaded from GitHub:', ghData.lastUpdated);
     // Render console panel if data has operation log
