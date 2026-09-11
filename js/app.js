@@ -860,25 +860,37 @@
       btn.textContent = lang==='zh'?'截图生成中...':'Generating...';
     }
 
-    // Build screenshot container with header/footer
-    var ssContainer = buildScreenshotContainer(target, reportId);
-    ssContainer.style.position = 'fixed';
-    ssContainer.style.left = '-9999px';
-    ssContainer.style.top = '0';
-    document.body.appendChild(ssContainer);
-
     var isDark = html.getAttribute('data-theme') === 'dark';
     var bgColor = isDark ? '#000000' : '#F2F2F7';
 
-    html2canvas(ssContainer, {
+    // Temporarily hide buttons and other elements we don't want in the screenshot
+    var hiddenEls = [];
+    var btnsToHide = target.querySelectorAll('.screenshot-btn, .edit-toggle-btn');
+    btnsToHide.forEach(function(el){
+      hiddenEls.push({el: el, orig: el.style.display});
+      el.style.display = 'none';
+    });
+
+    // For unified report, also hide the toolbar buttons area but keep the title
+    var toolbarRight = target.querySelector('.unified-toolbar-right');
+    if(toolbarRight){
+      hiddenEls.push({el: toolbarRight, orig: toolbarRight.style.display});
+      toolbarRight.style.display = 'none';
+    }
+
+    html2canvas(target, {
       backgroundColor: bgColor,
       scale: 2,
       useCORS: true,
       logging: false,
-      windowWidth: 900
+      windowWidth: 900,
+      allowTaint: true,
+      foreignObjectRendering: false
     }).then(function(canvas){
-      // Clean up
-      document.body.removeChild(ssContainer);
+      // Restore hidden elements
+      hiddenEls.forEach(function(item){
+        item.el.style.display = item.orig;
+      });
 
       // Download
       var link = document.createElement('a');
@@ -894,10 +906,10 @@
       }
     }).catch(function(err){
       console.error('Screenshot error:', err);
-      // Clean up on error too
-      if(ssContainer.parentNode){
-        document.body.removeChild(ssContainer);
-      }
+      // Restore on error too
+      hiddenEls.forEach(function(item){
+        item.el.style.display = item.orig;
+      });
       if(btn){
         btn.classList.remove('shooting');
         applyLang();
