@@ -19,16 +19,45 @@
   var ghSavePending = false;
 
   // Load data from GitHub (returns Promise)
+  // Tries multiple sources for reliability in China:
+  // 1. GitHub API (api.github.com) - gives SHA for subsequent saves
+  // 2. jsDelivr CDN (cdn.jsdelivr.net) - fast CDN mirror
+  // 3. raw.githubusercontent.com - direct raw content
   function ghLoad(){
+    // Strategy 1: GitHub API (preferred, gives SHA for saving)
     return fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
       headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
     }).then(function(res){
-      if(!res.ok) throw new Error('GitHub load failed: ' + res.status);
+      if(!res.ok) throw new Error('GitHub API failed: ' + res.status);
       return res.json();
     }).then(function(json){
       ghDataSHA = json.sha;
       var content = decodeURIComponent(escape(atob(json.content.replace(/\n/g, ''))));
       return JSON.parse(content);
+    }).catch(function(apiErr){
+      console.warn('[V-ing] GitHub API failed, trying CDN fallbacks:', apiErr.message);
+      // Strategy 2: jsDelivr CDN (most reliable in China)
+      var jsdelivrUrl = 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + Date.now();
+      return fetch(jsdelivrUrl).then(function(res){
+        if(!res.ok) throw new Error('jsDelivr failed: ' + res.status);
+        return res.json();
+      }).then(function(data){
+        console.log('[V-ing] Data loaded via jsDelivr CDN');
+        return data;
+      }).catch(function(cdnErr){
+        console.warn('[V-ing] jsDelivr failed, trying raw.githubusercontent:', cdnErr.message);
+        // Strategy 3: raw.githubusercontent.com
+        return fetch(GH_RAW + '?t=' + Date.now()).then(function(res){
+          if(!res.ok) throw new Error('Raw content failed: ' + res.status);
+          return res.json();
+        }).then(function(data){
+          console.log('[V-ing] Data loaded via raw.githubusercontent');
+          return data;
+        }).catch(function(rawErr){
+          console.error('[V-ing] All data sources failed:', rawErr.message);
+          throw rawErr;
+        });
+      });
     });
   }
 
@@ -51,6 +80,28 @@
     };
     if(ghDataSHA) payload.sha = ghDataSHA;
 
+    // If we don't have SHA (loaded via CDN fallback), fetch it first
+    if(!ghDataSHA){
+      fetch(GH_API + '?ref=' + GH_BRANCH, {
+        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      }).then(function(res){
+        if(!res.ok) throw new Error('Cannot get SHA: ' + res.status);
+        return res.json();
+      }).then(function(json){
+        ghDataSHA = json.sha;
+        payload.sha = ghDataSHA;
+        _ghPutData(payload);
+      }).catch(function(err){
+        console.warn('[V-ing] Cannot fetch SHA for save, saving without it:', err);
+        _ghPutData(payload);
+      });
+      return;
+    }
+
+    _ghPutData(payload);
+  }
+
+  function _ghPutData(payload){
     fetch(GH_API, {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
