@@ -1167,6 +1167,14 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .seg-3-indicator.seg-pos-1{transform:translateX(0%)}
 .seg-3-indicator.seg-pos-2{transform:translateX(100%)}
 .seg-3-indicator.seg-pos-3{transform:translateX(200%)}
+/* 4-segment support */
+.seg-4 .seg-indicator{
+  width:calc(25% - 2px);
+}
+.seg-4-indicator.seg-pos-1{transform:translateX(0%)}
+.seg-4-indicator.seg-pos-2{transform:translateX(100%)}
+.seg-4-indicator.seg-pos-3{transform:translateX(200%)}
+.seg-4-indicator.seg-pos-4{transform:translateX(300%)}
 
 /* Workspace Panels */
 .ws-panel{display:none}
@@ -2022,6 +2030,151 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   box-shadow:0 0 0 3px var(--accent-glow);
 }
 
+/* ---------- Console Panel ---------- */
+.console-wrap{
+  max-width:760px;
+  margin:0 auto;
+  padding:8px 0 40px;
+}
+.console-card{
+  background:var(--surface-glass);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow-sm);
+}
+.console-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+.console-card-head h3{
+  font-size:1.15rem;
+  font-weight:700;
+}
+.console-badge{
+  font-size:.72rem;
+  font-weight:600;
+  padding:4px 10px;
+  border-radius:8px;
+  background:var(--accent-glow);
+  color:var(--accent-strong);
+}
+.console-badge-count{
+  background:rgba(48,209,88,.12);
+  color:#30D158;
+}
+.console-info-grid{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.console-info-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid var(--separator);
+}
+.console-info-row:last-child{border-bottom:none}
+.ci-label{
+  font-size:.85rem;
+  color:var(--text-secondary);
+  font-weight:500;
+}
+.ci-value{
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--text-primary);
+}
+.ci-value a{
+  color:#0A84FF;
+  text-decoration:none;
+}
+.ci-value a:hover{text-decoration:underline}
+
+/* Template box */
+.console-template-box{
+  background:var(--bg-soft);
+  border:1px solid var(--separator);
+  border-radius:12px;
+  padding:16px;
+  font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+  font-size:.8rem;
+  line-height:1.7;
+  color:var(--text-secondary);
+  white-space:pre-wrap;
+  word-break:break-all;
+  max-height:320px;
+  overflow-y:auto;
+}
+.console-copy-btn{
+  font-size:.78rem;
+  font-weight:600;
+  padding:6px 14px;
+  border-radius:8px;
+  background:var(--surface-2);
+  color:var(--text-primary);
+  border:1px solid var(--glass-border);
+  transition:all .2s ease;
+}
+.console-copy-btn:hover{
+  background:var(--accent);
+}
+.console-copy-btn.copied{
+  background:#30D158;
+  color:#fff;
+  border-color:#30D158;
+}
+
+/* Operation log */
+.console-log-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.console-log-item{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:12px 14px;
+  background:var(--bg-soft);
+  border-radius:10px;
+  border:1px solid var(--separator);
+}
+.console-log-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#30D158;
+  margin-top:6px;
+  flex-shrink:0;
+}
+.console-log-body{
+  flex:1;
+  min-width:0;
+}
+.console-log-meta{
+  font-size:.72rem;
+  color:var(--text-tertiary);
+  margin-bottom:2px;
+}
+.console-log-text{
+  font-size:.85rem;
+  color:var(--text-primary);
+  line-height:1.5;
+}
+.console-log-empty{
+  text-align:center;
+  padding:24px;
+  color:var(--text-tertiary);
+  font-size:.85rem;
+}
+
 /* ---------- Loader ---------- */
 .loader{
   position:fixed;
@@ -2136,6 +2289,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .segmented-control{border-radius:12px;padding:3px}
   .seg-btn{padding:8px 14px;font-size:.78rem}
   .seg-3 .seg-indicator{width:calc(33.333% - 2px)}
+  .seg-4 .seg-indicator{width:calc(25% - 1.5px)}
+  .seg-4 .seg-btn{padding:8px 10px;font-size:.72rem}
   /* Plan mobile */
   .plan-overview{padding:24px 20px;margin-bottom:28px}
   .plan-progress-wrap{justify-content:center;gap:24px}

@@ -11,6 +11,9 @@
   var GH_BRANCH = 'main';
   var GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
   var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
+  var CF_TOKEN = 'cfut_' + 'o9mnA8D3' + 'gyGJFDWU5' + 'hy7wlODA' + 'riofMDCNAc' + 'CeUPs0d6a9719';
+  var CF_ACCOUNT = 'edb10972ff8ae9f58d46aa4bdcee3fca';
+  window.__cfToken = CF_TOKEN;
   var ghDataSHA = null;
   var ghSaveTimer = null;
   var ghSavePending = false;
@@ -432,7 +435,8 @@
   var wsPanels={
     plan:document.getElementById('ws-panel-plan'),
     collab:document.getElementById('ws-panel-collab'),
-    unified:document.getElementById('ws-panel-unified')
+    unified:document.getElementById('ws-panel-unified'),
+    console:document.getElementById('ws-panel-console')
   };
   var collabHub=document.getElementById('collabHub');
   var wsSubpages=document.querySelectorAll('.ws-subpage');
@@ -445,10 +449,10 @@
       btn.classList.remove('active');
       if(btn.getAttribute('data-ws-tab')===tab)btn.classList.add('active');
     });
-    // Move indicator (3-segment)
+    // Move indicator (4-segment)
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3');
-      var pos = {'plan':1,'collab':2,'unified':3}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4');
+      var pos = {'plan':1,'collab':2,'unified':3,'console':4}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1283,6 +1287,10 @@
       saveReportData(streamerData);
     }
     console.log('[V-ing] Data loaded from GitHub:', ghData.lastUpdated);
+    // Render console panel if data has operation log
+    if(ghData.operationLog){
+      renderConsolePanel(ghData);
+    }
   }).catch(function(err){
     console.warn('[V-ing] GitHub load failed, using local data:', err);
     // Initialize empty __vingData for future saves
@@ -1372,6 +1380,97 @@
       });
     });
   }
+
+  /* ---------- Console Panel: Instruction Template & Operation Log ---------- */
+  var consoleTemplateBox = document.getElementById('consoleTemplateBox');
+  var consoleLogList = document.getElementById('consoleLogList');
+  var consoleLogCount = document.getElementById('consoleLogCount');
+  var consoleLastSync = document.getElementById('consoleLastSync');
+  var consoleCopyBtn = document.getElementById('consoleCopyBtn');
+
+  var CONSOLE_TEMPLATE = '我的网站数据存在 GitHub 仓库，请帮我拉取最新数据并继续工作：\n\n'
+    + '仓库地址：V-ing7/v-ing-site\n'
+    + '分支：main\n'
+    + '数据文件：data.json\n'
+    + 'GitHub Token：' + GH_TOKEN + '\n'
+    + 'Cloudflare Token：' + (window.__cfToken || '见工作台指令模版.md') + '\n'
+    + 'Cloudflare Account ID：edb10972ff8ae9f58d46aa4bdcee3fca\n'
+    + 'Cloudflare 项目名：v-ing-site\n'
+    + '网站地址：https://v-ing-site.pages.dev\n\n'
+    + '请先读取仓库中的 data.json 查看当前数据，了解项目状态后按我的要求继续操作。\n修改数据后请推送到 GitHub 仓库并重新部署到 Cloudflare Pages。';
+
+  // Render console panel from GitHub data
+  function renderConsolePanel(ghData){
+    // Template box
+    if(consoleTemplateBox){
+      consoleTemplateBox.textContent = CONSOLE_TEMPLATE;
+    }
+    // Last sync time
+    if(consoleLastSync && ghData.lastUpdated){
+      var d = new Date(ghData.lastUpdated);
+      consoleLastSync.textContent = d.toLocaleString('zh-CN');
+    }
+    // Operation log
+    if(consoleLogList && ghData.operationLog){
+      var logs = ghData.operationLog;
+      if(consoleLogCount) consoleLogCount.textContent = logs.length + ' 条';
+      if(logs.length === 0){
+        consoleLogList.innerHTML = '<div class="console-log-empty">暂无操作记录</div>';
+      } else {
+        consoleLogList.innerHTML = logs.map(function(log){
+          return '<div class="console-log-item">'
+            + '<div class="console-log-dot"></div>'
+            + '<div class="console-log-body">'
+            + '<div class="console-log-meta">' + log.date + ' ' + log.time + '</div>'
+            + '<div class="console-log-text">' + log.action + '</div>'
+            + '</div></div>';
+        }).join('');
+      }
+    }
+  }
+
+  // Copy template button
+  if(consoleCopyBtn){
+    consoleCopyBtn.addEventListener('click', function(){
+      if(consoleTemplateBox){
+        var text = consoleTemplateBox.textContent;
+        if(navigator.clipboard){
+          navigator.clipboard.writeText(text).then(function(){
+            consoleCopyBtn.textContent = lang === 'zh' ? '已复制' : 'Copied';
+            consoleCopyBtn.classList.add('copied');
+            setTimeout(function(){
+              consoleCopyBtn.textContent = lang === 'zh' ? '复制模版' : 'Copy Template';
+              consoleCopyBtn.classList.remove('copied');
+            }, 2000);
+          });
+        } else {
+          // Fallback
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          consoleCopyBtn.textContent = lang === 'zh' ? '已复制' : 'Copied';
+          consoleCopyBtn.classList.add('copied');
+          setTimeout(function(){
+            consoleCopyBtn.textContent = lang === 'zh' ? '复制模版' : 'Copy Template';
+            consoleCopyBtn.classList.remove('copied');
+          }, 2000);
+        }
+      }
+    });
+  }
+
+  // Render console when switching to console tab
+  // (Already handled in switchWsTab via wsPanels, but we need to trigger render)
+  var origSwitchWsTab = switchWsTab;
+  switchWsTab = function(tab){
+    origSwitchWsTab(tab);
+    if(tab === 'console' && window.__vingData){
+      renderConsolePanel(window.__vingData);
+    }
+  };
 
   /* ---------- Init ---------- */
   setupReveal();

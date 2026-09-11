@@ -412,11 +412,12 @@
             <p class="section-desc reveal" data-cn="管理创作计划，追踪联动项目，让每一帧都按计划生长。" data-en="Manage creative schedules, track collaboration projects, let every frame grow on plan.">管理创作计划，追踪联动项目，让每一帧都按计划生长。</p>
           </div>
           <!-- iOS Segmented Control -->
-          <div class="segmented-control seg-3 reveal" id="wsTabs">
-            <button class="seg-btn active" data-ws-tab="plan" data-cn="微影个人计划表" data-en="V-ing Schedule">微影个人计划表</button>
-            <button class="seg-btn" data-ws-tab="collab" data-cn="联动" data-en="Collaborations">联动</button>
-            <button class="seg-btn" data-ws-tab="unified" data-cn="统一日报" data-en="Unified Report">统一日报</button>
-            <span class="seg-indicator seg-3-indicator" id="segIndicator"></span>
+          <div class="segmented-control seg-4 reveal" id="wsTabs">
+            <button class="seg-btn active" data-ws-tab="plan" data-cn="个人计划表" data-en="Schedule">个人计划表</button>
+            <button class="seg-btn" data-ws-tab="collab" data-cn="联动" data-en="Collabs">联动</button>
+            <button class="seg-btn" data-ws-tab="unified" data-cn="统一日报" data-en="Report">统一日报</button>
+            <button class="seg-btn" data-ws-tab="console" data-cn="工作台指令" data-en="Console">工作台指令</button>
+            <span class="seg-indicator seg-4-indicator" id="segIndicator"></span>
           </div>
         </div>
       </div>
@@ -1255,7 +1256,64 @@
                 </div>
               </div>
             </div>
+      </div>
+
+      <!-- ====== Panel 4: Console / Instruction Template ====== -->
+      <div class="ws-panel" id="ws-panel-console">
+        <div class="container">
+          <div class="console-wrap reveal">
+            <!-- Project Info Card -->
+            <div class="console-card">
+              <div class="console-card-head">
+                <h3 data-cn="项目核心信息" data-en="Project Info">项目核心信息</h3>
+                <span class="console-badge" data-cn="云端同步" data-en="Cloud Sync">云端同步</span>
+              </div>
+              <div class="console-info-grid">
+                <div class="console-info-row">
+                  <span class="ci-label">GitHub 仓库</span>
+                  <span class="ci-value" id="consoleRepo">V-ing7/v-ing-site</span>
+                </div>
+                <div class="console-info-row">
+                  <span class="ci-label" data-cn="数据文件" data-en="Data File">数据文件</span>
+                  <span class="ci-value">data.json</span>
+                </div>
+                <div class="console-info-row">
+                  <span class="ci-label" data-cn="网站地址" data-en="Site URL">网站地址</span>
+                  <span class="ci-value"><a href="https://v-ing-site.pages.dev" target="_blank">v-ing-site.pages.dev</a></span>
+                </div>
+                <div class="console-info-row">
+                  <span class="ci-label" data-cn="部署平台" data-en="Platform">部署平台</span>
+                  <span class="ci-value">Cloudflare Pages</span>
+                </div>
+                <div class="console-info-row">
+                  <span class="ci-label" data-cn="最后同步" data-en="Last Sync">最后同步</span>
+                  <span class="ci-value" id="consoleLastSync">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instruction Template Card -->
+            <div class="console-card">
+              <div class="console-card-head">
+                <h3 data-cn="跨 AI 会话指令模版" data-en="AI Session Template">跨 AI 会话指令模版</h3>
+                <button class="console-copy-btn" id="consoleCopyBtn" data-cn="复制模版" data-en="Copy Template">复制模版</button>
+              </div>
+              <div class="console-template-box" id="consoleTemplateBox">读取中...</div>
+            </div>
+
+            <!-- Operation Log Card -->
+            <div class="console-card">
+              <div class="console-card-head">
+                <h3 data-cn="操作记录日志" data-en="Operation Log">操作记录日志</h3>
+                <span class="console-badge console-badge-count" id="consoleLogCount">0 条</span>
+              </div>
+              <div class="console-log-list" id="consoleLogList">
+                <div class="console-log-empty" data-cn="加载中..." data-en="Loading...">加载中...</div>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
     </section>
 
     <!-- ========== CONTACT VIEW ========== -->
