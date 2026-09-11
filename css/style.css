@@ -1959,7 +1959,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .edit-toggle-btn.edit-active::before{content:'✓'}
 
 /* Editable numbers in edit mode */
-.edit-mode .sr-num{
+.edit-mode .sr-pct{
   cursor:pointer;
   border-radius:6px;
   padding:2px 6px;
@@ -1967,12 +1967,12 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   transition:all .2s ease;
   position:relative;
 }
-.edit-mode .sr-num:hover{
+.edit-mode .sr-pct:hover{
   background:rgba(255,159,10,.15);
   outline:1px dashed #FF9F0A;
   outline-offset:2px;
 }
-.edit-mode .sr-num::after{
+.edit-mode .sr-pct::after{
   content:'✏️';
   font-size:.5rem;
   position:absolute;
@@ -1981,7 +1981,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   opacity:0;
   transition:opacity .2s ease;
 }
-.edit-mode .sr-num:hover::after{opacity:.7}
+.edit-mode .sr-pct:hover::after{opacity:.7}
 .edit-mode .unified-brand-section{
   border-radius:16px;
   padding:4px;

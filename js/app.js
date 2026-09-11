@@ -934,45 +934,16 @@
       var nameEl = card.querySelector('h4');
       if(!nameEl) return;
       var name = nameEl.textContent.trim();
-      var nums = card.querySelectorAll('.sr-num');
-      var rings = card.querySelectorAll('.sr-ring-shoot, .sr-ring-edit');
+      var pcts = card.querySelectorAll('.sr-pct');
       var key = 'streamer_' + idx;
       if(!data[key]){
         data[key] = {
           name: name,
-          shoot: parseInt(nums[0] ? nums[0].textContent : '0', 10),
-          edit: parseInt(nums[1] ? nums[1].textContent : '0', 10)
+          shoot: parseInt(pcts[0] ? pcts[0].textContent : '0', 10),
+          edit: parseInt(pcts[1] ? pcts[1].textContent : '0', 10)
         };
       }
-      // Tag the elements with data attributes
-      if(nums[0]){
-        nums[0].setAttribute('data-streamer', key);
-        nums[0].setAttribute('data-field', 'shoot');
-      }
-      if(nums[1]){
-        nums[1].setAttribute('data-streamer', key);
-        nums[1].setAttribute('data-field', 'edit');
-      }
-      // Tag the ring circles too
-      if(rings[0]){
-        rings[0].setAttribute('data-streamer', key);
-        rings[0].setAttribute('data-field', 'shoot');
-      }
-      if(rings[1]){
-        rings[1].setAttribute('data-streamer', key);
-        rings[1].setAttribute('data-field', 'edit');
-      }
-      // Tag progress bars
-      var bars = card.querySelectorAll('.sr-bar');
-      var pcts = card.querySelectorAll('.sr-pct');
-      if(bars[0]){
-        bars[0].setAttribute('data-streamer', key);
-        bars[0].setAttribute('data-field', 'shoot');
-      }
-      if(bars[1]){
-        bars[1].setAttribute('data-streamer', key);
-        bars[1].setAttribute('data-field', 'edit');
-      }
+      // Tag the number elements with data attributes
       if(pcts[0]){
         pcts[0].setAttribute('data-streamer', key);
         pcts[0].setAttribute('data-field', 'shoot');
@@ -980,6 +951,16 @@
       if(pcts[1]){
         pcts[1].setAttribute('data-streamer', key);
         pcts[1].setAttribute('data-field', 'edit');
+      }
+      // Tag progress bars
+      var bars = card.querySelectorAll('.sr-bar');
+      if(bars[0]){
+        bars[0].setAttribute('data-streamer', key);
+        bars[0].setAttribute('data-field', 'shoot');
+      }
+      if(bars[1]){
+        bars[1].setAttribute('data-streamer', key);
+        bars[1].setAttribute('data-field', 'edit');
       }
     });
     return data;
@@ -1006,8 +987,8 @@
     var card = null;
     var cards = brandSection.querySelectorAll('.streamer-card');
     cards.forEach(function(c){
-      var nums = c.querySelectorAll('.sr-num');
-      if(nums[0] && nums[0].getAttribute('data-streamer') === key){
+      var pcts = c.querySelectorAll('.sr-pct');
+      if(pcts[0] && pcts[0].getAttribute('data-streamer') === key){
         card = c;
       }
     });
@@ -1017,36 +998,20 @@
     if(!d) return;
     var target = getStreamerTarget(key, data, brandSection);
 
-    // Update numbers
-    var nums = card.querySelectorAll('.sr-num');
-    if(nums[0]) nums[0].textContent = d.shoot;
-    if(nums[1]) nums[1].textContent = d.edit;
-
-    // Update rings
-    var rings = card.querySelectorAll('.sr-ring-shoot, .sr-ring-edit');
-    if(rings[0]){
-      rings[0].setAttribute('data-val', d.shoot);
-      rings[0].setAttribute('data-target', target);
-      rings[0].style.strokeDashoffset = calcOffset(d.shoot, target, CIRC_SMALL);
-    }
-    if(rings[1]){
-      rings[1].setAttribute('data-val', d.edit);
-      rings[1].setAttribute('data-target', target);
-      rings[1].style.strokeDashoffset = calcOffset(d.edit, target, CIRC_SMALL);
-    }
-
-    // Update progress bars
-    var bars = card.querySelectorAll('.sr-bar span');
+    // Update numbers (sr-pct now shows the actual count)
     var pcts = card.querySelectorAll('.sr-pct');
+    if(pcts[0]) pcts[0].textContent = d.shoot;
+    if(pcts[1]) pcts[1].textContent = d.edit;
+
+    // Update progress bars (allow >100%)
+    var bars = card.querySelectorAll('.sr-bar span');
     var shootPct = Math.round(d.shoot / target * 100);
     var editPct = Math.round(d.edit / target * 100);
-    if(bars[0]) bars[0].style.width = Math.min(shootPct, 100) + '%';
-    if(bars[1]) bars[1].style.width = Math.min(editPct, 100) + '%';
-    if(pcts[0]) pcts[0].textContent = shootPct + '%';
-    if(pcts[1]) pcts[1].textContent = editPct + '%';
+    if(bars[0]) bars[0].style.width = shootPct + '%';
+    if(bars[1]) bars[1].style.width = editPct + '%';
   }
 
-  // Update brand section summary rings
+  // Update brand section summary (progress bar version)
   function updateBrandSummary(brandSection, data){
     var brandHead = brandSection.querySelector('.unified-brand-head h3');
     if(!brandHead) return;
@@ -1056,8 +1021,8 @@
     var totalShoot = 0, totalEdit = 0, totalTarget = 0;
 
     cards.forEach(function(c){
-      var nums = c.querySelectorAll('.sr-num');
-      var key = nums[0] ? nums[0].getAttribute('data-streamer') : null;
+      var pcts = c.querySelectorAll('.sr-pct');
+      var key = pcts[0] ? pcts[0].getAttribute('data-streamer') : null;
       if(key && data[key]){
         totalShoot += data[key].shoot;
         totalEdit += data[key].edit;
@@ -1066,37 +1031,28 @@
 
     // Determine brand target
     if(brandText.indexOf('零跑') > -1){
-      totalTarget = 160; // 40 * 4
+      totalTarget = 40 * cards.length;
     } else if(brandText.indexOf('人设') > -1 || brandText.indexOf('IP') > -1){
       totalTarget = 20;
     } else {
       totalTarget = Math.max(totalShoot, 1);
     }
 
-    var rings = brandSection.querySelectorAll('.ring-shoot, .ring-edit, .ring-rate');
-    var nums = brandSection.querySelectorAll('.rm-num');
-    if(rings[0] && nums[0]){
-      rings[0].setAttribute('data-val', totalShoot);
-      rings[0].setAttribute('data-target', totalTarget);
-      rings[0].style.strokeDashoffset = calcOffset(totalShoot, totalTarget, CIRC_LARGE);
-      nums[0].textContent = totalShoot;
-    }
-    if(rings[1] && nums[1]){
-      rings[1].setAttribute('data-val', totalEdit);
-      rings[1].setAttribute('data-target', totalTarget);
-      rings[1].style.strokeDashoffset = calcOffset(totalEdit, totalTarget, CIRC_LARGE);
-      nums[1].textContent = totalEdit;
-    }
-    var rate = totalTarget > 0 ? Math.round(totalEdit / totalTarget * 100) : 0;
-    if(rings[2] && nums[2]){
-      rings[2].setAttribute('data-val', rate);
-      rings[2].setAttribute('data-target', 100);
-      rings[2].style.strokeDashoffset = calcOffset(rate, 100, CIRC_LARGE);
-      nums[2].textContent = rate + '%';
+    // Update brand-progress-summary bars and numbers
+    var summary = brandSection.querySelector('.brand-progress-summary');
+    if(summary){
+      var bpsNums = summary.querySelectorAll('.bps-num');
+      var bpsBars = summary.querySelectorAll('.bps-bar span');
+      var shootPct = Math.round(totalShoot / totalTarget * 100);
+      var editPct = Math.round(totalEdit / totalTarget * 100);
+      if(bpsNums[0]) bpsNums[0].textContent = totalShoot;
+      if(bpsNums[1]) bpsNums[1].textContent = totalEdit;
+      if(bpsBars[0]) bpsBars[0].style.width = shootPct + '%';
+      if(bpsBars[1]) bpsBars[1].style.width = editPct + '%';
     }
   }
 
-  // Update grand total summary
+  // Update grand total summary (progress bar version)
   function updateGrandTotal(data){
     var totalShoot = 0, totalEdit = 0;
     Object.keys(data).forEach(function(key){
@@ -1106,11 +1062,7 @@
       }
     });
 
-    // 零跑 target: 160, 中鑫之宝: sum of individual (no fixed), 人设: 20
-    // For grand total target, use 160 + individual + 20
-    // But simpler: total target = sum of all individual targets
-    // 零跑 4人 × 40 = 160, 中鑫 2人 (no target, use their shoot), 人设 1人 × 20 = 20
-    // For grand total, we'll use totalShoot as base for 中鑫's contribution
+    // Calculate grand target
     var brandSections = unifiedPanel ? unifiedPanel.querySelectorAll('.unified-brand-section') : [];
     var grandTarget = 0;
     brandSections.forEach(function(section){
@@ -1125,34 +1077,39 @@
       } else {
         // 中鑫之宝: no fixed target, add their shoot count
         cards.forEach(function(c){
-          var nums = c.querySelectorAll('.sr-num');
-          var key = nums[0] ? nums[0].getAttribute('data-streamer') : null;
+          var pcts = c.querySelectorAll('.sr-pct');
+          var key = pcts[0] ? pcts[0].getAttribute('data-streamer') : null;
           if(key && data[key]) grandTarget += Math.max(data[key].shoot, 1);
         });
       }
     });
 
-    var summaryRings = unifiedPanel.querySelectorAll('.unified-summary .ring-shoot, .unified-summary .ring-edit, .unified-summary .ring-rate');
-    var summaryNums = unifiedPanel.querySelectorAll('.unified-summary .us-ring-num');
-
-    if(summaryRings[0] && summaryNums[0]){
-      summaryRings[0].setAttribute('data-val', totalShoot);
-      summaryRings[0].setAttribute('data-target', grandTarget);
-      summaryRings[0].style.strokeDashoffset = calcOffset(totalShoot, grandTarget, 327);
-      summaryNums[0].textContent = totalShoot;
-    }
-    if(summaryRings[1] && summaryNums[1]){
-      summaryRings[1].setAttribute('data-val', totalEdit);
-      summaryRings[1].setAttribute('data-target', grandTarget);
-      summaryRings[1].style.strokeDashoffset = calcOffset(totalEdit, grandTarget, 327);
-      summaryNums[1].textContent = totalEdit;
-    }
-    var rate = grandTarget > 0 ? Math.round(totalEdit / grandTarget * 100) : 0;
-    if(summaryRings[2] && summaryNums[2]){
-      summaryRings[2].setAttribute('data-val', rate);
-      summaryRings[2].setAttribute('data-target', 100);
-      summaryRings[2].style.strokeDashoffset = calcOffset(rate, 100, 327);
-      summaryNums[2].textContent = rate + '%';
+    // Update total-stats-row (ts-num and ts-bar)
+    var summary = unifiedPanel ? unifiedPanel.querySelector('.unified-summary') : null;
+    if(summary){
+      var tsItems = summary.querySelectorAll('.ts-item');
+      // Item 0: 拍摄总数
+      if(tsItems[0]){
+        var num0 = tsItems[0].querySelector('.ts-num');
+        var bar0 = tsItems[0].querySelector('.ts-bar span');
+        if(num0) num0.textContent = totalShoot;
+        if(bar0) bar0.style.width = Math.round(totalShoot / grandTarget * 100) + '%';
+      }
+      // Item 1: 剪辑总数
+      if(tsItems[1]){
+        var num1 = tsItems[1].querySelector('.ts-num');
+        var bar1 = tsItems[1].querySelector('.ts-bar span');
+        if(num1) num1.textContent = totalEdit;
+        if(bar1) bar1.style.width = Math.round(totalEdit / grandTarget * 100) + '%';
+      }
+      // Item 2: 整体完成率 (based on edit / target)
+      var rate = grandTarget > 0 ? Math.round(totalEdit / grandTarget * 100) : 0;
+      if(tsItems[2]){
+        var num2 = tsItems[2].querySelector('.ts-num');
+        var bar2 = tsItems[2].querySelector('.ts-bar span');
+        if(num2) num2.textContent = rate + '%';
+        if(bar2) bar2.style.width = rate + '%';
+      }
     }
   }
 
@@ -1162,8 +1119,8 @@
     brandSections.forEach(function(section){
       var cards = section.querySelectorAll('.streamer-card');
       cards.forEach(function(card){
-        var nums = card.querySelectorAll('.sr-num');
-        var key = nums[0] ? nums[0].getAttribute('data-streamer') : null;
+        var pcts = card.querySelectorAll('.sr-pct');
+        var key = pcts[0] ? pcts[0].getAttribute('data-streamer') : null;
         if(key && data[key]){
           updateStreamerVisuals(key, data, section);
         }
@@ -1211,11 +1168,11 @@
     editToggleBtn.addEventListener('click', toggleEditMode);
   }
 
-  // Click on sr-num to edit
+  // Click on sr-pct to edit
   if(unifiedPanel){
     unifiedPanel.addEventListener('click', function(e){
       if(!editModeActive) return;
-      var numEl = e.target.closest('.sr-num');
+      var numEl = e.target.closest('.sr-pct');
       if(!numEl) return;
       if(numEl.tagName === 'INPUT') return;
 
