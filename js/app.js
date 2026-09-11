@@ -20,6 +20,31 @@
   var ghAutoRefreshTimer = null;
   var ghLastLoadTime = 0;
   var ghSyncStatus = 'loading'; // loading | success | error | offline
+  var ghSaveInProgress = false; // Prevent concurrent saves
+
+  // Trigger Cloudflare Pages redeployment to update same-origin data.json
+  function triggerCloudflareDeploy(){
+    var cfUrl = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT + '/pages/projects/v-ing-site/deployments';
+    fetch(cfUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + CF_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    }).then(function(res){
+      if(!res.ok) throw new Error('CF deploy ' + res.status);
+      return res.json();
+    }).then(function(data){
+      if(data.success){
+        console.log('[V-ing] ✓ Cloudflare deployment triggered');
+      } else {
+        console.warn('[V-ing] CF deploy response:', data.errors);
+      }
+    }).catch(function(err){
+      console.warn('[V-ing] CF deploy failed (non-critical):', err.message);
+    });
+  }
 
   // UTF-8 safe base64 decode
   function b64Decode(str){
@@ -119,6 +144,16 @@
 
   // Save data to GitHub (debounced, max 3 retries)
   function ghSave(data){
+    if(ghSaveInProgress){
+      console.log('[V-ing] Save already in progress, queueing...');
+      // Re-queue after a delay
+      if(ghSaveTimer) clearTimeout(ghSaveTimer);
+      ghSaveTimer = setTimeout(function(){
+        ghSaveRetryCount = 0;
+        _ghSaveNow(data);
+      }, 2500);
+      return;
+    }
     if(ghSaveTimer) clearTimeout(ghSaveTimer);
     ghSaveTimer = setTimeout(function(){
       ghSaveRetryCount = 0;
@@ -127,6 +162,11 @@
   }
 
   function _ghSaveNow(data){
+    if(ghSaveInProgress){
+      console.log('[V-ing] _ghSaveNow: save in progress, skipping');
+      return;
+    }
+    ghSaveInProgress = true;
     setSyncStatus('saving');
     data.lastUpdated = new Date().toISOString();
     var content = JSON.stringify(data, null, 2);
@@ -150,6 +190,7 @@
         payload.sha = ghDataSHA;
         _ghPutData(payload, data);
       }).catch(function(){
+        // Try saving without SHA (will create new file if needed)
         _ghPutData(payload, data);
       });
       return;
@@ -169,10 +210,19 @@
       if(json.content && json.content.sha) ghDataSHA = json.content.sha;
       console.log('[V-ing] ✓ Saved to GitHub');
       setSyncStatus('saved');
+      // Trigger Cloudflare Pages redeployment to update same-origin data.json
+      triggerCloudflareDeploy();
       // Reset to success after 2s
       setTimeout(function(){ if(ghSyncStatus === 'saved') setSyncStatus('success'); }, 2000);
+      ghSaveInProgress = false;
     }).catch(function(err){
       console.warn('[V-ing] Save failed:', err.message);
+      ghSaveInProgress = false;
+      // If 409 conflict (SHA mismatch), clear SHA and retry with fresh SHA
+      if(err.message.indexOf('409') > -1 || err.message.indexOf('Save 4') > -1){
+        console.log('[V-ing] SHA conflict, clearing SHA for re-fetch');
+        ghDataSHA = null;
+      }
       if(ghSaveRetryCount < 3){
         ghSaveRetryCount++;
         console.log('[V-ing] Retry save #' + ghSaveRetryCount + ' in 3s');
@@ -184,12 +234,12 @@
     });
   }
 
-  // Auto-refresh: check for new data every 60 seconds
+  // Auto-refresh: check for new data every 30 seconds
   function startAutoRefresh(){
     if(ghAutoRefreshTimer) clearInterval(ghAutoRefreshTimer);
     ghAutoRefreshTimer = setInterval(function(){
-      // Only auto-refresh if not in edit mode and page is visible
-      if(!editModeActive && !document.hidden){
+      // Only auto-refresh if not in edit mode, not saving, and page is visible
+      if(!editModeActive && !ghSaveInProgress && !document.hidden){
         ghLoad().then(function(ghData){
           // Only update if data is newer
           var newTime = ghData.lastUpdated || '';
@@ -227,7 +277,7 @@
           // Silent fail on auto-refresh
         });
       }
-    }, 60000); // 60 seconds
+    }, 30000); // 30 seconds
   }
 
   /* ---------- Loader ---------- */
@@ -1640,6 +1690,58 @@
       renderConsolePanel(window.__vingData);
     }
   };
+
+  /* ---------- Manual Force Sync ---------- */
+  // Expose sync function globally for the sync button
+  window.__vingSync = function(){
+    if(ghSaveInProgress){
+      console.log('[V-ing] Save in progress, cannot sync now');
+      return;
+    }
+    console.log('[V-ing] Manual sync triggered');
+    setSyncStatus('loading');
+    ghLoad().then(function(ghData){
+      window.__vingData = ghData;
+      // Sync theme
+      if(ghData.theme){
+        html.setAttribute('data-theme', ghData.theme);
+        localStorage.setItem('v-ing-theme', ghData.theme);
+      }
+      // Sync language
+      if(ghData.lang && ghData.lang !== lang){
+        lang = ghData.lang;
+        localStorage.setItem('v-ing-lang', lang);
+        applyLang();
+      }
+      // Sync streamer data
+      if(ghData.streamers && unifiedPanel){
+        streamerData = ghData.streamers;
+        initStreamerData();
+        Object.keys(ghData.streamers).forEach(function(key){
+          streamerData[key] = ghData.streamers[key];
+        });
+        refreshAllVisuals(streamerData);
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+      }
+      // Render console
+      if(ghData.operationLog){
+        renderConsolePanel(ghData);
+      }
+      console.log('[V-ing] ✓ Manual sync complete:', ghData.lastUpdated);
+    }).catch(function(err){
+      console.warn('[V-ing] Manual sync failed:', err);
+      setSyncStatus('error');
+    });
+  };
+
+  // Bind sync button click
+  var syncBtn = document.getElementById('syncStatusBadge');
+  if(syncBtn){
+    syncBtn.style.cursor = 'pointer';
+    syncBtn.addEventListener('click', function(){
+      window.__vingSync();
+    });
+  }
 
   /* ---------- Init ---------- */
   setupReveal();

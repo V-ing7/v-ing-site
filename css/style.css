@@ -271,6 +271,16 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   display:inline-flex;
   align-items:center;
   gap:5px;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.sync-badge:hover{
+  opacity:.8;
+  transform:scale(1.05);
+}
+.sync-badge:active{
+  transform:scale(.95);
 }
 .sync-badge::before{
   content:'';
