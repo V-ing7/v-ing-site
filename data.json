@@ -1,17 +1,17 @@
 {
   "streamers": {
     "streamer_0": {
-      "name": "可欣",
+      "name": "å¯æ¬£",
       "shoot": 60,
       "edit": 31
     },
     "streamer_1": {
-      "name": "小许",
+      "name": "å°è®¸",
       "shoot": 20,
       "edit": 6
     },
     "streamer_2": {
-      "name": "珊珊",
+      "name": "çç",
       "shoot": 15,
       "edit": 9
     },
@@ -21,12 +21,12 @@
       "edit": 9
     },
     "streamer_4": {
-      "name": "小凡",
+      "name": "å°å¡",
       "shoot": 5,
       "edit": 4
     },
     "streamer_5": {
-      "name": "东哥",
+      "name": "ä¸å¥",
       "shoot": 1,
       "edit": 1
     },
@@ -36,7 +36,7 @@
       "edit": 2
     }
   },
-  "lastUpdated": "2026-09-11T07:30:00Z",
+  "lastUpdated": "2026-09-11T11:21:25.987Z",
   "theme": "dark",
   "lang": "zh"
 }
