@@ -1,0 +1,42 @@
+{
+  "streamers": {
+    "streamer_0": {
+      "name": "可欣",
+      "shoot": 60,
+      "edit": 31
+    },
+    "streamer_1": {
+      "name": "小许",
+      "shoot": 20,
+      "edit": 6
+    },
+    "streamer_2": {
+      "name": "珊珊",
+      "shoot": 15,
+      "edit": 9
+    },
+    "streamer_3": {
+      "name": "CC",
+      "shoot": 15,
+      "edit": 9
+    },
+    "streamer_4": {
+      "name": "小凡",
+      "shoot": 5,
+      "edit": 4
+    },
+    "streamer_5": {
+      "name": "东哥",
+      "shoot": 1,
+      "edit": 1
+    },
+    "streamer_6": {
+      "name": "Tina",
+      "shoot": 5,
+      "edit": 2
+    }
+  },
+  "lastUpdated": "2026-09-11T07:30:00Z",
+  "theme": "dark",
+  "lang": "zh"
+}
