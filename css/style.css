@@ -2574,63 +2574,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:.85rem;
 }
 
-/* ---------- Loader ---------- */
-.loader{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:var(--bg);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:24px;
-  transition:opacity .6s ease,visibility .6s ease;
-}
-.loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
-/* CSS-only fallback: auto-hide loader after 3s even if JS is delayed/blocked */
-@keyframes loader-autohide{
-  0%,88%{opacity:1;visibility:visible}
-  100%{opacity:0;visibility:hidden;pointer-events:none}
-}
-.loader:not(.hidden){
-  animation:loader-autohide 3s ease forwards;
-}
-.loader-logo{
-  width:64px;height:64px;
-  border-radius:18px;
-  background:var(--text-primary);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  animation:loader-bounce 1.2s ease-in-out infinite;
-}
-.loader-mark{
-  font-size:2rem;
-  font-weight:800;
-  color:var(--bg);
-}
-@keyframes loader-bounce{
-  0%,100%{transform:scale(1) rotate(0)}
-  50%{transform:scale(.85) rotate(-5deg)}
-}
-.loader-bar{
-  width:120px;height:3px;
-  background:var(--surface-2);
-  border-radius:3px;
-  overflow:hidden;
-}
-.loader-bar span{
-  display:block;
-  width:40%;height:100%;
-  background:var(--accent);
-  border-radius:3px;
-  animation:loader-slide 1.2s ease-in-out infinite;
-}
-@keyframes loader-slide{
-  0%{transform:translateX(-100%)}
-  100%{transform:translateX(350%)}
-}
+
 
 /* ---------- Stagger Delays ---------- */
 .reveal:nth-child(1){transition-delay:.05s}
@@ -2796,54 +2740,98 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:opacity .6s ease, visibility .6s ease;
+  transition:opacity .5s cubic-bezier(.4,0,.2,1), visibility .5s cubic-bezier(.4,0,.2,1);
 }
 .loader.hidden{
   opacity:0;
   visibility:hidden;
+  pointer-events:none;
+}
+/* CSS-only fallback: auto-hide loader after 3s even if JS is delayed/blocked */
+@keyframes loader-autohide{
+  0%,85%{opacity:1;visibility:visible}
+  100%{opacity:0;visibility:hidden;pointer-events:none}
+}
+.loader:not(.hidden){
+  animation:loader-autohide 3s ease forwards;
 }
 .loader-inner{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:20px;
+  gap:24px;
 }
 .loader-logo{
-  width:72px;
+  width:80px;
   height:auto;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.1));
 }
 .loader-path{
   fill:none;
   stroke:var(--text-primary);
-  stroke-width:3;
+  stroke-width:2.5;
   stroke-linecap:round;
   stroke-linejoin:round;
   stroke-dasharray:1200;
   stroke-dashoffset:1200;
-  animation:loader-draw 1.6s cubic-bezier(.25,.46,.45,.94) forwards,
-           loader-fill .5s ease 1.4s forwards,
-           loader-pulse 2s ease-in-out 1.9s infinite;
+  animation:loader-draw 1.8s cubic-bezier(.65,.05,.36,1) forwards,
+           loader-fill .4s cubic-bezier(.4,0,.2,1) 1.6s forwards,
+           loader-breathe 2.4s ease-in-out 2s infinite;
 }
 @keyframes loader-draw{
-  to{stroke-dashoffset:0}
+  0%{stroke-dashoffset:1200}
+  100%{stroke-dashoffset:0}
 }
 @keyframes loader-fill{
   from{fill:transparent}
   to{fill:var(--text-primary)}
 }
-@keyframes loader-pulse{
-  0%,100%{transform:scale(1);opacity:1}
-  50%{transform:scale(1.05);opacity:.85}
+@keyframes loader-breathe{
+  0%,100%{
+    transform:scale(1);
+    opacity:1;
+    filter:drop-shadow(0 2px 8px rgba(0,0,0,.1));
+  }
+  50%{
+    transform:scale(1.03);
+    opacity:.9;
+    filter:drop-shadow(0 4px 16px rgba(0,0,0,.15));
+  }
 }
 .loader-text{
-  font-size:.95rem;
-  font-weight:600;
-  letter-spacing:.1em;
+  font-size:.9rem;
+  font-weight:500;
+  letter-spacing:.15em;
   color:var(--text-secondary);
   opacity:0;
-  animation:loader-text-fade .6s ease .8s forwards;
+  animation:loader-text-fade .7s cubic-bezier(.4,0,.2,1) .9s forwards;
 }
 @keyframes loader-text-fade{
-  from{opacity:0;transform:translateY(6px)}
+  from{opacity:0;transform:translateY(8px)}
   to{opacity:1;transform:translateY(0)}
+}
+.loader-progress{
+  width:80px;
+  height:2px;
+  background:var(--surface-2);
+  border-radius:2px;
+  overflow:hidden;
+  opacity:0;
+  animation:loader-progress-fade .5s ease 1.2s forwards;
+}
+.loader-progress span{
+  display:block;
+  width:0;
+  height:100%;
+  background:var(--text-primary);
+  border-radius:2px;
+  animation:loader-progress-fill 1.2s cubic-bezier(.4,0,.2,1) 1.2s forwards;
+}
+@keyframes loader-progress-fade{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes loader-progress-fill{
+  0%{width:0}
+  100%{width:100%}
 }
