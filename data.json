@@ -1,17 +1,17 @@
 {
   "streamers": {
     "streamer_0": {
-      "name": "å¯æ¬£",
+      "name": "Ã¥ÂÂ¯Ã¦Â¬Â£",
       "shoot": 60,
       "edit": 31
     },
     "streamer_1": {
-      "name": "å°è®¸",
+      "name": "Ã¥Â°ÂÃ¨Â®Â¸",
       "shoot": 20,
       "edit": 6
     },
     "streamer_2": {
-      "name": "çç",
+      "name": "Ã§ÂÂÃ§ÂÂ",
       "shoot": 15,
       "edit": 9
     },
@@ -21,12 +21,12 @@
       "edit": 9
     },
     "streamer_4": {
-      "name": "å°å¡",
+      "name": "Ã¥Â°ÂÃ¥ÂÂ¡",
       "shoot": 5,
       "edit": 4
     },
     "streamer_5": {
-      "name": "ä¸å¥",
+      "name": "Ã¤Â¸ÂÃ¥ÂÂ¥",
       "shoot": 1,
       "edit": 1
     },
@@ -36,7 +36,7 @@
       "edit": 2
     }
   },
-  "lastUpdated": "2026-09-11T11:21:44.216Z",
+  "lastUpdated": "2026-09-11T11:22:29.736Z",
   "theme": "dark",
   "lang": "en"
 }
