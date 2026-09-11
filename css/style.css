@@ -911,130 +911,58 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .team-role{font-size:.82rem;color:var(--accent);font-weight:500;margin-bottom:8px}
 .team-desc{font-size:.8rem;color:var(--text-secondary)}
 
-/* Premium Team Card */
-.team-card-premium{
+/* Minimal Team Card */
+.team-card-minimal{
   position:relative;
-  padding:48px 32px 40px;
-  border-radius:24px;
-  background:linear-gradient(145deg,var(--surface-glass),var(--bg-soft));
-  backdrop-filter:saturate(200%) blur(24px);
-  -webkit-backdrop-filter:saturate(200%) blur(24px);
+  padding:44px 36px;
+  border-radius:20px;
+  background:var(--surface-glass);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
   border:1px solid var(--glass-border);
-  overflow:hidden;
-  box-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.06);
-  transition:all .5s cubic-bezier(.25,.46,.45,.94);
+  transition:all .4s cubic-bezier(.25,.46,.45,.94);
 }
-.team-card-premium:hover{
-  transform:translateY(-8px);
-  box-shadow:0 16px 48px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.08);
+.team-card-minimal:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(0,0,0,.1);
 }
-.team-card-frame{
-  position:absolute;
-  top:12px;left:12px;right:12px;bottom:12px;
-  border-radius:18px;
-  border:1px solid rgba(255,215,100,.15);
-  pointer-events:none;
-}
-.team-card-frame::before,
-.team-card-frame::after{
-  content:'';
-  position:absolute;
-  width:20px;height:20px;
-  border:1.5px solid var(--accent);
-  opacity:.6;
-}
-.team-card-frame::before{
-  top:-1px;left:-1px;
-  border-right:none;
-  border-bottom:none;
-  border-radius:6px 0 0 0;
-}
-.team-card-frame::after{
-  bottom:-1px;right:-1px;
-  border-left:none;
-  border-top:none;
-  border-radius:0 0 6px 0;
-}
-.team-avatar-premium{
-  position:relative;
-  width:96px;height:96px;
+.team-avatar-minimal{
+  width:80px;height:80px;
   margin:0 auto 20px;
   border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),#7B61FF);
+  background:var(--surface-2);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:2.2rem;
-  font-weight:800;
-  color:#fff;
-  border:none;
-  box-shadow:0 8px 24px rgba(10,132,255,.35),0 2px 8px rgba(10,132,255,.2);
-  z-index:2;
+  font-size:2rem;
+  font-weight:700;
+  color:var(--text-primary);
+  border:1px solid var(--glass-border);
 }
-.avatar-ring{
-  position:absolute;
-  top:-4px;left:-4px;right:-4px;bottom:-4px;
-  border-radius:50%;
-  border:2px solid transparent;
-  background:linear-gradient(135deg,var(--accent),#FFD700,var(--accent)) border-box;
-  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
-  mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-  opacity:.6;
-  animation:avatar-ring-spin 8s linear infinite;
+.team-card-minimal .team-name{
+  font-size:1.4rem;
+  font-weight:700;
+  margin-bottom:6px;
+  letter-spacing:.01em;
+  color:var(--text-primary);
 }
-@keyframes avatar-ring-spin{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
+.team-card-minimal .team-role{
+  font-size:.85rem;
+  font-weight:500;
+  margin-bottom:18px;
+  color:var(--text-secondary);
 }
-.team-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:6px 14px;
-  border-radius:20px;
-  background:linear-gradient(135deg,rgba(255,215,100,.15),rgba(255,180,0,.1));
-  border:1px solid rgba(255,215,100,.3);
-  color:#FFD700;
-  font-size:.72rem;
-  font-weight:600;
-  margin-bottom:16px;
-  letter-spacing:.02em;
-}
-.team-badge svg{
-  filter:drop-shadow(0 1px 2px rgba(255,215,0,.3));
-}
-.team-name{
-  font-size:1.5rem !important;
-  font-weight:800 !important;
-  margin-bottom:8px !important;
-  letter-spacing:.02em;
-  background:linear-gradient(135deg,var(--text-primary),var(--text-secondary));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.team-card-premium .team-role{
-  font-size:.88rem;
-  font-weight:600;
-  margin-bottom:16px;
-  color:var(--accent);
-  letter-spacing:.03em;
-}
-.team-divider{
-  width:40px;
-  height:2px;
+.team-divider-minimal{
+  width:28px;
+  height:1px;
   margin:0 auto 16px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);
-  border-radius:2px;
-  opacity:.6;
+  background:var(--text-tertiary);
+  opacity:.5;
 }
-.team-card-premium .team-desc{
+.team-card-minimal .team-desc{
   font-size:.82rem;
   line-height:1.7;
   color:var(--text-secondary);
-  font-weight:400;
 }
 
 /* ---------- Timeline ---------- */
