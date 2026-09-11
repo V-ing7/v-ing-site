@@ -3,7 +3,7 @@
     "streamer_0": {
       "name": "可欣",
       "shoot": 60,
-      "edit": 65
+      "edit": 30
     },
     "streamer_1": {
       "name": "小许",
@@ -12,8 +12,8 @@
     },
     "streamer_2": {
       "name": "珊珊",
-      "shoot": 15,
-      "edit": 9
+      "shoot": 24,
+      "edit": 14
     },
     "streamer_3": {
       "name": "CC",
@@ -36,7 +36,7 @@
       "edit": 2
     }
   },
-  "lastUpdated": "2026-09-11T12:31:18.816Z",
+  "lastUpdated": "2026-09-11T12:36:24.752Z",
   "theme": "light",
   "lang": "zh",
   "operationLog": [
