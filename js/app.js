@@ -23,23 +23,46 @@
   var ghSaveInProgress = false; // Prevent concurrent saves
 
   // Trigger Cloudflare Pages redeployment to update same-origin data.json
+  // Note: This project uses direct-upload deployments. The POST endpoint
+  // requires a manifest. We try it anyway in case the project is reconfigured.
   function triggerCloudflareDeploy(){
-    var cfUrl = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT + '/pages/projects/v-ing-site/deployments';
-    fetch(cfUrl, {
+    var cfBase = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT + '/pages/projects/v-ing-site';
+    var cfHeaders = {
+      'Authorization': 'Bearer ' + CF_TOKEN,
+      'Content-Type': 'application/json'
+    };
+
+    // Try 1: Create a new deployment (works for git-connected projects)
+    fetch(cfBase + '/deployments', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + CF_TOKEN,
-        'Content-Type': 'application/json'
-      },
+      headers: cfHeaders,
       body: JSON.stringify({})
-    }).then(function(res){
-      if(!res.ok) throw new Error('CF deploy ' + res.status);
-      return res.json();
-    }).then(function(data){
+    }).then(function(res){ return res.json(); }).then(function(data){
       if(data.success){
         console.log('[V-ing] ✓ Cloudflare deployment triggered');
       } else {
-        console.warn('[V-ing] CF deploy response:', data.errors);
+        // Try 2: Retry latest deployment (refreshes CDN cache)
+        var errMsg = (data.errors && data.errors[0]) ? data.errors[0].message : 'unknown';
+        console.log('[V-ing] CF create failed (' + errMsg + '), trying retry...');
+        return fetch(cfBase + '/deployments?per_page=1', {
+          headers: cfHeaders
+        }).then(function(r){ return r.json(); }).then(function(listData){
+          var items = listData.result;
+          if(Array.isArray(items) && items.length > 0){
+            var latestId = items[0].id;
+            return fetch(cfBase + '/deployments/' + latestId + '/retry', {
+              method: 'POST',
+              headers: cfHeaders
+            }).then(function(r){ return r.json(); });
+          }
+          throw new Error('No deployments to retry');
+        }).then(function(retryData){
+          if(retryData.success){
+            console.log('[V-ing] ✓ Cloudflare deployment retried');
+          } else {
+            console.warn('[V-ing] CF retry failed:', retryData.errors);
+          }
+        });
       }
     }).catch(function(err){
       console.warn('[V-ing] CF deploy failed (non-critical):', err.message);
@@ -80,65 +103,128 @@
     el.className = 'sync-badge ' + info.cls;
   }
 
-  // Load data - tries 4 sources in order for maximum reliability
+  // Fetch with timeout helper
+  function fetchWithTimeout(url, options, timeout){
+    return Promise.race([
+      fetch(url, options || {}),
+      new Promise(function(_, reject){
+        setTimeout(function(){ reject(new Error('timeout ' + timeout + 'ms')); }, timeout);
+      })
+    ]);
+  }
+
+  // Load data - tries ALL sources in PARALLEL and picks the one with latest lastUpdated
   function ghLoad(){
     setSyncStatus('loading');
     ghLastLoadTime = Date.now();
 
-    // Source 1: GitHub API (gives SHA needed for saving)
-    return fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-    }).then(function(res){
-      if(!res.ok) throw new Error('GH API ' + res.status);
-      return res.json();
-    }).then(function(json){
-      ghDataSHA = json.sha;
-      var content = b64Decode(json.content);
-      var data = JSON.parse(content);
-      console.log('[V-ing] ✓ GitHub API');
-      setSyncStatus('success');
-      return data;
-    }).catch(function(apiErr){
-      console.warn('[V-ing] GitHub API failed:', apiErr.message);
+    var t = Date.now();
+    var shaFromAPI = null;
 
-      // Source 2: Same-origin data.json (Cloudflare Pages itself, no CORS issues)
-      return fetch('data.json?t=' + Date.now()).then(function(res){
+    // All sources to try in parallel (with 8s timeout each)
+    var sources = [
+      // Source 1: GitHub API (gives SHA needed for saving)
+      fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH + '&t=' + t, {
+        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      }, 8000).then(function(res){
+        if(!res.ok) throw new Error('GH API ' + res.status);
+        return res.json();
+      }).then(function(json){
+        shaFromAPI = json.sha;
+        var content = b64Decode(json.content);
+        var data = JSON.parse(content);
+        console.log('[V-ing] ✓ GitHub API (SHA: ' + json.sha.substring(0,7) + ')');
+        return data;
+      }).catch(function(err){
+        console.warn('[V-ing] GitHub API failed:', err.message);
+        return null;
+      }),
+      // Source 2: Same-origin data.json (Cloudflare Pages, no CORS)
+      fetchWithTimeout('data.json?t=' + t, {}, 5000).then(function(res){
         if(!res.ok) throw new Error('self ' + res.status);
         return res.json();
       }).then(function(data){
         console.log('[V-ing] ✓ Same-origin data.json');
-        setSyncStatus('success');
         return data;
-      }).catch(function(selfErr){
-        console.warn('[V-ing] Same-origin failed:', selfErr.message);
+      }).catch(function(err){
+        console.warn('[V-ing] Same-origin failed:', err.message);
+        return null;
+      }),
+      // Source 3: raw.githubusercontent.com
+      fetchWithTimeout(GH_RAW + '?t=' + t, {}, 8000).then(function(res){
+        if(!res.ok) throw new Error('raw ' + res.status);
+        return res.json();
+      }).then(function(data){
+        console.log('[V-ing] ✓ raw.githubusercontent');
+        return data;
+      }).catch(function(err){
+        console.warn('[V-ing] raw failed:', err.message);
+        return null;
+      }),
+      // Source 4: jsDelivr CDN
+      fetchWithTimeout('https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 8000).then(function(res){
+        if(!res.ok) throw new Error('jsDelivr ' + res.status);
+        return res.json();
+      }).then(function(data){
+        console.log('[V-ing] ✓ jsDelivr CDN');
+        return data;
+      }).catch(function(err){
+        console.warn('[V-ing] jsDelivr failed:', err.message);
+        return null;
+      }),
+      // Source 5: statically.io CDN
+      fetchWithTimeout('https://cdn.statically.io/gh/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 8000).then(function(res){
+        if(!res.ok) throw new Error('statically ' + res.status);
+        return res.json();
+      }).then(function(data){
+        console.log('[V-ing] ✓ statically CDN');
+        return data;
+      }).catch(function(err){
+        console.warn('[V-ing] statically failed:', err.message);
+        return null;
+      })
+    ];
 
-        // Source 3: raw.githubusercontent.com
-        return fetch(GH_RAW + '?t=' + Date.now()).then(function(res){
-          if(!res.ok) throw new Error('raw ' + res.status);
-          return res.json();
-        }).then(function(data){
-          console.log('[V-ing] ✓ raw.githubusercontent');
-          setSyncStatus('success');
-          return data;
-        }).catch(function(rawErr){
-          console.warn('[V-ing] raw failed:', rawErr.message);
+    // Wait for all sources, pick the one with latest lastUpdated
+    return Promise.all(sources).then(function(results){
+      var bestData = null;
+      var bestTime = '';
+      var usedAPI = false;
 
-          // Source 4: jsDelivr CDN
-          var jsdelivrUrl = 'https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + Date.now();
-          return fetch(jsdelivrUrl).then(function(res){
-            if(!res.ok) throw new Error('jsDelivr ' + res.status);
-            return res.json();
-          }).then(function(data){
-            console.log('[V-ing] ✓ jsDelivr CDN');
-            setSyncStatus('success');
-            return data;
-          }).catch(function(cdnErr){
-            console.error('[V-ing] All sources failed');
-            setSyncStatus('error');
-            throw cdnErr;
-          });
-        });
-      });
+      for(var i = 0; i < results.length; i++){
+        if(results[i] && results[i].lastUpdated){
+          if(!bestTime || results[i].lastUpdated > bestTime){
+            bestData = results[i];
+            bestTime = results[i].lastUpdated;
+            usedAPI = (i === 0); // Source 0 is GitHub API
+          }
+        }
+      }
+      // Fallback: use first non-null result if none had lastUpdated
+      if(!bestData){
+        for(var j = 0; j < results.length; j++){
+          if(results[j]){
+            bestData = results[j];
+            usedAPI = (j === 0);
+            break;
+          }
+        }
+      }
+
+      // Set SHA: only valid if we used the GitHub API data
+      if(usedAPI && shaFromAPI){
+        ghDataSHA = shaFromAPI;
+      } else {
+        // Clear SHA so save function will fetch fresh
+        ghDataSHA = null;
+      }
+
+      if(bestData){
+        setSyncStatus('success');
+        return bestData;
+      }
+      setSyncStatus('error');
+      throw new Error('All sources failed');
     });
   }
 
