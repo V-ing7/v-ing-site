@@ -1042,6 +1042,9 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:.72rem;
   font-weight:600;
 }
+.team-tags-light{
+  justify-content:center;
+}
 .team-tags-light .team-tag-light{
   padding:5px 12px;
   border-radius:8px;
