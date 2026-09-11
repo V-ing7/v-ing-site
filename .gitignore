@@ -1,6 +1,7 @@
 # Temp / Tool files
 .screenshots/
 .trae-html-share-packages/
+.uploads/
 .DS_Store
 *.log
 node_modules/
