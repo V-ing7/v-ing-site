@@ -1691,55 +1691,25 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .streamer-grid-1{grid-template-columns:1fr;max-width:400px;margin:0 auto}
 
 .streamer-card{
-  padding:24px 20px;
-  border-radius:18px;
+  padding:14px 16px;
+  border-radius:12px;
   background:var(--surface);
   border:1px solid var(--glass-border);
   transition:transform .4s cubic-bezier(.34,1.56,.64,1),box-shadow .4s ease;
   display:flex;
   flex-direction:column;
-  align-items:center;
-  gap:14px;
-  text-align:center;
+  gap:8px;
 }
 .streamer-card:hover{
-  transform:translateY(-6px);
+  transform:translateY(-4px);
   box-shadow:var(--shadow-md);
 }
-.streamer-info h4{font-size:1rem;font-weight:700}
-.streamer-tag{
-  display:block;
-  font-size:.68rem;
-  color:var(--text-tertiary);
-  margin-top:2px;
-}
-.streamer-rings{
-  display:flex;
-  gap:20px;
-  justify-content:center;
-}
-.sr-ring{
-  position:relative;
-  width:64px;height:64px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.sr-ring-text{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
-.sr-num{font-size:.95rem;font-weight:800}
-.sr-sub{font-size:.58rem;color:var(--text-tertiary)}
+.streamer-info h4{font-size:.9rem;font-weight:700;margin:0}
 .streamer-progress{
   width:100%;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:6px;
 }
 .sr-bar-row{
   display:flex;
@@ -1748,7 +1718,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:.72rem;
   color:var(--text-secondary);
 }
-.sr-bar-row span:first-child{width:48px;text-align:right;flex-shrink:0}
+.sr-bar-row span:first-child{width:36px;text-align:right;flex-shrink:0;font-size:.7rem}
 .sr-bar{
   flex:1;
   height:5px;
@@ -1778,6 +1748,52 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid rgba(175,82,222,.2);
 }
 .collab-glow-ip{background:rgba(175,82,222,.15)}
+
+
+/* Brand Progress Summary (simple bars, replaces rings) */
+.brand-progress-summary{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:20px;
+  padding:16px 20px;
+  border-radius:12px;
+  background:var(--surface);
+  border:1px solid var(--glass-border);
+}
+.bps-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.bps-label{
+  width:32px;
+  font-size:.78rem;
+  color:var(--text-secondary);
+  flex-shrink:0;
+}
+.bps-bar{
+  flex:1;
+  height:6px;
+  border-radius:3px;
+  background:var(--surface-2);
+  overflow:hidden;
+}
+.bps-bar span{
+  display:block;
+  height:100%;
+  border-radius:3px;
+  background:#FF9F0A;
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+}
+.bps-green span{background:#34C759}
+.bps-num{
+  width:36px;
+  text-align:right;
+  font-size:.82rem;
+  font-weight:700;
+  flex-shrink:0;
+}
 
 /* ---------- Unified Report Panel ---------- */
 .unified-report-wrap{
@@ -1845,30 +1861,42 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
   margin-bottom:20px;
 }
-.unified-summary-grid{
+.total-stats-row{
   display:flex;
-  gap:32px;
-  flex-wrap:wrap;
+  gap:24px;
   justify-content:center;
 }
-.us-ring-item{display:flex;align-items:center;justify-content:center}
-.us-ring{
-  position:relative;
-  width:88px;height:88px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.ts-item{
+  flex:1;
+  text-align:center;
+  max-width:160px;
 }
-.us-ring-text{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+.ts-num{
+  font-size:1.5rem;
+  font-weight:800;
+  letter-spacing:-.03em;
+  margin-bottom:4px;
 }
-.us-ring-num{font-size:1.25rem;font-weight:800;letter-spacing:-.03em}
-.us-ring-label{font-size:.62rem;color:var(--text-tertiary);text-align:center;margin-top:2px}
+.ts-label{
+  font-size:.7rem;
+  color:var(--text-tertiary);
+  margin-bottom:8px;
+}
+.ts-bar{
+  height:4px;
+  border-radius:2px;
+  background:var(--surface-2);
+  overflow:hidden;
+}
+.ts-bar span{
+  display:block;
+  height:100%;
+  border-radius:2px;
+  background:#FF9F0A;
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+}
+.ts-green span{background:#34C759}
+.ts-gray span{background:var(--accent)}
 
 /* Brand section in unified view */
 .unified-brand-section{
@@ -2105,25 +2133,23 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   /* Streamer & Report mobile */
   .streamer-grid{grid-template-columns:repeat(2,1fr)}
   .streamer-grid-2{grid-template-columns:1fr}
-  .streamer-card{padding:18px 14px;gap:12px;border-radius:16px}
-  .streamer-info h4{font-size:.92rem}
-  .streamer-tag{font-size:.65rem}
-  .streamer-rings{gap:14px}
-  .sr-ring{width:52px;height:52px}
-  .sr-ring svg{width:52px;height:52px}
-  .sr-num{font-size:.88rem}
-  .sr-sub{font-size:.62rem}
+  .streamer-card{padding:14px 12px;gap:8px;border-radius:12px}
+  .streamer-info h4{font-size:.88rem}
   .streamer-progress{gap:5px}
   .sr-bar-row{font-size:.7rem}
   .sr-pct{font-size:.68rem;width:32px}
-  .report-summary-row{gap:20px;padding:16px}
-  .report-ring-mini{width:64px;height:64px}
-  .report-ring-mini svg{width:64px;height:64px}
-  .rm-num{font-size:.95rem}
-  .rm-label{font-size:.6rem}
   .report-section{padding:20px}
   .report-head h3{font-size:1rem}
   .report-sub{font-size:.75rem}
+  /* Progress summary mobile */
+  .brand-progress-summary{padding:14px 16px;gap:8px;margin-bottom:16px;border-radius:10px}
+  .bps-label{font-size:.72rem;width:28px}
+  .bps-bar{height:5px}
+  .bps-num{font-size:.78rem;width:30px}
+  .total-stats-row{gap:16px}
+  .ts-num{font-size:1.2rem}
+  .ts-label{font-size:.62rem}
+  .unified-summary{padding:16px;margin-bottom:16px}
   /* Unified report mobile */
   .unified-toolbar{margin-bottom:14px;padding-bottom:12px}
   .unified-toolbar-title{font-size:.9rem}
@@ -2159,6 +2185,14 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .report-ring-mini{width:56px;height:56px}
   .report-ring-mini svg{width:56px;height:56px}
   .rm-num{font-size:.9rem}
+  /* Progress summary small screen */
+  .brand-progress-summary{padding:12px 14px;gap:6px;margin-bottom:12px}
+  .bps-label{font-size:.68rem;width:26px}
+  .bps-num{font-size:.72rem;width:26px}
+  .total-stats-row{gap:10px}
+  .ts-num{font-size:1rem}
+  .ts-label{font-size:.58rem}
+  .unified-summary{padding:14px;margin-bottom:14px}
   /* Unified report - small screen */
   .unified-toolbar-title{font-size:.82rem}
   .unified-toolbar-date{font-size:.65rem}
