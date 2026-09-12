@@ -2,41 +2,41 @@
   "streamers": {
     "streamer_0": {
       "name": "可欣",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 60,
+      "edit": 30
     },
     "streamer_1": {
       "name": "小许",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 20,
+      "edit": 6
     },
     "streamer_2": {
       "name": "珊珊",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 19,
+      "edit": 14
     },
     "streamer_3": {
       "name": "CC",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 15,
+      "edit": 9
     },
     "streamer_4": {
       "name": "小凡",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 5,
+      "edit": 4
     },
     "streamer_5": {
       "name": "东哥",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 1,
+      "edit": 1
     },
     "streamer_6": {
       "name": "Tina",
-      "shoot": 0,
-      "edit": 0
+      "shoot": 5,
+      "edit": 3
     }
   },
-  "lastUpdated": "2026-09-12T03:44:01.257Z",
+  "lastUpdated": "2026-09-12T03:46:31.969Z",
   "theme": "light",
   "lang": "zh",
   "operationLog": [
@@ -140,6 +140,12 @@
       "date": "2026-09-12",
       "time": "11:00",
       "action": "修复工作台密码保护：localStorage改为sessionStorage + 清空计划表数据",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "11:46",
+      "action": "录入9/11统一日报数据：拍摄总计125条，剪辑总计67条",
       "status": "完成"
     }
   ],
