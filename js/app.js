@@ -127,7 +127,7 @@
     var bestData = null;
     var bestTime = '';
 
-    // Auto-apply newer data to UI if promise already resolved
+    // Auto-apply newer data to UI
     function tryUpdate(data, sourceIdx, sourceName){
       if(!data) return;
       var dataTime = data.lastUpdated || '';
@@ -139,14 +139,13 @@
           ghDataSHA = shaFromAPI;
         }
         console.log('[V-ing] ✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
+        // Always apply data to UI immediately (first source or newer source)
+        applyRemoteData(data);
         if(!resolved){
-          // First valid data - resolve the promise immediately
           resolved = true;
           setSyncStatus('success');
         } else {
-          // Promise already resolved - auto-update UI with newer data
-          console.log('[V-ing] ↻ Newer data detected from ' + sourceName + ', updating UI...');
-          applyRemoteData(data);
+          console.log('[V-ing] ↻ Newer data from ' + sourceName + ', UI updated');
         }
       }
     }
@@ -1692,39 +1691,11 @@
     }
   }
 
-  // Then load from GitHub for cross-device sync
-  ghLoad().then(function(ghData){
-    window.__vingData = ghData;
-    // Sync theme
-    if(ghData.theme){
-      html.setAttribute('data-theme', ghData.theme);
-      localStorage.setItem('v-ing-theme', ghData.theme);
-    }
-    // Sync language
-    if(ghData.lang && ghData.lang !== lang){
-      lang = ghData.lang;
-      localStorage.setItem('v-ing-lang', lang);
-      applyLang();
-    }
-    // Sync streamer data
-    if(ghData.streamers && unifiedPanel){
-      streamerData = ghData.streamers;
-      // Re-init to ensure data-streamer attributes are set
-      initStreamerData();
-      // Override with GitHub data
-      Object.keys(ghData.streamers).forEach(function(key){
-        streamerData[key] = ghData.streamers[key];
-      });
-      refreshAllVisuals(streamerData);
-      // Only save to localStorage, do NOT push back to GitHub
-      // (we just loaded from GitHub, no need to save it back)
-      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
-    }
-    console.log('[V-ing] Data loaded from GitHub:', ghData.lastUpdated);
-    // Render console panel if data has operation log
-    if(ghData.operationLog){
-      renderConsolePanel(ghData);
-    }
+  // Load from GitHub for cross-device sync
+  // tryUpdate() inside ghLoad() now applies data to UI immediately
+  // This .then() only handles post-load tasks
+  ghLoad().then(function(){
+    console.log('[V-ing] Initial data load complete');
     // Start auto-refresh for cross-device sync
     startAutoRefresh();
   }).catch(function(err){
