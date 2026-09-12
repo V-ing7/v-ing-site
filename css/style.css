@@ -2602,33 +2602,88 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:.7rem;
   font-weight:600;
 }
-/* QR Code */
+/* QR Code - Optimized Design */
 .bc-qr-wrap{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:12px;
+  gap:14px;
   width:100%;
 }
 .bc-qr-frame{
   position:relative;
   width:100%;
   aspect-ratio:1/1;
-  max-width:160px;
-  border-radius:14px;
-  background:#fff;
+  max-width:170px;
+  border-radius:18px;
+  background:var(--surface);
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px;
-  box-shadow:0 4px 16px rgba(0,0,0,.08);
+  padding:12px;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.1),
+    0 2px 6px rgba(0,0,0,.06),
+    inset 0 1px 0 rgba(255,255,255,.6);
+  border:1px solid var(--glass-border);
+  overflow:hidden;
 }
+/* Gradient border overlay */
+.bc-qr-frame::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  padding:1.5px;
+  background:linear-gradient(145deg,
+    rgba(152,152,157,.4) 0%,
+    rgba(152,152,157,.1) 40%,
+    rgba(152,152,157,.05) 60%,
+    rgba(152,152,157,.25) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  opacity:.6;
+}
+/* Subtle inner glow */
+.bc-qr-frame::after{
+  content:'';
+  position:absolute;
+  inset:12px;
+  border-radius:10px;
+  background:radial-gradient(ellipse at 30% 20%,
+    rgba(255,255,255,.5) 0%,
+    transparent 50%);
+  pointer-events:none;
+}
+.dark-mode .bc-qr-frame::after{
+  background:radial-gradient(ellipse at 30% 20%,
+    rgba(255,255,255,.06) 0%,
+    transparent 50%);
+}
+/* Corner decorative accents */
+.bc-qr-corner{
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-color:var(--accent);
+  opacity:.4;
+  z-index:2;
+}
+.bc-qr-corner.tl{top:10px;left:10px;border-top:2px solid;border-left:2px solid;border-radius:4px 0 0 0}
+.bc-qr-corner.tr{top:10px;right:10px;border-top:2px solid;border-right:2px solid;border-radius:0 4px 0 0}
+.bc-qr-corner.bl{bottom:10px;left:10px;border-bottom:2px solid;border-left:2px solid;border-radius:0 0 0 4px}
+.bc-qr-corner.br{bottom:10px;right:10px;border-bottom:2px solid;border-right:2px solid;border-radius:0 0 4px 0}
+
 #bcQRCode{
   width:100%;
   height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
+  position:relative;
+  z-index:1;
 }
 #bcQRCode svg{
   width:100%;
@@ -2645,22 +2700,24 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:3px;
+  gap:4px;
   text-align:center;
 }
 .bc-qr-title{
   font-size:.75rem;
   color:var(--text-primary);
   font-weight:600;
-  letter-spacing:.03em;
+  letter-spacing:.04em;
 }
 .bc-qr-url{
-  font-size:.68rem;
+  font-size:.65rem;
   color:var(--text-tertiary);
-  font-family:monospace;
-  padding:3px 8px;
+  font-family:'SF Mono',Menlo,monospace;
+  padding:4px 10px;
   background:var(--surface-2);
-  border-radius:6px;
+  border-radius:8px;
+  border:1px solid var(--glass-border);
+  letter-spacing:.02em;
 }
 /* Bottom bar */
 .bc-bottom{
