@@ -4,7 +4,13 @@
 (function(){
   'use strict';
 
-  /* ---------- GitHub Data Sync (Robust Multi-Source) ---------- */
+  /* ================================================================
+     GitHub Data Sync — v3.0 (Deep Stability Optimization)
+     - Multi-source loading with priority, validation, and graceful fallback
+     - Save queue with merge-on-conflict, exponential backoff, timeout guard
+     - Adaptive auto-refresh with exponential backoff on failures
+     - Online/offline detection with automatic reconnection
+     ================================================================== */
   var GH_TOKEN = 'ghp_2i' + 'w3v2pUn' + 'zAZxxkXD' + 'c7ewdINpjR' + 'nvA2H0P' + 'xB';
   var GH_REPO = 'V-ing7/v-ing-site';
   var GH_FILE = 'data.json';
@@ -14,60 +20,46 @@
   var CF_TOKEN = 'cfut_' + 'o9mnA8D3' + 'gyGJFDWU5' + 'hy7wlODA' + 'riofMDCNAc' + 'CeUPs0d6a9719';
   var CF_ACCOUNT = 'edb10972ff8ae9f58d46aa4bdcee3fca';
   window.__cfToken = CF_TOKEN;
-  var ghDataSHA = null;
-  var ghSaveTimer = null;
-  var ghSaveRetryCount = 0;
-  var ghAutoRefreshTimer = null;
-  var ghLastLoadTime = 0;
-  var ghSyncStatus = 'loading'; // loading | success | error | offline
-  var ghSaveInProgress = false; // Prevent concurrent saves
-  var ghLastSaveTime = 0; // Timestamp of last save (ms) - prevents auto-refresh from overwriting fresh saves
 
-  // Trigger Cloudflare Pages redeployment to update same-origin data.json
-  // Note: This project uses direct-upload deployments. The POST endpoint
-  // requires a manifest. We try it anyway in case the project is reconfigured.
-  function triggerCloudflareDeploy(){
-    var cfBase = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT + '/pages/projects/v-ing-site';
-    var cfHeaders = {
-      'Authorization': 'Bearer ' + CF_TOKEN,
-      'Content-Type': 'application/json'
-    };
+  /* ---- Sync State ---- */
+  var ghDataSHA = null;           // Current file SHA for GitHub API
+  var ghSyncStatus = 'loading';   // loading | success | error | offline | saving | saved
+  var ghLastLoadTime = 0;         // Timestamp of last load attempt
+  var ghLastSuccessfulLoad = 0;   // Timestamp of last successful load
+  var ghLastSaveTime = 0;         // Timestamp of last save start
+  var ghLastSuccessfulSave = 0;   // Timestamp of last successful save
 
-    // Try 1: Create a new deployment (works for git-connected projects)
-    fetch(cfBase + '/deployments', {
-      method: 'POST',
-      headers: cfHeaders,
-      body: JSON.stringify({})
-    }).then(function(res){ return res.json(); }).then(function(data){
-      if(data.success){
-        console.log('[V-ing] ✓ Cloudflare deployment triggered');
-      } else {
-        // Try 2: Retry latest deployment (refreshes CDN cache)
-        var errMsg = (data.errors && data.errors[0]) ? data.errors[0].message : 'unknown';
-        console.log('[V-ing] CF create failed (' + errMsg + '), trying retry...');
-        return fetch(cfBase + '/deployments?per_page=1', {
-          headers: cfHeaders
-        }).then(function(r){ return r.json(); }).then(function(listData){
-          var items = listData.result;
-          if(Array.isArray(items) && items.length > 0){
-            var latestId = items[0].id;
-            return fetch(cfBase + '/deployments/' + latestId + '/retry', {
-              method: 'POST',
-              headers: cfHeaders
-            }).then(function(r){ return r.json(); });
-          }
-          throw new Error('No deployments to retry');
-        }).then(function(retryData){
-          if(retryData.success){
-            console.log('[V-ing] ✓ Cloudflare deployment retried');
-          } else {
-            console.warn('[V-ing] CF retry failed:', retryData.errors);
-          }
-        });
-      }
-    }).catch(function(err){
-      console.warn('[V-ing] CF deploy failed (non-critical):', err.message);
-    });
+  /* ---- Save Queue State ---- */
+  var _saveQueue = [];            // Pending save data snapshots
+  var _saveInProgress = false;    // Active save flag
+  var _saveRetryCount = 0;        // Current retry attempt
+  var _saveMaxRetries = 4;        // Max retries per save
+  var _saveDebounceTimer = null;  // Debounce timer
+  var _saveStuckGuard = null;     // Watchdog timer for stuck saves
+  var _saveStuckTimeout = 15000;  // 15s stuck guard
+
+  /* ---- Auto-refresh State ---- */
+  var _refreshTimer = null;
+  var _refreshBaseInterval = 30000;  // 30s base interval
+  var _refreshCurrentInterval = 30000;
+  var _refreshConsecutiveFailures = 0;
+  var _refreshMaxBackoff = 120000;   // Max 2 min backoff
+  var _refreshIsBackground = false;  // Whether current load is background refresh
+
+  /* ---- Offline Detection ---- */
+  var _isOnline = ('onLine' in navigator) ? navigator.onLine : true;
+  var _onlineHandlerBound = false;
+
+  /* ================================================================
+     Utility Functions
+     ================================================================ */
+  function _nowISO(){ return new Date().toISOString(); }
+
+  function _log(msg, level){
+    var prefix = '[V-ing Sync]';
+    if(level === 'warn'){ console.warn(prefix, msg); }
+    else if(level === 'error'){ console.error(prefix, msg); }
+    else{ console.log(prefix, msg); }
   }
 
   // UTF-8 safe base64 decode
@@ -86,204 +78,358 @@
     return btoa(binary);
   }
 
-  // Update visible sync status indicator
+  // Fetch with timeout and AbortController support
+  function fetchWithTimeout(url, options, timeoutMs){
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    var opts = options || {};
+    opts.signal = controller.signal;
+    return fetch(url, opts).then(function(res){
+      clearTimeout(timeoutId);
+      return res;
+    }).catch(function(err){
+      clearTimeout(timeoutId);
+      if(err.name === 'AbortError'){
+        throw new Error('timeout ' + timeoutMs + 'ms');
+      }
+      throw err;
+    });
+  }
+
+  // Validate that data has expected structure
+  function _isValidData(data){
+    if(!data || typeof data !== 'object') return false;
+    if(!data.streamers || typeof data.streamers !== 'object') return false;
+    // lastUpdated can be missing on very old versions, but should be string if present
+    if(data.lastUpdated !== undefined && typeof data.lastUpdated !== 'string') return false;
+    return true;
+  }
+
+  /* ================================================================
+     Sync Status UI
+     ================================================================ */
   function setSyncStatus(status, msg){
     ghSyncStatus = status;
     var el = document.getElementById('syncStatusBadge');
     if(!el) return;
     var labels = {
-      loading: { text: '同步中...', cls: 'sync-loading' },
-      success: { text: '已同步', cls: 'sync-success' },
-      error: { text: '同步失败', cls: 'sync-error' },
-      offline: { text: '离线模式', cls: 'sync-offline' },
-      saving: { text: '保存中...', cls: 'sync-loading' },
-      saved: { text: '已保存', cls: 'sync-success' }
+      loading:   { text: '同步中...', cls: 'sync-loading' },
+      success:   { text: '已同步',   cls: 'sync-success' },
+      error:     { text: '同步失败', cls: 'sync-error' },
+      offline:   { text: '离线模式', cls: 'sync-offline' },
+      saving:    { text: '保存中...', cls: 'sync-loading' },
+      saved:     { text: '已保存',   cls: 'sync-success' },
+      syncing:   { text: '同步中...', cls: 'sync-loading' }
     };
     var info = labels[status] || labels.loading;
     el.textContent = msg || info.text;
     el.className = 'sync-badge ' + info.cls;
   }
 
-  // Fetch with timeout helper
-  function fetchWithTimeout(url, options, timeout){
-    return Promise.race([
-      fetch(url, options || {}),
-      new Promise(function(_, reject){
-        setTimeout(function(){ reject(new Error('timeout ' + timeout + 'ms')); }, timeout);
+  /* ================================================================
+     Cloudflare Deploy Trigger (non-blocking, best-effort)
+     ================================================================ */
+  function triggerCloudflareDeploy(){
+    var cfBase = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT + '/pages/projects/v-ing-site';
+    var cfHeaders = {
+      'Authorization': 'Bearer ' + CF_TOKEN,
+      'Content-Type': 'application/json'
+    };
+    // Best-effort: retry latest deployment to refresh CDN
+    fetchWithTimeout(cfBase + '/deployments?per_page=1', { headers: cfHeaders }, 4000)
+      .then(function(r){ return r.json(); })
+      .then(function(listData){
+        var items = listData.result;
+        if(Array.isArray(items) && items.length > 0){
+          return fetchWithTimeout(cfBase + '/deployments/' + items[0].id + '/retry', {
+            method: 'POST', headers: cfHeaders
+          }, 4000).then(function(r){ return r.json(); });
+        }
+        throw new Error('No deployments');
       })
-    ]);
+      .then(function(d){
+        if(d.success){ _log('✓ Cloudflare deployment retried'); }
+        else{ _log('CF retry: ' + (d.errors ? d.errors[0].message : 'unknown'), 'warn'); }
+      })
+      .catch(function(err){ _log('CF deploy best-effort failed: ' + err.message, 'warn'); });
   }
 
-  // Load data - tries ALL sources in PARALLEL, uses first valid result immediately,
-  // then continues checking for newer data from other sources in background.
-  // If newer data arrives after initial resolve, auto-updates the UI.
-  function ghLoad(){
-    setSyncStatus('loading');
+  /* ================================================================
+     Data Loading — Multi-source with priority + validation
+     ================================================================ */
+  var _loadState = null; // Tracks ongoing load to avoid duplicates
+
+  function ghLoad(options){
+    var opts = options || {};
+    var isBackground = opts.background || false;
+
+    // If a load is already in progress, return its promise
+    if(_loadState && _loadState.pending){
+      _log('Load already in progress, reusing existing request', isBackground ? 'debug' : 'info');
+      return _loadState.promise;
+    }
+
+    if(!isBackground){
+      setSyncStatus('loading');
+    }
     ghLastLoadTime = Date.now();
 
-    var t = Date.now();
-    var shaFromAPI = null;
-    var resolved = false;
+    var cacheBust = Date.now();
     var bestData = null;
-    var bestTime = '';
+    var bestTime = null;
+    var bestSource = null;
+    var shaFromAPI = null;
+    var sourcesCompleted = 0;
+    var totalSources = 5;
+    var resolvedFirst = false;
+    var firstResolveData = null;
 
-    // Auto-apply newer data to UI
-    function tryUpdate(data, sourceIdx, sourceName){
-      if(!data) return;
-      var dataTime = data.lastUpdated || '';
-      var isNewer = !bestData || (dataTime && dataTime > bestTime) || !bestTime;
+    // Define sources with priority (lower = higher priority)
+    var sources = [
+      {
+        name: 'GitHub API',
+        priority: 1,
+        timeout: 6000,
+        fetch: function(){
+          return fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH + '&t=' + cacheBust, {
+            headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+          }, 6000).then(function(res){
+            if(!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          }).then(function(json){
+            shaFromAPI = json.sha;
+            var content = b64Decode(json.content);
+            var data = JSON.parse(content);
+            return { data: data, sha: json.sha, fromAPI: true };
+          });
+        }
+      },
+      {
+        name: 'Same-origin',
+        priority: 0, // Highest priority - fastest
+        timeout: 3000,
+        fetch: function(){
+          return fetchWithTimeout('data.json?t=' + cacheBust, {}, 3000).then(function(res){
+            if(!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          }).then(function(data){ return { data: data }; });
+        }
+      },
+      {
+        name: 'raw.githubusercontent',
+        priority: 2,
+        timeout: 6000,
+        fetch: function(){
+          return fetchWithTimeout(GH_RAW + '?t=' + cacheBust, {}, 6000).then(function(res){
+            if(!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          }).then(function(data){ return { data: data }; });
+        }
+      },
+      {
+        name: 'jsDelivr CDN',
+        priority: 3,
+        timeout: 5000,
+        fetch: function(){
+          return fetchWithTimeout('https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + cacheBust, {}, 5000).then(function(res){
+            if(!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          }).then(function(data){ return { data: data }; });
+        }
+      },
+      {
+        name: 'statically CDN',
+        priority: 4,
+        timeout: 5000,
+        fetch: function(){
+          return fetchWithTimeout('https://cdn.statically.io/gh/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE + '?t=' + cacheBust, {}, 5000).then(function(res){
+            if(!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          }).then(function(data){ return { data: data }; });
+        }
+      }
+    ];
+
+    function considerResult(sourceName, result, sourceIdx){
+      sourcesCompleted++;
+      if(!result || !_isValidData(result.data)){
+        _log(sourceName + ': invalid or empty data, skipped', 'warn');
+        return;
+      }
+      var dataTime = result.data.lastUpdated || '';
+      var isNewer = !bestData || (dataTime && dataTime > bestTime);
+
       if(isNewer){
-        bestData = data;
+        bestData = result.data;
         bestTime = dataTime;
-        if(sourceIdx === 0 && shaFromAPI){
-          ghDataSHA = shaFromAPI;
+        bestSource = sourceName;
+        if(result.fromAPI && result.sha){
+          ghDataSHA = result.sha;
         }
-        console.log('[V-ing] ✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
-        // Always apply data to UI immediately (first source or newer source)
-        applyRemoteData(data);
-        if(!resolved){
-          resolved = true;
-          setSyncStatus('success');
+        _log('✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
+        // Apply to UI immediately
+        applyRemoteData(result.data);
+
+        if(!resolvedFirst){
+          resolvedFirst = true;
+          firstResolveData = result.data;
+          if(!isBackground){
+            setSyncStatus('success');
+          }
+          ghLastSuccessfulLoad = Date.now();
+          _refreshConsecutiveFailures = 0;
+          _refreshCurrentInterval = _refreshBaseInterval;
         } else {
-          console.log('[V-ing] ↻ Newer data from ' + sourceName + ', UI updated');
+          _log('↻ Newer data from ' + sourceName + ', UI updated');
         }
       }
     }
 
-    // Apply remote data to UI (theme, lang, streamers, console)
-    function applyRemoteData(data){
-      window.__vingData = data;
-      if(data.theme){
-        html.setAttribute('data-theme', data.theme);
-        localStorage.setItem('v-ing-theme', data.theme);
-      }
-      if(data.lang && data.lang !== lang){
-        lang = data.lang;
-        localStorage.setItem('v-ing-lang', lang);
-        applyLang();
-      }
-      if(data.streamers && unifiedPanel){
-        streamerData = data.streamers;
-        initStreamerData();
-        Object.keys(data.streamers).forEach(function(key){
-          streamerData[key] = data.streamers[key];
+    // Launch all sources in parallel, with staggered start for lower-priority CDNs
+    sources.forEach(function(src, idx){
+      var delay = 0;
+      // Stagger CDN sources slightly to reduce initial burst
+      if(src.priority >= 3) delay = 300;
+      if(src.priority >= 4) delay = 600;
+
+      setTimeout(function(){
+        src.fetch().then(function(result){
+          considerResult(src.name, result, idx);
+        }).catch(function(err){
+          sourcesCompleted++;
+          _log(src.name + ' failed: ' + err.message, 'warn');
         });
-        refreshAllVisuals(streamerData);
-        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
-      }
-      if(data.operationLog){
-        renderConsolePanel(data);
-      }
-    }
-
-    // Source 1: GitHub API (gives SHA needed for saving)
-    fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH + '&t=' + t, {
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-    }, 5000).then(function(res){
-      if(!res.ok) throw new Error('GH API ' + res.status);
-      return res.json();
-    }).then(function(json){
-      shaFromAPI = json.sha;
-      var content = b64Decode(json.content);
-      var data = JSON.parse(content);
-      tryUpdate(data, 0, 'GitHub API (SHA: ' + json.sha.substring(0,7) + ')');
-    }).catch(function(err){
-      console.warn('[V-ing] GitHub API failed:', err.message);
+      }, delay);
     });
 
-    // Source 2: Same-origin data.json (Cloudflare Pages, fastest, no CORS)
-    fetchWithTimeout('data.json?t=' + t, {}, 3000).then(function(res){
-      if(!res.ok) throw new Error('self ' + res.status);
-      return res.json();
-    }).then(function(data){
-      tryUpdate(data, 1, 'Same-origin data.json');
-    }).catch(function(err){
-      console.warn('[V-ing] Same-origin failed:', err.message);
-    });
-
-    // Source 3: raw.githubusercontent.com
-    fetchWithTimeout(GH_RAW + '?t=' + t, {}, 5000).then(function(res){
-      if(!res.ok) throw new Error('raw ' + res.status);
-      return res.json();
-    }).then(function(data){
-      tryUpdate(data, 2, 'raw.githubusercontent');
-    }).catch(function(err){
-      console.warn('[V-ing] raw failed:', err.message);
-    });
-
-    // Source 4: jsDelivr CDN
-    fetchWithTimeout('https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 5000).then(function(res){
-      if(!res.ok) throw new Error('jsDelivr ' + res.status);
-      return res.json();
-    }).then(function(data){
-      tryUpdate(data, 3, 'jsDelivr CDN');
-    }).catch(function(err){
-      console.warn('[V-ing] jsDelivr failed:', err.message);
-    });
-
-    // Source 5: statically.io CDN
-    fetchWithTimeout('https://cdn.statically.io/gh/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 5000).then(function(res){
-      if(!res.ok) throw new Error('statically ' + res.status);
-      return res.json();
-    }).then(function(data){
-      tryUpdate(data, 4, 'statically CDN');
-    }).catch(function(err){
-      console.warn('[V-ing] statically failed:', err.message);
-    });
-
-    // Return a promise that resolves as soon as the first valid data arrives,
-    // or rejects after all sources have timed out
-    return new Promise(function(resolve, reject){
-      var checkInterval = setInterval(function(){
-        if(bestData){
-          clearInterval(checkInterval);
+    var promise = new Promise(function(resolve, reject){
+      // Fast resolve: as soon as we have valid data
+      var fastTimer = setInterval(function(){
+        if(resolvedFirst && firstResolveData){
+          clearInterval(fastTimer);
           clearTimeout(failTimer);
-          resolve(bestData);
+          resolve(firstResolveData);
         }
-      }, 100);
+      }, 50);
 
+      // Fail-safe timeout: if no data after 7s, fail or use whatever we have
       var failTimer = setTimeout(function(){
-        clearInterval(checkInterval);
+        clearInterval(fastTimer);
         if(bestData){
+          _log('Partial success: ' + sourcesCompleted + '/' + totalSources + ' sources responded');
           resolve(bestData);
-        }else{
-          setSyncStatus('error');
+        } else {
+          _log('All ' + totalSources + ' sources failed', 'error');
+          if(!isBackground){
+            if(!_isOnline){
+              setSyncStatus('offline');
+            } else {
+              setSyncStatus('error');
+            }
+          }
           reject(new Error('All sources failed'));
         }
-      }, 6000);
+      }, 7000);
     });
+
+    _loadState = {
+      pending: true,
+      promise: promise
+    };
+    promise.finally(function(){
+      _loadState = null;
+    });
+
+    return promise;
   }
 
-  // Save data to GitHub (debounced, max 3 retries)
-  function ghSave(data){
-    // Immediately update local timestamp to prevent auto-refresh from overwriting
-    data.lastUpdated = new Date().toISOString();
-    ghLastSaveTime = Date.now();
-    if(ghSaveInProgress){
-      console.log('[V-ing] Save already in progress, queueing...');
-      // Re-queue after a delay
-      if(ghSaveTimer) clearTimeout(ghSaveTimer);
-      ghSaveTimer = setTimeout(function(){
-        ghSaveRetryCount = 0;
-        _ghSaveNow(data);
-      }, 2500);
-      return;
+  /* ================================================================
+     Apply Remote Data to UI
+     ================================================================ */
+  function applyRemoteData(data){
+    window.__vingData = data;
+    if(data.theme){
+      html.setAttribute('data-theme', data.theme);
+      localStorage.setItem('v-ing-theme', data.theme);
     }
-    if(ghSaveTimer) clearTimeout(ghSaveTimer);
-    ghSaveTimer = setTimeout(function(){
-      ghSaveRetryCount = 0;
-      _ghSaveNow(data);
+    if(data.lang && data.lang !== lang){
+      lang = data.lang;
+      localStorage.setItem('v-ing-lang', lang);
+      applyLang();
+    }
+    if(data.streamers && unifiedPanel){
+      streamerData = data.streamers;
+      initStreamerData();
+      Object.keys(data.streamers).forEach(function(key){
+        streamerData[key] = data.streamers[key];
+      });
+      refreshAllVisuals(streamerData);
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+    }
+    if(data.operationLog){
+      renderConsolePanel(data);
+    }
+  }
+
+  /* ================================================================
+     Save System — Queue-based with merge-on-conflict + backoff
+     ================================================================ */
+
+  // Public: queue a save with debounce
+  function ghSave(data){
+    // Update local timestamp immediately to prevent auto-refresh overwrite
+    data.lastUpdated = _nowISO();
+    ghLastSaveTime = Date.now();
+
+    // Add to queue (merge with existing pending saves)
+    _saveQueue.push({
+      data: JSON.parse(JSON.stringify(data)), // deep copy snapshot
+      timestamp: Date.now()
+    });
+
+    // Clear existing debounce timer
+    if(_saveDebounceTimer){
+      clearTimeout(_saveDebounceTimer);
+    }
+
+    // Debounce: wait 1.5s of inactivity before saving
+    _saveDebounceTimer = setTimeout(function(){
+      _processSaveQueue();
     }, 1500);
   }
 
-  function _ghSaveNow(data){
-    if(ghSaveInProgress){
-      console.log('[V-ing] _ghSaveNow: save in progress, skipping');
-      return;
-    }
-    ghSaveInProgress = true;
+  // Process the save queue: merge all pending saves into one, then execute
+  function _processSaveQueue(){
+    if(_saveQueue.length === 0) return;
+    if(_saveInProgress) return; // Will be picked up when current save finishes
+
+    // Merge: use the latest pending save's data (since it's most recent)
+    var latest = _saveQueue[_saveQueue.length - 1];
+    _saveQueue = []; // Clear queue
+    _saveRetryCount = 0;
+
+    _executeSave(latest.data);
+  }
+
+  // Execute a single save with retry logic
+  function _executeSave(data){
+    _saveInProgress = true;
     setSyncStatus('saving');
-    // lastUpdated already set by ghSave(), use it directly
+
+    // Stuck guard: auto-reset if save takes too long
+    if(_saveStuckGuard) clearTimeout(_saveStuckGuard);
+    _saveStuckGuard = setTimeout(function(){
+      if(_saveInProgress){
+        _log('Save stuck timeout reached, resetting save state', 'error');
+        _saveInProgress = false;
+        setSyncStatus('error');
+        // If there are queued saves, try again
+        if(_saveQueue.length > 0){
+          _processSaveQueue();
+        }
+      }
+    }, _saveStuckTimeout);
+
     var content = JSON.stringify(data, null, 2);
     var b64 = b64Encode(content);
     var payload = {
@@ -291,81 +437,285 @@
       content: b64,
       branch: GH_BRANCH
     };
-    if(ghDataSHA) payload.sha = ghDataSHA;
 
-    // If no SHA, fetch it first then save
-    if(!ghDataSHA){
-      fetch(GH_API + '?ref=' + GH_BRANCH, {
-        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-      }).then(function(res){
-        if(!res.ok) throw new Error('SHA fetch ' + res.status);
+    function doPut(sha){
+      if(sha) payload.sha = sha;
+      return fetchWithTimeout(GH_API, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'token ' + GH_TOKEN,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }, 10000).then(function(res){
+        if(res.status === 409){
+          throw { type: 'conflict', message: 'SHA conflict (409)' };
+        }
+        if(!res.ok){
+          throw { type: 'http', status: res.status, message: 'HTTP ' + res.status };
+        }
         return res.json();
-      }).then(function(json){
-        ghDataSHA = json.sha;
-        payload.sha = ghDataSHA;
-        _ghPutData(payload, data);
-      }).catch(function(){
-        // Try saving without SHA (will create new file if needed)
-        _ghPutData(payload, data);
       });
-      return;
     }
-    _ghPutData(payload, data);
+
+    function handleSuccess(json){
+      if(json.content && json.content.sha){
+        ghDataSHA = json.content.sha;
+      }
+      ghLastSuccessfulSave = Date.now();
+      _log('✓ Saved to GitHub (SHA: ' + (ghDataSHA ? ghDataSHA.substring(0,7) : '?') + ')');
+      setSyncStatus('saved');
+      triggerCloudflareDeploy();
+      setTimeout(function(){
+        if(ghSyncStatus === 'saved') setSyncStatus('success');
+      }, 2000);
+      _finishSave(true);
+    }
+
+    function handleFailure(err){
+      _log('Save failed: ' + (err.message || err), 'warn');
+
+      if(err.type === 'conflict'){
+        // 409 Conflict: fetch latest data, merge, then retry
+        _log('409 conflict — fetching latest data and merging', 'warn');
+        _fetchLatestAndMerge(data).then(function(mergedData){
+          if(mergedData){
+            _log('Merge successful, retrying save');
+            // Use merged data for retry
+            _retrySave(mergedData);
+          } else {
+            _log('Merge failed, falling back to retry with fresh SHA', 'warn');
+            ghDataSHA = null;
+            _retrySave(data);
+          }
+        }).catch(function(){
+          ghDataSHA = null;
+          _retrySave(data);
+        });
+        return;
+      }
+
+      // Other errors: retry with exponential backoff
+      _retrySave(data);
+    }
+
+    // Execute PUT
+    if(ghDataSHA){
+      doPut(ghDataSHA).then(handleSuccess).catch(handleFailure);
+    } else {
+      // No SHA: fetch it first
+      _fetchSHA().then(function(sha){
+        ghDataSHA = sha;
+        return doPut(sha);
+      }).then(handleSuccess).catch(handleFailure);
+    }
   }
 
-  function _ghPutData(payload, originalData){
-    fetch(GH_API, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(function(res){
-      if(!res.ok) throw new Error('Save ' + res.status);
+  function _retrySave(data){
+    if(_saveRetryCount < _saveMaxRetries){
+      _saveRetryCount++;
+      var delay = Math.min(1000 * Math.pow(2, _saveRetryCount - 1), 8000);
+      _log('Retry save #' + _saveRetryCount + ' in ' + delay + 'ms');
+      setTimeout(function(){
+        _executeSave(data);
+      }, delay);
+    } else {
+      _log('Max retries (' + _saveMaxRetries + ') reached, save failed', 'error');
+      setSyncStatus('error');
+      _finishSave(false);
+      _saveRetryCount = 0;
+    }
+  }
+
+  function _finishSave(success){
+    _saveInProgress = false;
+    if(_saveStuckGuard){
+      clearTimeout(_saveStuckGuard);
+      _saveStuckGuard = null;
+    }
+    // If there are pending saves in the queue, process them
+    if(_saveQueue.length > 0){
+      _log('Processing ' + _saveQueue.length + ' queued save(s)');
+      setTimeout(function(){ _processSaveQueue(); }, 500);
+    }
+  }
+
+  // Fetch current SHA from GitHub API
+  function _fetchSHA(){
+    return fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH, {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    }, 5000).then(function(res){
+      if(!res.ok) throw new Error('SHA fetch HTTP ' + res.status);
+      return res.json();
+    }).then(function(json){ return json.sha; });
+  }
+
+  // Fetch latest data and merge with local changes
+  function _fetchLatestAndMerge(localData){
+    return fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH, {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    }, 5000).then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }).then(function(json){
-      if(json.content && json.content.sha) ghDataSHA = json.content.sha;
-      console.log('[V-ing] ✓ Saved to GitHub');
-      setSyncStatus('saved');
-      // Trigger Cloudflare Pages redeployment to update same-origin data.json
-      triggerCloudflareDeploy();
-      // Reset to success after 2s
-      setTimeout(function(){ if(ghSyncStatus === 'saved') setSyncStatus('success'); }, 2000);
-      ghSaveInProgress = false;
-    }).catch(function(err){
-      console.warn('[V-ing] Save failed:', err.message);
-      ghSaveInProgress = false;
-      // If 409 conflict (SHA mismatch), clear SHA and retry with fresh SHA
-      if(err.message.indexOf('409') > -1 || err.message.indexOf('Save 4') > -1){
-        console.log('[V-ing] SHA conflict, clearing SHA for re-fetch');
-        ghDataSHA = null;
+      ghDataSHA = json.sha;
+      var remoteContent = b64Decode(json.content);
+      var remoteData = JSON.parse(remoteContent);
+
+      // Merge strategy: use local data (more recent user edits) but
+      // incorporate any remote-only fields we don't have
+      var merged = JSON.parse(JSON.stringify(localData));
+
+      // Keep remote lastUpdated if it's newer
+      if(remoteData.lastUpdated && (!merged.lastUpdated || remoteData.lastUpdated > merged.lastUpdated)){
+        // But our local changes are newer — keep our timestamp
+        // Actually, we want to keep local changes authoritative
+        // Just make sure structure is complete
       }
-      if(ghSaveRetryCount < 3){
-        ghSaveRetryCount++;
-        console.log('[V-ing] Retry save #' + ghSaveRetryCount + ' in 3s');
-        setTimeout(function(){ _ghSaveNow(originalData); }, 3000);
-      } else {
-        setSyncStatus('error');
-        ghSaveRetryCount = 0;
+
+      // Merge streamers: per-streamer, use higher values (shoot/edit are counts that only go up)
+      if(remoteData.streamers && merged.streamers){
+        Object.keys(merged.streamers).forEach(function(key){
+          if(remoteData.streamers[key]){
+            // For numeric fields, take the max (safer merge)
+            var localS = merged.streamers[key];
+            var remoteS = remoteData.streamers[key];
+            if(typeof localS.shoot === 'number' && typeof remoteS.shoot === 'number'){
+              localS.shoot = Math.max(localS.shoot, remoteS.shoot);
+            }
+            if(typeof localS.edit === 'number' && typeof remoteS.edit === 'number'){
+              localS.edit = Math.max(localS.edit, remoteS.edit);
+            }
+          }
+        });
+        // Add any streamers that exist only in remote
+        Object.keys(remoteData.streamers).forEach(function(key){
+          if(!merged.streamers[key]){
+            merged.streamers[key] = remoteData.streamers[key];
+          }
+        });
       }
+
+      // Merge operation logs: combine and deduplicate by date+time+action
+      if(Array.isArray(remoteData.operationLog) && Array.isArray(merged.operationLog)){
+        var seen = {};
+        var combined = [];
+        merged.operationLog.forEach(function(entry){
+          var key = entry.date + '|' + entry.time + '|' + entry.action;
+          if(!seen[key]){ seen[key] = true; combined.push(entry); }
+        });
+        remoteData.operationLog.forEach(function(entry){
+          var key = entry.date + '|' + entry.time + '|' + entry.action;
+          if(!seen[key]){ seen[key] = true; combined.push(entry); }
+        });
+        // Sort by date + time
+        combined.sort(function(a, b){
+          return (a.date + a.time).localeCompare(b.date + b.time);
+        });
+        merged.operationLog = combined;
+      }
+
+      // Update timestamp
+      merged.lastUpdated = _nowISO();
+
+      return merged;
     });
   }
 
-  // Auto-refresh: check for new data every 30 seconds
+  /* ================================================================
+     Auto-refresh — Adaptive with exponential backoff
+     ================================================================ */
   function startAutoRefresh(){
-    if(ghAutoRefreshTimer) clearInterval(ghAutoRefreshTimer);
-    ghAutoRefreshTimer = setInterval(function(){
-      // Only auto-refresh if not in edit mode, not saving, page is visible,
-      // AND at least 90 seconds have passed since last save (prevents overwriting fresh saves)
+    if(_refreshTimer) clearInterval(_refreshTimer);
+    _refreshCurrentInterval = _refreshBaseInterval;
+    _refreshConsecutiveFailures = 0;
+
+    function tick(){
+      // Conditions for auto-refresh:
+      // 1. Not in edit mode
+      // 2. No save in progress
+      // 3. Page is visible
+      // 4. At least 90s since last save (protection window)
+      // 5. Online
       var timeSinceSave = Date.now() - ghLastSaveTime;
-      if(!editModeActive && !ghSaveInProgress && !document.hidden && timeSinceSave > 90000){
-        // ghLoad() now auto-updates UI in background when newer data arrives
-        ghLoad().then(function(){
-          console.log('[V-ing] Auto-refresh check complete');
+      var canRefresh = !editModeActive
+        && !_saveInProgress
+        && !document.hidden
+        && timeSinceSave > 90000
+        && _isOnline;
+
+      if(canRefresh){
+        ghLoad({ background: true }).then(function(){
+          // Success — reset backoff
+          _refreshConsecutiveFailures = 0;
+          if(_refreshCurrentInterval !== _refreshBaseInterval){
+            _refreshCurrentInterval = _refreshBaseInterval;
+            _log('Refresh backoff reset to ' + _refreshBaseInterval/1000 + 's');
+            _restartRefreshTimer();
+          }
         }).catch(function(){
-          // Silent fail on auto-refresh
+          // Failure — increase backoff
+          _refreshConsecutiveFailures++;
+          var newInterval = Math.min(
+            _refreshBaseInterval * Math.pow(1.5, _refreshConsecutiveFailures),
+            _refreshMaxBackoff
+          );
+          if(newInterval !== _refreshCurrentInterval){
+            _refreshCurrentInterval = Math.round(newInterval);
+            _log('Refresh backoff: ' + _refreshConsecutiveFailures + ' failures, interval=' + Math.round(_refreshCurrentInterval/1000) + 's', 'warn');
+            _restartRefreshTimer();
+          }
         });
       }
-    }, 30000); // 30 seconds
+
+      // Always schedule next tick (even if skipped this time)
+      _scheduleNextTick();
+    }
+
+    function _scheduleNextTick(){
+      if(_refreshTimer) clearTimeout(_refreshTimer);
+      _refreshTimer = setTimeout(tick, _refreshCurrentInterval);
+    }
+
+    function _restartRefreshTimer(){
+      _scheduleNextTick();
+    }
+
+    // Start first tick after initial delay
+    _scheduleNextTick();
   }
+
+  /* ================================================================
+     Online / Offline Detection
+     ================================================================ */
+  function _initOnlineDetection(){
+    if(_onlineHandlerBound) return;
+    _onlineHandlerBound = true;
+
+    window.addEventListener('online', function(){
+      _isOnline = true;
+      _log('Network online — resuming sync');
+      if(ghSyncStatus === 'offline'){
+        setSyncStatus('loading');
+        ghLoad().catch(function(){
+          setSyncStatus('offline');
+        });
+      }
+      // Reset backoff on reconnection
+      _refreshConsecutiveFailures = 0;
+      _refreshCurrentInterval = _refreshBaseInterval;
+    });
+
+    window.addEventListener('offline', function(){
+      _isOnline = false;
+      _log('Network offline', 'warn');
+      setSyncStatus('offline');
+    });
+  }
+
+  // Initialize online detection early
+  _initOnlineDetection();
 
   /* ---------- Loader ---------- */
   window.addEventListener('load',function(){
@@ -1907,14 +2257,13 @@
   /* ---------- Manual Force Sync ---------- */
   // Expose sync function globally for the sync button
   window.__vingSync = function(){
-    if(ghSaveInProgress){
-      console.log('[V-ing] Save in progress, cannot sync now');
+    if(_saveInProgress){
+      _log('Save in progress, cannot sync now');
       return;
     }
-    console.log('[V-ing] Manual sync triggered');
-    // ghLoad() now auto-updates UI in background when newer data arrives
+    _log('Manual sync triggered');
     ghLoad().then(function(){
-      console.log('[V-ing] ✓ Manual sync complete');
+      _log('✓ Manual sync complete');
     }).catch(function(err){
       setSyncStatus('error');
     });
