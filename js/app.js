@@ -114,118 +114,115 @@
     ]);
   }
 
-  // Load data - tries ALL sources in PARALLEL and picks the one with latest lastUpdated
+  // Load data - tries ALL sources in PARALLEL, uses first valid result immediately,
+  // then continues checking for newer data from other sources
   function ghLoad(){
     setSyncStatus('loading');
     ghLastLoadTime = Date.now();
 
     var t = Date.now();
     var shaFromAPI = null;
+    var resolved = false;
+    var bestData = null;
+    var bestTime = '';
 
-    // All sources to try in parallel (with 8s timeout each)
-    var sources = [
-      // Source 1: GitHub API (gives SHA needed for saving)
-      fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH + '&t=' + t, {
-        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-      }, 8000).then(function(res){
-        if(!res.ok) throw new Error('GH API ' + res.status);
-        return res.json();
-      }).then(function(json){
-        shaFromAPI = json.sha;
-        var content = b64Decode(json.content);
-        var data = JSON.parse(content);
-        console.log('[V-ing] ✓ GitHub API (SHA: ' + json.sha.substring(0,7) + ')');
-        return data;
-      }).catch(function(err){
-        console.warn('[V-ing] GitHub API failed:', err.message);
-        return null;
-      }),
-      // Source 2: Same-origin data.json (Cloudflare Pages, no CORS)
-      fetchWithTimeout('data.json?t=' + t, {}, 5000).then(function(res){
-        if(!res.ok) throw new Error('self ' + res.status);
-        return res.json();
-      }).then(function(data){
-        console.log('[V-ing] ✓ Same-origin data.json');
-        return data;
-      }).catch(function(err){
-        console.warn('[V-ing] Same-origin failed:', err.message);
-        return null;
-      }),
-      // Source 3: raw.githubusercontent.com
-      fetchWithTimeout(GH_RAW + '?t=' + t, {}, 8000).then(function(res){
-        if(!res.ok) throw new Error('raw ' + res.status);
-        return res.json();
-      }).then(function(data){
-        console.log('[V-ing] ✓ raw.githubusercontent');
-        return data;
-      }).catch(function(err){
-        console.warn('[V-ing] raw failed:', err.message);
-        return null;
-      }),
-      // Source 4: jsDelivr CDN
-      fetchWithTimeout('https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 8000).then(function(res){
-        if(!res.ok) throw new Error('jsDelivr ' + res.status);
-        return res.json();
-      }).then(function(data){
-        console.log('[V-ing] ✓ jsDelivr CDN');
-        return data;
-      }).catch(function(err){
-        console.warn('[V-ing] jsDelivr failed:', err.message);
-        return null;
-      }),
-      // Source 5: statically.io CDN
-      fetchWithTimeout('https://cdn.statically.io/gh/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 8000).then(function(res){
-        if(!res.ok) throw new Error('statically ' + res.status);
-        return res.json();
-      }).then(function(data){
-        console.log('[V-ing] ✓ statically CDN');
-        return data;
-      }).catch(function(err){
-        console.warn('[V-ing] statically failed:', err.message);
-        return null;
-      })
-    ];
-
-    // Wait for all sources, pick the one with latest lastUpdated
-    return Promise.all(sources).then(function(results){
-      var bestData = null;
-      var bestTime = '';
-      var usedAPI = false;
-
-      for(var i = 0; i < results.length; i++){
-        if(results[i] && results[i].lastUpdated){
-          if(!bestTime || results[i].lastUpdated > bestTime){
-            bestData = results[i];
-            bestTime = results[i].lastUpdated;
-            usedAPI = (i === 0); // Source 0 is GitHub API
-          }
+    function tryUpdate(data, sourceIdx, sourceName){
+      if(!data) return;
+      var dataTime = data.lastUpdated || '';
+      if(!bestData || (dataTime && dataTime > bestTime) || !bestTime){
+        bestData = data;
+        bestTime = dataTime;
+        if(sourceIdx === 0 && shaFromAPI){
+          ghDataSHA = shaFromAPI;
+        }
+        console.log('[V-ing] ✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
+        // If this is the first valid result, resolve immediately
+        if(!resolved){
+          resolved = true;
+          setSyncStatus('success');
+          // Return a resolved promise with the first valid data
+          // Other sources will continue checking in background
         }
       }
-      // Fallback: use first non-null result if none had lastUpdated
-      if(!bestData){
-        for(var j = 0; j < results.length; j++){
-          if(results[j]){
-            bestData = results[j];
-            usedAPI = (j === 0);
-            break;
-          }
+    }
+
+    // Source 1: GitHub API (gives SHA needed for saving)
+    fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH + '&t=' + t, {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    }, 5000).then(function(res){
+      if(!res.ok) throw new Error('GH API ' + res.status);
+      return res.json();
+    }).then(function(json){
+      shaFromAPI = json.sha;
+      var content = b64Decode(json.content);
+      var data = JSON.parse(content);
+      tryUpdate(data, 0, 'GitHub API (SHA: ' + json.sha.substring(0,7) + ')');
+    }).catch(function(err){
+      console.warn('[V-ing] GitHub API failed:', err.message);
+    });
+
+    // Source 2: Same-origin data.json (Cloudflare Pages, fastest, no CORS)
+    fetchWithTimeout('data.json?t=' + t, {}, 3000).then(function(res){
+      if(!res.ok) throw new Error('self ' + res.status);
+      return res.json();
+    }).then(function(data){
+      tryUpdate(data, 1, 'Same-origin data.json');
+    }).catch(function(err){
+      console.warn('[V-ing] Same-origin failed:', err.message);
+    });
+
+    // Source 3: raw.githubusercontent.com
+    fetchWithTimeout(GH_RAW + '?t=' + t, {}, 5000).then(function(res){
+      if(!res.ok) throw new Error('raw ' + res.status);
+      return res.json();
+    }).then(function(data){
+      tryUpdate(data, 2, 'raw.githubusercontent');
+    }).catch(function(err){
+      console.warn('[V-ing] raw failed:', err.message);
+    });
+
+    // Source 4: jsDelivr CDN
+    fetchWithTimeout('https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 5000).then(function(res){
+      if(!res.ok) throw new Error('jsDelivr ' + res.status);
+      return res.json();
+    }).then(function(data){
+      tryUpdate(data, 3, 'jsDelivr CDN');
+    }).catch(function(err){
+      console.warn('[V-ing] jsDelivr failed:', err.message);
+    });
+
+    // Source 5: statically.io CDN
+    fetchWithTimeout('https://cdn.statically.io/gh/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE + '?t=' + t, {}, 5000).then(function(res){
+      if(!res.ok) throw new Error('statically ' + res.status);
+      return res.json();
+    }).then(function(data){
+      tryUpdate(data, 4, 'statically CDN');
+    }).catch(function(err){
+      console.warn('[V-ing] statically failed:', err.message);
+    });
+
+    // Return a promise that resolves as soon as the first valid data arrives,
+    // or rejects after all sources have timed out
+    return new Promise(function(resolve, reject){
+      // Fast path: check every 100ms if we have data
+      var checkInterval = setInterval(function(){
+        if(bestData){
+          clearInterval(checkInterval);
+          clearTimeout(failTimer);
+          resolve(bestData);
         }
-      }
+      }, 100);
 
-      // Set SHA: only valid if we used the GitHub API data
-      if(usedAPI && shaFromAPI){
-        ghDataSHA = shaFromAPI;
-      } else {
-        // Clear SHA so save function will fetch fresh
-        ghDataSHA = null;
-      }
-
-      if(bestData){
-        setSyncStatus('success');
-        return bestData;
-      }
-      setSyncStatus('error');
-      throw new Error('All sources failed');
+      // Fallback: if no data after 6s, check if any arrived, otherwise reject
+      var failTimer = setTimeout(function(){
+        clearInterval(checkInterval);
+        if(bestData){
+          resolve(bestData);
+        }else{
+          setSyncStatus('error');
+          reject(new Error('All sources failed'));
+        }
+      }, 6000);
     });
   }
 
@@ -1924,8 +1921,6 @@
         }
       }
     });
-  }
-
   }
 
   // Render console when switching to console tab
