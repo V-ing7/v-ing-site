@@ -2440,19 +2440,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 
 /* ---------- Business Card Panel ---------- */
 .card-section{
-  max-width:520px;
+  max-width:480px;
   margin:0 auto;
   padding:8px 0 40px;
+  display:flex;
+  justify-content:center;
 }
 .business-card{
   position:relative;
-  border-radius:24px;
   overflow:hidden;
   background:var(--surface-glass);
   backdrop-filter:saturate(180%) blur(24px);
   -webkit-backdrop-filter:saturate(180%) blur(24px);
   border:1px solid var(--glass-border);
-  box-shadow:0 20px 60px rgba(0,0,0,.12);
+  box-shadow:0 12px 40px rgba(0,0,0,.1);
 }
 /* V2 Card — 90x56mm horizontal layout */
 .bc-card-v2{
@@ -2460,19 +2461,18 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   height:56mm;
   max-width:none;
   margin:0 auto;
-  padding:3mm 4mm;
+  padding:3.5mm 4mm;
   display:flex;
   flex-direction:row;
-  gap:3mm;
+  gap:3.5mm;
   box-sizing:border-box;
   border-radius:3mm;
-  overflow:hidden;
 }
 .bc-glow{
   position:absolute;
-  top:-30px;right:-30px;
-  width:100px;height:100px;
-  background:radial-gradient(circle,rgba(255,180,80,.12) 0%,transparent 70%);
+  top:-40px;right:-40px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(255,180,80,.1) 0%,transparent 70%);
   border-radius:50%;
   pointer-events:none;
 }
@@ -2480,16 +2480,16 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 /* Left column: avatar + QR */
 .bc-col-left{
   flex-shrink:0;
-  width:16mm;
+  width:18mm;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:space-between;
-  gap:1.5mm;
+  justify-content:center;
+  gap:2mm;
 }
 .bc-avatar{
   flex-shrink:0;
-  width:12mm;height:12mm;
+  width:14mm;height:14mm;
   border-radius:2.5mm;
   background:linear-gradient(135deg,var(--surface-2),var(--bg-soft));
   display:flex;
@@ -2499,38 +2499,38 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
 }
 .bc-logo{
-  width:7mm;
+  width:8mm;
   height:auto;
 }
 
 /* QR frame */
 .bc-qr-frame{
   position:relative;
-  width:14mm;
-  height:14mm;
+  width:15mm;
+  height:15mm;
   border-radius:1.5mm;
   background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:0.5mm;
-  box-shadow:0 1px 4px rgba(0,0,0,.1);
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
   flex-shrink:0;
 }
 #bcQRCode{
-  width:13mm;
-  height:13mm;
+  width:14mm;
+  height:14mm;
   flex-shrink:0;
   overflow:hidden;
 }
 #bcQRCode img{
-  width:13mm;
-  height:13mm;
+  width:14mm;
+  height:14mm;
   display:block;
 }
 .bc-qr-fallback-img{
-  width:13mm;
-  height:13mm;
+  width:14mm;
+  height:14mm;
   object-fit:contain;
   display:block;
 }
@@ -2541,58 +2541,77 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   min-width:0;
   display:flex;
   flex-direction:column;
-  gap:1mm;
+  justify-content:space-between;
+  padding:0.5mm 0;
 }
 .bc-name-section{
   flex-shrink:0;
 }
 .bc-name{
-  font-size:11pt;
+  font-size:12pt;
   font-weight:700;
   color:var(--text-primary);
-  margin:0 0 0.3mm;
-  line-height:1.2;
+  margin:0;
+  line-height:1.15;
+  letter-spacing:.02em;
 }
 .bc-title{
-  font-size:7pt;
+  font-size:7.5pt;
   color:var(--text-secondary);
-  margin:0 0 0.8mm;
+  margin:0.3mm 0 0;
   font-weight:500;
 }
 .bc-cert-badge{
   display:inline-flex;
   align-items:center;
-  gap:1mm;
-  padding:0.3mm 1.2mm;
+  gap:0.8mm;
+  padding:0.4mm 1.5mm;
   border-radius:1mm;
-  background:linear-gradient(135deg,rgba(255,200,100,.1),rgba(255,170,50,.04));
-  border:1px solid rgba(255,180,80,.15);
+  background:linear-gradient(135deg,rgba(255,200,100,.12),rgba(255,170,50,.04));
+  border:1px solid rgba(255,180,80,.18);
   color:var(--accent);
   font-size:5.5pt;
   font-weight:600;
-  margin-bottom:0.8mm;
+  margin-top:0.8mm;
 }
+.bc-tags-row{
+  display:flex;
+  gap:0.8mm;
+  flex-wrap:wrap;
+  margin-top:0.8mm;
+}
+.bc-tag{
+  padding:0.3mm 1.2mm;
+  border-radius:0.8mm;
+  background:var(--accent);
+  color:#fff;
+  font-size:5pt;
+  font-weight:600;
+  line-height:1.3;
+}
+
 .bc-divider{
   height:1px;
-  background:var(--glass-border);
-  margin:0.5mm 0;
+  background:linear-gradient(90deg,transparent,var(--glass-border) 20%,var(--glass-border) 80%,transparent);
+  margin:1.2mm 0;
 }
 
 /* Info grid 2x2 */
 .bc-info-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:1.2mm 3mm;
+  gap:1.5mm 4mm;
   flex:1;
+  align-content:center;
 }
 .bc-info-item{
   display:flex;
   align-items:center;
-  gap:1.2mm;
+  gap:1.5mm;
 }
 .bc-info-icon{
   flex-shrink:0;
-  width:4mm;height:4mm;
+  width:4.5mm;height:4.5mm;
   border-radius:1mm;
   background:var(--surface-2);
   display:flex;
@@ -2610,29 +2629,16 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:5pt;
   color:var(--text-tertiary);
   font-weight:500;
+  line-height:1.2;
 }
 .bc-info-value{
-  font-size:6.5pt;
+  font-size:7pt;
   color:var(--text-primary);
   font-weight:600;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-}
-
-/* Tags */
-.bc-tags-row{
-  display:flex;
-  gap:1mm;
-  flex-wrap:wrap;
-}
-.bc-tag{
-  padding:0.2mm 1mm;
-  border-radius:0.8mm;
-  background:var(--accent);
-  color:#fff;
-  font-size:5pt;
-  font-weight:600;
+  line-height:1.3;
 }
 
 /* Studio mark */
@@ -2644,12 +2650,31 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   color:var(--text-tertiary);
   font-weight:500;
   margin-top:auto;
+  padding-top:0.5mm;
 }
 .bc-mark-dot{
-  width:1mm;height:1mm;
+  width:1.2mm;height:1.2mm;
   border-radius:50%;
   background:var(--accent);
   flex-shrink:0;
+}
+
+/* Responsive: scale card on small screens */
+@media(max-width:480px){
+  .card-section{
+    max-width:100%;
+    padding:4px 4px 28px;
+  }
+  .bc-card-v2{
+    transform:scale(.85);
+    transform-origin:center top;
+  }
+}
+@media(max-width:380px){
+  .bc-card-v2{
+    transform:scale(.72);
+    transform-origin:center top;
+  }
 }
 
 /* ---------- Console Panel ---------- */
