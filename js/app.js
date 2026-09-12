@@ -1937,14 +1937,11 @@
         bcSaveBtn.querySelector('span').textContent = lang === 'zh' ? '生成中...' : 'Generating...';
         bcSaveBtn.classList.add('copied');
         setTimeout(function(){
-          // Temporarily set fixed dimensions for html2canvas compatibility
-          var cardRect = businessCard.getBoundingClientRect();
-          var size = Math.max(Math.round(cardRect.width), Math.round(cardRect.height));
-
           var bcInner = businessCard.querySelector('.bc-inner');
           var bcLeft = businessCard.querySelector('.bc-left');
           var bcRight = businessCard.querySelector('.bc-right');
           var bcBottom = businessCard.querySelector('.bc-bottom');
+          var bcGlow = businessCard.querySelector('.bc-glow');
 
           // Save original styles
           var orig = {
@@ -1971,20 +1968,38 @@
             } : null,
             bottom: bcBottom ? {
               marginTop: bcBottom.style.marginTop
+            } : null,
+            saveBtn: {
+              display: bcSaveBtn.style.display
+            },
+            glow: bcGlow ? {
+              display: bcGlow.style.display
             } : null
           };
 
-          // Apply fixed dimensions
+          // Get actual dimensions before modification
+          var cardRect = businessCard.getBoundingClientRect();
+          var size = Math.max(Math.round(cardRect.width), Math.round(cardRect.height));
+          var leftRatio = bcLeft.offsetWidth / (bcLeft.offsetWidth + bcRight.offsetWidth);
+          var rightRatio = bcRight.offsetWidth / (bcLeft.offsetWidth + bcRight.offsetWidth);
+          var gap = 20; // gap between left and right
+
+          // Hide save button during capture
+          bcSaveBtn.style.display = 'none';
+          // Hide decorative glow for cleaner output
+          if(bcGlow) bcGlow.style.display = 'none';
+
+          // Apply fixed dimensions for consistent rendering
           businessCard.style.width = size + 'px';
           businessCard.style.height = size + 'px';
           businessCard.style.aspectRatio = 'auto';
           businessCard.style.maxWidth = 'none';
-          // Use solid background instead of backdrop-filter for better canvas rendering
-          var bgColor = getComputedStyle(businessCard).backgroundColor;
-          if(!bgColor || bgColor === 'rgba(0, 0, 0, 0)'){
-            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            businessCard.style.background = isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)';
-          }
+          
+          // Use solid background for canvas rendering (backdrop-filter doesn't work well with canvas)
+          var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          businessCard.style.background = isDark ? '#1C1C1E' : '#FFFFFF';
+          businessCard.style.backdropFilter = 'none';
+          businessCard.style.webkitBackdropFilter = 'none';
 
           if(bcInner){
             var bottomHeight = bcBottom ? bcBottom.offsetHeight : 0;
@@ -1993,12 +2008,14 @@
             bcInner.style.flex = 'none';
           }
           if(bcLeft){
-            var leftW = Math.round(size * 0.55);
+            var innerWidth = size - 40; // subtract padding
+            var leftW = Math.round((innerWidth - gap) * leftRatio);
             bcLeft.style.flex = 'none';
             bcLeft.style.width = leftW + 'px';
           }
           if(bcRight){
-            var rightW = Math.round(size * 0.45) - 20; // subtract gap
+            var innerWidth = size - 40;
+            var rightW = Math.round((innerWidth - gap) * rightRatio);
             bcRight.style.flex = 'none';
             bcRight.style.width = rightW + 'px';
           }
@@ -2026,28 +2043,38 @@
             if(bcBottom && orig.bottom){
               bcBottom.style.marginTop = orig.bottom.marginTop;
             }
+            bcSaveBtn.style.display = orig.saveBtn.display;
+            if(bcGlow && orig.glow){
+              bcGlow.style.display = orig.glow.display;
+            }
           };
 
-          html2canvas(businessCard, {
-            backgroundColor: null,
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            width: size,
-            height: size
-          }).then(function(canvas){
-            cleanup();
-            var link = document.createElement('a');
-            link.download = '林威_名片.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            bcSaveBtn.innerHTML = originalText;
-            bcSaveBtn.classList.remove('copied');
-          }).catch(function(){
-            cleanup();
-            bcSaveBtn.innerHTML = originalText;
-            bcSaveBtn.classList.remove('copied');
-          });
+          // Wait a bit for layout to settle, then capture
+          setTimeout(function(){
+            html2canvas(businessCard, {
+              backgroundColor: null,
+              scale: 2,
+              useCORS: true,
+              allowTaint: true,
+              logging: false,
+              width: size,
+              height: size
+            }).then(function(canvas){
+              cleanup();
+              var link = document.createElement('a');
+              link.download = '林威_名片.png';
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+              bcSaveBtn.innerHTML = originalText;
+              bcSaveBtn.classList.remove('copied');
+            }).catch(function(err){
+              cleanup();
+              console.error('[V-ing] Card save error:', err);
+              bcSaveBtn.innerHTML = originalText;
+              bcSaveBtn.classList.remove('copied');
+              alert(lang === 'zh' ? '保存失败，请重试' : 'Save failed, please try again');
+            });
+          }, 100);
         }, 300);
       } else {
         // Fallback: just show a message
