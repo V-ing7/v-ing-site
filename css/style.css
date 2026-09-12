@@ -2480,7 +2480,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 .bc-avatar{
   flex-shrink:0;
-  width:52px;height:52px;
+  width:56px;height:56px;
   border-radius:14px;
   background:linear-gradient(135deg,var(--surface-2),var(--bg-soft));
   display:flex;
@@ -2490,7 +2490,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
 }
 .bc-logo{
-  width:30px;
+  width:32px;
   height:auto;
 }
 .bc-name-section{
@@ -2521,19 +2521,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   color:var(--accent);
   font-size:.65rem;
   font-weight:600;
+  margin-bottom:8px;
 }
 .bc-divider{
   height:1px;
   background:var(--glass-border);
-  margin:18px 0 16px;
+  margin:16px 0 16px;
 }
 
 /* Info grid 2x2 */
 .bc-info-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px 16px;
-  margin-bottom:16px;
+  gap:14px 12px;
+  margin-bottom:18px;
 }
 .bc-info-item{
   display:flex;
@@ -2575,7 +2576,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   display:flex;
   gap:6px;
   flex-wrap:wrap;
-  margin-bottom:18px;
 }
 .bc-tag{
   padding:3px 10px;
@@ -2598,6 +2598,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .bc-bottom-left{
   flex:1;
   min-width:0;
+  display:flex;
+  align-items:center;
 }
 .bc-studio-mark{
   display:flex;
@@ -2611,19 +2613,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   width:6px;height:6px;
   border-radius:50%;
   background:var(--accent);
+  flex-shrink:0;
 }
 
 /* QR section in bottom */
 .bc-qr-section{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
   flex-shrink:0;
 }
 .bc-qr-frame{
   position:relative;
-  width:76px;
-  height:76px;
+  width:72px;
+  height:72px;
   border-radius:10px;
   background:#fff;
   display:flex;
