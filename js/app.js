@@ -2287,7 +2287,7 @@
     checkReveals();
   },800);
 
-  /* ---------- Custom QR Code with Embedded Logo (Optimized v2) ---------- */
+  /* ---------- Standard QR Code ---------- */
   function initCustomQR(){
     var container=document.getElementById('bcQRCode');
     if(!container||typeof QRCodeStyling==='undefined'){
@@ -2295,20 +2295,13 @@
       if(fallback)fallback.style.display='block';
       return;
     }
-    // V-ing logo with white rounded background for better contrast
+    // V-ing logo as SVG data URL
     var logoSVG='<svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path fill="#231815" d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/></svg>';
     var logoDataUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(logoSVG);
     try{
-      // Detect theme for adaptive QR coloring
-      var isDark=document.documentElement.classList.contains('dark-mode');
-      var dotStart=isDark?'#E5E5EA':'#1C1C1E';
-      var dotEnd=isDark?'#8E8E93':'#48484A';
-      var cornerStart=isDark?'#F2F2F7':'#1C1C1E';
-      var cornerEnd=isDark?'#AEAEB2':'#3A3A3C';
-
       var qrCode=new QRCodeStyling({
-        width:220,
-        height:220,
+        width:200,
+        height:200,
         type:'svg',
         data:'https://v-ing-site.pages.dev',
         image:logoDataUrl,
@@ -2318,43 +2311,29 @@
           errorCorrectionLevel:'H'
         },
         dotsOptions:{
-          type:'rounded',
-          gradient:{
-            type:'linear',
-            rotation:0.785,
-            colorStops:[
-              {offset:0,color:dotStart},
-              {offset:1,color:dotEnd}
-            ]
-          }
+          color:'#000000',
+          type:'square'
         },
         backgroundOptions:{
-          color:'transparent'
+          color:'#ffffff'
         },
         cornersSquareOptions:{
-          type:'extra-rounded',
-          gradient:{
-            type:'linear',
-            rotation:0.785,
-            colorStops:[
-              {offset:0,color:cornerStart},
-              {offset:1,color:cornerEnd}
-            ]
-          }
+          color:'#000000',
+          type:'square'
         },
         cornersDotOptions:{
-          type:'dot',
-          color:dotStart
+          color:'#000000',
+          type:'square'
         },
         imageOptions:{
           crossOrigin:'anonymous',
-          margin:3,
-          imageSize:0.28,
+          margin:2,
+          imageSize:0.3,
           hideBackgroundDots:true
         }
       });
       qrCode.append(container);
-      console.log('[V-ing] Optimized QR code generated with gradient & embedded logo');
+      console.log('[V-ing] Standard QR code generated');
     }catch(e){
       console.warn('[V-ing] QR code styling failed:',e);
       var fb=document.querySelector('.bc-qr-fallback-img');
