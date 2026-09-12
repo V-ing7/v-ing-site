@@ -115,7 +115,8 @@
   }
 
   // Load data - tries ALL sources in PARALLEL, uses first valid result immediately,
-  // then continues checking for newer data from other sources
+  // then continues checking for newer data from other sources in background.
+  // If newer data arrives after initial resolve, auto-updates the UI.
   function ghLoad(){
     setSyncStatus('loading');
     ghLastLoadTime = Date.now();
@@ -126,23 +127,53 @@
     var bestData = null;
     var bestTime = '';
 
+    // Auto-apply newer data to UI if promise already resolved
     function tryUpdate(data, sourceIdx, sourceName){
       if(!data) return;
       var dataTime = data.lastUpdated || '';
-      if(!bestData || (dataTime && dataTime > bestTime) || !bestTime){
+      var isNewer = !bestData || (dataTime && dataTime > bestTime) || !bestTime;
+      if(isNewer){
         bestData = data;
         bestTime = dataTime;
         if(sourceIdx === 0 && shaFromAPI){
           ghDataSHA = shaFromAPI;
         }
         console.log('[V-ing] ✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
-        // If this is the first valid result, resolve immediately
         if(!resolved){
+          // First valid data - resolve the promise immediately
           resolved = true;
           setSyncStatus('success');
-          // Return a resolved promise with the first valid data
-          // Other sources will continue checking in background
+        } else {
+          // Promise already resolved - auto-update UI with newer data
+          console.log('[V-ing] ↻ Newer data detected from ' + sourceName + ', updating UI...');
+          applyRemoteData(data);
         }
+      }
+    }
+
+    // Apply remote data to UI (theme, lang, streamers, console)
+    function applyRemoteData(data){
+      window.__vingData = data;
+      if(data.theme){
+        html.setAttribute('data-theme', data.theme);
+        localStorage.setItem('v-ing-theme', data.theme);
+      }
+      if(data.lang && data.lang !== lang){
+        lang = data.lang;
+        localStorage.setItem('v-ing-lang', lang);
+        applyLang();
+      }
+      if(data.streamers && unifiedPanel){
+        streamerData = data.streamers;
+        initStreamerData();
+        Object.keys(data.streamers).forEach(function(key){
+          streamerData[key] = data.streamers[key];
+        });
+        refreshAllVisuals(streamerData);
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+      }
+      if(data.operationLog){
+        renderConsolePanel(data);
       }
     }
 
@@ -204,7 +235,6 @@
     // Return a promise that resolves as soon as the first valid data arrives,
     // or rejects after all sources have timed out
     return new Promise(function(resolve, reject){
-      // Fast path: check every 100ms if we have data
       var checkInterval = setInterval(function(){
         if(bestData){
           clearInterval(checkInterval);
@@ -213,7 +243,6 @@
         }
       }, 100);
 
-      // Fallback: if no data after 6s, check if any arrived, otherwise reject
       var failTimer = setTimeout(function(){
         clearInterval(checkInterval);
         if(bestData){
@@ -329,40 +358,9 @@
       // AND at least 90 seconds have passed since last save (prevents overwriting fresh saves)
       var timeSinceSave = Date.now() - ghLastSaveTime;
       if(!editModeActive && !ghSaveInProgress && !document.hidden && timeSinceSave > 90000){
-        ghLoad().then(function(ghData){
-          // ONLY update if remote data is STRICTLY NEWER than local
-          // This prevents auto-refresh from reverting freshly saved data
-          var newTime = ghData.lastUpdated || '';
-          var currentTime = (window.__vingData && window.__vingData.lastUpdated) || '';
-          if(newTime && newTime > currentTime){
-            console.log('[V-ing] Auto-refresh: data updated remotely');
-            window.__vingData = ghData;
-            // Sync theme
-            if(ghData.theme){
-              html.setAttribute('data-theme', ghData.theme);
-              localStorage.setItem('v-ing-theme', ghData.theme);
-            }
-            // Sync language
-            if(ghData.lang && ghData.lang !== lang){
-              lang = ghData.lang;
-              localStorage.setItem('v-ing-lang', lang);
-              applyLang();
-            }
-            // Sync streamer data
-            if(ghData.streamers && unifiedPanel){
-              streamerData = ghData.streamers;
-              initStreamerData();
-              Object.keys(ghData.streamers).forEach(function(key){
-                streamerData[key] = ghData.streamers[key];
-              });
-              refreshAllVisuals(streamerData);
-              try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
-            }
-            // Render console
-            if(ghData.operationLog){
-              renderConsolePanel(ghData);
-            }
-          }
+        // ghLoad() now auto-updates UI in background when newer data arrives
+        ghLoad().then(function(){
+          console.log('[V-ing] Auto-refresh check complete');
         }).catch(function(){
           // Silent fail on auto-refresh
         });
@@ -1941,46 +1939,10 @@
       return;
     }
     console.log('[V-ing] Manual sync triggered');
-    setSyncStatus('loading');
-    ghLoad().then(function(ghData){
-      // Check if remote data is newer than local
-      var newTime = ghData.lastUpdated || '';
-      var currentTime = (window.__vingData && window.__vingData.lastUpdated) || '';
-      // If local data is newer (just saved), don't overwrite with old remote data
-      if(currentTime && newTime && newTime < currentTime){
-        console.log('[V-ing] Local data is newer (saved at ' + currentTime + '), remote is ' + newTime + ' - keeping local');
-        setSyncStatus('success');
-        return;
-      }
-      window.__vingData = ghData;
-      // Sync theme
-      if(ghData.theme){
-        html.setAttribute('data-theme', ghData.theme);
-        localStorage.setItem('v-ing-theme', ghData.theme);
-      }
-      // Sync language
-      if(ghData.lang && ghData.lang !== lang){
-        lang = ghData.lang;
-        localStorage.setItem('v-ing-lang', lang);
-        applyLang();
-      }
-      // Sync streamer data
-      if(ghData.streamers && unifiedPanel){
-        streamerData = ghData.streamers;
-        initStreamerData();
-        Object.keys(ghData.streamers).forEach(function(key){
-          streamerData[key] = ghData.streamers[key];
-        });
-        refreshAllVisuals(streamerData);
-        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
-      }
-      // Render console
-      if(ghData.operationLog){
-        renderConsolePanel(ghData);
-      }
-      console.log('[V-ing] ✓ Manual sync complete:', ghData.lastUpdated);
+    // ghLoad() now auto-updates UI in background when newer data arrives
+    ghLoad().then(function(){
+      console.log('[V-ing] ✓ Manual sync complete');
     }).catch(function(err){
-      console.warn('[V-ing] Manual sync failed:', err);
       setSyncStatus('error');
     });
   };
