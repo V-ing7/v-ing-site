@@ -2296,9 +2296,9 @@
     if(!container)return;
     // Use qrserver.com API - reliable, no library dependency
     var img=document.createElement('img');
-    img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://v-ing-site.pages.dev&color=000000&bgcolor=ffffff&ecc=M';
+    img.src='https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://v-ing-site.pages.dev&color=000000&bgcolor=ffffff&ecc=M';
     img.alt='QR Code';
-    img.style.cssText='width:62px;height:62px;display:block;border:none;';
+    img.style.cssText='width:100%;height:100%;display:block;border:none;';
     img.onload=function(){
       console.log('[V-ing] QR code image loaded successfully');
     };
