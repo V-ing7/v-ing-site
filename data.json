@@ -2,41 +2,41 @@
   "streamers": {
     "streamer_0": {
       "name": "可欣",
-      "shoot": 60,
-      "edit": 30
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_1": {
       "name": "小许",
-      "shoot": 20,
-      "edit": 6
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_2": {
       "name": "珊珊",
-      "shoot": 24,
-      "edit": 14
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_3": {
       "name": "CC",
-      "shoot": 15,
-      "edit": 9
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_4": {
       "name": "小凡",
-      "shoot": 5,
-      "edit": 4
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_5": {
       "name": "东哥",
-      "shoot": 1,
-      "edit": 1
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_6": {
       "name": "Tina",
-      "shoot": 5,
-      "edit": 2
+      "shoot": 0,
+      "edit": 0
     }
   },
-  "lastUpdated": "2026-09-12T02:46:14.938Z",
+  "lastUpdated": "2026-09-12T03:00:00.000Z",
   "theme": "dark",
   "lang": "zh",
   "operationLog": [
@@ -117,6 +117,30 @@
       "time": "21:00",
       "action": "更新跨AI会话指令模版v2.0：完整同步机制说明、操作步骤、注意事项",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "10:30",
+      "action": "删除名片页面保存名片按钮（HTML+JS+CSS）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "10:38",
+      "action": "修复卡顿bug：修复JS语法错误+数据加载改为先到先用模式",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "10:50",
+      "action": "修复实时同步：ghLoad后台自动更新UI+简化自动刷新逻辑",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "11:00",
+      "action": "修复工作台密码保护：localStorage改为sessionStorage + 清空计划表数据",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -129,7 +153,7 @@
     "description": "网站数据存在 GitHub 仓库 data.json 中，编辑时自动同步到云端。",
     "syncMechanism": {
       "saveFlow": "浏览器编辑 → GitHub API PUT → 触发Cloudflare部署",
-      "loadFlow": "并行5源加载 → 选择lastUpdated最新的数据",
+      "loadFlow": "并行5源加载 → 先到先用 → 后台检查更新",
       "autoRefresh": "30秒间隔，仅当远端时间戳 > 本地时更新",
       "saveProtection": "保存后90秒内跳过自动刷新",
       "manualSync": "点击导航栏同步徽章强制同步"
@@ -141,6 +165,6 @@
       "jsDelivr CDN (cdn.jsdelivr.net)",
       "statically CDN (cdn.statically.io)"
     ],
-    "version": "v2.1"
+    "version": "v2.2"
   }
 }

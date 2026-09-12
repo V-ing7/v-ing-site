@@ -755,7 +755,8 @@
   var wsLockInput='';
 
   function isWsUnlocked(){
-    return localStorage.getItem(WS_LOCK_KEY)==='1';
+    // Use sessionStorage so password resets when browser is closed
+    return sessionStorage.getItem(WS_LOCK_KEY)==='1';
   }
   function showWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.add('ws-lock-active');
@@ -765,7 +766,8 @@
   }
   function hideWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
-    localStorage.setItem(WS_LOCK_KEY,'1');
+    // Use sessionStorage: unlocked during this browser session only
+    sessionStorage.setItem(WS_LOCK_KEY,'1');
     // Trigger reveals after unlock
     setTimeout(function(){checkReveals()},100);
   }
