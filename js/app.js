@@ -2125,6 +2125,306 @@
     });
   });
 
+  /* ---------- Kanban Board: Add / Edit / Delete Cards ---------- */
+  (function(){
+    var planPanel = document.getElementById('ws-panel-plan');
+    if(!planPanel) return;
+
+    // Add card: click + button shows inline form
+    planPanel.querySelectorAll('.kanban-add-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var colType = btn.getAttribute('data-col-target');
+        var cardsContainer = planPanel.querySelector('[data-col-cards="'+colType+'"]');
+        if(!cardsContainer) return;
+        // Prevent duplicate forms
+        if(cardsContainer.querySelector('.kanban-card-new')) return;
+
+        // Hide empty placeholder
+        var empty = cardsContainer.querySelector('.kanban-empty');
+        if(empty) empty.style.display = 'none';
+
+        var form = document.createElement('div');
+        form.className = 'kanban-card-new';
+        var lang = document.documentElement.getAttribute('data-lang') || 'zh';
+        var titlePh = lang === 'zh' ? '任务标题' : 'Task title';
+        var descPh = lang === 'zh' ? '任务描述（可选）' : 'Description (optional)';
+        var deadPh = lang === 'zh' ? '截止日期 如9/20' : 'Due date e.g. 9/20';
+        var confirmText = lang === 'zh' ? '确认' : 'Confirm';
+        var cancelText = lang === 'zh' ? '取消' : 'Cancel';
+
+        form.innerHTML =
+          '<input type="text" class="kcn-title" placeholder="'+titlePh+'" maxlength="50">' +
+          '<textarea class="kcn-desc" placeholder="'+descPh+'" rows="2" maxlength="100"></textarea>' +
+          '<input type="text" class="kcn-deadline" placeholder="'+deadPh+'" maxlength="20">' +
+          '<div class="kanban-card-new-actions">' +
+            '<button class="kcn-cancel">'+cancelText+'</button>' +
+            '<button class="kcn-confirm">'+confirmText+'</button>' +
+          '</div>';
+        cardsContainer.insertBefore(form, cardsContainer.firstChild);
+
+        form.querySelector('.kcn-title').focus();
+
+        // Confirm
+        form.querySelector('.kcn-confirm').addEventListener('click', function(){
+          var title = form.querySelector('.kcn-title').value.trim();
+          var desc = form.querySelector('.kcn-desc').value.trim();
+          var deadline = form.querySelector('.kcn-deadline').value.trim();
+          if(!title){
+            form.querySelector('.kcn-title').style.borderColor = '#FF3B30';
+            return;
+          }
+          // Create card
+          var card = createKanbanCard(colType, title, desc, deadline);
+          cardsContainer.insertBefore(card, form.nextSibling);
+          form.remove();
+          updateColCount(colType);
+          // Show empty if no cards
+          checkEmpty(cardsContainer, colType);
+        });
+
+        // Cancel
+        form.querySelector('.kcn-cancel').addEventListener('click', function(){
+          form.remove();
+          checkEmpty(cardsContainer, colType);
+        });
+
+        // Enter to confirm on title
+        form.querySelector('.kcn-title').addEventListener('keydown', function(e){
+          if(e.key === 'Enter'){ e.preventDefault(); form.querySelector('.kcn-confirm').click(); }
+        });
+      });
+    });
+
+    // Column order for move buttons
+    var colOrder = ['todo', 'wip', 'done'];
+
+    // Create a kanban card element
+    function createKanbanCard(colType, title, desc, deadline){
+      var card = document.createElement('div');
+      card.className = 'kanban-card';
+      if(colType === 'done') card.className += ' kanban-card-done';
+      card.setAttribute('data-priority','normal');
+      card.setAttribute('data-col-type', colType);
+      card.setAttribute('draggable', 'true');
+
+      buildCardContent(card, colType, title, desc, deadline);
+      attachCardEvents(card);
+      return card;
+    }
+
+    // Build the inner HTML of a card based on column type
+    function buildCardContent(card, colType, title, desc, deadline){
+      var lang = document.documentElement.getAttribute('data-lang') || 'zh';
+      var tagClass = colType === 'todo' ? 'kc-tag-bili' : (colType === 'wip' ? 'kc-tag-dy' : 'kc-tag-collab');
+      var tagText;
+      if(lang === 'en'){
+        tagText = colType === 'todo' ? 'To Do' : (colType === 'wip' ? 'WIP' : 'Done');
+      } else {
+        tagText = colType === 'todo' ? '待办' : (colType === 'wip' ? '进行中' : '已完成');
+      }
+
+      // Move buttons - left arrow disabled for first column, right for last
+      var colIdx = colOrder.indexOf(colType);
+      var leftDisabled = colIdx === 0 ? 'disabled' : '';
+      var rightDisabled = colIdx === colOrder.length - 1 ? 'disabled' : '';
+      var moveBtns = '<div class="kc-move-btns">' +
+        '<button class="kc-move-btn kc-move-left" '+leftDisabled+' title="左移">◀</button>' +
+        '<button class="kc-move-btn kc-move-right" '+rightDisabled+' title="右移">▶</button>' +
+      '</div>';
+
+      var tags = '<div class="kc-tags"><span class="kc-tag '+tagClass+'">'+tagText+'</span></div>';
+      var titleHtml = '<h4 contenteditable="true">'+escapeHtml(title)+'</h4>';
+      var descHtml = desc ? '<p contenteditable="true">'+escapeHtml(desc)+'</p>' :
+        '<p contenteditable="true" data-placeholder="..." style="color:var(--text-tertiary);">...</p>';
+
+      var footHtml = '<div class="kc-foot">';
+      if(colType === 'done'){
+        footHtml += '<span class="kc-check">✓</span><span class="kc-date" contenteditable="true">'+escapeHtml(deadline||'')+'</span>';
+      } else {
+        var dlDefault = (lang === 'en') ? 'Due' : '截止';
+        footHtml += '<span class="kc-deadline" contenteditable="true">'+escapeHtml(deadline||dlDefault)+'</span>';
+        if(colType === 'wip') footHtml += '<span class="kc-progress-bar"><span style="width:0%"></span></span>';
+      }
+      footHtml += '</div>';
+
+      var delBtn = '<button class="kc-edit-btn kc-del-btn" title="删除" style="display:flex;">✕</button>';
+
+      card.innerHTML = moveBtns + tags + titleHtml + descHtml + footHtml + delBtn;
+      card.setAttribute('data-col-type', colType);
+      // Toggle done style
+      if(colType === 'done') card.classList.add('kanban-card-done');
+      else card.classList.remove('kanban-card-done');
+    }
+
+    // Attach event listeners to a card (move, delete, drag)
+    // Reads column type from data-col-type attribute so it's always current
+    function attachCardEvents(card){
+      // Move left
+      var leftBtn = card.querySelector('.kc-move-left');
+      if(leftBtn){
+        leftBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var ct = card.getAttribute('data-col-type');
+          var idx = colOrder.indexOf(ct);
+          if(idx > 0) moveCardToCol(card, ct, colOrder[idx - 1]);
+        });
+      }
+      // Move right
+      var rightBtn = card.querySelector('.kc-move-right');
+      if(rightBtn){
+        rightBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var ct = card.getAttribute('data-col-type');
+          var idx = colOrder.indexOf(ct);
+          if(idx < colOrder.length - 1) moveCardToCol(card, ct, colOrder[idx + 1]);
+        });
+      }
+      // Delete
+      card.querySelector('.kc-del-btn').addEventListener('click', function(e){
+        e.stopPropagation();
+        var ct = card.getAttribute('data-col-type');
+        var cardsContainer = card.parentNode;
+        card.remove();
+        updateColCount(ct);
+        checkEmpty(cardsContainer, ct);
+      });
+
+      // Drag-and-drop
+      card.addEventListener('dragstart', function(e){
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.getAttribute('data-col-type'));
+        draggedCard = card;
+        draggedFromCol = card.getAttribute('data-col-type');
+      });
+      card.addEventListener('dragend', function(){
+        card.classList.remove('dragging');
+        planPanel.querySelectorAll('.kanban-col').forEach(function(c){
+          c.classList.remove('drag-over');
+        });
+        draggedCard = null;
+        draggedFromCol = null;
+      });
+    }
+
+    // Move a card from one column to another, updating its content and style
+    function moveCardToCol(card, fromCol, toCol){
+      if(fromCol === toCol) return;
+      // Capture current editable content
+      var titleEl = card.querySelector('h4[contenteditable]');
+      var descEl = card.querySelector('p[contenteditable]');
+      var deadlineEl = card.querySelector('.kc-deadline[contenteditable], .kc-date[contenteditable]');
+      var title = titleEl ? titleEl.textContent.trim() : '';
+      var desc = descEl ? descEl.textContent.trim() : '';
+      // Ignore placeholder text
+      if(desc === '...' || desc === '') desc = '';
+      var deadline = deadlineEl ? deadlineEl.textContent.trim() : '';
+      var dlDefault = (document.documentElement.getAttribute('data-lang') === 'en') ? 'Due' : '截止';
+      if(deadline === dlDefault || deadline === '截止') deadline = '';
+
+      // Remove from old column
+      var oldContainer = card.parentNode;
+
+      // Create a clean clone (cloneNode(false) = no children, no event listeners on the element itself)
+      var newCard = card.cloneNode(false);
+      newCard.classList.remove('dragging');
+
+      oldContainer.removeChild(card);
+      checkEmpty(oldContainer, fromCol);
+
+      // Build content for new column on the clean clone
+      buildCardContent(newCard, toCol, title, desc, deadline);
+      attachCardEvents(newCard);
+
+      // Add to new column
+      var newContainer = planPanel.querySelector('[data-col-cards="'+toCol+'"]');
+      if(newContainer){
+        var empty = newContainer.querySelector('.kanban-empty');
+        if(empty) empty.style.display = 'none';
+        newContainer.insertBefore(newCard, newContainer.firstChild);
+      }
+
+      // Update counts for both columns
+      updateColCount(fromCol);
+      updateColCount(toCol);
+      checkEmpty(oldContainer, fromCol);
+      if(newContainer) checkEmpty(newContainer, toCol);
+    }
+
+    // Drag-and-drop on columns
+    var draggedCard = null;
+    var draggedFromCol = null;
+    planPanel.querySelectorAll('.kanban-col').forEach(function(col){
+      var cardsContainer = col.querySelector('.kanban-cards');
+      if(!cardsContainer) return;
+
+      col.addEventListener('dragover', function(e){
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        col.classList.add('drag-over');
+      });
+      col.addEventListener('dragleave', function(e){
+        // Only remove if leaving the column entirely
+        if(!col.contains(e.relatedTarget)) col.classList.remove('drag-over');
+      });
+      col.addEventListener('drop', function(e){
+        e.preventDefault();
+        col.classList.remove('drag-over');
+        if(!draggedCard || !draggedFromCol) return;
+        var toCol = col.getAttribute('data-col');
+        if(draggedFromCol === toCol) return;
+        moveCardToCol(draggedCard, draggedFromCol, toCol);
+      });
+    });
+
+    function escapeHtml(s){
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function updateColCount(colType){
+      var cardsContainer = planPanel.querySelector('[data-col-cards="'+colType+'"]');
+      if(!cardsContainer) return;
+      var count = cardsContainer.querySelectorAll('.kanban-card').length;
+      var col = planPanel.querySelector('.kanban-col[data-col="'+colType+'"]');
+      if(col){
+        var countEl = col.querySelector('.col-count');
+        if(countEl) countEl.textContent = count;
+      }
+      // Update progress stats
+      var todoCount = planPanel.querySelectorAll('[data-col-cards="todo"] .kanban-card').length;
+      var wipCount = planPanel.querySelectorAll('[data-col-cards="wip"] .kanban-card').length;
+      var doneCount = planPanel.querySelectorAll('[data-col-cards="done"] .kanban-card').length;
+      var total = todoCount + wipCount + doneCount;
+      var psNums = planPanel.querySelectorAll('.plan-stat .ps-num');
+      if(psNums.length >= 4){
+        psNums[0].textContent = total;            // 本周任务
+        psNums[1].textContent = doneCount;          // 已完成
+        psNums[2].textContent = wipCount;           // 进行中
+        psNums[3].textContent = todoCount;          // 待办
+      }
+      // Update ring
+      var pct = total > 0 ? Math.round(doneCount / total * 100) : 0;
+      var ringPct = planPanel.querySelector('.ring-pct');
+      var ringFill = planPanel.querySelector('.ring-fill');
+      if(ringPct) ringPct.textContent = pct + '%';
+      if(ringFill){
+        var circumference = 327;
+        ringFill.setAttribute('stroke-dashoffset', circumference - (circumference * pct / 100));
+      }
+    }
+
+    function checkEmpty(cardsContainer, colType){
+      var cards = cardsContainer.querySelectorAll('.kanban-card').length;
+      var form = cardsContainer.querySelector('.kanban-card-new');
+      var empty = cardsContainer.querySelector('.kanban-empty');
+      if(cards === 0 && !form){
+        if(empty) empty.style.display = '';
+      } else {
+        if(empty) empty.style.display = 'none';
+      }
+    }
+  })();
+
   // Click on sr-pct to edit
   if(unifiedPanel){
     unifiedPanel.addEventListener('click', function(e){

@@ -524,35 +524,38 @@
           <!-- Kanban Board -->
           <div class="kanban-board reveal">
             <!-- Column: To Do -->
-            <div class="kanban-col">
+            <div class="kanban-col" data-col="todo">
               <div class="kanban-col-head">
                 <span class="col-dot col-dot-todo"></span>
                 <h3 data-cn="待办" data-en="To Do">待办</h3>
                 <span class="col-count">0</span>
+                <button class="kanban-add-btn" data-col-target="todo" title="添加任务">+</button>
               </div>
-              <div class="kanban-cards">
+              <div class="kanban-cards" data-col-cards="todo">
                 <div class="kanban-empty" data-cn="暂无待办任务" data-en="No tasks">暂无待办任务</div>
               </div>
             </div>
             <!-- Column: In Progress -->
-            <div class="kanban-col">
+            <div class="kanban-col" data-col="wip">
               <div class="kanban-col-head">
                 <span class="col-dot col-dot-wip"></span>
                 <h3 data-cn="进行中" data-en="In Progress">进行中</h3>
                 <span class="col-count">0</span>
+                <button class="kanban-add-btn" data-col-target="wip" title="添加任务">+</button>
               </div>
-              <div class="kanban-cards">
+              <div class="kanban-cards" data-col-cards="wip">
                 <div class="kanban-empty" data-cn="暂无进行中任务" data-en="No tasks">暂无进行中任务</div>
               </div>
             </div>
             <!-- Column: Done -->
-            <div class="kanban-col">
+            <div class="kanban-col" data-col="done">
               <div class="kanban-col-head">
                 <span class="col-dot col-dot-done"></span>
                 <h3 data-cn="已完成" data-en="Done">已完成</h3>
                 <span class="col-count">0</span>
+                <button class="kanban-add-btn" data-col-target="done" title="添加任务">+</button>
               </div>
-              <div class="kanban-cards">
+              <div class="kanban-cards" data-col-cards="done">
                 <div class="kanban-empty" data-cn="暂无已完成任务" data-en="No tasks">暂无已完成任务</div>
               </div>
             </div>
