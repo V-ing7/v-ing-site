@@ -2639,12 +2639,10 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 #bcQRCode{
   width:62px;
   height:62px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   flex-shrink:0;
+  overflow:hidden;
 }
-#bcQRCode svg{
+#bcQRCode img{
   width:62px;
   height:62px;
   display:block;

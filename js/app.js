@@ -2290,52 +2290,25 @@
     checkReveals();
   },800);
 
-  /* ---------- Standard QR Code (no logo) ---------- */
-  var bcQRInited=false;
+  /* ---------- QR Code: direct image approach ---------- */
   function initCustomQR(){
     var container=document.getElementById('bcQRCode');
     if(!container)return;
-    if(bcQRInited)return; // already initialized
-    if(typeof QRCodeStyling==='undefined'){
-      var fallback=document.querySelector('.bc-qr-fallback-img');
-      if(fallback)fallback.style.display='block';
-      return;
-    }
-    try{
-      var qrCode=new QRCodeStyling({
-        width:62,
-        height:62,
-        type:'svg',
-        data:'https://v-ing-site.pages.dev',
-        qrOptions:{
-          typeNumber:0,
-          mode:'Byte',
-          errorCorrectionLevel:'M'
-        },
-        dotsOptions:{
-          color:'#000000',
-          type:'square'
-        },
-        backgroundOptions:{
-          color:'#ffffff'
-        },
-        cornersSquareOptions:{
-          color:'#000000',
-          type:'square'
-        },
-        cornersDotOptions:{
-          color:'#000000',
-          type:'square'
-        }
-      });
-      qrCode.append(container);
-      bcQRInited=true;
-      console.log('[V-ing] QR code generated successfully');
-    }catch(e){
-      console.warn('[V-ing] QR code styling failed:',e);
+    // Use qrserver.com API - reliable, no library dependency
+    var img=document.createElement('img');
+    img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://v-ing-site.pages.dev&color=000000&bgcolor=ffffff&ecc=M';
+    img.alt='QR Code';
+    img.style.cssText='width:62px;height:62px;display:block;border:none;';
+    img.onload=function(){
+      console.log('[V-ing] QR code image loaded successfully');
+    };
+    img.onerror=function(){
+      console.warn('[V-ing] QR image failed, trying fallback');
       var fb=document.querySelector('.bc-qr-fallback-img');
       if(fb)fb.style.display='block';
-    }
+    };
+    container.innerHTML='';
+    container.appendChild(img);
   }
   // Also try on page load as fallback
   window.addEventListener('load',function(){
