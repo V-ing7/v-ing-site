@@ -1524,6 +1524,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
+  gap:2px;
 }
 .segmented-control::-webkit-scrollbar{display:none}
 .seg-btn{
@@ -1533,7 +1534,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px 16px;
+  padding:10px 18px;
   font-size:.88rem;
   font-weight:600;
   color:var(--text-secondary);
@@ -1544,45 +1545,17 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   cursor:pointer;
   border:none;
   background:transparent;
+  min-width:0;
+  letter-spacing:.01em;
 }
-.seg-btn.active{color:var(--text-primary)}
-.seg-indicator{
-  position:absolute;
-  top:4px;bottom:4px;
-  left:4px;
-  width:calc(50% - 4px);
+.seg-btn.active{
+  color:var(--text-primary);
   background:var(--surface-2);
-  border-radius:10px;
   box-shadow:var(--shadow-sm);
-  transition:transform .45s cubic-bezier(.25,.46,.45,.94),width .45s cubic-bezier(.25,.46,.45,.94);
-  z-index:1;
-  will-change:transform;
 }
-.seg-indicator.seg-right{transform:translateX(100%)}
-/* 3-segment support */
-.seg-3 .seg-indicator{
-  width:calc(33.333% - 2.66px);
+.seg-indicator{
+  display:none;
 }
-.seg-3-indicator.seg-pos-1{transform:translateX(0%)}
-.seg-3-indicator.seg-pos-2{transform:translateX(100%)}
-.seg-3-indicator.seg-pos-3{transform:translateX(200%)}
-/* 4-segment support */
-.seg-4 .seg-indicator{
-  width:calc(25% - 2px);
-}
-.seg-4-indicator.seg-pos-1{transform:translateX(0%)}
-.seg-4-indicator.seg-pos-2{transform:translateX(100%)}
-.seg-4-indicator.seg-pos-3{transform:translateX(200%)}
-.seg-4-indicator.seg-pos-4{transform:translateX(300%)}
-/* 5-segment support */
-.seg-5 .seg-indicator{
-  width:calc(20% - 3.2px);
-}
-.seg-5-indicator.seg-pos-1{transform:translateX(0%)}
-.seg-5-indicator.seg-pos-2{transform:translateX(100%)}
-.seg-5-indicator.seg-pos-3{transform:translateX(200%)}
-.seg-5-indicator.seg-pos-4{transform:translateX(300%)}
-.seg-5-indicator.seg-pos-5{transform:translateX(400%)}
 
 /* Workspace Panels */
 .ws-panel{display:none;will-change:opacity,transform}
@@ -2880,11 +2853,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .workspace-hero{padding:16px 0 28px}
   .workspace-hero .section-head{margin-bottom:24px}
   .workspace-hero .section-title{font-size:clamp(1.5rem,6vw,2rem)}
-  .segmented-control{border-radius:12px;padding:3px}
+  .segmented-control{border-radius:12px;padding:3px;gap:1px}
   .seg-btn{padding:8px 10px;font-size:.72rem;min-width:0}
-  .seg-3 .seg-indicator{width:calc(33.333% - 2px)}
-  .seg-4 .seg-indicator{width:calc(25% - 1.5px)}
-  .seg-5 .seg-indicator{width:calc(20% - 2.4px)}
   /* Plan mobile */
   .plan-overview{padding:24px 20px;margin-bottom:28px}
   .plan-progress-wrap{justify-content:center;gap:24px}
