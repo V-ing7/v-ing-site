@@ -2454,52 +2454,34 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
   box-shadow:0 20px 60px rgba(0,0,0,.12);
 }
-/* 1:1 Square Card */
-.bc-square{
-  aspect-ratio:1/1;
-  max-width:460px;
+/* V2 Card — vertical layout */
+.bc-card-v2{
+  max-width:420px;
   margin:0 auto;
+  padding:28px 26px 22px;
   display:flex;
   flex-direction:column;
+  gap:0;
 }
 .bc-glow{
   position:absolute;
-  top:-80px;right:-80px;
-  width:240px;height:240px;
-  background:radial-gradient(circle,rgba(255,180,80,.15) 0%,transparent 70%);
+  top:-60px;right:-60px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,180,80,.12) 0%,transparent 70%);
   border-radius:50%;
   pointer-events:none;
 }
-.bc-inner{
-  position:relative;
-  flex:1;
+
+/* Top section: avatar + name */
+.bc-top{
   display:flex;
-  gap:20px;
-  padding:28px 28px 0;
-}
-.bc-left{
-  flex:1.2;
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-}
-.bc-right{
-  flex:.8;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-width:0;
-}
-.bc-header{
-  display:flex;
-  align-items:center;
+  align-items:flex-start;
   gap:14px;
-  margin-bottom:14px;
 }
 .bc-avatar{
   flex-shrink:0;
-  width:56px;height:56px;
-  border-radius:16px;
+  width:52px;height:52px;
+  border-radius:14px;
   background:linear-gradient(135deg,var(--surface-2),var(--bg-soft));
   display:flex;
   align-items:center;
@@ -2508,60 +2490,59 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
 }
 .bc-logo{
-  width:34px;
+  width:30px;
   height:auto;
 }
-.bc-name-wrap{
+.bc-name-section{
   flex:1;
   min-width:0;
 }
 .bc-name{
-  font-size:1.3rem;
+  font-size:1.25rem;
   font-weight:700;
   color:var(--text-primary);
-  margin:0 0 3px;
+  margin:0 0 2px;
   line-height:1.2;
 }
 .bc-title{
-  font-size:.8rem;
+  font-size:.78rem;
   color:var(--text-secondary);
-  margin:0;
+  margin:0 0 6px;
   font-weight:500;
 }
 .bc-cert-badge{
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  padding:4px 10px;
-  border-radius:8px;
-  background:linear-gradient(135deg,rgba(255,200,100,.12),rgba(255,170,50,.06));
-  border:1px solid rgba(255,180,80,.2);
+  gap:5px;
+  padding:3px 8px;
+  border-radius:6px;
+  background:linear-gradient(135deg,rgba(255,200,100,.1),rgba(255,170,50,.04));
+  border:1px solid rgba(255,180,80,.15);
   color:var(--accent);
-  font-size:.68rem;
+  font-size:.65rem;
   font-weight:600;
-  margin-bottom:16px;
-  align-self:flex-start;
 }
 .bc-divider{
   height:1px;
   background:var(--glass-border);
-  margin:0 0 14px;
+  margin:18px 0 16px;
 }
-.bc-info-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+
+/* Info grid 2x2 */
+.bc-info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px 16px;
   margin-bottom:16px;
-  flex:1;
 }
 .bc-info-item{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:9px;
 }
 .bc-info-icon{
   flex-shrink:0;
-  width:28px;height:28px;
+  width:30px;height:30px;
   border-radius:8px;
   background:var(--surface-2);
   display:flex;
@@ -2576,52 +2557,81 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   min-width:0;
 }
 .bc-info-label{
-  font-size:.65rem;
+  font-size:.62rem;
   color:var(--text-tertiary);
   font-weight:500;
 }
 .bc-info-value{
-  font-size:.78rem;
+  font-size:.76rem;
   color:var(--text-primary);
   font-weight:600;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+
+/* Tags */
 .bc-tags-row{
   display:flex;
   gap:6px;
   flex-wrap:wrap;
-  margin-bottom:4px;
+  margin-bottom:18px;
 }
 .bc-tag{
-  padding:4px 10px;
-  border-radius:8px;
+  padding:3px 10px;
+  border-radius:7px;
   background:var(--accent);
   color:#fff;
-  font-size:.7rem;
+  font-size:.68rem;
   font-weight:600;
 }
-/* QR Code */
-.bc-qr-wrap{
+
+/* Bottom: studio mark + QR */
+.bc-bottom-v2{
   display:flex;
-  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding-top:16px;
+  border-top:1px solid var(--glass-border);
+}
+.bc-bottom-left{
+  flex:1;
+  min-width:0;
+}
+.bc-studio-mark{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:.7rem;
+  color:var(--text-tertiary);
+  font-weight:500;
+}
+.bc-mark-dot{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--accent);
+}
+
+/* QR section in bottom */
+.bc-qr-section{
+  display:flex;
   align-items:center;
   gap:12px;
-  width:100%;
+  flex-shrink:0;
 }
 .bc-qr-frame{
   position:relative;
-  width:100%;
-  aspect-ratio:1/1;
-  max-width:160px;
-  border-radius:12px;
+  width:76px;
+  height:76px;
+  border-radius:10px;
   background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px;
-  box-shadow:0 4px 16px rgba(0,0,0,.08);
+  padding:5px;
+  box-shadow:0 2px 10px rgba(0,0,0,.1);
+  flex-shrink:0;
 }
 #bcQRCode{
   width:100%;
@@ -2644,47 +2654,19 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .bc-qr-label{
   display:flex;
   flex-direction:column;
-  align-items:center;
-  gap:3px;
-  text-align:center;
+  gap:2px;
 }
 .bc-qr-title{
-  font-size:.75rem;
+  font-size:.7rem;
   color:var(--text-primary);
   font-weight:600;
-  letter-spacing:.03em;
+  white-space:nowrap;
 }
 .bc-qr-url{
-  font-size:.68rem;
+  font-size:.62rem;
   color:var(--text-tertiary);
   font-family:monospace;
-  padding:3px 8px;
-  background:var(--surface-2);
-  border-radius:6px;
-}
-/* Bottom bar */
-.bc-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 28px;
-  border-top:1px solid var(--glass-border);
-  margin-top:auto;
-  position:relative;
-  z-index:1;
-}
-.bc-studio-mark{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:.72rem;
-  color:var(--text-tertiary);
-  font-weight:500;
-}
-.bc-mark-dot{
-  width:6px;height:6px;
-  border-radius:50%;
-  background:var(--accent);
+  white-space:nowrap;
 }
 
 /* ---------- Console Panel ---------- */
