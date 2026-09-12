@@ -17,7 +17,7 @@
   var GH_BRANCH = 'main';
   var GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
   var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
-  var CF_TOKEN = 'cfut_' + 'o9mnA8D3' + 'gyGJFDWU5' + 'hy7wlODA' + 'riofMDCNAc' + 'CeUPs0d6a9719';
+  var CF_TOKEN = 'cfut_' + 'rS6u3s18' + '78jmZXekQ' + 'a2if1HvpV' + 'tssokeOYAd' + 'Pr0c64e1a21b';
   var CF_ACCOUNT = 'edb10972ff8ae9f58d46aa4bdcee3fca';
   window.__cfToken = CF_TOKEN;
 
@@ -2151,38 +2151,46 @@
   var consoleLastSync = document.getElementById('consoleLastSync');
   var consoleCopyBtn = document.getElementById('consoleCopyBtn');
 
-  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v2.0】\n'
+  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v3.0】\n'
     + '我的网站数据存在 GitHub 仓库，请帮我拉取最新数据并继续工作。\n\n'
     + '【项目信息】\n'
     + '仓库地址：V-ing7/v-ing-site\n'
     + '分支：main\n'
     + '数据文件：data.json（含主播数据、主题、语言、操作日志）\n'
     + '网站地址：https://v-ing-site.pages.dev\n'
+    + 'GitHub Pages：https://V-ing7.github.io/v-ing-site/\n'
     + 'Cloudflare 项目名：v-ing-site\n'
     + 'Cloudflare Account ID：edb10972ff8ae9f58d46aa4bdcee3fca\n\n'
     + '【凭据】\n'
     + 'GitHub Token：' + GH_TOKEN + '\n'
-    + 'Cloudflare Token：' + (window.__cfToken || '见工作台指令模版.md') + '\n\n'
-    + '【同步机制说明】\n'
-    + '1. 浏览器编辑保存时自动写入 GitHub 仓库 data.json\n'
-    + '2. 保存后自动触发 Cloudflare Pages 重新部署\n'
-    + '3. 页面加载时并行请求 5 个数据源，选择最新数据\n'
-    + '4. 每 30 秒自动刷新检查远端是否有新数据（仅当远端时间戳 > 本地时）\n'
-    + '5. 保存后 90 秒内跳过自动刷新，防止旧 CDN 缓存覆盖新数据\n'
-    + '6. 点击导航栏同步徽章可手动强制同步\n\n'
+    + 'Cloudflare Token：' + (window.__cfToken || '见工作台指令模版') + '\n'
+    + 'Cloudflare Account ID：edb10972ff8ae9f58d46aa4bdcee3fca\n\n'
+    + '【自动部署机制 v3.0】\n'
+    + '1. 推送代码到 GitHub main 分支后，GitHub Actions 自动同时部署到两个平台：\n'
+    + '   - GitHub Pages（https://V-ing7.github.io/v-ing-site/）\n'
+    + '   - Cloudflare Pages（https://v-ing-site.pages.dev）\n'
+    + '2. GitHub Secrets 已配置 CF_API_TOKEN 和 CF_ACCOUNT_ID\n'
+    + '3. 工作流文件：.github/workflows/deploy.yml（修改需在 GitHub 网页端操作）\n'
+    + '4. 浏览器编辑保存时自动写入 GitHub 仓库 data.json\n'
+    + '5. 页面加载时并行请求 5 个数据源，选择最新数据\n'
+    + '6. 每 30 秒自动刷新检查远端是否有新数据（仅当远端时间戳 > 本地时）\n'
+    + '7. 保存后 90 秒内跳过自动刷新，防止旧 CDN 缓存覆盖新数据\n'
+    + '8. 点击导航栏同步徽章可手动强制同步\n\n'
     + '【操作步骤】\n'
     + '1. 先用 GitHub API 读取 data.json（GET https://api.github.com/repos/V-ing7/v-ing-site/contents/data.json?ref=main）\n'
     + '2. 解析 base64 content（UTF-8 安全解码：atob → Uint8Array → TextDecoder）\n'
     + '3. 了解当前数据状态后按我的要求修改\n'
     + '4. 修改后用 GitHub API PUT 回 data.json（需带 sha 参数）\n'
-    + '5. 用 Cloudflare API 或 wrangler 重新部署到 Cloudflare Pages\n'
-    + '6. 部署命令：CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<id> npx wrangler pages deploy /workspace --project-name=v-ing-site --branch=main\n\n'
+    + '5. 如需部署代码变更，git push origin main 即可自动触发双平台部署\n'
+    + '6. 如需手动部署 Cloudflare Pages（紧急情况）：\n'
+    + '   CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<id> npx wrangler pages deploy . --project-name=v-ing-site --branch=main\n\n'
     + '【注意事项】\n'
     + '- 保存到 GitHub 时需先获取当前文件 sha，PUT 时带上 sha 防止冲突\n'
     + '- 如果遇到 409 冲突，重新获取 sha 后重试\n'
     + '- data.json 中的中文字符必须用 UTF-8 编码，不能乱码\n'
     + '- operationLog 记录每次重要操作，格式：{date, time, action, status}\n'
-    + '- instructionTemplate 区域包含项目元信息，保持最新';
+    + '- instructionTemplate 区域包含项目元信息，保持最新\n'
+    + '- 修改 .github/workflows/deploy.yml 需在 GitHub 网页端操作（PAT 无 workflow 权限）';
 
   // Render console panel from GitHub data
   function renderConsolePanel(ghData){
