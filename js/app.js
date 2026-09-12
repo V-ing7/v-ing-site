@@ -2297,8 +2297,8 @@
     }
     try{
       var qrCode=new QRCodeStyling({
-        width:200,
-        height:200,
+        width:120,
+        height:120,
         type:'svg',
         data:'https://v-ing-site.pages.dev',
         qrOptions:{
