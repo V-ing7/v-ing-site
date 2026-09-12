@@ -1654,6 +1654,15 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border-radius:8px;
 }
 .kanban-cards{display:flex;flex-direction:column;gap:12px}
+.kanban-empty{
+  padding:32px 16px;
+  text-align:center;
+  color:var(--text-tertiary);
+  font-size:.85rem;
+  border:1px dashed var(--glass-border);
+  border-radius:12px;
+  background:transparent;
+}
 .kanban-card{
   padding:16px;
   border-radius:14px;
