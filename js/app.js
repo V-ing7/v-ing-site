@@ -2223,13 +2223,14 @@
         tagText = colType === 'todo' ? '待办' : (colType === 'wip' ? '进行中' : '已完成');
       }
 
-      // Move buttons - left arrow disabled for first column, right for last
+      // Unified action toolbar: move left, move right, delete
       var colIdx = colOrder.indexOf(colType);
       var leftDisabled = colIdx === 0 ? 'disabled' : '';
       var rightDisabled = colIdx === colOrder.length - 1 ? 'disabled' : '';
-      var moveBtns = '<div class="kc-move-btns">' +
-        '<button class="kc-move-btn kc-move-left" '+leftDisabled+' title="左移">◀</button>' +
-        '<button class="kc-move-btn kc-move-right" '+rightDisabled+' title="右移">▶</button>' +
+      var actionsBar = '<div class="kc-actions">' +
+        '<button class="kc-action-btn kc-move-left" '+leftDisabled+' title="左移">◀</button>' +
+        '<button class="kc-action-btn kc-move-right" '+rightDisabled+' title="右移">▶</button>' +
+        '<button class="kc-action-btn kc-action-del kc-del-btn" title="删除">✕</button>' +
       '</div>';
 
       var tags = '<div class="kc-tags"><span class="kc-tag '+tagClass+'">'+tagText+'</span></div>';
@@ -2247,9 +2248,7 @@
       }
       footHtml += '</div>';
 
-      var delBtn = '<button class="kc-edit-btn kc-del-btn" title="删除" style="display:flex;">✕</button>';
-
-      card.innerHTML = moveBtns + tags + titleHtml + descHtml + footHtml + delBtn;
+      card.innerHTML = actionsBar + tags + titleHtml + descHtml + footHtml;
       card.setAttribute('data-col-type', colType);
       // Toggle done style
       if(colType === 'done') card.classList.add('kanban-card-done');

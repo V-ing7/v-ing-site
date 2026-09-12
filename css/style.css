@@ -1729,66 +1729,62 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 .kcn-cancel:hover{background:var(--glass-border)}
 /* Editable kanban card */
-.kanban-card .kc-edit-btn{
-  position:absolute;
-  top:8px;
-  right:8px;
-  width:22px;
-  height:22px;
-  border-radius:6px;
-  border:none;
-  background:rgba(0,0,0,.06);
-  color:var(--text-tertiary);
-  font-size:.75rem;
-  cursor:pointer;
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-.kanban-card:hover .kc-edit-btn{display:flex}
 .kanban-card{position:relative}
 .kanban-card [contenteditable="true"]:focus{
   outline:2px solid var(--accent);
   outline-offset:2px;
   border-radius:4px;
 }
-/* Move buttons (left/right arrows for cross-column movement) */
-.kc-move-btns{
+/* Unified action toolbar (move left/right + delete) */
+.kc-actions{
   position:absolute;
-  bottom:10px;
-  right:10px;
+  top:8px;
+  right:8px;
   display:none;
-  gap:4px;
-  z-index:2;
+  gap:2px;
+  z-index:3;
+  background:var(--surface-glass);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border:1px solid var(--glass-border);
+  border-radius:8px;
+  padding:2px;
+  opacity:0;
+  transition:opacity .2s ease;
 }
-.kanban-card:hover .kc-move-btns{display:flex}
-.kc-move-btn{
-  width:22px;
-  height:22px;
+.kanban-card:hover .kc-actions{
+  display:flex;
+  opacity:1;
+}
+.kc-action-btn{
+  width:24px;
+  height:24px;
   border-radius:6px;
   border:none;
-  background:rgba(0,0,0,.06);
+  background:transparent;
   color:var(--text-tertiary);
-  font-size:.7rem;
+  font-size:.72rem;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:all .2s ease;
+  transition:all .15s ease;
 }
-.kc-move-btn:hover{
+.kc-action-btn:hover{
   background:var(--accent);
   color:#fff;
-  transform:scale(1.15);
 }
-.kc-move-btn:disabled{
-  opacity:.3;
+.kc-action-btn:disabled{
+  opacity:.25;
   cursor:not-allowed;
 }
-.kc-move-btn:disabled:hover{
-  background:rgba(0,0,0,.06);
+.kc-action-btn:disabled:hover{
+  background:transparent;
   color:var(--text-tertiary);
-  transform:none;
+}
+.kc-action-del:hover{
+  background:#FF3B30;
+  color:#fff;
 }
 /* Drag-and-drop styles */
 .kanban-card[draggable="true"]{
@@ -1828,7 +1824,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 .kanban-card[data-priority="high"]{border-left:3px solid #FF9F0A}
 .kanban-card-done{opacity:.7}
-.kc-tags{display:flex;gap:6px;margin-bottom:10px}
+.kc-tags{display:flex;gap:6px;margin-bottom:10px;padding-right:90px;min-height:22px}
 .kc-tag{
   font-size:.65rem;
   font-weight:600;
