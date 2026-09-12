@@ -2648,7 +2648,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   width:24%;
   aspect-ratio:1/1;
   background:#fff;
-  border-radius:50%;
+  border-radius:4px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -2986,7 +2986,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .bc-tag{padding:3px 7px;font-size:.62rem;border-radius:6px}
   .bc-qr-wrap{gap:8px}
   .bc-qr-frame{max-width:100%;border-radius:12px;padding:8px}
-  .bc-qr-logo{top:51%;width:24%;border-radius:50%;box-shadow:0 0 0 2px #fff,0 1px 4px rgba(0,0,0,.1);padding:5%}
+  .bc-qr-logo{top:51%;width:24%;border-radius:4px;box-shadow:0 0 0 2px #fff,0 1px 4px rgba(0,0,0,.1);padding:5%}
   .bc-qr-title{font-size:.65rem}
   .bc-qr-url{font-size:.58rem;padding:2px 6px;border-radius:4px}
   .bc-bottom{padding:10px 20px}
