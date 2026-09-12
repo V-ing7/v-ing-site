@@ -1245,7 +1245,6 @@
     if(tab==='unified'){
       var unifiedWrap=document.getElementById('unified-report-wrap');
       if(unifiedWrap){
-        // Force reveal all elements in unified panel immediately
         var unifiedPanelEl=document.getElementById('ws-panel-unified');
         if(unifiedPanelEl){
           unifiedPanelEl.querySelectorAll('.reveal').forEach(function(el){
@@ -1254,6 +1253,10 @@
         }
         setTimeout(function(){animateRingsInContainer(unifiedWrap)},300);
       }
+    }
+    // Initialize QR code when switching to card panel
+    if(tab==='card'){
+      setTimeout(initCustomQR,200);
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
@@ -2288,17 +2291,20 @@
   },800);
 
   /* ---------- Standard QR Code (no logo) ---------- */
+  var bcQRInited=false;
   function initCustomQR(){
     var container=document.getElementById('bcQRCode');
-    if(!container||typeof QRCodeStyling==='undefined'){
+    if(!container)return;
+    if(bcQRInited)return; // already initialized
+    if(typeof QRCodeStyling==='undefined'){
       var fallback=document.querySelector('.bc-qr-fallback-img');
       if(fallback)fallback.style.display='block';
       return;
     }
     try{
       var qrCode=new QRCodeStyling({
-        width:120,
-        height:120,
+        width:62,
+        height:62,
         type:'svg',
         data:'https://v-ing-site.pages.dev',
         qrOptions:{
@@ -2323,16 +2329,17 @@
         }
       });
       qrCode.append(container);
-      console.log('[V-ing] Standard QR code generated (no logo)');
+      bcQRInited=true;
+      console.log('[V-ing] QR code generated successfully');
     }catch(e){
       console.warn('[V-ing] QR code styling failed:',e);
       var fb=document.querySelector('.bc-qr-fallback-img');
       if(fb)fb.style.display='block';
     }
   }
-  // Wait for QRCodeStyling library to load (defer)
+  // Also try on page load as fallback
   window.addEventListener('load',function(){
-    setTimeout(initCustomQR,100);
+    setTimeout(initCustomQR,500);
   });
 
 })();

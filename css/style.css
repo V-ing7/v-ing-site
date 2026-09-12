@@ -2637,22 +2637,21 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   flex-shrink:0;
 }
 #bcQRCode{
-  position:absolute;
-  inset:5px;
+  width:62px;
+  height:62px;
   display:flex;
   align-items:center;
   justify-content:center;
+  flex-shrink:0;
 }
 #bcQRCode svg{
-  width:100%;
-  height:100%;
+  width:62px;
+  height:62px;
   display:block;
 }
 .bc-qr-fallback-img{
-  position:absolute;
-  inset:5px;
-  width:auto;
-  height:auto;
+  width:62px;
+  height:62px;
   object-fit:contain;
   display:block;
 }
