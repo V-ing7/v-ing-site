@@ -2,12 +2,12 @@
   "streamers": {
     "streamer_0": {
       "name": "可欣",
-      "shoot": 60,
-      "edit": 30
+      "shoot": 0,
+      "edit": 0
     },
     "streamer_1": {
       "name": "小许",
-      "shoot": 20,
+      "shoot": 0,
       "edit": 0
     },
     "streamer_2": {
@@ -36,7 +36,7 @@
       "edit": 0
     }
   },
-  "lastUpdated": "2026-09-12T03:40:21.257Z",
+  "lastUpdated": "2026-09-12T03:44:01.257Z",
   "theme": "light",
   "lang": "zh",
   "operationLog": [
