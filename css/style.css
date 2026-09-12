@@ -2480,8 +2480,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 .bc-avatar{
   flex-shrink:0;
-  width:56px;height:56px;
-  border-radius:14px;
+  width:64px;height:64px;
+  border-radius:16px;
   background:linear-gradient(135deg,var(--surface-2),var(--bg-soft));
   display:flex;
   align-items:center;
@@ -2490,7 +2490,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
 }
 .bc-logo{
-  width:32px;
+  width:38px;
   height:auto;
 }
 .bc-name-section{
