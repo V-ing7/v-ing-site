@@ -382,7 +382,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   gap:4px;
   transform:translateY(-100%);
   transition:transform .5s cubic-bezier(.34,1.56,.64,1);
-  z-index:99;
+  z-index:101;
 }
 .mobile-menu.open{transform:translateY(0)}
 .mobile-link{
@@ -1508,7 +1508,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 /* iOS Segmented Control */
 .segmented-control{
   position:relative;
-  display:inline-flex;
+  display:flex;
   background:var(--surface-glass);
   backdrop-filter:saturate(180%) blur(20px);
   -webkit-backdrop-filter:saturate(180%) blur(20px);
@@ -1516,7 +1516,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border-radius:14px;
   padding:4px;
   margin:0 auto;
-  display:flex;
   justify-content:center;
   align-items:center;
   width:fit-content;
@@ -2703,25 +2702,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border-radius:50%;
   background:var(--accent);
 }
-.bc-save-btn{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:7px 14px;
-  border-radius:10px;
-  background:var(--surface-2);
-  color:var(--text-primary);
-  font-size:.75rem;
-  font-weight:600;
-  border:1px solid var(--glass-border);
-  cursor:pointer;
-  transition:all .25s ease;
-}
-.bc-save-btn:hover{
-  background:var(--accent);
-  color:#fff;
-  border-color:var(--accent);
-}
+
 
 /* ---------- Console Panel ---------- */
 .console-wrap{
@@ -2956,8 +2937,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .total-stats-row{gap:16px}
   .ts-num{font-size:1.2rem}
   .ts-label{font-size:.62rem}
-  .unified-summary{padding:16px;margin-bottom:16px}
-  /* Unified report mobile */
   .unified-toolbar{margin-bottom:14px;padding-bottom:12px}
   .unified-toolbar-title{font-size:.9rem}
   .unified-toolbar-date{font-size:.7rem}
@@ -3006,8 +2985,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .bc-bottom{padding:10px 20px}
   .bc-studio-mark{font-size:.68rem;gap:6px}
   .bc-mark-dot{width:5px;height:5px}
-  .bc-save-btn{padding:6px 10px;font-size:.68rem;gap:4px}
-  .bc-save-btn svg{width:13px;height:13px}
 }
 @media(max-width:380px){
   .placeholder-grid{grid-template-columns:1fr}
@@ -3030,7 +3007,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .total-stats-row{gap:10px}
   .ts-num{font-size:1rem}
   .ts-label{font-size:.58rem}
-  .unified-summary{padding:14px;margin-bottom:14px}
   /* Unified report - small screen */
   .unified-toolbar-title{font-size:.82rem}
   .unified-toolbar-date{font-size:.65rem}

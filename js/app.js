@@ -422,7 +422,7 @@
       checkReveals();
     });
   }
-  themeToggle.addEventListener('click',toggleTheme);
+  if(themeToggle) themeToggle.addEventListener('click',toggleTheme);
   initTheme();
 
   /* ---------- Language Toggle ---------- */
@@ -468,7 +468,7 @@
       ghSave(window.__vingData);
     }
   }
-  langToggle.addEventListener('click',toggleLang);
+  if(langToggle) langToggle.addEventListener('click',toggleLang);
   applyLang();
 
   /* ---------- View Navigation (SPA) ---------- */
@@ -554,8 +554,8 @@
       var target=el.getAttribute('data-nav');
       switchView(target);
       // Close mobile menu
-      mobileMenu.classList.remove('open');
-      menuToggle.classList.remove('active');
+      if(mobileMenu) mobileMenu.classList.remove('open');
+      if(menuToggle) menuToggle.classList.remove('active');
     });
   });
 
@@ -568,27 +568,31 @@
   }
 
   /* ---------- Mobile Menu ---------- */
-  menuToggle.addEventListener('click',function(){
-    menuToggle.classList.toggle('active');
-    mobileMenu.classList.toggle('open');
-  });
+  if(menuToggle && mobileMenu){
+    menuToggle.addEventListener('click',function(){
+      menuToggle.classList.toggle('active');
+      mobileMenu.classList.toggle('open');
+    });
+  }
 
   /* ---------- Nav Scroll Effect ---------- */
   var scrollTicking=false;
-  window.addEventListener('scroll',function(){
-    if(!scrollTicking){
-      requestAnimationFrame(function(){
-        var y=window.scrollY;
-        if(y>20){
-          nav.classList.add('scrolled');
-        }else{
-          nav.classList.remove('scrolled');
-        }
-        scrollTicking=false;
-      });
-      scrollTicking=true;
-    }
-  });
+  if(nav){
+    window.addEventListener('scroll',function(){
+      if(!scrollTicking){
+        requestAnimationFrame(function(){
+          var y=window.scrollY;
+          if(y>20){
+            nav.classList.add('scrolled');
+          }else{
+            nav.classList.remove('scrolled');
+          }
+          scrollTicking=false;
+        });
+        scrollTicking=true;
+      }
+    });
+  }
 
   /* ---------- Reveal Animations (IntersectionObserver) ---------- */
   var revealObserver;
@@ -723,20 +727,12 @@
     });
   }
 
-  /* ---------- Smooth Anchor Links in Footer ---------- */
-  document.querySelectorAll('.footer a[data-nav]').forEach(function(el){
-    el.addEventListener('click',function(e){
-      e.preventDefault();
-      switchView(el.getAttribute('data-nav'));
-    });
-  });
-
   /* ---------- Keyboard Navigation ---------- */
   document.addEventListener('keydown',function(e){
     // ESC closes mobile menu
-    if(e.key==='Escape'&&mobileMenu.classList.contains('open')){
+    if(e.key==='Escape'&&mobileMenu&&mobileMenu.classList.contains('open')){
       mobileMenu.classList.remove('open');
-      menuToggle.classList.remove('active');
+      if(menuToggle) menuToggle.classList.remove('active');
     }
   });
 
@@ -1922,169 +1918,6 @@
             consoleCopyBtn.classList.remove('copied');
           }, 2000);
         }
-      }
-    });
-  }
-
-  // Business card save button
-  var bcSaveBtn = document.getElementById('bcSaveBtn');
-  if(bcSaveBtn){
-    bcSaveBtn.addEventListener('click', function(){
-      var businessCard = document.querySelector('.business-card');
-      if(!businessCard) return;
-      var originalText = bcSaveBtn.innerHTML;
-      if(window.html2canvas){
-        bcSaveBtn.querySelector('span').textContent = lang === 'zh' ? '生成中...' : 'Generating...';
-        bcSaveBtn.classList.add('copied');
-        setTimeout(function(){
-          var bcInner = businessCard.querySelector('.bc-inner');
-          var bcLeft = businessCard.querySelector('.bc-left');
-          var bcRight = businessCard.querySelector('.bc-right');
-          var bcBottom = businessCard.querySelector('.bc-bottom');
-          var bcGlow = businessCard.querySelector('.bc-glow');
-
-          // Save original styles
-          var orig = {
-            card: {
-              width: businessCard.style.width,
-              height: businessCard.style.height,
-              aspectRatio: businessCard.style.aspectRatio,
-              maxWidth: businessCard.style.maxWidth,
-              background: businessCard.style.background,
-              backdropFilter: businessCard.style.backdropFilter,
-              WebkitBackdropFilter: businessCard.style.webkitBackdropFilter
-            },
-            inner: bcInner ? {
-              height: bcInner.style.height,
-              flex: bcInner.style.flex
-            } : null,
-            left: bcLeft ? {
-              flex: bcLeft.style.flex,
-              width: bcLeft.style.width
-            } : null,
-            right: bcRight ? {
-              flex: bcRight.style.flex,
-              width: bcRight.style.width
-            } : null,
-            bottom: bcBottom ? {
-              marginTop: bcBottom.style.marginTop
-            } : null,
-            saveBtn: {
-              display: bcSaveBtn.style.display
-            },
-            glow: bcGlow ? {
-              display: bcGlow.style.display
-            } : null
-          };
-
-          // Get actual dimensions before modification
-          var cardRect = businessCard.getBoundingClientRect();
-          var size = Math.max(Math.round(cardRect.width), Math.round(cardRect.height));
-          var leftRatio = bcLeft.offsetWidth / (bcLeft.offsetWidth + bcRight.offsetWidth);
-          var rightRatio = bcRight.offsetWidth / (bcLeft.offsetWidth + bcRight.offsetWidth);
-          var gap = 20; // gap between left and right
-
-          // Hide save button during capture
-          bcSaveBtn.style.display = 'none';
-          // Hide decorative glow for cleaner output
-          if(bcGlow) bcGlow.style.display = 'none';
-
-          // Apply fixed dimensions for consistent rendering
-          businessCard.style.width = size + 'px';
-          businessCard.style.height = size + 'px';
-          businessCard.style.aspectRatio = 'auto';
-          businessCard.style.maxWidth = 'none';
-          
-          // Use solid background for canvas rendering (backdrop-filter doesn't work well with canvas)
-          var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          businessCard.style.background = isDark ? '#1C1C1E' : '#FFFFFF';
-          businessCard.style.backdropFilter = 'none';
-          businessCard.style.webkitBackdropFilter = 'none';
-
-          if(bcInner){
-            var bottomHeight = bcBottom ? bcBottom.offsetHeight : 0;
-            var innerHeight = size - bottomHeight;
-            bcInner.style.height = innerHeight + 'px';
-            bcInner.style.flex = 'none';
-          }
-          if(bcLeft){
-            var innerWidth = size - 40; // subtract padding
-            var leftW = Math.round((innerWidth - gap) * leftRatio);
-            bcLeft.style.flex = 'none';
-            bcLeft.style.width = leftW + 'px';
-          }
-          if(bcRight){
-            var innerWidth = size - 40;
-            var rightW = Math.round((innerWidth - gap) * rightRatio);
-            bcRight.style.flex = 'none';
-            bcRight.style.width = rightW + 'px';
-          }
-
-          var cleanup = function(){
-            businessCard.style.width = orig.card.width;
-            businessCard.style.height = orig.card.height;
-            businessCard.style.aspectRatio = orig.card.aspectRatio;
-            businessCard.style.maxWidth = orig.card.maxWidth;
-            businessCard.style.background = orig.card.background;
-            businessCard.style.backdropFilter = orig.card.backdropFilter;
-            businessCard.style.webkitBackdropFilter = orig.card.WebkitBackdropFilter;
-            if(bcInner && orig.inner){
-              bcInner.style.height = orig.inner.height;
-              bcInner.style.flex = orig.inner.flex;
-            }
-            if(bcLeft && orig.left){
-              bcLeft.style.flex = orig.left.flex;
-              bcLeft.style.width = orig.left.width;
-            }
-            if(bcRight && orig.right){
-              bcRight.style.flex = orig.right.flex;
-              bcRight.style.width = orig.right.width;
-            }
-            if(bcBottom && orig.bottom){
-              bcBottom.style.marginTop = orig.bottom.marginTop;
-            }
-            bcSaveBtn.style.display = orig.saveBtn.display;
-            if(bcGlow && orig.glow){
-              bcGlow.style.display = orig.glow.display;
-            }
-          };
-
-          // Wait a bit for layout to settle, then capture
-          setTimeout(function(){
-            html2canvas(businessCard, {
-              backgroundColor: null,
-              scale: 2,
-              useCORS: true,
-              allowTaint: true,
-              logging: false,
-              width: size,
-              height: size
-            }).then(function(canvas){
-              cleanup();
-              var link = document.createElement('a');
-              link.download = '林威_名片.png';
-              link.href = canvas.toDataURL('image/png');
-              link.click();
-              bcSaveBtn.innerHTML = originalText;
-              bcSaveBtn.classList.remove('copied');
-            }).catch(function(err){
-              cleanup();
-              console.error('[V-ing] Card save error:', err);
-              bcSaveBtn.innerHTML = originalText;
-              bcSaveBtn.classList.remove('copied');
-              alert(lang === 'zh' ? '保存失败，请重试' : 'Save failed, please try again');
-            });
-          }, 100);
-        }, 300);
-      } else {
-        // Fallback: just show a message
-        var span = bcSaveBtn.querySelector('span');
-        span.textContent = lang === 'zh' ? '已保存' : 'Saved';
-        bcSaveBtn.classList.add('copied');
-        setTimeout(function(){
-          bcSaveBtn.innerHTML = originalText;
-          bcSaveBtn.classList.remove('copied');
-        }, 2000);
       }
     });
   }
