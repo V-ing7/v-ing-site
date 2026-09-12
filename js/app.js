@@ -1567,7 +1567,7 @@
     var cloned = target.cloneNode(true);
 
     // Remove screenshot buttons from cloned content
-    var ssBtns = cloned.querySelectorAll('.screenshot-btn, .edit-toggle-btn');
+    var ssBtns = cloned.querySelectorAll('.screenshot-btn, .edit-toggle-btn, .ws-panel-toolbar-right');
     ssBtns.forEach(function(b){ b.remove(); });
 
     // Sync ring dashoffset values from live DOM to cloned DOM
@@ -1724,7 +1724,7 @@
 
     // Temporarily hide buttons and other elements we don't want in the screenshot
     var hiddenEls = [];
-    var btnsToHide = target.querySelectorAll('.screenshot-btn, .edit-toggle-btn');
+    var btnsToHide = target.querySelectorAll('.screenshot-btn, .edit-toggle-btn, .ws-panel-toolbar-right');
     btnsToHide.forEach(function(el){
       hiddenEls.push({el: el, orig: el.style.display});
       el.style.display = 'none';
@@ -2088,6 +2088,42 @@
   if(editToggleBtn){
     editToggleBtn.addEventListener('click', toggleEditMode);
   }
+
+  /* ---------- Generic Panel Edit Mode ---------- */
+  // For panels other than unified-report, toggle contentEditable on text elements
+  document.querySelectorAll('.ws-panel-toolbar .edit-toggle-btn[data-edit-target]').forEach(function(btn){
+    if(btn.id === 'editToggleBtn') return; // skip unified-report's own button
+    btn.addEventListener('click', function(){
+      var targetId = btn.getAttribute('data-edit-target');
+      var panel = document.getElementById(targetId);
+      if(!panel) return;
+      var isActive = panel.classList.toggle('edit-mode');
+      var lang = document.documentElement.getAttribute('data-lang') || 'zh';
+      if(isActive){
+        btn.textContent = lang === 'zh' ? '完成' : 'Done';
+        btn.classList.add('edit-active');
+        // Make text elements editable
+        panel.querySelectorAll('h2:not(.section-title-lg), h3, h4, p, span.bc-info-value, span.ring-pct, span.ps-num, span.cs-num, span.ss-num, span.ts-num, span.bps-num').forEach(function(el){
+          // Skip elements inside buttons or toolbars
+          if(el.closest('.ws-panel-toolbar')) return;
+          if(el.closest('.seg-btn')) return;
+          el.setAttribute('contenteditable', 'true');
+          el.style.cursor = 'text';
+          el.style.outline = 'none';
+          el.addEventListener('focus', function(){el.style.outline='2px solid var(--accent)';el.style.outlineOffset='2px';});
+          el.addEventListener('blur', function(){el.style.outline='';});
+        });
+      } else {
+        btn.textContent = lang === 'zh' ? '编辑' : 'Edit';
+        btn.classList.remove('edit-active');
+        panel.querySelectorAll('[contenteditable="true"]').forEach(function(el){
+          el.removeAttribute('contenteditable');
+          el.style.cursor = '';
+          el.style.outline = '';
+        });
+      }
+    });
+  });
 
   // Click on sr-pct to edit
   if(unifiedPanel){
