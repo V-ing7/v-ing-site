@@ -382,7 +382,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   gap:4px;
   transform:translateY(-100%);
   transition:transform .5s cubic-bezier(.34,1.56,.64,1);
-  z-index:101;
+  z-index:99;
 }
 .mobile-menu.open{transform:translateY(0)}
 .mobile-link{
@@ -1508,7 +1508,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 /* iOS Segmented Control */
 .segmented-control{
   position:relative;
-  display:flex;
+  display:inline-flex;
   background:var(--surface-glass);
   backdrop-filter:saturate(180%) blur(20px);
   -webkit-backdrop-filter:saturate(180%) blur(20px);
@@ -1516,6 +1516,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border-radius:14px;
   padding:4px;
   margin:0 auto;
+  display:flex;
   justify-content:center;
   align-items:center;
   width:fit-content;
@@ -2644,12 +2645,17 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   top:51%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:22%;
+  width:24%;
   aspect-ratio:1/1;
+  background:#fff;
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   color:#231815;
+  box-shadow:0 0 0 3px #fff,
+             0 2px 8px rgba(0,0,0,.1);
+  padding:5%;
   z-index:2;
 }
 .bc-qr-logo svg{
@@ -2702,7 +2708,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border-radius:50%;
   background:var(--accent);
 }
-
 
 /* ---------- Console Panel ---------- */
 .console-wrap{
@@ -2937,6 +2942,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .total-stats-row{gap:16px}
   .ts-num{font-size:1.2rem}
   .ts-label{font-size:.62rem}
+  .unified-summary{padding:16px;margin-bottom:16px}
+  /* Unified report mobile */
   .unified-toolbar{margin-bottom:14px;padding-bottom:12px}
   .unified-toolbar-title{font-size:.9rem}
   .unified-toolbar-date{font-size:.7rem}
@@ -2979,7 +2986,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .bc-tag{padding:3px 7px;font-size:.62rem;border-radius:6px}
   .bc-qr-wrap{gap:8px}
   .bc-qr-frame{max-width:100%;border-radius:12px;padding:8px}
-  .bc-qr-logo{top:51%;width:22%}
+  .bc-qr-logo{top:51%;width:24%;border-radius:50%;box-shadow:0 0 0 2px #fff,0 1px 4px rgba(0,0,0,.1);padding:5%}
   .bc-qr-title{font-size:.65rem}
   .bc-qr-url{font-size:.58rem;padding:2px 6px;border-radius:4px}
   .bc-bottom{padding:10px 20px}
@@ -3007,6 +3014,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .total-stats-row{gap:10px}
   .ts-num{font-size:1rem}
   .ts-label{font-size:.58rem}
+  .unified-summary{padding:14px;margin-bottom:14px}
   /* Unified report - small screen */
   .unified-toolbar-title{font-size:.82rem}
   .unified-toolbar-date{font-size:.65rem}

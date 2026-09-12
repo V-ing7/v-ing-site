@@ -422,7 +422,7 @@
       checkReveals();
     });
   }
-  if(themeToggle) themeToggle.addEventListener('click',toggleTheme);
+  themeToggle.addEventListener('click',toggleTheme);
   initTheme();
 
   /* ---------- Language Toggle ---------- */
@@ -468,7 +468,7 @@
       ghSave(window.__vingData);
     }
   }
-  if(langToggle) langToggle.addEventListener('click',toggleLang);
+  langToggle.addEventListener('click',toggleLang);
   applyLang();
 
   /* ---------- View Navigation (SPA) ---------- */
@@ -554,8 +554,8 @@
       var target=el.getAttribute('data-nav');
       switchView(target);
       // Close mobile menu
-      if(mobileMenu) mobileMenu.classList.remove('open');
-      if(menuToggle) menuToggle.classList.remove('active');
+      mobileMenu.classList.remove('open');
+      menuToggle.classList.remove('active');
     });
   });
 
@@ -568,31 +568,27 @@
   }
 
   /* ---------- Mobile Menu ---------- */
-  if(menuToggle && mobileMenu){
-    menuToggle.addEventListener('click',function(){
-      menuToggle.classList.toggle('active');
-      mobileMenu.classList.toggle('open');
-    });
-  }
+  menuToggle.addEventListener('click',function(){
+    menuToggle.classList.toggle('active');
+    mobileMenu.classList.toggle('open');
+  });
 
   /* ---------- Nav Scroll Effect ---------- */
   var scrollTicking=false;
-  if(nav){
-    window.addEventListener('scroll',function(){
-      if(!scrollTicking){
-        requestAnimationFrame(function(){
-          var y=window.scrollY;
-          if(y>20){
-            nav.classList.add('scrolled');
-          }else{
-            nav.classList.remove('scrolled');
-          }
-          scrollTicking=false;
-        });
-        scrollTicking=true;
-      }
-    });
-  }
+  window.addEventListener('scroll',function(){
+    if(!scrollTicking){
+      requestAnimationFrame(function(){
+        var y=window.scrollY;
+        if(y>20){
+          nav.classList.add('scrolled');
+        }else{
+          nav.classList.remove('scrolled');
+        }
+        scrollTicking=false;
+      });
+      scrollTicking=true;
+    }
+  });
 
   /* ---------- Reveal Animations (IntersectionObserver) ---------- */
   var revealObserver;
@@ -727,12 +723,20 @@
     });
   }
 
+  /* ---------- Smooth Anchor Links in Footer ---------- */
+  document.querySelectorAll('.footer a[data-nav]').forEach(function(el){
+    el.addEventListener('click',function(e){
+      e.preventDefault();
+      switchView(el.getAttribute('data-nav'));
+    });
+  });
+
   /* ---------- Keyboard Navigation ---------- */
   document.addEventListener('keydown',function(e){
     // ESC closes mobile menu
-    if(e.key==='Escape'&&mobileMenu&&mobileMenu.classList.contains('open')){
+    if(e.key==='Escape'&&mobileMenu.classList.contains('open')){
       mobileMenu.classList.remove('open');
-      if(menuToggle) menuToggle.classList.remove('active');
+      menuToggle.classList.remove('active');
     }
   });
 
@@ -1920,6 +1924,8 @@
         }
       }
     });
+  }
+
   }
 
   // Render console when switching to console tab
