@@ -13,7 +13,7 @@
     "streamer_2": {
       "name": "珊珊",
       "shoot": 24,
-      "edit": 14
+      "edit": 19
     },
     "streamer_3": {
       "name": "CC",
@@ -33,10 +33,10 @@
     "streamer_6": {
       "name": "Tina",
       "shoot": 5,
-      "edit": 3
+      "edit": 4
     }
   },
-  "lastUpdated": "2026-09-13T07:42:02.769Z",
+  "lastUpdated": "2026-09-13T09:12:14.604Z",
   "theme": "light",
   "lang": "zh",
   "operationLog": [
