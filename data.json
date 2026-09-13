@@ -18,7 +18,7 @@
     "streamer_3": {
       "name": "CC",
       "shoot": 15,
-      "edit": 9
+      "edit": 15
     },
     "streamer_4": {
       "name": "小凡",
@@ -36,7 +36,7 @@
       "edit": 3
     }
   },
-  "lastUpdated": "2026-09-12T12:04:05.050Z",
+  "lastUpdated": "2026-09-13T01:54:10.281Z",
   "theme": "dark",
   "lang": "zh",
   "operationLog": [
