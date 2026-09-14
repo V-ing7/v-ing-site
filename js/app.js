@@ -363,6 +363,8 @@
       Object.keys(data.streamers).forEach(function(key){
         streamerData[key] = data.streamers[key];
       });
+      // Initialize sub-page streamer cards with data attributes
+      initSubpageStreamers();
       refreshAllVisuals(streamerData);
       try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
     }
@@ -644,6 +646,7 @@
       // 5. Online
       var timeSinceSave = Date.now() - ghLastSaveTime;
       var canRefresh = !editModeActive
+        && !subpageEditMode
         && !_saveInProgress
         && !document.hidden
         && timeSinceSave > 90000
@@ -1830,6 +1833,29 @@
     }
   }
 
+  /* ---- Streamer Real-time Sync to GitHub ---- */
+  // Debounced save: wait 800ms after last edit to avoid spamming the API
+  var _streamerSaveTimer = null;
+  function saveStreamersToGitHub(){
+    if(_streamerSaveTimer) clearTimeout(_streamerSaveTimer);
+    _streamerSaveTimer = setTimeout(function(){
+      if(window.__vingData){
+        window.__vingData.streamers = {};
+        Object.keys(streamerData).forEach(function(key){
+          if(streamerData[key] && typeof streamerData[key].shoot === 'number'){
+            window.__vingData.streamers[key] = streamerData[key];
+          }
+        });
+        window.__vingData.lastUpdated = new Date().toISOString();
+        if(typeof ghSave === 'function'){
+          ghSave(window.__vingData);
+        }
+      }
+      // Also save to localStorage
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+    }, 800);
+  }
+
   // Build streamer data model from DOM
   function initStreamerData(){
     var data = loadReportData();
@@ -1869,6 +1895,91 @@
     });
     return data;
   }
+
+  /* ---- Sub-page (联动) Streamer Sync ---- */
+  // Initialize sub-page streamer cards: match by name and add data attributes
+  function initSubpageStreamers(){
+    var leapSection = document.getElementById('report-leap');
+    if(!leapSection) return;
+    var leapCards = leapSection.querySelectorAll('.streamer-card');
+    // Build name→key map from streamerData
+    var nameToKey = {};
+    Object.keys(streamerData).forEach(function(key){
+      if(streamerData[key] && streamerData[key].name){
+        nameToKey[streamerData[key].name] = key;
+      }
+    });
+    leapCards.forEach(function(card){
+      var nameEl = card.querySelector('h4');
+      if(!nameEl) return;
+      var name = nameEl.textContent.trim();
+      var key = nameToKey[name];
+      if(!key){
+        // Fallback: try to find by index (first 4 streamers are 零跑)
+        var idx = Array.prototype.indexOf.call(leapCards, card);
+        key = 'streamer_' + idx;
+      }
+      var pcts = card.querySelectorAll('.sr-pct');
+      if(pcts[0]){
+        pcts[0].setAttribute('data-streamer', key);
+        pcts[0].setAttribute('data-field', 'shoot');
+      }
+      if(pcts[1]){
+        pcts[1].setAttribute('data-streamer', key);
+        pcts[1].setAttribute('data-field', 'edit');
+      }
+      var bars = card.querySelectorAll('.sr-bar');
+      if(bars[0]){
+        bars[0].setAttribute('data-streamer', key);
+        bars[0].setAttribute('data-field', 'shoot');
+      }
+      if(bars[1]){
+        bars[1].setAttribute('data-streamer', key);
+        bars[1].setAttribute('data-field', 'edit');
+      }
+    });
+  }
+
+  // Refresh sub-page streamer cards from data
+  function refreshSubpageStreamers(data){
+    var leapSection = document.getElementById('report-leap');
+    if(!leapSection) return;
+    var leapCards = leapSection.querySelectorAll('.streamer-card');
+    var totalShoot = 0, totalEdit = 0;
+    var cardCount = leapCards.length;
+    var TARGET = 40; // 零跑 target per streamer
+
+    leapCards.forEach(function(card){
+      var pcts = card.querySelectorAll('.sr-pct');
+      var key = pcts[0] ? pcts[0].getAttribute('data-streamer') : null;
+      if(!key || !data[key]) return;
+      var d = data[key];
+      // Update numbers
+      if(pcts[0]) pcts[0].textContent = d.shoot;
+      if(pcts[1]) pcts[1].textContent = d.edit;
+      // Update progress bars
+      var bars = card.querySelectorAll('.sr-bar span');
+      if(bars[0]) bars[0].style.width = Math.round(d.shoot / TARGET * 100) + '%';
+      if(bars[1]) bars[1].style.width = Math.round(d.edit / TARGET * 100) + '%';
+      totalShoot += d.shoot;
+      totalEdit += d.edit;
+    });
+
+    // Update brand progress summary
+    var summary = leapSection.querySelector('.brand-progress-summary');
+    if(summary){
+      var bpsNums = summary.querySelectorAll('.bps-num');
+      var bpsBars = summary.querySelectorAll('.bps-bar span');
+      var totalTarget = TARGET * cardCount;
+      if(bpsNums[0]) bpsNums[0].textContent = totalShoot;
+      if(bpsNums[1]) bpsNums[1].textContent = totalEdit;
+      if(bpsBars[0]) bpsBars[0].style.width = Math.round(totalShoot / totalTarget * 100) + '%';
+      if(bpsBars[1]) bpsBars[1].style.width = Math.round(totalEdit / totalTarget * 100) + '%';
+    }
+  }
+
+  // Expose globally for sync system
+  window.__refreshSubpageStreamers = refreshSubpageStreamers;
 
   // Get brand section target for a streamer
   function getStreamerTarget(key, data, brandSection){
@@ -2032,6 +2143,8 @@
       updateBrandSummary(section, data);
     });
     updateGrandTotal(data);
+    // Sync sub-page (联动) streamer cards
+    refreshSubpageStreamers(data);
   }
 
   // Initialize data and apply saved values
@@ -2040,6 +2153,8 @@
     try{
       // First load from localStorage for instant display
       streamerData = initStreamerData();
+      // Initialize sub-page streamer cards with data attributes
+      initSubpageStreamers();
       if(Object.keys(streamerData).length > 0){
         refreshAllVisuals(streamerData);
       }
@@ -2092,6 +2207,93 @@
 
   if(editToggleBtn){
     editToggleBtn.addEventListener('click', toggleEditMode);
+  }
+
+  /* ---------- Sub-page (联动) Edit Mode ---------- */
+  var subpageEditBtn = document.getElementById('subpageEditBtn');
+  var subpageEditMode = false;
+
+  function toggleSubpageEditMode(){
+    subpageEditMode = !subpageEditMode;
+    var leapSection = document.getElementById('report-leap');
+    if(!leapSection) return;
+    if(subpageEditMode){
+      leapSection.classList.add('edit-mode');
+      if(subpageEditBtn){
+        subpageEditBtn.textContent = (document.documentElement.getAttribute('data-lang') === 'en') ? 'Done' : '完成';
+        subpageEditBtn.classList.add('edit-active');
+      }
+    } else {
+      leapSection.classList.remove('edit-mode');
+      if(subpageEditBtn){
+        subpageEditBtn.textContent = (document.documentElement.getAttribute('data-lang') === 'en') ? 'Edit' : '编辑';
+        subpageEditBtn.classList.remove('edit-active');
+      }
+      // Save data on exit
+      saveStreamersToGitHub();
+    }
+  }
+
+  if(subpageEditBtn){
+    subpageEditBtn.addEventListener('click', toggleSubpageEditMode);
+  }
+
+  // Click on sr-pct in sub-page to edit
+  var leapSection = document.getElementById('report-leap');
+  if(leapSection){
+    leapSection.addEventListener('click', function(e){
+      if(!subpageEditMode) return;
+      var numEl = e.target.closest('.sr-pct');
+      if(!numEl) return;
+      if(numEl.tagName === 'INPUT') return;
+
+      var key = numEl.getAttribute('data-streamer');
+      var field = numEl.getAttribute('data-field');
+      if(!key || !field) return;
+
+      // Replace span with input
+      var currentVal = numEl.textContent.trim();
+      var input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.value = currentVal;
+      input.className = 'sr-num-input';
+      input.setAttribute('data-streamer', key);
+      input.setAttribute('data-field', field);
+
+      numEl.style.display = 'none';
+      numEl.parentNode.insertBefore(input, numEl.nextSibling);
+      input.focus();
+      input.select();
+
+      // Handle input blur
+      function handleSubpageBlur(){
+        var newVal = parseInt(input.value, 10);
+        if(isNaN(newVal) || newVal < 0) newVal = 0;
+        // Update data
+        if(streamerData[key]){
+          streamerData[key][field] = newVal;
+        }
+        // Restore span
+        input.remove();
+        numEl.style.display = '';
+        // Refresh all visuals (unified panel + sub-page)
+        refreshAllVisuals(streamerData);
+        // Real-time save to GitHub (debounced)
+        saveStreamersToGitHub();
+      }
+
+      input.addEventListener('blur', handleSubpageBlur);
+      input.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter'){
+          input.blur();
+        }
+        if(ev.key === 'Escape'){
+          input.value = currentVal;
+          input.blur();
+        }
+      });
+    });
   }
 
   /* ---------- Generic Panel Edit Mode ---------- */
@@ -2541,8 +2743,10 @@
         // Restore span
         input.remove();
         numEl.style.display = '';
-        // Refresh visuals
+        // Refresh visuals (includes sub-page sync)
         refreshAllVisuals(streamerData);
+        // Real-time save to GitHub (debounced)
+        saveStreamersToGitHub();
       }
 
       input.addEventListener('blur', handleBlur);

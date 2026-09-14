@@ -2332,6 +2332,12 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   gap:16px;
   margin-bottom:28px;
 }
+.report-head-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
 .report-sub{
   font-size:.82rem;
   color:var(--text-tertiary);
@@ -2793,6 +2799,15 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   transition:background .3s ease;
 }
 .edit-mode .unified-brand-section:hover{
+  background:rgba(255,159,10,.03);
+}
+/* Sub-page (联动) edit mode */
+#report-leap.edit-mode .streamer-card{
+  border-radius:12px;
+  padding:4px;
+  transition:background .3s ease;
+}
+#report-leap.edit-mode .streamer-card:hover{
   background:rgba(255,159,10,.03);
 }
 
