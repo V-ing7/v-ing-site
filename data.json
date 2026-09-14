@@ -17,7 +17,7 @@
     },
     "streamer_3": {
       "name": "CC",
-      "shoot": 15,
+      "shoot": 20,
       "edit": 15
     },
     "streamer_4": {
@@ -36,7 +36,7 @@
       "edit": 4
     }
   },
-  "lastUpdated": "2026-09-13T09:12:14.604Z",
+  "lastUpdated": "2026-09-14T04:54:01.801Z",
   "theme": "light",
   "lang": "zh",
   "operationLog": [
