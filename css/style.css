@@ -3126,10 +3126,11 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .card-section{
     max-width:100%;
     padding:8px 0 32px;
+    overflow-x:hidden;
   }
   .bc-card-v2{
     --u:5.56px;
-    --f:1.96px;
+    --f:2.2px;
     transform:none;
   }
 }
@@ -3137,17 +3138,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .card-section{
     max-width:100%;
     padding:4px 0 28px;
+    overflow-x:hidden;
   }
   .bc-card-v2{
-    --u:3.78px;
-    --f:1.33px;
+    --u:3.6px;
+    --f:1.8px;
+    max-width:100%;
     transform:none;
   }
 }
 @media(max-width:380px){
   .bc-card-v2{
-    --u:3.22px;
-    --f:1.14px;
+    --u:3.1px;
+    --f:1.6px;
+    max-width:100%;
     transform:none;
   }
 }
