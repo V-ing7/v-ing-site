@@ -2881,18 +2881,21 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 /* Logo watermark — top-right corner, inset transparent */
 .bc-logo-watermark{
   position:absolute;
-  top:-4mm;
-  right:-3mm;
-  width:22mm;
-  height:auto;
+  top:1.5mm;
+  right:1.5mm;
+  width:14mm;
+  height:14mm;
   opacity:.06;
   pointer-events:none;
   z-index:0;
   color:var(--text-primary);
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
 }
 .bc-logo-watermark svg{
   width:100%;
-  height:auto;
+  height:100%;
   display:block;
   filter:blur(.3px);
 }
