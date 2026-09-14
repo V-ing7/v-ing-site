@@ -2916,29 +2916,50 @@
     checkReveals();
   },800);
 
-  /* ---------- QR Code: direct image approach ---------- */
+  /* ---------- QR Code: rounded dot style with qr-code-styling ---------- */
   function initCustomQR(){
     var container=document.getElementById('bcQRCode');
     if(!container)return;
-    // Use qrserver.com API - reliable, no library dependency
-    var img=document.createElement('img');
-    img.src='https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://v-ing-site.pages.dev&color=000000&bgcolor=ffffff&ecc=M';
-    img.alt='QR Code';
-    img.style.cssText='width:100%;height:100%;display:block;border:none;';
-    img.onload=function(){
-      console.log('[V-ing] QR code image loaded successfully');
-    };
-    img.onerror=function(){
-      console.warn('[V-ing] QR image failed, trying fallback');
-      var fb=document.querySelector('.bc-qr-fallback-img');
-      if(fb)fb.style.display='block';
-    };
     container.innerHTML='';
-    container.appendChild(img);
+    if(typeof QRCodeStyling==='undefined'){
+      // Fallback to API image if library not loaded
+      var img=document.createElement('img');
+      img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
+      img.alt='QR Code';
+      img.style.cssText='width:100%;height:100%;display:block;border:none;';
+      container.appendChild(img);
+      return;
+    }
+    try{
+      new QRCodeStyling({
+        width:120,height:120,type:'canvas',
+        data:'https://v-ing-site.pages.dev',
+        dotsOptions:{type:'rounded',color:'#3a3835'},
+        backgroundOptions:{color:'#f5f4f1'},
+        cornersSquareOptions:{type:'extra-rounded',color:'#3a3835'},
+        cornersDotOptions:{type:'dot',color:'#3a3835'},
+        qrOptions:{errorCorrectionLevel:'M'}
+      }).append(container);
+    }catch(e){
+      console.warn('[V-ing] QRCodeStyling failed, using API fallback',e);
+      var fb=document.createElement('img');
+      fb.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
+      fb.alt='QR Code';
+      fb.style.cssText='width:100%;height:100%;display:block;border:none;';
+      container.appendChild(fb);
+    }
   }
-  // Also try on page load as fallback
+  // Load QR library then init
+  function loadQRLib(){
+    if(typeof QRCodeStyling!=='undefined'){initCustomQR();return;}
+    var s=document.createElement('script');
+    s.src='https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js';
+    s.onload=initCustomQR;
+    s.onerror=function(){console.warn('[V-ing] QR lib load failed, using API');initCustomQR();};
+    document.head.appendChild(s);
+  }
   window.addEventListener('load',function(){
-    setTimeout(initCustomQR,500);
+    setTimeout(loadQRLib,300);
   });
 
 })();

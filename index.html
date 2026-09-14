@@ -1138,42 +1138,43 @@
         <div class="container">
           <div class="card-section reveal">
             <div class="business-card bc-card-v2">
-              <div class="bc-glow"></div>
+              <!-- Paper texture layers -->
+              <div class="bc-paper-fiber"></div>
+              <div class="bc-sheen"></div>
+              <div class="bc-light-leak"></div>
+
+              <!-- Logo watermark - debossed -->
               <div class="bc-logo-watermark">
                 <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
                   <path fill="currentColor" d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/>
                 </svg>
               </div>
 
-              <!-- 左栏：二维码 -->
-              <div class="bc-col-left">
-                <div class="bc-qr-frame">
-                  <div id="bcQRCode"></div>
-                  <img class="bc-qr-fallback-img" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://v-ing-site.pages.dev&color=000000&bgcolor=ffffff&ecc=M" alt="QR" style="display:none">
-                </div>
+              <!-- Perforation notches -->
+              <div class="bc-notch-top"></div>
+              <div class="bc-notch-bottom"></div>
+              <div class="bc-perforation"></div>
+
+              <!-- Left stub section: QR -->
+              <div class="bc-stub">
+                <div class="bc-stub-top">ADMIT ONE</div>
+                <div class="bc-qr-frame" id="bcQRCode"></div>
+                <div class="bc-stub-bottom">V-ING</div>
               </div>
 
-              <!-- 右栏：姓名 + 信息 -->
-              <div class="bc-col-right">
-                <div class="bc-name-section">
+              <!-- Right main section -->
+              <div class="bc-main-section">
+                <div>
                   <h2 class="bc-name" data-cn="林威" data-en="Lin Wei">林威</h2>
+                  <div class="bc-name-cn" data-cn="林威" data-en="LIN WEI">林威</div>
                   <p class="bc-title" data-cn="高级摄影师 · 主创导演" data-en="Senior Photographer · Lead Director">高级摄影师 · 主创导演</p>
-                  <div class="bc-cert-badge">
-                    <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    <span data-cn="国家高级摄影师认证" data-en="National Senior Photographer Cert.">国家高级摄影师认证</span>
-                  </div>
                   <div class="bc-tags-row">
                     <span class="bc-tag" data-cn="Vlog" data-en="Vlog">Vlog</span>
                     <span class="bc-tag" data-cn="宣传片" data-en="Promo">宣传片</span>
                     <span class="bc-tag" data-cn="纪录片" data-en="Doc">纪录片</span>
                   </div>
                 </div>
-
                 <div class="bc-divider"></div>
-
-                <!-- 信息网格 2x2 -->
                 <div class="bc-info-grid">
                   <div class="bc-info-item">
                     <div class="bc-info-icon">
@@ -1183,7 +1184,7 @@
                       </svg>
                     </div>
                     <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="所在城市" data-en="Location">所在城市</span>
+                      <span class="bc-info-label" data-cn="所在城市" data-en="City">所在城市</span>
                       <span class="bc-info-value" data-cn="福建 · 泉州" data-en="Quanzhou, Fujian">福建 · 泉州</span>
                     </div>
                   </div>
@@ -1207,7 +1208,7 @@
                       </svg>
                     </div>
                     <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="从业经验" data-en="Experience">从业经验</span>
+                      <span class="bc-info-label" data-cn="从业经验" data-en="Exp">从业经验</span>
                       <span class="bc-info-value" data-cn="3-5 年" data-en="3-5 Years">3-5 年</span>
                     </div>
                   </div>
@@ -1224,11 +1225,9 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- 底部：工作室标识 -->
-                <div class="bc-studio-mark">
-                  <span class="bc-mark-dot"></span>
-                  <span data-cn="微影 V-ing Studio" data-en="V-ing Studio">微影 V-ing Studio</span>
+                <div class="bc-bottom-mark">
+                  <span class="bc-studio" data-cn="V-ing Studio" data-en="V-ing Studio">V-ing Studio</span>
+                  <span class="bc-seat">NO. 001</span>
                 </div>
               </div>
 
