@@ -2057,9 +2057,143 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   margin-bottom:12px;
 }
 .subpage-sec-text{
-  font-size:.92rem;
+  font-size:.9rem;
   color:var(--text-secondary);
-  line-height:1.7;
+  line-height:1.6;
+  margin-bottom:16px;
+}
+
+/* ===== Sales Policy Cards ===== */
+.policy-policy-note{
+  margin-top:8px;
+  margin-bottom:20px;
+  padding:12px 16px;
+  border-radius:10px;
+  background:rgba(255,159,10,.08);
+  border:1px solid rgba(255,159,10,.2);
+}
+.policy-policy-note p{
+  font-size:.82rem;
+  color:var(--text-secondary);
+  line-height:1.5;
+}
+.policy-model-group{
+  margin-bottom:32px;
+}
+.policy-group-title{
+  font-size:1.1rem;
+  font-weight:800;
+  margin-bottom:16px;
+  padding-left:14px;
+  border-left:4px solid var(--accent);
+  color:var(--text-primary);
+}
+.policy-model-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:16px;
+}
+.policy-card{
+  border-radius:16px;
+  background:var(--surface);
+  border:1px solid var(--glass-border);
+  overflow:hidden;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s ease;
+}
+.policy-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-md);
+}
+.policy-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:14px 16px;
+  background:var(--surface-glass);
+  border-bottom:1px solid var(--glass-border);
+}
+.policy-card-name{
+  font-size:.95rem;
+  font-weight:700;
+  color:var(--text-primary);
+}
+.policy-card-tag{
+  font-size:.72rem;
+  font-weight:600;
+  padding:3px 10px;
+  border-radius:8px;
+  white-space:nowrap;
+}
+.policy-tag-deal{
+  background:rgba(52,199,89,.1);
+  color:#34C759;
+}
+.policy-tag-hot{
+  background:rgba(255,159,10,.12);
+  color:#FF9F0A;
+}
+.policy-card-body{
+  padding:12px 16px;
+}
+.policy-row{
+  display:flex;
+  gap:8px;
+  padding:6px 0;
+  border-bottom:1px solid rgba(0,0,0,.04);
+  font-size:.8rem;
+  line-height:1.5;
+}
+.policy-row:last-child{border-bottom:none}
+.policy-label{
+  flex-shrink:0;
+  width:72px;
+  font-weight:600;
+  color:var(--text-tertiary);
+}
+.policy-val{
+  flex:1;
+  color:var(--text-secondary);
+}
+.policy-notice{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:16px 20px;
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,159,10,.08),rgba(255,159,10,.03));
+  border:1px solid rgba(255,159,10,.2);
+  margin-bottom:32px;
+}
+.policy-notice-icon{
+  flex-shrink:0;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#FF9F0A;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:.9rem;
+}
+.policy-notice-text{
+  flex:1;
+}
+.policy-notice-text strong{
+  display:block;
+  font-size:.9rem;
+  font-weight:700;
+  margin-bottom:4px;
+}
+.policy-notice-text span{
+  font-size:.82rem;
+  color:var(--text-secondary);
+  line-height:1.5;
+}
+@media(max-width:768px){
+  .policy-model-cards{grid-template-columns:1fr}
 }
 .subpage-projects{display:flex;flex-direction:column;gap:16px}
 .subpage-project{
