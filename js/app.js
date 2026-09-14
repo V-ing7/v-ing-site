@@ -2922,9 +2922,8 @@
     if(!container)return;
     container.innerHTML='';
     if(typeof QRCodeStyling==='undefined'){
-      // Fallback to API image if library not loaded
       var img=document.createElement('img');
-      img.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
+      img.src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
       img.alt='QR Code';
       img.style.cssText='width:100%;height:100%;display:block;border:none;';
       container.appendChild(img);
@@ -2932,7 +2931,7 @@
     }
     try{
       new QRCodeStyling({
-        width:120,height:120,type:'canvas',
+        width:240,height:240,type:'canvas',
         data:'https://v-ing-site.pages.dev',
         dotsOptions:{type:'rounded',color:'#3a3835'},
         backgroundOptions:{color:'#f5f4f1'},
@@ -2943,7 +2942,7 @@
     }catch(e){
       console.warn('[V-ing] QRCodeStyling failed, using API fallback',e);
       var fb=document.createElement('img');
-      fb.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
+      fb.src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
       fb.alt='QR Code';
       fb.style.cssText='width:100%;height:100%;display:block;border:none;';
       container.appendChild(fb);
