@@ -36,17 +36,11 @@
       "edit": 4
     }
   },
-  "lastUpdated": "2026-09-14T08:51:35.738Z",
+  "lastUpdated": "2026-09-14T08:52:49.241Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
-    "todo": [
-      {
-        "title": "同步测试任务",
-        "desc": "验证同步",
-        "deadline": "9/15"
-      }
-    ],
+    "todo": [],
     "wip": [],
     "done": []
   },
