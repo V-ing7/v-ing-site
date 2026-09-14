@@ -2845,7 +2845,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   align-items:flex-start;
 }
 /* Kill reveal transform after animation to avoid compositing-layer blur */
-.card-section.reveal.visible{transform:none}
+.card-section.reveal.visible{transform:none !important}
 
 .business-card{
   position:relative;
@@ -2856,19 +2856,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
   box-shadow:0 12px 40px rgba(0,0,0,.1);
 }
-/* V2 Card — nuke ALL parent glassmorphism that causes blur */
+/* V2 Card — completely neutralize parent glassmorphism */
 .business-card.bc-card-v2{
   position:relative;
   overflow:hidden;
-  backdrop-filter:none;
-  -webkit-backdrop-filter:none;
-  border:none;
-  background:none;
-  box-shadow:none;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  border:none !important;
+  box-shadow:none !important;
+  isolation:isolate;
+  /* DO NOT set background:none — let .bc-card-v2 provide it */
 }
 
 /* ===== V2 Card — Cinema Ticket Stub (White Hard Card) ===== */
-/* Pixel-perfect: --u = px-per-mm, --f = px-per-pt. NO transform:scale */
+/* All px via CSS vars. ZERO transform → zero compositing blur */
 .bc-card-v2{
   --u:7.56px;   /* 1mm = 7.56px → card 680×423px on desktop */
   --f:2.67px;   /* 1pt = 2.67px  → proportional font scaling */
@@ -2891,8 +2892,13 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
     0 20px 50px rgba(0,0,0,.02),
     inset 0 1px 0 rgba(255,255,255,.6),
     inset 0 -1px 0 rgba(0,0,0,.02);
-  transform:perspective(1400px) rotateY(-1deg);
+  transform:none;
   transform-origin:center;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
 }
 [data-theme="dark"] .bc-card-v2{
   background:
@@ -3115,7 +3121,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 [data-theme="dark"] .bc-seat{color:rgba(255,220,180,.15)}
 
-/* Responsive: shrink via CSS variables — zero transform scaling */
+/* Responsive: shrink via CSS variables — zero transform */
 @media(max-width:768px){
   .card-section{
     max-width:100%;
@@ -3124,8 +3130,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .bc-card-v2{
     --u:5.56px;
     --f:1.96px;
-    transform:perspective(1200px) rotateY(-0.5deg);
-    transform-origin:center;
+    transform:none;
   }
 }
 @media(max-width:480px){
