@@ -39,6 +39,11 @@
   "lastUpdated": "2026-09-14T07:09:59.091Z",
   "theme": "light",
   "lang": "zh",
+  "kanbanTasks": {
+    "todo": [],
+    "wip": [],
+    "done": []
+  },
   "operationLog": [
     {
       "date": "2026-09-11",

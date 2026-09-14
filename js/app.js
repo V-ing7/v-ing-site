@@ -369,6 +369,10 @@
     if(data.operationLog){
       renderConsolePanel(data);
     }
+    // Render kanban tasks from remote data
+    if(data.kanbanTasks && window.__renderKanbanFromData){
+      window.__renderKanbanFromData(data.kanbanTasks);
+    }
   }
 
   /* ================================================================
@@ -2059,6 +2063,7 @@
       streamers: streamerData,
       theme: html.getAttribute('data-theme'),
       lang: lang,
+      kanbanTasks: { todo: [], wip: [], done: [] },
       lastUpdated: new Date().toISOString()
     };
     // Still start auto-refresh to recover when network is available
@@ -2180,6 +2185,8 @@
           updateColCount(colType);
           // Show empty if no cards
           checkEmpty(cardsContainer, colType);
+          // Sync to GitHub
+          saveKanbanToGitHub();
         });
 
         // Cancel
@@ -2286,6 +2293,8 @@
         card.remove();
         updateColCount(ct);
         checkEmpty(cardsContainer, ct);
+        // Sync to GitHub
+        saveKanbanToGitHub();
       });
 
       // Drag-and-drop
@@ -2303,6 +2312,13 @@
         });
         draggedCard = null;
         draggedFromCol = null;
+      });
+
+      // Save to GitHub when inline editing (contenteditable) loses focus
+      card.querySelectorAll('[contenteditable="true"]').forEach(function(el){
+        el.addEventListener('blur', function(){
+          saveKanbanToGitHub();
+        });
       });
     }
 
@@ -2348,6 +2364,8 @@
       updateColCount(toCol);
       checkEmpty(oldContainer, fromCol);
       if(newContainer) checkEmpty(newContainer, toCol);
+      // Sync to GitHub
+      saveKanbanToGitHub();
     }
 
     // Drag-and-drop on columns
@@ -2422,6 +2440,67 @@
         if(empty) empty.style.display = 'none';
       }
     }
+
+    /* ---- Kanban Sync to GitHub ---- */
+    // Collect all kanban card data from DOM into a JSON-serializable object
+    function collectKanbanData(){
+      var result = { todo: [], wip: [], done: [] };
+      ['todo','wip','done'].forEach(function(colType){
+        var container = planPanel.querySelector('[data-col-cards="'+colType+'"]');
+        if(!container) return;
+        container.querySelectorAll('.kanban-card').forEach(function(card){
+          var titleEl = card.querySelector('h4[contenteditable]');
+          var descEl = card.querySelector('p[contenteditable]');
+          var deadlineEl = card.querySelector('.kc-deadline[contenteditable], .kc-date[contenteditable]');
+          var title = titleEl ? titleEl.textContent.trim() : '';
+          var desc = descEl ? descEl.textContent.trim() : '';
+          if(desc === '...') desc = '';
+          var deadline = deadlineEl ? deadlineEl.textContent.trim() : '';
+          var dlDefault = (document.documentElement.getAttribute('data-lang') === 'en') ? 'Due' : '截止';
+          if(deadline === dlDefault || deadline === '截止') deadline = '';
+          result[colType].push({ title: title, desc: desc, deadline: deadline });
+        });
+      });
+      return result;
+    }
+
+    // Save kanban data to GitHub via the existing sync system
+    var _kanbanSaveTimer = null;
+    function saveKanbanToGitHub(){
+      // Debounce: wait 800ms after last edit to avoid spamming the API
+      if(_kanbanSaveTimer) clearTimeout(_kanbanSaveTimer);
+      _kanbanSaveTimer = setTimeout(function(){
+        if(window.__vingData){
+          window.__vingData.kanbanTasks = collectKanbanData();
+          window.__vingData.lastUpdated = new Date().toISOString();
+          if(typeof ghSave === 'function'){
+            ghSave(window.__vingData);
+          }
+        }
+      }, 800);
+    }
+
+    // Render kanban cards from data (used on page load and auto-refresh)
+    function renderKanbanFromData(kanbanData){
+      if(!kanbanData || !planPanel) return;
+      ['todo','wip','done'].forEach(function(colType){
+        var container = planPanel.querySelector('[data-col-cards="'+colType+'"]');
+        if(!container) return;
+        // Remove existing cards (but not the form or empty placeholder)
+        container.querySelectorAll('.kanban-card').forEach(function(c){ c.remove(); });
+        var tasks = kanbanData[colType] || [];
+        tasks.forEach(function(task){
+          var card = createKanbanCard(colType, task.title || '', task.desc || '', task.deadline || '');
+          container.insertBefore(card, container.firstChild);
+        });
+        // Update count and empty state
+        updateColCount(colType);
+        checkEmpty(container, colType);
+      });
+    }
+
+    // Expose render function globally for the sync system
+    window.__renderKanbanFromData = renderKanbanFromData;
   })();
 
   // Click on sr-pct to edit
