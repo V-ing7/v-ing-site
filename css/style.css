@@ -2896,43 +2896,31 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   pointer-events:none;
 }
 
-/* Logo watermark — top-right corner, inset/debossed effect */
+/* Logo watermark — top-right corner, inset/debossed, no frame */
 .bc-logo-watermark{
   position:absolute;
   top:1.5mm;
   right:1.5mm;
-  width:12mm;
-  height:12mm;
-  border-radius:2mm;
+  width:10mm;
+  height:10mm;
   pointer-events:none;
   z-index:0;
   color:var(--text-primary);
   display:flex;
   align-items:center;
   justify-content:center;
-  /* Inset/debossed effect */
-  background:linear-gradient(145deg,rgba(0,0,0,.04),rgba(0,0,0,.01));
-  box-shadow:
-    inset 0 1px 2px rgba(0,0,0,.12),
-    inset 0 -1px 1px rgba(255,255,255,.06);
-  border:1px solid rgba(0,0,0,.03);
-}
-[data-theme="dark"] .bc-logo-watermark{
-  background:linear-gradient(145deg,rgba(0,0,0,.2),rgba(0,0,0,.08));
-  box-shadow:
-    inset 0 1px 3px rgba(0,0,0,.3),
-    inset 0 -1px 1px rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.03);
 }
 .bc-logo-watermark svg{
-  width:7mm;
-  height:7mm;
+  width:8mm;
+  height:8mm;
   display:block;
-  opacity:.12;
-  filter:blur(.2px);
+  opacity:.1;
+  /* Inset/debossed effect on the logo itself */
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));
 }
 [data-theme="dark"] .bc-logo-watermark svg{
-  opacity:.15;
+  opacity:.13;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));
 }
 
 /* Left column: QR only */
