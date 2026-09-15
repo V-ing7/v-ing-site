@@ -1950,11 +1950,24 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:1.4rem;
   font-weight:800;
   flex-shrink:0;
+  overflow:hidden;
+}
+.collab-logo-img{
+  width:88%;
+  height:88%;
+  object-fit:contain;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.06));
 }
 .collab-logo-leap{
-  background:rgba(0,200,255,.12);
-  color:rgba(0,200,255,.9);
-  border:1px solid rgba(0,200,255,.2);
+  background:transparent;
+  border:none;
+}
+[data-theme="dark"] .collab-logo-leap{
+  background:transparent;
+  border:none;
+}
+[data-theme="dark"] .collab-logo-leap .collab-logo-img{
+  filter:brightness(0) invert(0.85) drop-shadow(0 1px 3px rgba(0,0,0,.2));
 }
 .collab-logo-zxzb{
   background:rgba(255,180,0,.12);
@@ -2036,7 +2049,23 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   border:1px solid var(--glass-border);
   margin-bottom:40px;
 }
-.subpage-brand{display:flex;align-items:center;gap:20px}
+.subpage-brand{display:flex;align-items:center;gap:24px}
+.subpage-brand-logo{
+  height:56px;width:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.08));
+}
+[data-theme="dark"] .subpage-brand-logo{
+  filter:brightness(0) invert(0.88) drop-shadow(0 2px 8px rgba(0,0,0,.3));
+}
+.subpage-brand-text{display:flex;flex-direction:column;gap:6px}
+.subpage-brand-zh{
+  height:28px;width:auto;
+  object-fit:contain;
+}
+[data-theme="dark"] .subpage-brand-zh{
+  filter:brightness(0) invert(0.88);
+}
 .subpage-brand h2{font-size:1.6rem;font-weight:800}
 .subpage-stats{display:flex;gap:32px}
 .subpage-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -2316,6 +2345,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 
 /* ---------- Report Section (Daily Report) ---------- */
 .report-section{
+  position:relative;
   margin-top:40px;
   padding:28px;
   border-radius:20px;
@@ -2323,6 +2353,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
   border:1px solid var(--glass-border);
+  overflow:hidden;
+}
+.report-brand-watermark{
+  position:absolute;
+  bottom:-12px;
+  right:24px;
+  height:36px;
+  width:auto;
+  opacity:.04;
+  pointer-events:none;
+}
+[data-theme="dark"] .report-brand-watermark{
+  opacity:.06;
+  filter:brightness(0) invert(1);
 }
 .report-head{
   display:flex;
