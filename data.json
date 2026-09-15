@@ -32,11 +32,11 @@
     },
     "streamer_6": {
       "name": "Tina",
-      "shoot": 5,
+      "shoot": 7,
       "edit": 4
     }
   },
-  "lastUpdated": "2026-09-15T12:23:58.807Z",
+  "lastUpdated": "2026-09-15T12:24:12.285Z",
   "theme": "dark",
   "lang": "zh",
   "kanbanTasks": {
