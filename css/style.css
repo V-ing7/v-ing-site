@@ -810,6 +810,16 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 .bilibili-icon{background:var(--bili-soft);color:var(--bili)}
 .douyin-icon{background:var(--dy-soft);color:var(--dy)}
+/* Douyin official logo */
+.platform-logo-dy{margin-bottom:20px;display:block}
+.platform-logo-dy img{height:32px;width:auto;display:block}
+.platform-logo-dy .dy-logo-dark{display:none}
+[data-theme="dark"] .platform-logo-dy .dy-logo-light{display:none}
+[data-theme="dark"] .platform-logo-dy .dy-logo-dark{display:block}
+/* Bilibili logo: icon + text */
+.platform-logo-bili{margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.platform-logo-bili .bili-icon-svg{height:28px;width:28px;flex-shrink:0}
+.platform-logo-bili .bili-text-svg{height:22px;width:auto;flex-shrink:0}
 .platform-card h3{font-size:1.4rem;margin-bottom:4px}
 .platform-card > p{font-size:.88rem;color:var(--text-secondary);margin-bottom:20px}
 .platform-stat{
@@ -1300,6 +1310,11 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   background:var(--surface-2);
 }
 .social-pill svg{flex-shrink:0}
+.social-pill img{flex-shrink:0;height:18px;width:44px;object-fit:contain}
+.social-pill .platform-logo-bili img,.social-pill img[src*="bilibili-text"]{height:16px;width:39px}
+.social-pill .dy-logo-dark{display:none}
+[data-theme="dark"] .social-pill .dy-logo-light{display:none}
+[data-theme="dark"] .social-pill .dy-logo-dark{display:inline-block}
 
 /* ---------- Footer ---------- */
 .footer{

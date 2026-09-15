@@ -176,6 +176,12 @@
       "time": "16:45",
       "action": "联动零跑主播实时同步：防抖保存到GitHub、子页面主播卡片同步更新、子页面编辑模式、自动刷新保护",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-15",
+      "time": "09:30",
+      "action": "品牌联动logo更新：零跑logo集成、哔哩哔哩图标+文字组合logo、抖音官方logo（深浅主题适配）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
