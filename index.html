@@ -6,6 +6,9 @@
   <title>微影 V-ing | 影视创作工作室</title>
   <meta name="description" content="微影 V-ing - 影视创作工作室 | Film & Video Creation Studio">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
   <script src="js/lib/html2canvas.min.js" defer></script>
 </head>
 <body>
@@ -70,46 +73,54 @@
     </div>
   </nav>
 
+  <!-- ========== Cinema Hero ========== -->
+  <div class="cinema-letterbox top"></div>
+  <div class="cinema-letterbox bottom"></div>
+  <div class="cinema-cam tl"><span class="cinema-rec-dot"></span>REC</div>
+  <div class="cinema-cam tr" id="cinemaTc">00:00:00:00</div>
+  <div class="cinema-cam bl">V-ING · CINEMA</div>
+  <div class="cinema-cam br">F2.8 · 1/50 · ISO 800</div>
+  <div class="cinema-scroll-hint">
+    <span data-cn="滚动" data-en="Scroll">滚动</span>
+  </div>
+  <section class="cinema-hero" aria-hidden="true">
+    <div class="cinema-stage">
+      <div class="cinema-bg"></div>
+      <div class="cinema-leak"></div>
+      <div class="cinema-beam"></div>
+      <div class="cinema-spotlight"></div>
+      <div class="cinema-edge-fade top"></div>
+      <div class="cinema-edge-fade bottom"></div>
+      <div class="cinema-vignette"></div>
+      <div class="cinema-scanlines"></div>
+      <div class="cinema-grain"></div>
+      <div class="cinema-dust" id="cinemaDust"></div>
+      <div class="cinema-title-wrap">
+        <div class="cinema-title-line">
+          <span class="cinema-char" style="--d:1s">我</span>
+          <span class="cinema-char" style="--d:1.15s">们</span>
+        </div>
+        <div class="cinema-sep"></div>
+        <div class="cinema-title-line">
+          <span class="cinema-char" style="--d:1.6s">正</span>
+          <span class="cinema-char" style="--d:1.75s">在</span>
+          <span class="cinema-char" style="--d:1.9s">进</span>
+          <span class="cinema-char" style="--d:2.05s">行</span>
+          <span class="cinema-char" style="--d:2.2s">时</span>
+        </div>
+        <div class="cinema-subtitle" data-cn="Present Continuous" data-en="Present Continuous">Present Continuous</div>
+      </div>
+      <div class="cinema-bottom-fade"></div>
+    </div>
+  </section>
+
   <!-- ========== Main Content ========== -->
   <main class="main" id="main">
 
     <!-- ========== HOME VIEW ========== -->
     <section class="view view-active" id="view-home" data-view="home">
-      <!-- Hero -->
-      <div class="hero" id="hero">
-        <div class="hero-content">
-          <p class="hero-eyebrow reveal" data-cn="影视创作工作室" data-en="Film & Video Creation Studio">影视创作工作室</p>
-          <h1 class="hero-title reveal">
-            <span class="title-line">V-ing</span>
-            <span class="title-sub" data-cn="微影" data-en="V-ing">微影</span>
-          </h1>
-          <p class="hero-tagline reveal" data-cn="我们·正在进行时" data-en="We · In Present Continuous">我们·正在进行时</p>
-          <p class="hero-desc reveal" data-cn="用镜头捕捉光影，用创意定义故事。分布于哔哩哔哩与抖音平台，持续输出高质量影视内容。" data-en="Capturing light and shadow through the lens, defining stories through creativity. Distributed on Bilibili and Douyin, continuously delivering high-quality film content.">用镜头捕捉光影，用创意定义故事。分布于哔哩哔哩与抖音平台，持续输出高质量影视内容。</p>
-          <div class="hero-cta reveal">
-            <button class="btn btn-primary" data-nav="works" data-cn="探索作品" data-en="Explore Works">探索作品</button>
-            <button class="btn btn-ghost" data-nav="contact" data-cn="联系我们" data-en="Contact Us">联系我们</button>
-          </div>
-        </div>
-        <div class="hero-visual reveal">
-          <div class="visual-frame">
-            <div class="frame-inner">
-              <div class="film-strip film-strip-top">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
-              <div class="play-orb">
-                <svg viewBox="0 0 24 24" width="40" height="40"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
-              </div>
-              <div class="film-strip film-strip-bottom">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="scroll-hint reveal">
-          <span class="scroll-line"></span>
-          <span class="scroll-text" data-cn="向下滚动" data-en="Scroll Down">向下滚动</span>
-        </div>
-      </div>
+      <!-- Hero Spacer (cinema hero is fixed above) -->
+      <div class="cinema-hero-spacer"></div>
 
       <!-- Stats Section -->
       <section class="stats-section">

@@ -758,21 +758,19 @@
       html.setAttribute('data-theme',saved);
     }
   }
+
   function toggleTheme(){
     var current=html.getAttribute('data-theme');
     var next=current==='dark'?'light':'dark';
     html.setAttribute('data-theme',next);
     localStorage.setItem('v-ing-theme',next);
-    // Sync to GitHub
     if(window.__vingData){
       window.__vingData.theme = next;
       ghSave(window.__vingData);
     }
-    // Refresh reveal observer to re-trigger if needed
-    requestAnimationFrame(function(){
-      checkReveals();
-    });
+    requestAnimationFrame(function(){ checkReveals(); });
   }
+
   themeToggle.addEventListener('click',toggleTheme);
   initTheme();
 
@@ -832,8 +830,30 @@
 
     var oldView=document.getElementById('view-'+currentView);
     var newView=document.getElementById('view-'+target);
+    var cinemaHero=document.querySelector('.cinema-hero');
+    var cinemaLetterboxes=document.querySelectorAll('.cinema-letterbox');
+    var cinemaCams=document.querySelectorAll('.cinema-cam');
+    var cinemaScrollHint=document.querySelector('.cinema-scroll-hint');
 
     if(!newView)return;
+
+    // Hide cinema hero when leaving home
+    if(currentView==='home'&&target!=='home'&&cinemaHero){
+      cinemaHero.style.transition='opacity .3s ease';
+      cinemaHero.style.opacity='0';
+      cinemaLetterboxes.forEach(function(el){
+        el.style.transition='opacity .3s ease';
+        el.style.opacity='0';
+      });
+      cinemaCams.forEach(function(el){
+        el.style.transition='opacity .3s ease';
+        el.style.opacity='0';
+      });
+      if(cinemaScrollHint){
+        cinemaScrollHint.style.transition='opacity .3s ease';
+        cinemaScrollHint.style.opacity='0';
+      }
+    }
 
     // Fade out current
     if(oldView){
@@ -854,6 +874,20 @@
       newView.classList.add('view-active');
       newView.style.opacity='0';
       newView.style.transform='translateY(14px)';
+
+      // Show cinema hero when entering home
+      if(target==='home'&&cinemaHero){
+        cinemaHero.style.opacity='1';
+        cinemaLetterboxes.forEach(function(el){
+          el.style.opacity='';
+        });
+        cinemaCams.forEach(function(el){
+          el.style.opacity='';
+        });
+        if(cinemaScrollHint){
+          cinemaScrollHint.style.opacity='';
+        }
+      }
 
       // Force reflow
       void newView.offsetWidth;
@@ -881,6 +915,23 @@
         newView.style.transition='';
         newView.style.opacity='';
         newView.style.transform='';
+        // Clear cinema hero inline styles after transition
+        if(target==='home'&&cinemaHero){
+          cinemaHero.style.transition='';
+          cinemaHero.style.opacity='';
+          cinemaLetterboxes.forEach(function(el){
+            el.style.transition='';
+            el.style.opacity='';
+          });
+          cinemaCams.forEach(function(el){
+            el.style.transition='';
+            el.style.opacity='';
+          });
+          if(cinemaScrollHint){
+            cinemaScrollHint.style.transition='';
+            cinemaScrollHint.style.opacity='';
+          }
+        }
         checkReveals();
         // Show workspace password lock if needed
         if(target==='workspace'&&!isWsUnlocked()){
@@ -2960,5 +3011,70 @@
   window.addEventListener('load',function(){
     setTimeout(loadQRLib,300);
   });
+
+  /* ================================================================
+     Cinema Hero — 影视风格首页标题
+     ================================================================ */
+  function initCinemaHero(){
+    // Dust particles
+    var dust = document.getElementById('cinemaDust');
+    if(!dust) return;
+    for(var i=0;i<35;i++){
+      var s=document.createElement('span');
+      s.style.left=Math.random()*100+'%';
+      s.style.animationDuration=(7+Math.random()*15)+'s';
+      s.style.animationDelay=Math.random()*12+'s';
+      var sz=1+Math.random()*2.5;
+      s.style.width=sz+'px';
+      s.style.height=sz+'px';
+      s.style.opacity=.15+Math.random()*.4;
+      dust.appendChild(s);
+    }
+
+    // Timecode
+    var tc=document.getElementById('cinemaTc');
+    if(tc){
+      var frames=0;
+      setInterval(function(){
+        frames++;
+        var f=frames%24;
+        var s=Math.floor(frames/24)%60;
+        var m=Math.floor(frames/1440)%60;
+        var h=Math.floor(frames/86400);
+        tc.textContent=
+          String(h).padStart(2,'0')+':'+
+          String(m).padStart(2,'0')+':'+
+          String(s).padStart(2,'0')+':'+
+          String(f).padStart(2,'0');
+      },42);
+    }
+
+    // Scroll-driven transition
+    var ticking=false;
+    function updateScroll(){
+      var scrollY=window.scrollY||window.pageYOffset;
+      var vh=window.innerHeight;
+      var progress=Math.min(scrollY/vh,1);
+      // Ease out cubic
+      var eased=1-Math.pow(1-progress,3);
+      document.documentElement.style.setProperty('--cinema-scroll-progress',eased);
+      ticking=false;
+    }
+    function onScroll(){
+      if(!ticking){
+        requestAnimationFrame(updateScroll);
+        ticking=true;
+      }
+    }
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll,{passive:true});
+    updateScroll();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initCinemaHero);
+  }else{
+    initCinemaHero();
+  }
 
 })();
