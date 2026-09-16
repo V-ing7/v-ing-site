@@ -769,6 +769,8 @@
       ghSave(window.__vingData);
     }
     requestAnimationFrame(function(){ checkReveals(); });
+    // Re-render QR code with theme-appropriate color
+    setTimeout(updateQRTheme,50);
   }
 
   themeToggle.addEventListener('click',toggleTheme);
@@ -2967,49 +2969,75 @@
     checkReveals();
   },800);
 
-  /* ---------- QR Code: rounded dot style with qr-code-styling ---------- */
+  /* ---------- QR Code: dynamic color with QRCodeStyling (transparent bg) ---------- */
+  var _qrInstance=null;
+  var _qrData='https://v-ing-site.pages.dev';
+  var _qrReady=false;
+
+  function getQRColor(){
+    var theme=document.documentElement.getAttribute('data-theme');
+    return theme==='dark' ? '#ffdcb4' : '#3a3835';
+  }
+
+  function buildQROptions(){
+    var dotColor=getQRColor();
+    return {
+      width:240,height:240,type:'canvas',
+      data:_qrData,
+      dotsOptions:{type:'rounded',color:dotColor},
+      backgroundOptions:{color:'rgba(0,0,0,0)'},
+      cornersSquareOptions:{type:'extra-rounded',color:dotColor},
+      cornersDotOptions:{type:'dot',color:dotColor},
+      qrOptions:{errorCorrectionLevel:'M'}
+    };
+  }
+
   function initCustomQR(){
     var container=document.getElementById('bcQRCode');
     if(!container)return;
     container.innerHTML='';
-    if(typeof QRCodeStyling==='undefined'){
-      var img=document.createElement('img');
-      img.src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
-      img.alt='QR Code';
-      img.style.cssText='width:100%;height:100%;display:block;border:none;';
-      container.appendChild(img);
+
+    if(typeof QRCodeStyling!=='undefined'){
+      try{
+        _qrInstance=new QRCodeStyling(buildQROptions());
+        _qrInstance.append(container);
+        _qrReady=true;
+        return;
+      }catch(e){
+        console.warn('[V-ing] QRCodeStyling failed',e);
+      }
+    }
+    // Retry after 500ms if library not yet loaded
+    if(!_qrReady){
+      setTimeout(initCustomQR,500);
+    }
+  }
+
+  function updateQRTheme(){
+    if(!_qrReady||!_qrInstance){
+      setTimeout(updateQRTheme,200);
       return;
     }
+    var container=document.getElementById('bcQRCode');
+    if(!container)return;
+    var dotColor=getQRColor();
     try{
-      new QRCodeStyling({
-        width:240,height:240,type:'canvas',
-        data:'https://v-ing-site.pages.dev',
-        dotsOptions:{type:'rounded',color:'#3a3835'},
-        backgroundOptions:{color:'#f5f4f1'},
-        cornersSquareOptions:{type:'extra-rounded',color:'#3a3835'},
-        cornersDotOptions:{type:'dot',color:'#3a3835'},
-        qrOptions:{errorCorrectionLevel:'M'}
-      }).append(container);
+      _qrInstance.update({
+        dotsOptions:{type:'rounded',color:dotColor},
+        backgroundOptions:{color:'rgba(0,0,0,0)'},
+        cornersSquareOptions:{type:'extra-rounded',color:dotColor},
+        cornersDotOptions:{type:'dot',color:dotColor}
+      });
     }catch(e){
-      console.warn('[V-ing] QRCodeStyling failed, using API fallback',e);
-      var fb=document.createElement('img');
-      fb.src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://v-ing-site.pages.dev&color=3a3835&bgcolor=f5f4f1&ecc=M';
-      fb.alt='QR Code';
-      fb.style.cssText='width:100%;height:100%;display:block;border:none;';
-      container.appendChild(fb);
+      console.warn('[V-ing] QR update failed, re-creating',e);
+      container.innerHTML='';
+      _qrInstance=new QRCodeStyling(buildQROptions());
+      _qrInstance.append(container);
     }
   }
-  // Load QR library then init
-  function loadQRLib(){
-    if(typeof QRCodeStyling!=='undefined'){initCustomQR();return;}
-    var s=document.createElement('script');
-    s.src='https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js';
-    s.onload=initCustomQR;
-    s.onerror=function(){console.warn('[V-ing] QR lib load failed, using API');initCustomQR();};
-    document.head.appendChild(s);
-  }
+
   window.addEventListener('load',function(){
-    setTimeout(loadQRLib,300);
+    setTimeout(initCustomQR,500);
   });
 
   /* ================================================================
