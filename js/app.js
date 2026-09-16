@@ -939,6 +939,10 @@
         if(target==='workspace'&&!isWsUnlocked()){
           showWsLock();
         }
+        // Reset collab sub-page state when entering collab view
+        if(target==='collab'){
+          showCollabHub();
+        }
         isAnimating=false;
       },420);
     },240);
@@ -1260,9 +1264,7 @@
   var segIndicator=document.getElementById('segIndicator');
   var wsPanels={
     plan:document.getElementById('ws-panel-plan'),
-    collab:document.getElementById('ws-panel-collab'),
     unified:document.getElementById('ws-panel-unified'),
-    card:document.getElementById('ws-panel-card'),
     console:document.getElementById('ws-panel-console')
   };
   var collabHub=document.getElementById('collabHub');
@@ -1279,7 +1281,7 @@
     // Move indicator (5-segment)
     if(segIndicator){
       segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5');
-      var pos = {'plan':1,'collab':2,'unified':3,'card':4,'console':5}[tab] || 1;
+      var pos = {'plan':1,'unified':2,'console':3}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1296,10 +1298,6 @@
       wsPanels[tab].querySelectorAll('.reveal').forEach(function(el){
         el.classList.add('visible');
       });
-    }
-    // Reset sub-page state when switching to collab
-    if(tab==='collab'){
-      showCollabHub();
     }
     // Animate rings when switching to unified
     if(tab==='unified'){
@@ -1344,12 +1342,17 @@
     var sub=document.getElementById('ws-sub-'+target);
     if(sub){
       sub.classList.add('ws-subpage-active');
-      // Smooth scroll to workspace tabs area with proper offset
-      var wsTabsEl=document.getElementById('wsTabs');
-      if(wsTabsEl){
-        var rect=wsTabsEl.getBoundingClientRect();
+      // Smooth scroll: prefer workspace tabs, fallback to collab view head
+      var scrollTarget=document.getElementById('wsTabs');
+      if(!scrollTarget){
+        scrollTarget=document.querySelector('#view-collab .section-head');
+      }
+      if(scrollTarget){
+        var rect=scrollTarget.getBoundingClientRect();
         var targetY=window.scrollY+rect.top-80;
-        window.scrollTo({top:targetY,behavior:'smooth'});
+        if(Math.abs(window.scrollY-targetY)>20){
+          window.scrollTo({top:targetY,behavior:'smooth'});
+        }
       }
       // Trigger reveals in sub-page
       setTimeout(function(){checkReveals()},100);

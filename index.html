@@ -47,6 +47,7 @@
         <a href="#home" class="nav-link active" data-nav="home" data-cn="首页" data-en="Home">首页</a>
         <a href="#about" class="nav-link" data-nav="about" data-cn="关于" data-en="About">关于</a>
         <a href="#works" class="nav-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
+        <a href="#collab" class="nav-link" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
         <a href="#workspace" class="nav-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
         <a href="#contact" class="nav-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
       </div>
@@ -68,6 +69,7 @@
       <a href="#home" class="mobile-link active" data-nav="home" data-cn="首页" data-en="Home">首页</a>
       <a href="#about" class="mobile-link" data-nav="about" data-cn="关于" data-en="About">关于</a>
       <a href="#works" class="mobile-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
+      <a href="#collab" class="mobile-link" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
       <a href="#workspace" class="mobile-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
       <a href="#contact" class="mobile-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
     </div>
@@ -289,63 +291,106 @@
             <h2 class="section-title" data-cn="镜头背后的人" data-en="People Behind the Lens">镜头背后的人</h2>
           </div>
           <div class="team-grid team-grid-single">
-            <div class="team-card team-card-expandable reveal" id="teamCard">
-              <div class="team-card-head" id="teamCardHead">
-                <div class="team-avatar team-avatar-expand">
-                  <span>林</span>
-                </div>
-                <div class="team-card-title-expand">
-                  <h3 class="team-name-expand" data-cn="林威" data-en="Lin Wei">林威</h3>
-                  <p class="team-role-expand" data-cn="高级摄影师 · 主创导演" data-en="Senior Photographer · Lead Creator">高级摄影师 · 主创导演</p>
-                </div>
-                <div class="team-card-arrow" id="teamCardArrow">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
-                </div>
+            <!-- Business Card -->
+          <div class="card-section reveal">
+            <div class="business-card bc-card-v2">
+              <!-- Paper texture layers -->
+              <div class="bc-paper-fiber"></div>
+              <div class="bc-sheen"></div>
+              <div class="bc-light-leak"></div>
+
+              <!-- Logo watermark - debossed -->
+              <div class="bc-logo-watermark">
+                <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/>
+                </svg>
               </div>
-              <div class="team-card-detail" id="teamCardDetail">
-                <div class="team-detail-inner">
-                  <div class="team-info-row">
-                    <span class="team-info-label" data-cn="所在城市" data-en="Location">所在城市</span>
-                    <span class="team-info-value" data-cn="福建 · 泉州" data-en="Quanzhou, Fujian">福建 · 泉州</span>
+
+              <!-- Perforation notches -->
+              <div class="bc-notch-top"></div>
+              <div class="bc-notch-bottom"></div>
+              <div class="bc-perforation"></div>
+
+              <!-- Left stub section: QR -->
+              <div class="bc-stub">
+                <div class="bc-stub-top">ADMIT ONE</div>
+                <div class="bc-qr-frame" id="bcQRCode"></div>
+                <div class="bc-stub-bottom">V-ING</div>
+              </div>
+
+              <!-- Right main section -->
+              <div class="bc-main-section">
+                <div>
+                  <h2 class="bc-name">LIN WEI</h2>
+                  <div class="bc-name-cn" data-cn="林威" data-en="LIN WEI">林威</div>
+                  <p class="bc-title" data-cn="高级摄影师 · 主创导演" data-en="Senior Photographer · Lead Director">高级摄影师 · 主创导演</p>
+                  <div class="bc-tags-row">
+                    <span class="bc-tag" data-cn="Vlog" data-en="Vlog">Vlog</span>
+                    <span class="bc-tag" data-cn="宣传片" data-en="Promo">宣传片</span>
+                    <span class="bc-tag" data-cn="纪录片" data-en="Doc">纪录片</span>
                   </div>
-                  <div class="team-info-row">
-                    <span class="team-info-label" data-cn="从业经验" data-en="Experience">从业经验</span>
-                    <span class="team-info-value" data-cn="3-5 年" data-en="3-5 years">3-5 年</span>
-                  </div>
-                  <div class="team-info-block">
-                    <span class="team-info-label" data-cn="专业领域" data-en="Specialties">专业领域</span>
-                    <div class="team-tags team-tags-light">
-                      <span class="team-tag-light" data-cn="Vlog创作" data-en="Vlog Production">Vlog创作</span>
-                      <span class="team-tag-light" data-cn="品牌宣传片" data-en="Brand Promo">品牌宣传片</span>
-                      <span class="team-tag-light" data-cn="人文纪录片" data-en="Documentary">人文纪录片</span>
-                    </div>
-                  </div>
-                  <div class="team-info-block">
-                    <span class="team-info-label" data-cn="合作品牌" data-en="Brands">合作品牌</span>
-                    <div class="team-tags team-tags-light">
-                      <span class="team-tag-light">零跑汽车</span>
-                      <span class="team-tag-light">中鑫之宝</span>
-                    </div>
-                  </div>
-                  <div class="team-info-block">
-                    <span class="team-info-label" data-cn="专业认证" data-en="Certification">专业认证</span>
-                    <div class="team-cert">
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </div>
+                <div class="bc-divider"></div>
+                <div class="bc-info-grid">
+                  <div class="bc-info-item">
+                    <div class="bc-info-icon">
+                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
                       </svg>
-                      <span data-cn="国家高级摄影师认证" data-en="National Senior Photographer Certification">国家高级摄影师认证</span>
+                    </div>
+                    <div class="bc-info-text">
+                      <span class="bc-info-label" data-cn="所在城市" data-en="City">所在城市</span>
+                      <span class="bc-info-value" data-cn="福建 · 泉州" data-en="Quanzhou, Fujian">福建 · 泉州</span>
+                    </div>
+                  </div>
+                  <div class="bc-info-item">
+                    <div class="bc-info-icon">
+                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                      </svg>
+                    </div>
+                    <div class="bc-info-text">
+                      <span class="bc-info-label" data-cn="联系邮箱" data-en="Email">联系邮箱</span>
+                      <span class="bc-info-value">vkyvkyvky@163.com</span>
+                    </div>
+                  </div>
+                  <div class="bc-info-item">
+                    <div class="bc-info-icon">
+                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                      </svg>
+                    </div>
+                    <div class="bc-info-text">
+                      <span class="bc-info-label" data-cn="从业经验" data-en="Exp">从业经验</span>
+                      <span class="bc-info-value" data-cn="3-5 年" data-en="3-5 Years">3-5 年</span>
+                    </div>
+                  </div>
+                  <div class="bc-info-item">
+                    <div class="bc-info-icon">
+                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                    </div>
+                    <div class="bc-info-text">
+                      <span class="bc-info-label" data-cn="所属团队" data-en="Team">所属团队</span>
+                      <span class="bc-info-value" data-cn="微影 V-ing" data-en="V-ing">微影 V-ing</span>
                     </div>
                   </div>
                 </div>
+                <div class="bc-bottom-mark">
+                  <span class="bc-studio" data-cn="V-ing Studio" data-en="V-ing Studio">V-ing Studio</span>
+                  <span class="bc-seat">NO. 001</span>
+                </div>
               </div>
+
             </div>
           </div>
         </div>
       </section>
-
-      <!-- Timeline -->
       <section class="timeline-section">
         <div class="container">
           <div class="section-head reveal">
@@ -421,168 +466,22 @@
       </div>
     </section>
 
-    <!-- ========== WORKSPACE VIEW ========== -->
-    <section class="view" id="view-workspace" data-view="workspace">
-      <!-- Password Lock Overlay -->
-      <div class="ws-lock-overlay" id="wsLockOverlay">
-        <div class="ws-lock-card">
-          <div class="ws-lock-icon">
-            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-          <h3 class="ws-lock-title" data-cn="个人工作台" data-en="Workspace">个人工作台</h3>
-          <p class="ws-lock-desc" data-cn="请输入6位密码以访问" data-en="Enter 6-digit password to continue">请输入6位密码以访问</p>
-          <div class="ws-lock-dots" id="wsLockDots">
-            <span class="ws-lock-dot"></span>
-            <span class="ws-lock-dot"></span>
-            <span class="ws-lock-dot"></span>
-            <span class="ws-lock-dot"></span>
-            <span class="ws-lock-dot"></span>
-            <span class="ws-lock-dot"></span>
-          </div>
-          <div class="ws-lock-error" id="wsLockError"></div>
-          <div class="ws-lock-keypad">
-            <button class="ws-lock-key" data-key="1"><span>1</span></button>
-            <button class="ws-lock-key" data-key="2"><span>2</span><small>ABC</small></button>
-            <button class="ws-lock-key" data-key="3"><span>3</span><small>DEF</small></button>
-            <button class="ws-lock-key" data-key="4"><span>4</span><small>GHI</small></button>
-            <button class="ws-lock-key" data-key="5"><span>5</span><small>JKL</small></button>
-            <button class="ws-lock-key" data-key="6"><span>6</span><small>MNO</small></button>
-            <button class="ws-lock-key" data-key="7"><span>7</span><small>PQRS</small></button>
-            <button class="ws-lock-key" data-key="8"><span>8</span><small>TUV</small></button>
-            <button class="ws-lock-key" data-key="9"><span>9</span><small>WXYZ</small></button>
-            <button class="ws-lock-key ws-lock-key-empty" disabled></button>
-            <button class="ws-lock-key" data-key="0"><span>0</span></button>
-            <button class="ws-lock-key ws-lock-key-delete" data-key="delete">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
-                <line x1="18" y1="9" x2="12" y2="15"/>
-                <line x1="12" y1="9" x2="18" y2="15"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- Workspace Header -->
-      <div class="workspace-hero">
+    <!-- ========== COLLAB VIEW ========== -->
+    <section class="view" id="view-collab" data-view="collab">
+      <div class="collab-view-wrap">
         <div class="container">
           <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="个人工作台" data-en="Workspace">个人工作台</span>
-            <h2 class="section-title section-title-lg" data-cn="工作正在进行时" data-en="Work In Progress">工作正在进行时</h2>
-            <p class="section-desc reveal" data-cn="管理创作计划，追踪联动项目，让每一帧都按计划生长。" data-en="Manage creative schedules, track collaboration projects, let every frame grow on plan.">管理创作计划，追踪联动项目，让每一帧都按计划生长。</p>
-          </div>
-          <!-- iOS Segmented Control -->
-          <div class="segmented-control seg-5 reveal" id="wsTabs">
-            <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
-            <button class="seg-btn" data-ws-tab="collab" data-cn="联动" data-en="Collabs">联动</button>
-            <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
-            <button class="seg-btn" data-ws-tab="card" data-cn="我的名片" data-en="My Card">我的名片</button>
-            <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
-            <span class="seg-indicator seg-5-indicator" id="segIndicator"></span>
+            <span class="section-eyebrow" data-cn="品牌联动" data-en="Collaborations">品牌联动</span>
+            <h2 class="section-title section-title-lg" data-cn="品牌联动项目" data-en="Brand Collaboration Projects">品牌联动项目</h2>
+            <p class="section-desc reveal" data-cn="与优秀品牌伙伴共同创作影像故事" data-en="Creating visual stories with outstanding brand partners">与优秀品牌伙伴共同创作影像故事</p>
           </div>
         </div>
-      </div>
-
-      <!-- ====== Panel 1: Plan Board ====== -->
-      <div class="ws-panel ws-panel-active" id="ws-panel-plan">
-        <div class="container">
-          <!-- Panel Edit Toolbar -->
-          <div class="ws-panel-toolbar reveal">
-            <div class="ws-panel-toolbar-left">
-              <span class="ws-panel-dot"></span>
-              <span class="ws-panel-toolbar-title" data-cn="计划表" data-en="Schedule">计划表</span>
-            </div>
-            <div class="ws-panel-toolbar-right">
-              <button class="edit-toggle-btn" data-edit-target="ws-panel-plan" data-cn="编辑" data-en="Edit">编辑</button>
-            </div>
-          </div>
-          <!-- Progress Overview -->
-          <div class="plan-overview reveal">
-            <div class="plan-progress-wrap">
-              <div class="plan-progress-ring">
-                <svg viewBox="0 0 120 120" width="120" height="120">
-                  <circle class="ring-track" cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
-                  <circle class="ring-fill" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
-                </svg>
-                <div class="ring-text">
-                  <span class="ring-pct">0%</span>
-                  <span class="ring-label" data-cn="本周完成率" data-en="This Week">本周完成率</span>
-                </div>
-              </div>
-              <div class="plan-stats">
-                <div class="plan-stat">
-                  <span class="ps-num">0</span>
-                  <span class="ps-label" data-cn="本周任务" data-en="Weekly Tasks">本周任务</span>
-                </div>
-                <div class="plan-stat">
-                  <span class="ps-num done">0</span>
-                  <span class="ps-label" data-cn="已完成" data-en="Completed">已完成</span>
-                </div>
-                <div class="plan-stat">
-                  <span class="ps-num wip">0</span>
-                  <span class="ps-label" data-cn="进行中" data-en="In Progress">进行中</span>
-                </div>
-                <div class="plan-stat">
-                  <span class="ps-num todo">0</span>
-                  <span class="ps-label" data-cn="待办" data-en="To Do">待办</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Kanban Board -->
-          <div class="kanban-board reveal">
-            <!-- Column: To Do -->
-            <div class="kanban-col" data-col="todo">
-              <div class="kanban-col-head">
-                <span class="col-dot col-dot-todo"></span>
-                <h3 data-cn="待办" data-en="To Do">待办</h3>
-                <span class="col-count">0</span>
-                <button class="kanban-add-btn" data-col-target="todo" title="添加任务">+</button>
-              </div>
-              <div class="kanban-cards" data-col-cards="todo">
-                <div class="kanban-empty" data-cn="暂无待办任务" data-en="No tasks">暂无待办任务</div>
-              </div>
-            </div>
-            <!-- Column: In Progress -->
-            <div class="kanban-col" data-col="wip">
-              <div class="kanban-col-head">
-                <span class="col-dot col-dot-wip"></span>
-                <h3 data-cn="进行中" data-en="In Progress">进行中</h3>
-                <span class="col-count">0</span>
-                <button class="kanban-add-btn" data-col-target="wip" title="添加任务">+</button>
-              </div>
-              <div class="kanban-cards" data-col-cards="wip">
-                <div class="kanban-empty" data-cn="暂无进行中任务" data-en="No tasks">暂无进行中任务</div>
-              </div>
-            </div>
-            <!-- Column: Done -->
-            <div class="kanban-col" data-col="done">
-              <div class="kanban-col-head">
-                <span class="col-dot col-dot-done"></span>
-                <h3 data-cn="已完成" data-en="Done">已完成</h3>
-                <span class="col-count">0</span>
-                <button class="kanban-add-btn" data-col-target="done" title="添加任务">+</button>
-              </div>
-              <div class="kanban-cards" data-col-cards="done">
-                <div class="kanban-empty" data-cn="暂无已完成任务" data-en="No tasks">暂无已完成任务</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ====== Panel 2: Collaboration Hub ====== -->
-      <div class="ws-panel" id="ws-panel-collab">
         <div class="container">
           <!-- Collab Hub -->
           <div class="collab-hub reveal" id="collabHub">
             <div class="collab-hub-head">
-              <h3 class="collab-hub-title" data-cn="品牌联动项目" data-en="Brand Collaboration Projects">品牌联动项目</h3>
-              <p class="collab-hub-desc" data-cn="与优秀品牌伙伴共同创作影像故事" data-en="Creating visual stories with outstanding brand partners">与优秀品牌伙伴共同创作影像故事</p>
+              <h3 class="collab-hub-title" data-cn="合作品牌" data-en="Partner Brands">合作品牌</h3>
+              <p class="collab-hub-desc" data-cn="点击品牌卡片查看详细合作内容" data-en="Click a brand card to view collaboration details">点击品牌卡片查看详细合作内容</p>
             </div>
             <div class="collab-cards">
               <!-- 零跑 -->
@@ -981,10 +880,163 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== WORKSPACE VIEW ========== -->
+    <section class="view" id="view-workspace" data-view="workspace">
+      <!-- Password Lock Overlay -->
+      <div class="ws-lock-overlay" id="wsLockOverlay">
+        <div class="ws-lock-card">
+          <div class="ws-lock-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
           </div>
+          <h3 class="ws-lock-title" data-cn="个人工作台" data-en="Workspace">个人工作台</h3>
+          <p class="ws-lock-desc" data-cn="请输入6位密码以访问" data-en="Enter 6-digit password to continue">请输入6位密码以访问</p>
+          <div class="ws-lock-dots" id="wsLockDots">
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+            <span class="ws-lock-dot"></span>
+          </div>
+          <div class="ws-lock-error" id="wsLockError"></div>
+          <div class="ws-lock-keypad">
+            <button class="ws-lock-key" data-key="1"><span>1</span></button>
+            <button class="ws-lock-key" data-key="2"><span>2</span><small>ABC</small></button>
+            <button class="ws-lock-key" data-key="3"><span>3</span><small>DEF</small></button>
+            <button class="ws-lock-key" data-key="4"><span>4</span><small>GHI</small></button>
+            <button class="ws-lock-key" data-key="5"><span>5</span><small>JKL</small></button>
+            <button class="ws-lock-key" data-key="6"><span>6</span><small>MNO</small></button>
+            <button class="ws-lock-key" data-key="7"><span>7</span><small>PQRS</small></button>
+            <button class="ws-lock-key" data-key="8"><span>8</span><small>TUV</small></button>
+            <button class="ws-lock-key" data-key="9"><span>9</span><small>WXYZ</small></button>
+            <button class="ws-lock-key ws-lock-key-empty" disabled></button>
+            <button class="ws-lock-key" data-key="0"><span>0</span></button>
+            <button class="ws-lock-key ws-lock-key-delete" data-key="delete">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+                <line x1="18" y1="9" x2="12" y2="15"/>
+                <line x1="12" y1="9" x2="18" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Workspace Header -->
+      <div class="workspace-hero">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-eyebrow" data-cn="个人工作台" data-en="Workspace">个人工作台</span>
+            <h2 class="section-title section-title-lg" data-cn="工作正在进行时" data-en="Work In Progress">工作正在进行时</h2>
+            <p class="section-desc reveal" data-cn="管理创作计划，追踪项目进度，让每一帧都按计划生长。" data-en="Manage creative schedules, track project progress, let every frame grow on plan.">管理创作计划，追踪项目进度，让每一帧都按计划生长。</p>
+          </div>
+          <!-- iOS Segmented Control -->
+          <div class="segmented-control seg-3 reveal" id="wsTabs">
+            <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
+            <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
+            <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
+            <span class="seg-indicator seg-3-indicator" id="segIndicator"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== Panel 1: Plan Board ====== -->
+      <div class="ws-panel ws-panel-active" id="ws-panel-plan">
+        <div class="container">
+          <!-- Panel Edit Toolbar -->
+          <div class="ws-panel-toolbar reveal">
+            <div class="ws-panel-toolbar-left">
+              <span class="ws-panel-dot"></span>
+              <span class="ws-panel-toolbar-title" data-cn="计划表" data-en="Schedule">计划表</span>
+            </div>
+            <div class="ws-panel-toolbar-right">
+              <button class="edit-toggle-btn" data-edit-target="ws-panel-plan" data-cn="编辑" data-en="Edit">编辑</button>
+            </div>
+          </div>
+          <!-- Progress Overview -->
+          <div class="plan-overview reveal">
+            <div class="plan-progress-wrap">
+              <div class="plan-progress-ring">
+                <svg viewBox="0 0 120 120" width="120" height="120">
+                  <circle class="ring-track" cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+                  <circle class="ring-fill" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="ring-text">
+                  <span class="ring-pct">0%</span>
+                  <span class="ring-label" data-cn="本周完成率" data-en="This Week">本周完成率</span>
+                </div>
+              </div>
+              <div class="plan-stats">
+                <div class="plan-stat">
+                  <span class="ps-num">0</span>
+                  <span class="ps-label" data-cn="本周任务" data-en="Weekly Tasks">本周任务</span>
+                </div>
+                <div class="plan-stat">
+                  <span class="ps-num done">0</span>
+                  <span class="ps-label" data-cn="已完成" data-en="Completed">已完成</span>
+                </div>
+                <div class="plan-stat">
+                  <span class="ps-num wip">0</span>
+                  <span class="ps-label" data-cn="进行中" data-en="In Progress">进行中</span>
+                </div>
+                <div class="plan-stat">
+                  <span class="ps-num todo">0</span>
+                  <span class="ps-label" data-cn="待办" data-en="To Do">待办</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- ====== Panel 3: Unified Daily Report ====== -->
+          <!-- Kanban Board -->
+          <div class="kanban-board reveal">
+            <!-- Column: To Do -->
+            <div class="kanban-col" data-col="todo">
+              <div class="kanban-col-head">
+                <span class="col-dot col-dot-todo"></span>
+                <h3 data-cn="待办" data-en="To Do">待办</h3>
+                <span class="col-count">0</span>
+                <button class="kanban-add-btn" data-col-target="todo" title="添加任务">+</button>
+              </div>
+              <div class="kanban-cards" data-col-cards="todo">
+                <div class="kanban-empty" data-cn="暂无待办任务" data-en="No tasks">暂无待办任务</div>
+              </div>
+            </div>
+            <!-- Column: In Progress -->
+            <div class="kanban-col" data-col="wip">
+              <div class="kanban-col-head">
+                <span class="col-dot col-dot-wip"></span>
+                <h3 data-cn="进行中" data-en="In Progress">进行中</h3>
+                <span class="col-count">0</span>
+                <button class="kanban-add-btn" data-col-target="wip" title="添加任务">+</button>
+              </div>
+              <div class="kanban-cards" data-col-cards="wip">
+                <div class="kanban-empty" data-cn="暂无进行中任务" data-en="No tasks">暂无进行中任务</div>
+              </div>
+            </div>
+            <!-- Column: Done -->
+            <div class="kanban-col" data-col="done">
+              <div class="kanban-col-head">
+                <span class="col-dot col-dot-done"></span>
+                <h3 data-cn="已完成" data-en="Done">已完成</h3>
+                <span class="col-count">0</span>
+                <button class="kanban-add-btn" data-col-target="done" title="添加任务">+</button>
+              </div>
+              <div class="kanban-cards" data-col-cards="done">
+                <div class="kanban-empty" data-cn="暂无已完成任务" data-en="No tasks">暂无已完成任务</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ====== Panel 2: Unified Daily Report ====== -->
           <div class="ws-panel" id="ws-panel-unified">
             <div class="container">
               <div class="unified-report-wrap" id="unified-report-wrap">
@@ -1139,110 +1191,7 @@
             </div>
       </div>
 
-      <!-- ====== Panel 4: My Business Card ====== -->
-      <div class="ws-panel" id="ws-panel-card">
-        <div class="container">
-          <div class="card-section reveal">
-            <div class="business-card bc-card-v2">
-              <!-- Paper texture layers -->
-              <div class="bc-paper-fiber"></div>
-              <div class="bc-sheen"></div>
-              <div class="bc-light-leak"></div>
-
-              <!-- Logo watermark - debossed -->
-              <div class="bc-logo-watermark">
-                <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
-                  <path fill="currentColor" d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/>
-                </svg>
-              </div>
-
-              <!-- Perforation notches -->
-              <div class="bc-notch-top"></div>
-              <div class="bc-notch-bottom"></div>
-              <div class="bc-perforation"></div>
-
-              <!-- Left stub section: QR -->
-              <div class="bc-stub">
-                <div class="bc-stub-top">ADMIT ONE</div>
-                <div class="bc-qr-frame" id="bcQRCode"></div>
-                <div class="bc-stub-bottom">V-ING</div>
-              </div>
-
-              <!-- Right main section -->
-              <div class="bc-main-section">
-                <div>
-                  <h2 class="bc-name">LIN WEI</h2>
-                  <div class="bc-name-cn" data-cn="林威" data-en="LIN WEI">林威</div>
-                  <p class="bc-title" data-cn="高级摄影师 · 主创导演" data-en="Senior Photographer · Lead Director">高级摄影师 · 主创导演</p>
-                  <div class="bc-tags-row">
-                    <span class="bc-tag" data-cn="Vlog" data-en="Vlog">Vlog</span>
-                    <span class="bc-tag" data-cn="宣传片" data-en="Promo">宣传片</span>
-                    <span class="bc-tag" data-cn="纪录片" data-en="Doc">纪录片</span>
-                  </div>
-                </div>
-                <div class="bc-divider"></div>
-                <div class="bc-info-grid">
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="所在城市" data-en="City">所在城市</span>
-                      <span class="bc-info-value" data-cn="福建 · 泉州" data-en="Quanzhou, Fujian">福建 · 泉州</span>
-                    </div>
-                  </div>
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="联系邮箱" data-en="Email">联系邮箱</span>
-                      <span class="bc-info-value">vkyvkyvky@163.com</span>
-                    </div>
-                  </div>
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="从业经验" data-en="Exp">从业经验</span>
-                      <span class="bc-info-value" data-cn="3-5 年" data-en="3-5 Years">3-5 年</span>
-                    </div>
-                  </div>
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="所属团队" data-en="Team">所属团队</span>
-                      <span class="bc-info-value" data-cn="微影 V-ing" data-en="V-ing">微影 V-ing</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="bc-bottom-mark">
-                  <span class="bc-studio" data-cn="V-ing Studio" data-en="V-ing Studio">V-ing Studio</span>
-                  <span class="bc-seat">NO. 001</span>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ====== Panel 5: Console / Instruction Template ====== -->
+      <!-- ====== Panel 2: Console / Instruction Template ====== -->
       <div class="ws-panel" id="ws-panel-console">
         <div class="container">
           <div class="console-wrap reveal">
@@ -1393,6 +1342,7 @@
           <a href="#home" data-nav="home" data-cn="首页" data-en="Home">首页</a>
           <a href="#about" data-nav="about" data-cn="关于" data-en="About">关于</a>
           <a href="#works" data-nav="works" data-cn="作品" data-en="Works">作品</a>
+          <a href="#collab" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
           <a href="#workspace" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
           <a href="#contact" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
         </div>

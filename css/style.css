@@ -938,7 +938,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 .team-grid-single{
   grid-template-columns:1fr;
-  max-width:400px;
+  max-width:680px;
   margin:0 auto;
 }
 .team-card{
@@ -1626,6 +1626,12 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 @keyframes ws-panel-in{
   from{opacity:0;transform:translateY(12px) scale(.992)}
   to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* Collab View */
+.collab-view-wrap{
+  padding:100px 0 60px;
+  min-height:100vh;
 }
 
 /* Plan Board */
