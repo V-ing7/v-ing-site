@@ -23,7 +23,7 @@
     "streamer_4": {
       "name": "小凡",
       "shoot": 11,
-      "edit": 4
+      "edit": 5
     },
     "streamer_5": {
       "name": "东哥",
@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-16T11:28:52.587Z",
+  "lastUpdated": "2026-09-16T11:28:57.804Z",
   "theme": "dark",
   "lang": "zh",
   "kanbanTasks": {
