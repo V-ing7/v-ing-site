@@ -3228,7 +3228,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 }
 [data-theme="dark"] .bc-seat{color:rgba(255,220,180,.15)}
 
-/* Responsive: shrink via CSS variables — zero transform */
+/* Responsive: shrink via CSS variables — keep horizontal ticket style */
 @media(max-width:768px){
   .card-section{
     max-width:100%;
@@ -3236,8 +3236,9 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
     overflow-x:hidden;
   }
   .bc-card-v2{
-    --u:5.56px;
-    --f:2.2px;
+    --u:5.2px;
+    --f:2.1px;
+    width:calc(var(--u) * 90);
     transform:none;
   }
 }
@@ -3248,16 +3249,18 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
     overflow-x:hidden;
   }
   .bc-card-v2{
-    --u:3.6px;
-    --f:1.8px;
+    --u:4.3px;
+    --f:1.9px;
+    width:calc(var(--u) * 88);
     max-width:100%;
     transform:none;
   }
 }
 @media(max-width:380px){
   .bc-card-v2{
-    --u:3.1px;
-    --f:1.6px;
+    --u:3.9px;
+    --f:1.75px;
+    width:calc(var(--u) * 86);
     max-width:100%;
     transform:none;
   }
