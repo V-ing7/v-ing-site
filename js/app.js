@@ -375,8 +375,11 @@
     if(data.kanbanTasks && window.__renderKanbanFromData){
       window.__renderKanbanFromData(data.kanbanTasks);
     }
-    // Render storyboard from remote data
-    if(data.storyboard && window.__renderStoryboard){
+    // Render storyboard from remote data (multi-project)
+    if(data.storyboardProjects && Array.isArray(data.storyboardProjects) && window.__renderStoryboard){
+      window.__renderStoryboard(data.storyboardProjects);
+    } else if(data.storyboard && window.__renderStoryboard){
+      // Old single-project format (migration)
       window.__renderStoryboard(data.storyboard);
     }
   }
@@ -3120,7 +3123,7 @@
 })();
 
 /* ================================================================
-   Storyboard Table Module
+   Storyboard Table Module (Multi-Project v2)
    ================================================================ */
 (function(){
   'use strict';
@@ -3153,10 +3156,20 @@
     {value:'斯坦尼康',label:{cn:'斯坦尼康',en:'Steadicam'}}
   ];
 
+  var LONG_PRESS_MS = 1200;  // long-press duration
   var currentLang = localStorage.getItem('v-ing-lang') || 'zh';
-  var sbData = { projectName:'', shootDate:'', rows:[] };
-  var isEditing = false;
+
+  // Multi-project data
+  var projects = [];       // array of {id, projectName, shootDate, rows, lastUpdated}
+  var currentProjectId = null;  // currently editing project id (null = new)
   var hasUnsavedChanges = false;
+
+  // DOM refs
+  var projectListView = document.getElementById('sbProjectListView');
+  var editorView = document.getElementById('sbEditorView');
+  var detailView = document.getElementById('sbDetailView');
+  var projectGrid = document.getElementById('sbProjectGrid');
+  var projectEmpty = document.getElementById('sbProjectEmpty');
 
   var tableBody = document.getElementById('sbTableBody');
   var sbEmpty = document.getElementById('sbEmpty');
@@ -3169,19 +3182,24 @@
   var sbStatusInfo = document.getElementById('sbStatusInfo');
   var sbStatusSync = document.getElementById('sbStatusSync');
 
+  var sbAddProject = document.getElementById('sbAddProject');
+  var sbBackToList = document.getElementById('sbBackToList');
+  var sbDetailBack = document.getElementById('sbDetailBack');
+  var sbDetailEdit = document.getElementById('sbDetailEdit');
+  var sbDetailTitle = document.getElementById('sbDetailTitle');
+  var sbDetailInfo = document.getElementById('sbDetailInfo');
+  var sbDetailTableBody = document.getElementById('sbDetailTableBody');
+
   function t(cn,en){
     return currentLang === 'en' ? en : cn;
   }
 
+  function genId(){
+    return 'sb_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,6);
+  }
+
   function createEmptyRow(){
-    return {
-      size:'',
-      movement:'',
-      visual:'',
-      audio:'',
-      duration:'',
-      note:''
-    };
+    return {size:'',movement:'',visual:'',audio:'',duration:'',note:''};
   }
 
   function getShotSizeLabel(val){
@@ -3198,149 +3216,330 @@
     return '';
   }
 
-  function renderRows(){
-    if(!tableBody) return;
-    tableBody.innerHTML = '';
+  /* ---------- Project List Rendering ---------- */
+  function renderProjectList(){
+    if(!projectGrid) return;
+    projectGrid.innerHTML = '';
 
-    if(sbData.rows.length === 0){
-      if(sbEmpty) sbEmpty.style.display = '';
-      if(sbTable) sbTable.style.display = 'none';
-    } else {
-      if(sbEmpty) sbEmpty.style.display = 'none';
-      if(sbTable) sbTable.style.display = '';
+    if(projects.length === 0){
+      if(projectEmpty) projectEmpty.style.display = '';
+      return;
     }
+    if(projectEmpty) projectEmpty.style.display = 'none';
 
-    sbData.rows.forEach(function(row, idx){
-      var tr = document.createElement('tr');
-      tr.setAttribute('data-row-idx', idx);
+    projects.forEach(function(proj){
+      var card = document.createElement('div');
+      card.className = 'sb-pcard';
+      card.setAttribute('data-pid', proj.id);
 
-      // Shot number
-      var tdNum = document.createElement('td');
-      tdNum.className = 'sb-td-num';
-      tdNum.textContent = String(idx + 1).padStart(2,'0');
-      tr.appendChild(tdNum);
+      var shotCount = (proj.rows || []).length;
+      var updated = proj.lastUpdated ? new Date(proj.lastUpdated).toLocaleString() : '--';
 
-      // Shot size (select)
-      var tdSize = document.createElement('td');
-      var selSize = document.createElement('select');
-      selSize.className = 'sb-select sb-cell-size';
-      SHOT_SIZES.forEach(function(opt){
-        var o = document.createElement('option');
-        o.value = opt.value;
-        o.textContent = t(opt.label.cn, opt.label.en);
-        if(opt.value === row.size) o.selected = true;
-        selSize.appendChild(o);
-      });
-      selSize.addEventListener('change', function(){
-        row.size = selSize.value;
-        markUnsaved();
-      });
-      tdSize.appendChild(selSize);
-      tr.appendChild(tdSize);
+      card.innerHTML =
+        '<div class="sb-pcard-progress"></div>' +
+        '<div class="sb-pcard-body">' +
+          '<div class="sb-pcard-name">' + escapeHtml(proj.projectName || t('未命名项目','Untitled Project')) + '</div>' +
+          '<div class="sb-pcard-meta">' +
+            '<span class="sb-pcard-shots">' + shotCount + ' ' + t('镜头','shots') + '</span>' +
+            (proj.shootDate ? '<span class="sb-pcard-date">' + proj.shootDate + '</span>' : '') +
+          '</div>' +
+          '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
+        '</div>' +
+        '<div class="sb-pcard-hint">' + t('长按查看','Long-press to view') + '</div>';
 
-      // Movement (select)
-      var tdMove = document.createElement('td');
-      var selMove = document.createElement('select');
-      selMove.className = 'sb-select sb-cell-move';
-      MOVEMENTS.forEach(function(opt){
-        var o = document.createElement('option');
-        o.value = opt.value;
-        o.textContent = t(opt.label.cn, opt.label.en);
-        if(opt.value === row.movement) o.selected = true;
-        selMove.appendChild(o);
-      });
-      selMove.addEventListener('change', function(){
-        row.movement = selMove.value;
-        markUnsaved();
-      });
-      tdMove.appendChild(selMove);
-      tr.appendChild(tdMove);
+      // Long-press handler
+      bindLongPress(card, proj.id);
 
-      // Visual description (contenteditable)
-      var tdDesc = document.createElement('td');
-      var cellDesc = document.createElement('div');
-      cellDesc.className = 'sb-cell';
-      cellDesc.setAttribute('contenteditable','true');
-      cellDesc.setAttribute('data-placeholder', t('描述画面...','Describe visual...'));
-      cellDesc.textContent = row.visual || '';
-      cellDesc.addEventListener('input', function(){
-        row.visual = cellDesc.textContent;
-        markUnsaved();
-      });
-      tdDesc.appendChild(cellDesc);
-      tr.appendChild(tdDesc);
-
-      // Audio / VO (contenteditable)
-      var tdAudio = document.createElement('td');
-      var cellAudio = document.createElement('div');
-      cellAudio.className = 'sb-cell';
-      cellAudio.setAttribute('contenteditable','true');
-      cellAudio.setAttribute('data-placeholder', t('旁白/音效...','VO / SFX...'));
-      cellAudio.textContent = row.audio || '';
-      cellAudio.addEventListener('input', function(){
-        row.audio = cellAudio.textContent;
-        markUnsaved();
-      });
-      tdAudio.appendChild(cellAudio);
-      tr.appendChild(tdAudio);
-
-      // Duration (input)
-      var tdDur = document.createElement('td');
-      var inpDur = document.createElement('input');
-      inpDur.type = 'text';
-      inpDur.className = 'sb-dur-input';
-      inpDur.value = row.duration || '';
-      inpDur.setAttribute('placeholder', '0s');
-      inpDur.addEventListener('input', function(){
-        row.duration = inpDur.value;
-        markUnsaved();
-      });
-      tdDur.appendChild(inpDur);
-      tr.appendChild(tdDur);
-
-      // Notes (contenteditable)
-      var tdNote = document.createElement('td');
-      var cellNote = document.createElement('div');
-      cellNote.className = 'sb-cell';
-      cellNote.setAttribute('contenteditable','true');
-      cellNote.setAttribute('data-placeholder', t('备注...','Notes...'));
-      cellNote.textContent = row.note || '';
-      cellNote.addEventListener('input', function(){
-        row.note = cellNote.textContent;
-        markUnsaved();
-      });
-      tdNote.appendChild(cellNote);
-      tr.appendChild(tdNote);
-
-      // Delete button
-      var tdAct = document.createElement('td');
-      var delBtn = document.createElement('button');
-      delBtn.className = 'sb-del-btn';
-      delBtn.innerHTML = '&times;';
-      delBtn.title = t('删除此行','Delete row');
-      delBtn.addEventListener('click', function(){
-        sbData.rows.splice(idx, 1);
-        markUnsaved();
-        renderRows();
-        updateStatusBar();
-      });
-      tdAct.appendChild(delBtn);
-      tr.appendChild(tdAct);
-
-      tableBody.appendChild(tr);
+      projectGrid.appendChild(card);
     });
-
-    updateStatusBar();
   }
 
-  function updateStatusBar(){
-    if(sbStatusInfo){
-      var count = sbData.rows.length;
-      sbStatusInfo.textContent = t('共 ' + count + ' 个镜头', count + ' shots total');
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /* ---------- Long Press + Progress Bar ---------- */
+  function bindLongPress(card, pid){
+    var pressTimer = null;
+    var progressTimer = null;
+    var triggered = false;
+
+    function startPress(e){
+      // Only respond to touch or mouse (not click)
+      triggered = false;
+      card.classList.add('long-pressing');
+      // Start progress bar animation on next frame
+      requestAnimationFrame(function(){
+        var bar = card.querySelector('.sb-pcard-progress');
+        if(bar){
+          bar.classList.add('active');
+        }
+      });
+      pressTimer = setTimeout(function(){
+        triggered = true;
+        card.classList.remove('long-pressing');
+        var bar2 = card.querySelector('.sb-pcard-progress');
+        if(bar2) bar2.classList.remove('active');
+        openDetailPage(pid);
+      }, LONG_PRESS_MS);
     }
-    if(sbProjectName){
-      sbProjectName.textContent = sbData.projectName || t('未命名项目','Untitled Project');
+
+    function cancelPress(){
+      card.classList.remove('long-pressing');
+      var bar = card.querySelector('.sb-pcard-progress');
+      if(bar) bar.classList.remove('active');
+      if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
     }
+
+    // Mouse events
+    card.addEventListener('mousedown', function(e){
+      // Ignore clicks on buttons inside card
+      if(e.target.closest('button')) return;
+      startPress(e);
+    });
+    card.addEventListener('mouseup', cancelPress);
+    card.addEventListener('mouseleave', cancelPress);
+
+    // Touch events
+    card.addEventListener('touchstart', function(e){
+      if(e.target.closest('button')) return;
+      startPress(e);
+    }, {passive:true});
+    card.addEventListener('touchend', cancelPress);
+    card.addEventListener('touchmove', cancelPress);
+
+    // Prevent click navigation if long-press was triggered
+    card.addEventListener('click', function(e){
+      if(triggered){
+        e.preventDefault();
+        e.stopPropagation();
+        triggered = false;
+      }
+    });
+  }
+
+  /* ---------- Detail Page (read-only view) ---------- */
+  function openDetailPage(pid){
+    var proj = projects.find(function(p){ return p.id === pid; });
+    if(!proj) return;
+
+    // Collapse: hide project list, show detail
+    if(projectListView) projectListView.style.display = 'none';
+    if(editorView) editorView.style.display = 'none';
+    if(detailView) detailView.style.display = '';
+
+    // Populate
+    if(sbDetailTitle) sbDetailTitle.textContent = proj.projectName || t('未命名项目','Untitled Project');
+
+    if(sbDetailInfo){
+      var shotCount = (proj.rows || []).length;
+      var totalDur = 0;
+      (proj.rows || []).forEach(function(r){
+        var d = parseFloat(r.duration);
+        if(!isNaN(d)) totalDur += d;
+      });
+      sbDetailInfo.innerHTML =
+        '<span><span class="sb-detail-label">' + t('项目名称','Project') + ':</span> ' + escapeHtml(proj.projectName || '--') + '</span>' +
+        '<span><span class="sb-detail-label">' + t('拍摄日期','Shoot Date') + ':</span> ' + (proj.shootDate || '--') + '</span>' +
+        '<span><span class="sb-detail-label">' + t('镜头数','Shots') + ':</span> ' + shotCount + '</span>' +
+        '<span><span class="sb-detail-label">' + t('总时长','Total Duration') + ':</span> ' + totalDur + 's</span>';
+    }
+
+    // Render read-only table
+    if(sbDetailTableBody){
+      sbDetailTableBody.innerHTML = '';
+      if(!proj.rows || proj.rows.length === 0){
+        sbDetailTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无镜头数据','No shot data') + '</td></tr>';
+      } else {
+        proj.rows.forEach(function(row, idx){
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td class="sb-td-num">' + (idx+1) + '</td>' +
+            '<td>' + escapeHtml(getShotSizeLabel(row.size)) + '</td>' +
+            '<td>' + escapeHtml(getMovementLabel(row.movement)) + '</td>' +
+            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</td>' +
+            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.audio || '') + '</td>' +
+            '<td style="text-align:center">' + escapeHtml(row.duration || '') + '</td>' +
+            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.note || '') + '</td>';
+          sbDetailTableBody.appendChild(tr);
+        });
+      }
+    }
+
+    // Store current project id for edit button
+    detailView.setAttribute('data-pid', pid);
+
+    // Smooth scroll to top of detail
+    if(detailView) detailView.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function backToProjectList(){
+    if(detailView) detailView.style.display = 'none';
+    if(editorView) editorView.style.display = 'none';
+    if(projectListView) projectListView.style.display = '';
+    renderProjectList();
+  }
+
+  /* ---------- Editor (add/edit project) ---------- */
+  function openEditor(pid){
+    // pid = null for new project, or existing project id
+    currentProjectId = pid || null;
+    hasUnsavedChanges = false;
+
+    if(projectListView) projectListView.style.display = 'none';
+    if(detailView) detailView.style.display = 'none';
+    if(editorView) editorView.style.display = '';
+
+    var proj = pid ? projects.find(function(p){ return p.id === pid; }) : null;
+
+    if(sbProjectInput) sbProjectInput.value = proj ? (proj.projectName || '') : '';
+    if(sbDateInput) sbDateInput.value = proj ? (proj.shootDate || '') : '';
+    if(sbProjectName) sbProjectName.textContent = proj ? (proj.projectName || t('未命名项目','Untitled Project')) : t('新项目','New Project');
+
+    // Clear table and load rows
+    if(tableBody) tableBody.innerHTML = '';
+    if(proj && proj.rows && proj.rows.length > 0){
+      proj.rows.forEach(function(row, idx){
+        renderRow(row, idx + 1);
+      });
+    } else {
+      // Start with one empty row
+      renderRow(createEmptyRow(), 1);
+    }
+
+    updateStatusInfo();
+    updateEmptyState();
+
+    if(sbStatusSync){
+      sbStatusSync.textContent = '';
+      sbStatusSync.className = 'sb-status-sync';
+    }
+
+    if(editorView) editorView.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function getCurrentProjectData(){
+    var rows = [];
+    if(tableBody){
+      var trs = tableBody.querySelectorAll('tr');
+      trs.forEach(function(tr){
+        var sizeSel = tr.querySelector('[data-field="size"]');
+        var moveSel = tr.querySelector('[data-field="movement"]');
+        var visualCell = tr.querySelector('[data-field="visual"]');
+        var audioCell = tr.querySelector('[data-field="audio"]');
+        var durInput = tr.querySelector('[data-field="duration"]');
+        var noteCell = tr.querySelector('[data-field="note"]');
+        rows.push({
+          size: sizeSel ? sizeSel.value : '',
+          movement: moveSel ? moveSel.value : '',
+          visual: visualCell ? visualCell.textContent : '',
+          audio: audioCell ? audioCell.textContent : '',
+          duration: durInput ? durInput.value : '',
+          note: noteCell ? noteCell.textContent : ''
+        });
+      });
+    }
+    return {
+      id: currentProjectId || genId(),
+      projectName: sbProjectInput ? sbProjectInput.value.trim() : '',
+      shootDate: sbDateInput ? sbDateInput.value : '',
+      rows: rows,
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  /* ---------- Row Rendering ---------- */
+  function renderRow(row, rowNum){
+    if(!tableBody) return;
+    var tr = document.createElement('tr');
+
+    // Shot size select
+    var sizeOpts = SHOT_SIZES.map(function(s){
+      return '<option value="' + s.value + '"' + (s.value === (row && row.size ? row.size : '') ? ' selected' : '') + '>' + t(s.label.cn, s.label.en) + '</option>';
+    }).join('');
+
+    // Movement select
+    var moveOpts = MOVEMENTS.map(function(m){
+      return '<option value="' + m.value + '"' + (m.value === (row && row.movement ? row.movement : '') ? ' selected' : '') + '>' + t(m.label.cn, m.label.en) + '</option>';
+    }).join('');
+
+    tr.innerHTML =
+      '<td class="sb-td-num">' + rowNum + '</td>' +
+      '<td><select class="sb-select" data-field="size">' + sizeOpts + '</select></td>' +
+      '<td><select class="sb-select" data-field="movement">' + moveOpts + '</select></td>' +
+      '<td><div class="sb-cell" contenteditable="true" data-field="visual" data-placeholder="' + t('描述画面...','Describe visual...') + '">' + escapeHtml(row ? row.visual || '' : '') + '</div></td>' +
+      '<td><div class="sb-cell" contenteditable="true" data-field="audio" data-placeholder="' + t('音频/旁白...','Audio / VO...') + '">' + escapeHtml(row ? row.audio || '' : '') + '</div></td>' +
+      '<td><input type="text" class="sb-dur-input" data-field="duration" value="' + escapeHtml(row ? row.duration || '' : '') + '" placeholder="0s"></td>' +
+      '<td><div class="sb-cell" contenteditable="true" data-field="note" data-placeholder="' + t('备注...','Notes...') + '">' + escapeHtml(row ? row.note || '' : '') + '</div></td>' +
+      '<td><button class="sb-del-btn" title="' + t('删除','Delete') + '">×</button></td>';
+
+    // Bind events
+    var sizeSel = tr.querySelector('[data-field="size"]');
+    var moveSel = tr.querySelector('[data-field="movement"]');
+    if(sizeSel) sizeSel.addEventListener('change', markUnsaved);
+    if(moveSel) moveSel.addEventListener('change', markUnsaved);
+
+    var cells = tr.querySelectorAll('.sb-cell');
+    cells.forEach(function(cell){
+      cell.addEventListener('input', markUnsaved);
+    });
+
+    var durInp = tr.querySelector('[data-field="duration"]');
+    if(durInp) durInp.addEventListener('input', markUnsaved);
+
+    var delBtn = tr.querySelector('.sb-del-btn');
+    if(delBtn){
+      delBtn.addEventListener('click', function(){
+        tr.remove();
+        // Renumber
+        var allTrs = tableBody.querySelectorAll('tr');
+        allTrs.forEach(function(t, i){
+          var numEl = t.querySelector('.sb-td-num');
+          if(numEl) numEl.textContent = i + 1;
+        });
+        updateStatusInfo();
+        updateEmptyState();
+        markUnsaved();
+      });
+    }
+
+    tableBody.appendChild(tr);
+  }
+
+  function renderRows(rows){
+    if(!tableBody) return;
+    tableBody.innerHTML = '';
+    if(rows && rows.length){
+      rows.forEach(function(row, idx){
+        renderRow(row, idx + 1);
+      });
+    } else {
+      renderRow(createEmptyRow(), 1);
+    }
+    updateStatusInfo();
+    updateEmptyState();
+  }
+
+  function addRow(){
+    var rowNum = tableBody ? tableBody.children.length + 1 : 1;
+    renderRow(createEmptyRow(), rowNum);
+    markUnsaved();
+    if(tableBody && tableBody.lastElementChild){
+      tableBody.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }
+
+  /* ---------- Status helpers ---------- */
+  function updateStatusInfo(){
+    var count = tableBody ? tableBody.children.length : 0;
+    if(sbStatusInfo) sbStatusInfo.textContent = t('共 ','Total: ') + count + t(' 个镜头',' shots');
+  }
+
+  function updateEmptyState(){
+    var count = tableBody ? tableBody.children.length : 0;
+    if(sbEmpty) sbEmpty.style.display = count === 0 ? '' : 'none';
   }
 
   function markUnsaved(){
@@ -3351,14 +3550,6 @@
     }
   }
 
-  function markSaved(){
-    hasUnsavedChanges = false;
-    if(sbStatusSync){
-      sbStatusSync.textContent = t('✓ 已同步','✓ Synced');
-      sbStatusSync.className = 'sb-status-sync saved';
-    }
-  }
-
   function markSaving(){
     if(sbStatusSync){
       sbStatusSync.textContent = t('保存中...','Saving...');
@@ -3366,22 +3557,19 @@
     }
   }
 
-  function addRow(){
-    sbData.rows.push(createEmptyRow());
-    markUnsaved();
-    renderRows();
-    // Scroll to the new row
-    if(tableBody && tableBody.lastElementChild){
-      tableBody.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+  function markSaved(){
+    hasUnsavedChanges = false;
+    if(sbStatusSync){
+      sbStatusSync.textContent = t('已同步','Synced');
+      sbStatusSync.className = 'sb-status-sync saved';
     }
   }
 
+  /* ---------- Save ---------- */
   function saveToCloud(){
-    // Gather project info
-    if(sbProjectInput) sbData.projectName = sbProjectInput.value.trim();
-    if(sbDateInput) sbData.shootDate = sbDateInput.value;
+    var projData = getCurrentProjectData();
 
-    if(sbData.rows.length === 0 && !sbData.projectName){
+    if(projData.rows.length === 0 && !projData.projectName){
       if(sbStatusSync){
         sbStatusSync.textContent = t('无内容可保存','Nothing to save');
         sbStatusSync.className = 'sb-status-sync';
@@ -3391,43 +3579,60 @@
 
     markSaving();
 
-    // Save to window.__vingData and call ghSave
+    // Update or add to projects array
+    var existingIdx = projects.findIndex(function(p){ return p.id === projData.id; });
+    if(existingIdx >= 0){
+      projects[existingIdx] = projData;
+    } else {
+      projects.push(projData);
+      currentProjectId = projData.id;  // now we're editing an existing project
+    }
+
+    // Save to window.__vingData
     if(window.__vingData){
-      window.__vingData.storyboard = {
-        projectName: sbData.projectName,
-        shootDate: sbData.shootDate,
-        rows: sbData.rows.map(function(r){
-          return {
-            size: r.size || '',
-            movement: r.movement || '',
-            visual: r.visual || '',
-            audio: r.audio || '',
-            duration: r.duration || '',
-            note: r.note || ''
-          };
-        }),
-        lastUpdated: new Date().toISOString()
-      };
-      // Add operation log entry
+      window.__vingData.storyboardProjects = projects.map(function(p){
+        return {
+          id: p.id,
+          projectName: p.projectName || '',
+          shootDate: p.shootDate || '',
+          rows: (p.rows || []).map(function(r){
+            return {
+              size: r.size || '',
+              movement: r.movement || '',
+              visual: r.visual || '',
+              audio: r.audio || '',
+              duration: r.duration || '',
+              note: r.note || ''
+            };
+          }),
+          lastUpdated: p.lastUpdated || new Date().toISOString()
+        };
+      });
+
+      // Operation log
       if(window.__vingData.operationLog && Array.isArray(window.__vingData.operationLog)){
         var now = new Date();
         var bjTime = new Date(now.getTime() + 8 * 3600 * 1000);
         window.__vingData.operationLog.push({
           date: bjTime.toISOString().slice(0,10),
           time: bjTime.toISOString().slice(11,16),
-          action: '分镜头脚本更新：' + (sbData.projectName || '未命名') + '（' + sbData.rows.length + '个镜头）',
-          status: '完成'
+          action: t('分镜头脚本更新：','Storyboard update: ') + (projData.projectName || t('未命名','Untitled')) + '（' + projData.rows.length + t('个镜头',' shots') + '）',
+          status: t('完成','Done')
         });
       }
+
       if(typeof window.__ghSave === 'function'){
         window.__ghSave(window.__vingData);
-        // Listen for save completion
         var checkInterval = setInterval(function(){
           var st = window.__ghSyncStatus;
           if(st !== undefined){
             if(st === 'saved' || st === 'success'){
               markSaved();
               clearInterval(checkInterval);
+              // Auto-collapse to project list after save
+              setTimeout(function(){
+                backToProjectList();
+              }, 800);
             } else if(st === 'error'){
               if(sbStatusSync){
                 sbStatusSync.textContent = t('保存失败','Save failed');
@@ -3437,7 +3642,6 @@
             }
           }
         }, 500);
-        // Fallback timeout
         setTimeout(function(){ clearInterval(checkInterval); }, 15000);
       } else {
         if(sbStatusSync){
@@ -3453,59 +3657,110 @@
     }
   }
 
-  // Public render function (called from applyRemoteData)
+  /* ---------- Data Sync (called from applyRemoteData) ---------- */
   window.__renderStoryboard = function(data){
     if(!data) return;
-    sbData.projectName = data.projectName || '';
-    sbData.shootDate = data.shootDate || '';
-    sbData.rows = Array.isArray(data.rows) ? data.rows.map(function(r){
-      return {
-        size: r.size || '',
-        movement: r.movement || '',
-        visual: r.visual || '',
-        audio: r.audio || '',
-        duration: r.duration || '',
-        note: r.note || ''
+
+    // Migration: handle old single-project format
+    if(data.projectName || data.rows){
+      // Old format: convert to project
+      var oldProj = {
+        id: data.id || genId(),
+        projectName: data.projectName || '',
+        shootDate: data.shootDate || '',
+        rows: Array.isArray(data.rows) ? data.rows.map(function(r){
+          return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+        }) : [],
+        lastUpdated: data.lastUpdated || new Date().toISOString()
       };
-    }) : [];
-
-    if(sbProjectInput) sbProjectInput.value = sbData.projectName;
-    if(sbDateInput) sbDateInput.value = sbData.shootDate;
-
-    renderRows();
-    markSaved();
-  };
-
-  // Init
-  function init(){
-    if(!tableBody) return;
-
-    // Check for existing storyboard data in __vingData
-    if(window.__vingData && window.__vingData.storyboard){
-      window.__renderStoryboard(window.__vingData.storyboard);
-    } else {
-      // Start with one empty row for quick start
-      sbData.rows.push(createEmptyRow());
-      renderRows();
+      // Only add if not already in projects
+      var exists = projects.find(function(p){ return p.id === oldProj.id; });
+      if(!exists) projects.push(oldProj);
     }
 
+    // New multi-project format
+    if(Array.isArray(data)){
+      data.forEach(function(proj){
+        var p = projects.find(function(x){ return x.id === proj.id; });
+        if(p){
+          p.projectName = proj.projectName || '';
+          p.shootDate = proj.shootDate || '';
+          p.rows = Array.isArray(proj.rows) ? proj.rows.map(function(r){
+            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+          }) : [];
+          p.lastUpdated = proj.lastUpdated || new Date().toISOString();
+        } else {
+          projects.push({
+            id: proj.id || genId(),
+            projectName: proj.projectName || '',
+            shootDate: proj.shootDate || '',
+            rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
+              return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            }) : [],
+            lastUpdated: proj.lastUpdated || new Date().toISOString()
+          });
+        }
+      });
+    }
+
+    renderProjectList();
+  };
+
+  /* ---------- Init ---------- */
+  function init(){
+    if(!tableBody && !projectGrid) return;
+
+    // Load projects from __vingData
+    if(window.__vingData){
+      if(window.__vingData.storyboardProjects && Array.isArray(window.__vingData.storyboardProjects)){
+        projects = window.__vingData.storyboardProjects.map(function(p){
+          return {
+            id: p.id || genId(),
+            projectName: p.projectName || '',
+            shootDate: p.shootDate || '',
+            rows: Array.isArray(p.rows) ? p.rows.map(function(r){
+              return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            }) : [],
+            lastUpdated: p.lastUpdated || ''
+          };
+        });
+      } else if(window.__vingData.storyboard){
+        // Migrate old single-project format
+        var sb = window.__vingData.storyboard;
+        projects = [{
+          id: sb.id || genId(),
+          projectName: sb.projectName || '',
+          shootDate: sb.shootDate || '',
+          rows: Array.isArray(sb.rows) ? sb.rows.map(function(r){
+            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+          }) : [],
+          lastUpdated: sb.lastUpdated || ''
+        }];
+      }
+    }
+
+    renderProjectList();
+
     // Bind buttons
+    if(sbAddProject) sbAddProject.addEventListener('click', function(){ openEditor(null); });
     if(sbAddRow) sbAddRow.addEventListener('click', addRow);
     if(sbSave) sbSave.addEventListener('click', saveToCloud);
+    if(sbBackToList) sbBackToList.addEventListener('click', backToProjectList);
+    if(sbDetailBack) sbDetailBack.addEventListener('click', backToProjectList);
+    if(sbDetailEdit) sbDetailEdit.addEventListener('click', function(){
+      var pid = detailView.getAttribute('data-pid');
+      if(pid) openEditor(pid);
+    });
 
     // Bind project name input
     if(sbProjectInput){
       sbProjectInput.addEventListener('input', function(){
-        sbData.projectName = sbProjectInput.value;
         if(sbProjectName) sbProjectName.textContent = sbProjectInput.value || t('未命名项目','Untitled Project');
         markUnsaved();
       });
     }
     if(sbDateInput){
-      sbDateInput.addEventListener('change', function(){
-        sbData.shootDate = sbDateInput.value;
-        markUnsaved();
-      });
+      sbDateInput.addEventListener('change', markUnsaved);
     }
 
     // Warn before leaving if unsaved
@@ -3526,7 +3781,31 @@
   // Re-render on language change
   window.addEventListener('ving-lang-changed', function(){
     currentLang = localStorage.getItem('v-ing-lang') || 'zh';
-    renderRows();
+    renderProjectList();
+    if(editorView && editorView.style.display !== 'none'){
+      // Re-render editor rows with new language
+      var rows = [];
+      if(tableBody){
+        var trs = tableBody.querySelectorAll('tr');
+        trs.forEach(function(tr){
+          var sizeSel = tr.querySelector('[data-field="size"]');
+          var moveSel = tr.querySelector('[data-field="movement"]');
+          var visualCell = tr.querySelector('[data-field="visual"]');
+          var audioCell = tr.querySelector('[data-field="audio"]');
+          var durInput = tr.querySelector('[data-field="duration"]');
+          var noteCell = tr.querySelector('[data-field="note"]');
+          rows.push({
+            size: sizeSel ? sizeSel.value : '',
+            movement: moveSel ? moveSel.value : '',
+            visual: visualCell ? visualCell.textContent : '',
+            audio: audioCell ? audioCell.textContent : '',
+            duration: durInput ? durInput.value : '',
+            note: noteCell ? noteCell.textContent : ''
+          });
+        });
+      }
+      renderRows(rows);
+    }
   });
 
 })();
