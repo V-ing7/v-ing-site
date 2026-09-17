@@ -3739,6 +3739,11 @@
           autoResizeTextarea(ta);
         });
       }
+      if(visualList){
+        visualList.querySelectorAll('textarea.sb-cell').forEach(function(ta){
+          autoResizeTextarea(ta);
+        });
+      }
     });
 
     if(editorView) editorView.scrollIntoView({behavior:'smooth',block:'start'});
