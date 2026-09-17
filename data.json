@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T08:14:47.887Z",
+  "lastUpdated": "2026-09-17T08:15:00.581Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -212,6 +212,12 @@
       "time": "16:14",
       "action": "分镜头脚本更新：1（1个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:15",
+      "action": "分镜头脚本更新：2（1个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -301,6 +307,22 @@
         }
       ],
       "lastUpdated": "2026-09-17T08:14:47.886Z"
+    },
+    {
+      "id": "sb_mu597zs5_8ke5",
+      "projectName": "2",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "中景",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T08:15:00.581Z"
     }
   ]
 }
