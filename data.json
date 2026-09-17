@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T05:54:55.636Z",
+  "lastUpdated": "2026-09-17T05:58:44.500Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -194,6 +194,12 @@
       "time": "13:54",
       "action": "分镜头脚本更新：未命名（1个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "13:58",
+      "action": "分镜头脚本更新：莆田（1个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -221,18 +227,18 @@
     "version": "v3.0"
   },
   "storyboard": {
-    "projectName": "",
+    "projectName": "莆田",
     "shootDate": "",
     "rows": [
       {
         "size": "",
         "movement": "",
-        "visual": "",
+        "visual": "12",
         "audio": "",
         "duration": "",
         "note": ""
       }
     ],
-    "lastUpdated": "2026-09-17T05:54:55.634Z"
+    "lastUpdated": "2026-09-17T05:58:44.500Z"
   }
 }
