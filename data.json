@@ -12,7 +12,7 @@
     },
     "streamer_2": {
       "name": "珊珊",
-      "shoot": 24,
+      "shoot": 29,
       "edit": 19
     },
     "streamer_3": {
@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T03:57:23.534Z",
+  "lastUpdated": "2026-09-17T04:17:09.399Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
