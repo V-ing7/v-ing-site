@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T08:36:30.367Z",
+  "lastUpdated": "2026-09-17T13:26:08.613Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -227,12 +227,6 @@
     },
     {
       "date": "2026-09-17",
-      "time": "16:16",
-      "action": "分镜头脚本更新：莆田（1个镜头）",
-      "status": "完成"
-    },
-    {
-      "date": "2026-09-17",
       "time": "16:35",
       "action": "删除分镜头项目：好",
       "status": "完成"
@@ -247,6 +241,30 @@
       "date": "2026-09-17",
       "time": "16:36",
       "action": "删除分镜头项目：1",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "21:03",
+      "action": "删除分镜头项目：莆田",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "21:03",
+      "action": "分镜头脚本更新：未命名（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "21:04",
+      "action": "删除分镜头项目：未命名项目",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "21:26",
+      "action": "分镜头脚本更新：q（1个镜头）",
       "status": "完成"
     }
   ],
@@ -291,20 +309,20 @@
   },
   "storyboardProjects": [
     {
-      "id": "sb_mu58rcp1_bcg1",
-      "projectName": "莆田",
-      "shootDate": "2026-09-17",
+      "id": "sb_mu5kc04c_zupn",
+      "projectName": "q",
+      "shootDate": "",
       "rows": [
         {
           "size": "",
           "movement": "",
-          "visual": "12",
+          "visual": "",
           "audio": "",
           "duration": "",
           "note": ""
         }
       ],
-      "lastUpdated": "2026-09-17T08:16:09.461Z"
+      "lastUpdated": "2026-09-17T13:26:04.274Z"
     }
   ]
 }
