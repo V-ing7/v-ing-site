@@ -1195,12 +1195,30 @@
       <!-- ====== Panel 3: Storyboard Table ====== -->
       <div class="ws-panel" id="ws-panel-storyboard">
         <div class="container">
-          <div class="sb-wrap reveal">
-            <!-- Toolbar -->
+
+          <!-- Project List View (default) -->
+          <div class="sb-wrap reveal" id="sbProjectListView">
             <div class="sb-toolbar">
               <div class="sb-toolbar-left">
                 <span class="sb-dot"></span>
-                <span class="sb-toolbar-title" data-cn="分镜头脚本" data-en="Storyboard">分镜头脚本</span>
+                <span class="sb-toolbar-title" data-cn="分镜头项目" data-en="Storyboard Projects">分镜头项目</span>
+              </div>
+              <div class="sb-toolbar-right">
+                <button class="sb-btn sb-btn-add" id="sbAddProject" data-cn="+ 添加项目" data-en="+ New Project">+ 添加项目</button>
+              </div>
+            </div>
+            <div class="sb-project-grid" id="sbProjectGrid">
+              <!-- Project cards injected by JS -->
+            </div>
+            <div class="sb-empty" id="sbProjectEmpty" data-cn="暂无项目，点击「添加项目」开始" data-en="No projects yet. Click '+ New Project' to begin.">暂无项目，点击「添加项目」开始</div>
+          </div>
+
+          <!-- Editor View (hidden by default) -->
+          <div class="sb-wrap reveal" id="sbEditorView" style="display:none">
+            <!-- Toolbar -->
+            <div class="sb-toolbar">
+              <div class="sb-toolbar-left">
+                <button class="sb-btn sb-btn-back" id="sbBackToList" data-cn="← 返回列表" data-en="← Back">← 返回列表</button>
                 <span class="sb-project-name" id="sbProjectName" data-cn="未命名项目" data-en="Untitled Project">未命名项目</span>
               </div>
               <div class="sb-toolbar-right">
@@ -1247,6 +1265,38 @@
               <span class="sb-status-sync" id="sbStatusSync"></span>
             </div>
           </div>
+
+          <!-- Detail Subpage (for viewing a saved project, long-press to enter) -->
+          <div class="sb-wrap sb-detail-page" id="sbDetailView" style="display:none">
+            <div class="sb-toolbar">
+              <div class="sb-toolbar-left">
+                <button class="sb-btn sb-btn-back" id="sbDetailBack" data-cn="← 返回列表" data-en="← Back">← 返回列表</button>
+                <span class="sb-dot"></span>
+                <span class="sb-toolbar-title" id="sbDetailTitle">--</span>
+              </div>
+              <div class="sb-toolbar-right">
+                <button class="sb-btn sb-btn-add" id="sbDetailEdit" data-cn="编辑" data-en="Edit">编辑</button>
+              </div>
+            </div>
+            <div class="sb-detail-info" id="sbDetailInfo"></div>
+            <div class="sb-table-wrap">
+              <table class="sb-table" id="sbDetailTable">
+                <thead>
+                  <tr>
+                    <th class="sb-th-num" data-cn="镜号" data-en="No.">镜号</th>
+                    <th class="sb-th-size" data-cn="景别" data-en="Shot Size">景别</th>
+                    <th class="sb-th-move" data-cn="运镜" data-en="Movement">运镜</th>
+                    <th class="sb-th-desc" data-cn="画面内容" data-en="Visual Description">画面内容</th>
+                    <th class="sb-th-audio" data-cn="音频/旁白" data-en="Audio / VO">音频/旁白</th>
+                    <th class="sb-th-dur" data-cn="时长" data-en="Duration">时长</th>
+                    <th class="sb-th-note" data-cn="备注" data-en="Notes">备注</th>
+                  </tr>
+                </thead>
+                <tbody id="sbDetailTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
 
