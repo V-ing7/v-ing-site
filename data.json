@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T08:36:30.367Z",
+  "lastUpdated": "2026-09-17T14:04:07.362Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -248,6 +248,12 @@
       "time": "16:36",
       "action": "删除分镜头项目：1",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:04",
+      "action": "画面内容更新：测试项目（4个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -305,6 +311,46 @@
         }
       ],
       "lastUpdated": "2026-09-17T08:16:09.461Z"
+    },
+    {
+      "id": "sb_mu5loyf5_qy38",
+      "projectName": "测试项目",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "阳光透过窗户",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T14:04:07.361Z"
     }
   ]
 }
