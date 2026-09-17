@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T15:12:28.737Z",
+  "lastUpdated": "2026-09-17T15:49:27.703Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -296,6 +296,12 @@
       "time": "23:12",
       "action": "计划更新：两列测试（3个任务）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "23:49",
+      "action": "计划更新：交互测试（3个任务）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -369,6 +375,26 @@
         }
       ],
       "lastUpdated": "2026-09-17T15:12:28.737Z"
+    },
+    {
+      "id": "sb_mu5pgf87_2cc3",
+      "projectName": "交互测试",
+      "shootDate": "",
+      "rows": [
+        {
+          "shotTask": "任务一",
+          "visual": "阳光透过窗户洒在桌面上，咖啡杯冒着热气，窗外是繁忙的街道，行人匆匆走过，一切显得宁静而美好"
+        },
+        {
+          "shotTask": "任务二",
+          "visual": ""
+        },
+        {
+          "shotTask": "任务三",
+          "visual": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T15:49:27.703Z"
     }
   ]
 }
