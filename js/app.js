@@ -3262,13 +3262,77 @@
           '</div>' +
           '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
         '</div>' +
+        '<button class="sb-pcard-del" title="' + t('删除项目','Delete project') + '">×</button>' +
         '<div class="sb-pcard-hint">' + t('长按查看','Long-press to view') + '</div>';
+
+      // Delete button handler
+      var delBtn = card.querySelector('.sb-pcard-del');
+      if(delBtn){
+        delBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          confirmDeleteProject(proj.id, proj.projectName || t('未命名项目','Untitled Project'));
+        });
+      }
 
       // Long-press handler
       bindLongPress(card, proj.id);
 
       projectGrid.appendChild(card);
     });
+  }
+
+  /* ---------- Delete Project ---------- */
+  function confirmDeleteProject(pid, name){
+    // Use native confirm dialog
+    var msg = t('确定要删除项目「','Are you sure you want to delete "') + name + t('」吗？此操作不可撤销。','"? This cannot be undone.');
+    if(!confirm(msg)) return;
+    deleteProject(pid);
+  }
+
+  function deleteProject(pid){
+    var idx = projects.findIndex(function(p){ return p.id === pid; });
+    if(idx < 0) return;
+
+    var proj = projects[idx];
+    var projName = proj.projectName || t('未命名项目','Untitled Project');
+
+    // Remove from projects array
+    projects.splice(idx, 1);
+
+    // Update window.__vingData
+    if(window.__vingData){
+      window.__vingData.storyboardProjects = projects.map(function(p){
+        return {
+          id: p.id,
+          projectName: p.projectName || '',
+          shootDate: p.shootDate || '',
+          rows: (p.rows || []).map(function(r){
+            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+          }),
+          lastUpdated: p.lastUpdated || new Date().toISOString()
+        };
+      });
+
+      // Operation log
+      if(window.__vingData.operationLog && Array.isArray(window.__vingData.operationLog)){
+        var now = new Date();
+        var bjTime = new Date(now.getTime() + 8 * 3600 * 1000);
+        window.__vingData.operationLog.push({
+          date: bjTime.toISOString().slice(0,10),
+          time: bjTime.toISOString().slice(11,16),
+          action: t('删除分镜头项目：','Deleted storyboard project: ') + projName,
+          status: t('完成','Done')
+        });
+      }
+
+      // Save to cloud
+      if(typeof window.__ghSave === 'function'){
+        window.__ghSave(window.__vingData);
+      }
+    }
+
+    renderProjectList();
   }
 
   function escapeHtml(str){
