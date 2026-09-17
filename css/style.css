@@ -4422,16 +4422,27 @@ body{
   transition:border-color .2s ease,background .2s ease;
   word-break:break-word;
   white-space:pre-wrap;
+  overflow:hidden;
 }
 .sb-cell:focus{
   border-color:var(--accent);
   background:var(--surface-1);
   cursor:text;
 }
-.sb-cell:empty::before{
+.sb-cell:empty::before,
+.sb-cell[data-placeholder]:placeholder-shown{
   content:attr(data-placeholder);
   color:var(--text-quaternary);
   opacity:.6;
+}
+/* Textarea-specific: show placeholder via CSS */
+textarea.sb-cell::placeholder{
+  color:var(--text-quaternary);
+  opacity:.6;
+}
+textarea.sb-cell:focus{
+  border-color:var(--accent);
+  background:var(--surface-1);
 }
 
 /* Shot size select */
@@ -4517,10 +4528,119 @@ body{
 
 /* Column widths */
 .sb-th-num{width:50px}
+.sb-th-shot{min-width:140px;width:16%}
 .sb-th-size{width:90px}
 .sb-th-move{width:100px}
 .sb-th-dur{width:80px}
 .sb-th-act{width:40px}
+
+/* Shot task textarea (smaller) */
+textarea.sb-cell-shot{
+  min-height:32px;
+  font-size:.82rem;
+}
+/* Visual description textarea (larger) */
+textarea.sb-cell-desc{
+  min-height:48px;
+  font-size:.85rem;
+}
+textarea.sb-cell-audio{
+  min-height:48px;
+}
+textarea.sb-cell-note{
+  min-height:32px;
+  font-size:.82rem;
+}
+
+/* Batch input button */
+.sb-btn-batch{
+  background:var(--surface-2);
+  color:var(--accent);
+  border:1px solid var(--accent);
+  font-size:.78rem;
+}
+
+/* Batch input dialog */
+.sb-batch-dialog{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.45);
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+.sb-batch-dialog-inner{
+  width:100%;
+  max-width:560px;
+  background:var(--surface-glass);
+  backdrop-filter:saturate(180%) blur(24px);
+  -webkit-backdrop-filter:saturate(180%) blur(24px);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:var(--shadow-xl);
+}
+.sb-batch-dialog-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+.sb-batch-dialog-title{
+  font-size:1rem;
+  font-weight:700;
+  color:var(--text-primary);
+}
+.sb-batch-dialog-close{
+  background:none;
+  border:none;
+  font-size:1.5rem;
+  color:var(--text-tertiary);
+  cursor:pointer;
+  padding:0 4px;
+  line-height:1;
+}
+.sb-batch-dialog-close:hover{
+  color:var(--text-primary);
+}
+.sb-batch-textarea{
+  width:100%;
+  min-height:120px;
+  max-height:300px;
+  padding:12px;
+  border:1px solid var(--glass-border);
+  border-radius:10px;
+  background:var(--surface-1);
+  color:var(--text-primary);
+  font-size:.88rem;
+  font-family:inherit;
+  line-height:1.6;
+  resize:vertical;
+  outline:none;
+  transition:border-color .2s ease;
+}
+.sb-batch-textarea:focus{
+  border-color:var(--accent);
+}
+.sb-batch-textarea::placeholder{
+  color:var(--text-quaternary);
+  opacity:.5;
+}
+.sb-batch-dialog-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:16px;
+  gap:12px;
+}
+.sb-batch-hint{
+  font-size:.75rem;
+  color:var(--text-tertiary);
+}
 
 /* Mobile */
 @media(max-width:768px){

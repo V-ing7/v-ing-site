@@ -3198,6 +3198,11 @@
   var sbBackToList = document.getElementById('sbBackToList');
   var sbDetailBack = document.getElementById('sbDetailBack');
   var sbDetailEdit = document.getElementById('sbDetailEdit');
+  var sbBatchShots = document.getElementById('sbBatchShots');
+  var sbBatchDialog = document.getElementById('sbBatchDialog');
+  var sbBatchText = document.getElementById('sbBatchText');
+  var sbBatchClose = document.getElementById('sbBatchClose');
+  var sbBatchConfirm = document.getElementById('sbBatchConfirm');
   var sbDetailTitle = document.getElementById('sbDetailTitle');
   var sbDetailInfo = document.getElementById('sbDetailInfo');
   var sbDetailTableBody = document.getElementById('sbDetailTableBody');
@@ -3211,7 +3216,7 @@
   }
 
   function createEmptyRow(){
-    return {size:'',movement:'',visual:'',audio:'',duration:'',note:''};
+    return {shotTask:'',size:'',movement:'',visual:'',audio:'',duration:'',note:''};
   }
 
   function getShotSizeLabel(val){
@@ -3384,7 +3389,7 @@
           projectName: p.projectName || '',
           shootDate: p.shootDate || '',
           rows: (p.rows || []).map(function(r){
-            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
@@ -3397,7 +3402,7 @@
         window.__vingData.operationLog.push({
           date: bjTime.toISOString().slice(0,10),
           time: bjTime.toISOString().slice(11,16),
-          action: t('删除分镜头项目：','Deleted storyboard project: ') + projName,
+          action: t('删除画面内容项目：','Deleted visual project: ') + projName,
           status: t('完成','Done')
         });
       }
@@ -3650,12 +3655,13 @@
     if(sbDetailTableBody){
       sbDetailTableBody.innerHTML = '';
       if(!proj.rows || proj.rows.length === 0){
-        sbDetailTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无镜头数据','No shot data') + '</td></tr>';
+        sbDetailTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无镜头数据','No shot data') + '</td></tr>';
       } else {
         proj.rows.forEach(function(row, idx){
           var tr = document.createElement('tr');
           tr.innerHTML =
             '<td class="sb-td-num">' + (idx+1) + '</td>' +
+            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.shotTask || '') + '</td>' +
             '<td>' + escapeHtml(getShotSizeLabel(row.size)) + '</td>' +
             '<td>' + escapeHtml(getMovementLabel(row.movement)) + '</td>' +
             '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</td>' +
@@ -3724,6 +3730,7 @@
     if(tableBody){
       var trs = tableBody.querySelectorAll('tr');
       trs.forEach(function(tr){
+        var shotTaskCell = tr.querySelector('[data-field="shotTask"]');
         var sizeSel = tr.querySelector('[data-field="size"]');
         var moveSel = tr.querySelector('[data-field="movement"]');
         var visualCell = tr.querySelector('[data-field="visual"]');
@@ -3731,12 +3738,13 @@
         var durInput = tr.querySelector('[data-field="duration"]');
         var noteCell = tr.querySelector('[data-field="note"]');
         rows.push({
+          shotTask: shotTaskCell ? shotTaskCell.value : '',
           size: sizeSel ? sizeSel.value : '',
           movement: moveSel ? moveSel.value : '',
-          visual: visualCell ? visualCell.textContent : '',
-          audio: audioCell ? audioCell.textContent : '',
+          visual: visualCell ? visualCell.value : '',
+          audio: audioCell ? audioCell.value : '',
           duration: durInput ? durInput.value : '',
-          note: noteCell ? noteCell.textContent : ''
+          note: noteCell ? noteCell.value : ''
         });
       });
     }
@@ -3749,6 +3757,12 @@
       _local: !currentProjectId,  // true if this is a new unsaved project
       _saved: false
     };
+  }
+
+  /* ---------- Auto-resize textarea ---------- */
+  function autoResizeTextarea(ta){
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight, 32) + 'px';
   }
 
   /* ---------- Row Rendering ---------- */
@@ -3768,12 +3782,13 @@
 
     tr.innerHTML =
       '<td class="sb-td-num">' + rowNum + '</td>' +
+      '<td><textarea class="sb-cell sb-cell-shot" data-field="shotTask" data-placeholder="' + t('拍摄镜头任务...','Shot task...') + '" rows="1">' + escapeHtml(row ? row.shotTask || '' : '') + '</textarea></td>' +
       '<td><select class="sb-select" data-field="size">' + sizeOpts + '</select></td>' +
       '<td><select class="sb-select" data-field="movement">' + moveOpts + '</select></td>' +
-      '<td><div class="sb-cell" contenteditable="true" data-field="visual" data-placeholder="' + t('描述画面...','Describe visual...') + '">' + escapeHtml(row ? row.visual || '' : '') + '</div></td>' +
-      '<td><div class="sb-cell" contenteditable="true" data-field="audio" data-placeholder="' + t('音频/旁白...','Audio / VO...') + '">' + escapeHtml(row ? row.audio || '' : '') + '</div></td>' +
+      '<td><textarea class="sb-cell sb-cell-desc" data-field="visual" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row ? row.visual || '' : '') + '</textarea></td>' +
+      '<td><textarea class="sb-cell sb-cell-audio" data-field="audio" data-placeholder="' + t('音频/旁白...','Audio / VO...') + '" rows="2">' + escapeHtml(row ? row.audio || '' : '') + '</textarea></td>' +
       '<td><input type="text" class="sb-dur-input" data-field="duration" value="' + escapeHtml(row ? row.duration || '' : '') + '" placeholder="0s"></td>' +
-      '<td><div class="sb-cell" contenteditable="true" data-field="note" data-placeholder="' + t('备注...','Notes...') + '">' + escapeHtml(row ? row.note || '' : '') + '</div></td>' +
+      '<td><textarea class="sb-cell sb-cell-note" data-field="note" data-placeholder="' + t('备注...','Notes...') + '" rows="1">' + escapeHtml(row ? row.note || '' : '') + '</textarea></td>' +
       '<td><button class="sb-del-btn" title="' + t('删除','Delete') + '">×</button></td>';
 
     // Bind events
@@ -3782,9 +3797,14 @@
     if(sizeSel) sizeSel.addEventListener('change', markUnsaved);
     if(moveSel) moveSel.addEventListener('change', markUnsaved);
 
-    var cells = tr.querySelectorAll('.sb-cell');
-    cells.forEach(function(cell){
-      cell.addEventListener('input', markUnsaved);
+    // Auto-resize all textareas
+    var textareas = tr.querySelectorAll('textarea.sb-cell');
+    textareas.forEach(function(ta){
+      autoResizeTextarea(ta);
+      ta.addEventListener('input', function(){
+        autoResizeTextarea(ta);
+        markUnsaved();
+      });
     });
 
     var durInp = tr.querySelector('[data-field="duration"]');
@@ -3920,7 +3940,7 @@
         window.__vingData.operationLog.push({
           date: bjTime.toISOString().slice(0,10),
           time: bjTime.toISOString().slice(11,16),
-          action: t('分镜头脚本更新：','Storyboard update: ') + (projData.projectName || t('未命名','Untitled')) + '（' + projData.rows.length + t('个镜头',' shots') + '）',
+          action: t('画面内容更新：','Visual update: ') + (projData.projectName || t('未命名','Untitled')) + '（' + projData.rows.length + t('个镜头',' shots') + '）',
           status: t('完成','Done')
         });
       }
@@ -3980,7 +4000,7 @@
         projectName: data.projectName || '',
         shootDate: data.shootDate || '',
         rows: Array.isArray(data.rows) ? data.rows.map(function(r){
-          return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+          return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
         }) : [],
         lastUpdated: data.lastUpdated || new Date().toISOString()
       });
@@ -3994,7 +4014,7 @@
           projectName: proj.projectName || '',
           shootDate: proj.shootDate || '',
           rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
-            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
           }) : [],
           lastUpdated: proj.lastUpdated || new Date().toISOString()
         });
@@ -4015,7 +4035,7 @@
     function sig(p){
       // Include row content for stronger dedup
       var rowSig = (p.rows || []).map(function(r){
-        return [r.size||'',r.movement||'',r.visual||'',r.audio||'',r.duration||'',r.note||''].join(',');
+        return [r.shotTask||'',r.size||'',r.movement||'',r.visual||'',r.audio||'',r.duration||'',r.note||''].join(',');
       }).join('||');
       return (p.projectName || '') + '|' + (p.shootDate || '') + '|' + (p.rows || []).length + '|' + rowSig;
     }
@@ -4068,7 +4088,7 @@
           projectName: p.projectName || '',
           shootDate: p.shootDate || '',
           rows: (p.rows || []).map(function(r){
-            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
@@ -4096,7 +4116,7 @@
             projectName: p.projectName || '',
             shootDate: p.shootDate || '',
             rows: Array.isArray(p.rows) ? p.rows.map(function(r){
-              return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+              return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
             }) : [],
             lastUpdated: p.lastUpdated || '',
             _local: false,
@@ -4125,7 +4145,7 @@
           projectName: sb.projectName || '',
           shootDate: sb.shootDate || '',
           rows: Array.isArray(sb.rows) ? sb.rows.map(function(r){
-            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
           }) : [],
           lastUpdated: sb.lastUpdated || '',
           _local: false,
@@ -4145,6 +4165,73 @@
     if(sbDetailEdit) sbDetailEdit.addEventListener('click', function(){
       var pid = detailView.getAttribute('data-pid');
       if(pid) openEditor(pid);
+    });
+
+    // Batch input shooting shots
+    if(sbBatchShots) sbBatchShots.addEventListener('click', function(){
+      if(sbBatchDialog) sbBatchDialog.style.display = '';
+      if(sbBatchText){
+        sbBatchText.focus();
+        autoResizeTextarea(sbBatchText);
+      }
+    });
+    if(sbBatchClose) sbBatchClose.addEventListener('click', function(){
+      if(sbBatchDialog) sbBatchDialog.style.display = 'none';
+    });
+    if(sbBatchText) sbBatchText.addEventListener('input', function(){
+      autoResizeTextarea(sbBatchText);
+    });
+    if(sbBatchConfirm) sbBatchConfirm.addEventListener('click', function(){
+      var text = sbBatchText ? sbBatchText.value.trim() : '';
+      if(text){
+        // Split by Chinese period 。 or English period . followed by space/newline
+        var shots = text.split(/[。.．]\s*/).filter(function(s){
+          return s.trim().length > 0;
+        });
+        if(shots.length > 0){
+          // Clear existing empty rows, keep rows with content
+          var existingRows = [];
+          if(tableBody){
+            var trs = tableBody.querySelectorAll('tr');
+            trs.forEach(function(tr){
+              var shotTaskCell = tr.querySelector('[data-field="shotTask"]');
+              var hasContent = false;
+              // Check if any field has content
+              var allInputs = tr.querySelectorAll('[data-field]');
+              allInputs.forEach(function(inp){
+                var v = inp.value || inp.textContent || '';
+                if(v.trim()) hasContent = true;
+              });
+              if(hasContent){
+                existingRows.push({
+                  shotTask: shotTaskCell ? shotTaskCell.value : '',
+                  size: tr.querySelector('[data-field="size"]') ? tr.querySelector('[data-field="size"]').value : '',
+                  movement: tr.querySelector('[data-field="movement"]') ? tr.querySelector('[data-field="movement"]').value : '',
+                  visual: tr.querySelector('[data-field="visual"]') ? tr.querySelector('[data-field="visual"]').value : '',
+                  audio: tr.querySelector('[data-field="audio"]') ? tr.querySelector('[data-field="audio"]').value : '',
+                  duration: tr.querySelector('[data-field="duration"]') ? tr.querySelector('[data-field="duration"]').value : '',
+                  note: tr.querySelector('[data-field="note"]') ? tr.querySelector('[data-field="note"]').value : ''
+                });
+              }
+            });
+          }
+          // Add new rows for each shot
+          shots.forEach(function(shotText){
+            existingRows.push({
+              shotTask: shotText.trim(),
+              size: '', movement: '', visual: '', audio: '', duration: '', note: ''
+            });
+          });
+          renderRows(existingRows);
+          markUnsaved();
+          // Scroll to last row
+          if(tableBody && tableBody.lastElementChild){
+            tableBody.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+          }
+        }
+      }
+      if(sbBatchDialog) sbBatchDialog.style.display = 'none';
+      if(sbBatchText) sbBatchText.value = '';
     });
 
     // Bind project name input
@@ -4183,6 +4270,7 @@
       if(tableBody){
         var trs = tableBody.querySelectorAll('tr');
         trs.forEach(function(tr){
+          var shotTaskCell = tr.querySelector('[data-field="shotTask"]');
           var sizeSel = tr.querySelector('[data-field="size"]');
           var moveSel = tr.querySelector('[data-field="movement"]');
           var visualCell = tr.querySelector('[data-field="visual"]');
@@ -4190,12 +4278,13 @@
           var durInput = tr.querySelector('[data-field="duration"]');
           var noteCell = tr.querySelector('[data-field="note"]');
           rows.push({
+            shotTask: shotTaskCell ? shotTaskCell.value : '',
             size: sizeSel ? sizeSel.value : '',
             movement: moveSel ? moveSel.value : '',
-            visual: visualCell ? visualCell.textContent : '',
-            audio: audioCell ? audioCell.textContent : '',
+            visual: visualCell ? visualCell.value : '',
+            audio: audioCell ? audioCell.value : '',
             duration: durInput ? durInput.value : '',
-            note: noteCell ? noteCell.textContent : ''
+            note: noteCell ? noteCell.value : ''
           });
         });
       }

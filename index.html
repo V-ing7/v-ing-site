@@ -940,7 +940,7 @@
           <div class="segmented-control seg-4 reveal" id="wsTabs">
             <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
             <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
-            <button class="seg-btn" data-ws-tab="storyboard" data-cn="分镜头" data-en="Storyboard">分镜头</button>
+            <button class="seg-btn" data-ws-tab="storyboard" data-cn="画面内容" data-en="Visual">画面内容</button>
             <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
             <span class="seg-indicator seg-4-indicator" id="segIndicator"></span>
           </div>
@@ -1201,7 +1201,7 @@
             <div class="sb-toolbar">
               <div class="sb-toolbar-left">
                 <span class="sb-dot"></span>
-                <span class="sb-toolbar-title" data-cn="分镜头项目" data-en="Storyboard Projects">分镜头项目</span>
+                <span class="sb-toolbar-title" data-cn="画面内容项目" data-en="Visual Projects">画面内容项目</span>
               </div>
               <div class="sb-toolbar-right">
                 <button class="sb-btn sb-btn-add" id="sbAddProject" data-cn="+ 添加项目" data-en="+ New Project">+ 添加项目</button>
@@ -1222,6 +1222,7 @@
                 <span class="sb-project-name" id="sbProjectName" data-cn="未命名项目" data-en="Untitled Project">未命名项目</span>
               </div>
               <div class="sb-toolbar-right">
+                <button class="sb-btn sb-btn-batch" id="sbBatchShots" data-cn="一键输入拍摄镜头" data-en="Batch Add Shots">一键输入拍摄镜头</button>
                 <button class="sb-btn sb-btn-add" id="sbAddRow" data-cn="+ 添加镜头" data-en="+ Add Shot">+ 添加镜头</button>
                 <button class="sb-btn sb-btn-save" id="sbSave" data-cn="提交保存" data-en="Submit">提交保存</button>
               </div>
@@ -1241,6 +1242,7 @@
                 <thead>
                   <tr>
                     <th class="sb-th-num" data-cn="镜号" data-en="No.">镜号</th>
+                    <th class="sb-th-shot" data-cn="拍摄镜头" data-en="Shot Task">拍摄镜头</th>
                     <th class="sb-th-size" data-cn="景别" data-en="Shot Size">景别</th>
                     <th class="sb-th-move" data-cn="运镜" data-en="Movement">运镜</th>
                     <th class="sb-th-desc" data-cn="画面内容" data-en="Visual Description">画面内容</th>
@@ -1254,6 +1256,21 @@
                   <!-- Rows injected by JS -->
                 </tbody>
               </table>
+            </div>
+
+            <!-- Batch input dialog -->
+            <div class="sb-batch-dialog" id="sbBatchDialog" style="display:none">
+              <div class="sb-batch-dialog-inner">
+                <div class="sb-batch-dialog-header">
+                  <span class="sb-batch-dialog-title" data-cn="一键输入拍摄镜头" data-en="Batch Add Shots">一键输入拍摄镜头</span>
+                  <button class="sb-batch-dialog-close" id="sbBatchClose">×</button>
+                </div>
+                <textarea class="sb-batch-textarea" id="sbBatchText" data-cn-placeholder="每个镜头用中文句号隔开。&#10;例：主角走进咖啡馆。特写桌上的咖啡杯。全景展现街道远景。" data-en-placeholder="Separate each shot with a period.&#10;e.g.: Hero enters cafe. Close-up of coffee cup. Wide street view." rows="6" placeholder="每个镜头用中文句号隔开。&#10;例：主角走进咖啡馆。特写桌上的咖啡杯。全景展现街道远景。"></textarea>
+                <div class="sb-batch-dialog-footer">
+                  <span class="sb-batch-hint" data-cn="每个句号创建一行镜头任务" data-en="Each period creates one shot row">每个句号创建一行镜头任务</span>
+                  <button class="sb-btn sb-btn-save" id="sbBatchConfirm" data-cn="确认添加" data-en="Add All">确认添加</button>
+                </div>
+              </div>
             </div>
 
             <!-- Empty state -->
@@ -1284,6 +1301,7 @@
                 <thead>
                   <tr>
                     <th class="sb-th-num" data-cn="镜号" data-en="No.">镜号</th>
+                    <th class="sb-th-shot" data-cn="拍摄镜头" data-en="Shot Task">拍摄镜头</th>
                     <th class="sb-th-size" data-cn="景别" data-en="Shot Size">景别</th>
                     <th class="sb-th-move" data-cn="运镜" data-en="Movement">运镜</th>
                     <th class="sb-th-desc" data-cn="画面内容" data-en="Visual Description">画面内容</th>
