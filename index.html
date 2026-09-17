@@ -937,11 +937,12 @@
             <p class="section-desc reveal" data-cn="管理创作计划，追踪项目进度，让每一帧都按计划生长。" data-en="Manage creative schedules, track project progress, let every frame grow on plan.">管理创作计划，追踪项目进度，让每一帧都按计划生长。</p>
           </div>
           <!-- iOS Segmented Control -->
-          <div class="segmented-control seg-3 reveal" id="wsTabs">
+          <div class="segmented-control seg-4 reveal" id="wsTabs">
             <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
             <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
+            <button class="seg-btn" data-ws-tab="storyboard" data-cn="分镜头" data-en="Storyboard">分镜头</button>
             <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
-            <span class="seg-indicator seg-3-indicator" id="segIndicator"></span>
+            <span class="seg-indicator seg-4-indicator" id="segIndicator"></span>
           </div>
         </div>
       </div>
@@ -1191,7 +1192,65 @@
             </div>
       </div>
 
-      <!-- ====== Panel 2: Console / Instruction Template ====== -->
+      <!-- ====== Panel 3: Storyboard Table ====== -->
+      <div class="ws-panel" id="ws-panel-storyboard">
+        <div class="container">
+          <div class="sb-wrap reveal">
+            <!-- Toolbar -->
+            <div class="sb-toolbar">
+              <div class="sb-toolbar-left">
+                <span class="sb-dot"></span>
+                <span class="sb-toolbar-title" data-cn="分镜头脚本" data-en="Storyboard">分镜头脚本</span>
+                <span class="sb-project-name" id="sbProjectName" data-cn="未命名项目" data-en="Untitled Project">未命名项目</span>
+              </div>
+              <div class="sb-toolbar-right">
+                <button class="sb-btn sb-btn-add" id="sbAddRow" data-cn="+ 添加镜头" data-en="+ Add Shot">+ 添加镜头</button>
+                <button class="sb-btn sb-btn-save" id="sbSave" data-cn="提交保存" data-en="Submit">提交保存</button>
+              </div>
+            </div>
+
+            <!-- Project Title Input (editable) -->
+            <div class="sb-project-bar">
+              <label class="sb-label" data-cn="项目名称" data-en="Project Name">项目名称</label>
+              <input type="text" class="sb-project-input" id="sbProjectInput" data-cn-placeholder="输入项目名称..." data-en-placeholder="Enter project name..." placeholder="输入项目名称...">
+              <label class="sb-label" data-cn="拍摄日期" data-en="Shoot Date">拍摄日期</label>
+              <input type="date" class="sb-date-input" id="sbDateInput">
+            </div>
+
+            <!-- Table -->
+            <div class="sb-table-wrap">
+              <table class="sb-table" id="sbTable">
+                <thead>
+                  <tr>
+                    <th class="sb-th-num" data-cn="镜号" data-en="No.">镜号</th>
+                    <th class="sb-th-size" data-cn="景别" data-en="Shot Size">景别</th>
+                    <th class="sb-th-move" data-cn="运镜" data-en="Movement">运镜</th>
+                    <th class="sb-th-desc" data-cn="画面内容" data-en="Visual Description">画面内容</th>
+                    <th class="sb-th-audio" data-cn="音频/旁白" data-en="Audio / VO">音频/旁白</th>
+                    <th class="sb-th-dur" data-cn="时长" data-en="Duration">时长</th>
+                    <th class="sb-th-note" data-cn="备注" data-en="Notes">备注</th>
+                    <th class="sb-th-act"></th>
+                  </tr>
+                </thead>
+                <tbody id="sbTableBody">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty state -->
+            <div class="sb-empty" id="sbEmpty" data-cn="暂无镜头，点击「添加镜头」开始" data-en="No shots yet. Click 'Add Shot' to begin.">暂无镜头，点击「添加镜头」开始</div>
+
+            <!-- Status bar -->
+            <div class="sb-status-bar" id="sbStatusBar">
+              <span class="sb-status-info" id="sbStatusInfo" data-cn="共 0 个镜头" data-en="0 shots total">共 0 个镜头</span>
+              <span class="sb-status-sync" id="sbStatusSync"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== Panel 4: Console / Instruction Template ====== -->
       <div class="ws-panel" id="ws-panel-console">
         <div class="container">
           <div class="console-wrap reveal">
