@@ -3632,7 +3632,10 @@
     // Collapse: hide project list, show detail
     if(projectListView) projectListView.style.display = 'none';
     if(editorView) editorView.style.display = 'none';
-    if(detailView) detailView.style.display = '';
+    if(detailView){
+      detailView.style.display = '';
+      detailView.classList.add('visible');
+    }
 
     // Populate
     if(sbDetailTitle) sbDetailTitle.textContent = proj.projectName || t('未命名项目','Untitled Project');
@@ -3681,8 +3684,8 @@
   }
 
   function backToProjectList(){
-    if(detailView) detailView.style.display = 'none';
-    if(editorView) editorView.style.display = 'none';
+    if(detailView){ detailView.style.display = 'none'; detailView.classList.remove('visible'); }
+    if(editorView){ editorView.style.display = 'none'; editorView.classList.remove('visible'); }
     if(projectListView) projectListView.style.display = '';
     renderProjectList();
   }
@@ -3695,7 +3698,10 @@
 
     if(projectListView) projectListView.style.display = 'none';
     if(detailView) detailView.style.display = 'none';
-    if(editorView) editorView.style.display = '';
+    if(editorView){
+      editorView.style.display = '';
+      editorView.classList.add('visible');
+    }
 
     var proj = pid ? projects.find(function(p){ return p.id === pid; }) : null;
 
@@ -3721,6 +3727,15 @@
       sbStatusSync.textContent = '';
       sbStatusSync.className = 'sb-status-sync';
     }
+
+    // Safety: re-resize all textareas after a frame to ensure correct heights
+    requestAnimationFrame(function(){
+      if(tableBody){
+        tableBody.querySelectorAll('textarea.sb-cell').forEach(function(ta){
+          autoResizeTextarea(ta);
+        });
+      }
+    });
 
     if(editorView) editorView.scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -3761,8 +3776,12 @@
 
   /* ---------- Auto-resize textarea ---------- */
   function autoResizeTextarea(ta){
-    ta.style.height = 'auto';
-    ta.style.height = Math.max(ta.scrollHeight, 32) + 'px';
+    if(!ta) return;
+    // Reset height to auto to get true scrollHeight
+    ta.style.height = '0px';
+    // Force browser layout
+    var sh = ta.scrollHeight;
+    ta.style.height = Math.max(sh, 28) + 'px';
   }
 
   /* ---------- Row Rendering ---------- */
@@ -3791,13 +3810,16 @@
       '<td><textarea class="sb-cell sb-cell-note" data-field="note" data-placeholder="' + t('备注...','Notes...') + '" rows="1">' + escapeHtml(row ? row.note || '' : '') + '</textarea></td>' +
       '<td><button class="sb-del-btn" title="' + t('删除','Delete') + '">×</button></td>';
 
-    // Bind events
+    // Append to DOM FIRST so scrollHeight is accurate for auto-resize
+    tableBody.appendChild(tr);
+
+    // Bind events (now that element is in DOM)
     var sizeSel = tr.querySelector('[data-field="size"]');
     var moveSel = tr.querySelector('[data-field="movement"]');
     if(sizeSel) sizeSel.addEventListener('change', markUnsaved);
     if(moveSel) moveSel.addEventListener('change', markUnsaved);
 
-    // Auto-resize all textareas
+    // Auto-resize all textareas — must be after appendChild so scrollHeight is correct
     var textareas = tr.querySelectorAll('textarea.sb-cell');
     textareas.forEach(function(ta){
       autoResizeTextarea(ta);
@@ -3825,8 +3847,6 @@
         markUnsaved();
       });
     }
-
-    tableBody.appendChild(tr);
   }
 
   function renderRows(rows){
@@ -3921,6 +3941,7 @@
           shootDate: p.shootDate || '',
           rows: (p.rows || []).map(function(r){
             return {
+              shotTask: r.shotTask || '',
               size: r.size || '',
               movement: r.movement || '',
               visual: r.visual || '',
