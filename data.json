@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T05:58:44.500Z",
+  "lastUpdated": "2026-09-17T08:03:49.012Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -200,6 +200,12 @@
       "time": "13:58",
       "action": "分镜头脚本更新：莆田（1个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:03",
+      "action": "分镜头脚本更新：好（1个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -240,5 +246,71 @@
       }
     ],
     "lastUpdated": "2026-09-17T05:58:44.500Z"
-  }
+  },
+  "storyboardProjects": [
+    {
+      "id": "sb_mu58rcp1_bcg1",
+      "projectName": "莆田",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "12",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T05:58:44.500Z"
+    },
+    {
+      "id": "sb_mu58s040_33ye",
+      "projectName": "莆田",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "12",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T05:58:44.500Z"
+    },
+    {
+      "id": "sb_mu58sn7s_7vfj",
+      "projectName": "莆田",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "12",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T05:58:44.500Z"
+    },
+    {
+      "id": "sb_mu58tlla_qw76",
+      "projectName": "好",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T08:03:49.008Z"
+    }
+  ]
 }
