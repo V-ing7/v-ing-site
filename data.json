@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T08:35:28.752Z",
+  "lastUpdated": "2026-09-17T08:36:30.367Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -236,6 +236,18 @@
       "time": "16:35",
       "action": "删除分镜头项目：好",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:36",
+      "action": "删除分镜头项目：2",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:36",
+      "action": "删除分镜头项目：1",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -293,38 +305,6 @@
         }
       ],
       "lastUpdated": "2026-09-17T08:16:09.461Z"
-    },
-    {
-      "id": "sb_mu597pzi_sakx",
-      "projectName": "1",
-      "shootDate": "",
-      "rows": [
-        {
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T08:14:47.886Z"
-    },
-    {
-      "id": "sb_mu597zs5_8ke5",
-      "projectName": "2",
-      "shootDate": "",
-      "rows": [
-        {
-          "size": "中景",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T08:15:00.581Z"
     }
   ]
 }
