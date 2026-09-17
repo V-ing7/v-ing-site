@@ -3183,7 +3183,8 @@
   var projectGrid = document.getElementById('sbProjectGrid');
   var projectEmpty = document.getElementById('sbProjectEmpty');
 
-  var tableBody = document.getElementById('sbTableBody');
+  var tableBody = document.getElementById('sbTaskList');
+  var visualList = document.getElementById('sbVisualList');
   var sbEmpty = document.getElementById('sbEmpty');
   var sbTable = document.getElementById('sbTable');
   var sbAddRow = document.getElementById('sbAddRow');
@@ -3193,6 +3194,7 @@
   var sbProjectName = document.getElementById('sbProjectName');
   var sbStatusInfo = document.getElementById('sbStatusInfo');
   var sbStatusSync = document.getElementById('sbStatusSync');
+  var sbTaskCount = document.getElementById('sbTaskCount');
 
   var sbAddProject = document.getElementById('sbAddProject');
   var sbBackToList = document.getElementById('sbBackToList');
@@ -3205,7 +3207,8 @@
   var sbBatchConfirm = document.getElementById('sbBatchConfirm');
   var sbDetailTitle = document.getElementById('sbDetailTitle');
   var sbDetailInfo = document.getElementById('sbDetailInfo');
-  var sbDetailTableBody = document.getElementById('sbDetailTableBody');
+  var sbDetailTaskList = document.getElementById('sbDetailTaskList');
+  var sbDetailVisualList = document.getElementById('sbDetailVisualList');
 
   function t(cn,en){
     return currentLang === 'en' ? en : cn;
@@ -3216,7 +3219,7 @@
   }
 
   function createEmptyRow(){
-    return {shotTask:'',size:'',movement:'',visual:'',audio:'',duration:'',note:''};
+    return {shotTask:'',visual:'',done:false};
   }
 
   function getShotSizeLabel(val){
@@ -3274,7 +3277,7 @@
           '<div class="sb-pcard-body">' +
             '<div class="sb-pcard-name">' + escapeHtml(proj.projectName || t('未命名项目','Untitled Project')) + '</div>' +
             '<div class="sb-pcard-meta">' +
-              '<span class="sb-pcard-shots">' + shotCount + ' ' + t('镜头','shots') + '</span>' +
+              '<span class="sb-pcard-shots">' + shotCount + ' ' + t('任务','tasks') + '</span>' +
               (proj.shootDate ? '<span class="sb-pcard-date">' + proj.shootDate + '</span>' : '') +
             '</div>' +
             '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
@@ -3389,7 +3392,7 @@
           projectName: p.projectName || '',
           shootDate: p.shootDate || '',
           rows: (p.rows || []).map(function(r){
-            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
@@ -3402,7 +3405,7 @@
         window.__vingData.operationLog.push({
           date: bjTime.toISOString().slice(0,10),
           time: bjTime.toISOString().slice(11,16),
-          action: t('删除画面内容项目：','Deleted visual project: ') + projName,
+          action: t('删除计划项目：','Deleted plan project: ') + projName,
           status: t('完成','Done')
         });
       }
@@ -3642,36 +3645,44 @@
 
     if(sbDetailInfo){
       var shotCount = (proj.rows || []).length;
-      var totalDur = 0;
-      (proj.rows || []).forEach(function(r){
-        var d = parseFloat(r.duration);
-        if(!isNaN(d)) totalDur += d;
-      });
       sbDetailInfo.innerHTML =
         '<span><span class="sb-detail-label">' + t('项目名称','Project') + ':</span> ' + escapeHtml(proj.projectName || '--') + '</span>' +
         '<span><span class="sb-detail-label">' + t('拍摄日期','Shoot Date') + ':</span> ' + (proj.shootDate || '--') + '</span>' +
-        '<span><span class="sb-detail-label">' + t('镜头数','Shots') + ':</span> ' + shotCount + '</span>' +
-        '<span><span class="sb-detail-label">' + t('总时长','Total Duration') + ':</span> ' + totalDur + 's</span>';
+        '<span><span class="sb-detail-label">' + t('任务数','Tasks') + ':</span> ' + shotCount + '</span>';
     }
 
     // Render read-only table
-    if(sbDetailTableBody){
-      sbDetailTableBody.innerHTML = '';
+    if(sbDetailTaskList){
+      sbDetailTaskList.innerHTML = '';
       if(!proj.rows || proj.rows.length === 0){
-        sbDetailTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无镜头数据','No shot data') + '</td></tr>';
+        sbDetailTaskList.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无任务','No tasks') + '</div>';
       } else {
         proj.rows.forEach(function(row, idx){
-          var tr = document.createElement('tr');
-          tr.innerHTML =
-            '<td class="sb-td-num">' + (idx+1) + '</td>' +
-            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.shotTask || '') + '</td>' +
-            '<td>' + escapeHtml(getShotSizeLabel(row.size)) + '</td>' +
-            '<td>' + escapeHtml(getMovementLabel(row.movement)) + '</td>' +
-            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</td>' +
-            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.audio || '') + '</td>' +
-            '<td style="text-align:center">' + escapeHtml(row.duration || '') + '</td>' +
-            '<td style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.note || '') + '</td>';
-          sbDetailTableBody.appendChild(tr);
+          var card = document.createElement('div');
+          card.className = 'sb-task-card' + (row.done ? ' done' : '');
+          card.innerHTML =
+            '<div class="sb-task-card-content">' +
+              '<span class="sb-task-num">' + (idx + 1) + '</span>' +
+              '<span class="sb-task-text">' + escapeHtml(row.shotTask || '') + '</span>' +
+            '</div>' +
+            (row.done ? '<span class="sb-task-badge">' + t('已完成','Done') + '</span>' : '');
+          sbDetailTaskList.appendChild(card);
+        });
+      }
+    }
+
+    if(sbDetailVisualList){
+      sbDetailVisualList.innerHTML = '';
+      if(!proj.rows || proj.rows.length === 0){
+        sbDetailVisualList.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无画面内容','No visual content') + '</div>';
+      } else {
+        proj.rows.forEach(function(row, idx){
+          var item = document.createElement('div');
+          item.className = 'sb-visual-item';
+          item.innerHTML =
+            '<div class="sb-visual-num">' + (idx + 1) + '</div>' +
+            '<div class="sb-visual-text" style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</div>';
+          sbDetailVisualList.appendChild(item);
         });
       }
     }
@@ -3709,19 +3720,12 @@
     if(sbDateInput) sbDateInput.value = proj ? (proj.shootDate || '') : '';
     if(sbProjectName) sbProjectName.textContent = proj ? (proj.projectName || t('未命名项目','Untitled Project')) : t('新项目','New Project');
 
-    // Clear table and load rows
-    if(tableBody) tableBody.innerHTML = '';
+    // Clear and load rows
     if(proj && proj.rows && proj.rows.length > 0){
-      proj.rows.forEach(function(row, idx){
-        renderRow(row, idx + 1);
-      });
+      renderAllRows(proj.rows);
     } else {
-      // Start with one empty row
-      renderRow(createEmptyRow(), 1);
+      renderAllRows([createEmptyRow()]);
     }
-
-    updateStatusInfo();
-    updateEmptyState();
 
     if(sbStatusSync){
       sbStatusSync.textContent = '';
@@ -3741,28 +3745,13 @@
   }
 
   function getCurrentProjectData(){
-    var rows = [];
-    if(tableBody){
-      var trs = tableBody.querySelectorAll('tr');
-      trs.forEach(function(tr){
-        var shotTaskCell = tr.querySelector('[data-field="shotTask"]');
-        var sizeSel = tr.querySelector('[data-field="size"]');
-        var moveSel = tr.querySelector('[data-field="movement"]');
-        var visualCell = tr.querySelector('[data-field="visual"]');
-        var audioCell = tr.querySelector('[data-field="audio"]');
-        var durInput = tr.querySelector('[data-field="duration"]');
-        var noteCell = tr.querySelector('[data-field="note"]');
-        rows.push({
-          shotTask: shotTaskCell ? shotTaskCell.value : '',
-          size: sizeSel ? sizeSel.value : '',
-          movement: moveSel ? moveSel.value : '',
-          visual: visualCell ? visualCell.value : '',
-          audio: audioCell ? audioCell.value : '',
-          duration: durInput ? durInput.value : '',
-          note: noteCell ? noteCell.value : ''
-        });
-      });
-    }
+    var rows = editRows.map(function(r){
+      return {
+        shotTask: r.shotTask || '',
+        visual: r.visual || '',
+        done: r.done || false
+      };
+    });
     return {
       id: currentProjectId || genId(),
       projectName: sbProjectInput ? sbProjectInput.value.trim() : '',
@@ -3784,88 +3773,148 @@
     ta.style.height = Math.max(sh, 28) + 'px';
   }
 
-  /* ---------- Row Rendering ---------- */
-  function renderRow(row, rowNum){
-    if(!tableBody) return;
-    var tr = document.createElement('tr');
+  /* ---------- Row Rendering: Task Cards + Visual Textareas ---------- */
 
-    // Shot size select
-    var sizeOpts = SHOT_SIZES.map(function(s){
-      return '<option value="' + s.value + '"' + (s.value === (row && row.size ? row.size : '') ? ' selected' : '') + '>' + t(s.label.cn, s.label.en) + '</option>';
-    }).join('');
+  // Current editing rows (shared state)
+  var editRows = [];
 
-    // Movement select
-    var moveOpts = MOVEMENTS.map(function(m){
-      return '<option value="' + m.value + '"' + (m.value === (row && row.movement ? row.movement : '') ? ' selected' : '') + '>' + t(m.label.cn, m.label.en) + '</option>';
-    }).join('');
-
-    tr.innerHTML =
-      '<td class="sb-td-num">' + rowNum + '</td>' +
-      '<td><textarea class="sb-cell sb-cell-shot" data-field="shotTask" data-placeholder="' + t('拍摄镜头任务...','Shot task...') + '" rows="1">' + escapeHtml(row ? row.shotTask || '' : '') + '</textarea></td>' +
-      '<td><select class="sb-select" data-field="size">' + sizeOpts + '</select></td>' +
-      '<td><select class="sb-select" data-field="movement">' + moveOpts + '</select></td>' +
-      '<td><textarea class="sb-cell sb-cell-desc" data-field="visual" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row ? row.visual || '' : '') + '</textarea></td>' +
-      '<td><textarea class="sb-cell sb-cell-audio" data-field="audio" data-placeholder="' + t('音频/旁白...','Audio / VO...') + '" rows="2">' + escapeHtml(row ? row.audio || '' : '') + '</textarea></td>' +
-      '<td><input type="text" class="sb-dur-input" data-field="duration" value="' + escapeHtml(row ? row.duration || '' : '') + '" placeholder="0s"></td>' +
-      '<td><textarea class="sb-cell sb-cell-note" data-field="note" data-placeholder="' + t('备注...','Notes...') + '" rows="1">' + escapeHtml(row ? row.note || '' : '') + '</textarea></td>' +
-      '<td><button class="sb-del-btn" title="' + t('删除','Delete') + '">×</button></td>';
-
-    // Append to DOM FIRST so scrollHeight is accurate for auto-resize
-    tableBody.appendChild(tr);
-
-    // Bind events (now that element is in DOM)
-    var sizeSel = tr.querySelector('[data-field="size"]');
-    var moveSel = tr.querySelector('[data-field="movement"]');
-    if(sizeSel) sizeSel.addEventListener('change', markUnsaved);
-    if(moveSel) moveSel.addEventListener('change', markUnsaved);
-
-    // Auto-resize all textareas — must be after appendChild so scrollHeight is correct
-    var textareas = tr.querySelectorAll('textarea.sb-cell');
-    textareas.forEach(function(ta){
-      autoResizeTextarea(ta);
-      ta.addEventListener('input', function(){
-        autoResizeTextarea(ta);
-        markUnsaved();
-      });
-    });
-
-    var durInp = tr.querySelector('[data-field="duration"]');
-    if(durInp) durInp.addEventListener('input', markUnsaved);
-
-    var delBtn = tr.querySelector('.sb-del-btn');
-    if(delBtn){
-      delBtn.addEventListener('click', function(){
-        tr.remove();
-        // Renumber
-        var allTrs = tableBody.querySelectorAll('tr');
-        allTrs.forEach(function(t, i){
-          var numEl = t.querySelector('.sb-td-num');
-          if(numEl) numEl.textContent = i + 1;
-        });
-        updateStatusInfo();
-        updateEmptyState();
-        markUnsaved();
-      });
-    }
-  }
-
-  function renderRows(rows){
-    if(!tableBody) return;
-    tableBody.innerHTML = '';
-    if(rows && rows.length){
-      rows.forEach(function(row, idx){
-        renderRow(row, idx + 1);
-      });
-    } else {
-      renderRow(createEmptyRow(), 1);
-    }
+  function renderAllRows(rows){
+    editRows = rows || [];
+    renderTaskCards();
+    renderVisualList();
     updateStatusInfo();
     updateEmptyState();
   }
 
+  function renderTaskCards(){
+    if(!tableBody) return;
+    tableBody.innerHTML = '';
+    editRows.forEach(function(row, idx){
+      var card = document.createElement('div');
+      card.className = 'sb-task-card' + (row.done ? ' done' : '');
+      card.setAttribute('data-idx', idx);
+      card.innerHTML =
+        '<div class="sb-task-card-content">' +
+          '<span class="sb-task-num">' + (idx + 1) + '</span>' +
+          '<span class="sb-task-text" ' + (row.done ? '' : 'contenteditable="true"') + ' data-field="shotTask">' + escapeHtml(row.shotTask || '') + '</span>' +
+        '</div>' +
+        '<button class="sb-task-done-btn' + (row.done ? ' completed' : '') + '" data-idx="' + idx + '" title="' + t('拍摄完成','Done') + '"></button>' +
+        '<div class="sb-task-progress"></div>';
+      tableBody.appendChild(card);
+
+      // Long-press delete for completed tasks
+      if(row.done){
+        bindTaskLongPress(card, idx);
+      }
+
+      // Editable text
+      var textEl = card.querySelector('[data-field="shotTask"]');
+      if(textEl && !row.done){
+        textEl.addEventListener('input', function(){
+          editRows[idx].shotTask = textEl.textContent;
+          markUnsaved();
+        });
+      }
+    });
+
+    // Bind done buttons
+    tableBody.querySelectorAll('.sb-task-done-btn').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var i = parseInt(btn.getAttribute('data-idx'));
+        if(isNaN(i)) return;
+        editRows[i].done = !editRows[i].done;
+        renderTaskCards();
+        markUnsaved();
+      });
+    });
+
+    // Update count
+    if(sbTaskCount) sbTaskCount.textContent = editRows.length;
+  }
+
+  function renderVisualList(){
+    if(!visualList) return;
+    visualList.innerHTML = '';
+    editRows.forEach(function(row, idx){
+      var item = document.createElement('div');
+      item.className = 'sb-visual-item';
+      item.innerHTML =
+        '<div class="sb-visual-num">' + (idx + 1) + '</div>' +
+        '<textarea class="sb-cell sb-cell-desc" data-idx="' + idx + '" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row.visual || '') + '</textarea>';
+      visualList.appendChild(item);
+
+      var ta = item.querySelector('textarea');
+      autoResizeTextarea(ta);
+      ta.addEventListener('input', function(){
+        autoResizeTextarea(ta);
+        editRows[idx].visual = ta.value;
+        markUnsaved();
+      });
+    });
+  }
+
+  // Long-press on completed task to delete with progress bar
+  function bindTaskLongPress(card, idx){
+    var pressTimer = null;
+    var triggered = false;
+    var pressing = false;
+
+    function startPress(e){
+      if(pressing) return;
+      pressing = true;
+      triggered = false;
+      card.classList.add('pressing');
+      var bar = card.querySelector('.sb-task-progress');
+      if(bar) bar.classList.add('active');
+
+      pressTimer = setTimeout(function(){
+        triggered = true;
+        pressing = false;
+        card.classList.remove('pressing');
+        var bar2 = card.querySelector('.sb-task-progress');
+        if(bar2) bar2.classList.remove('active');
+        // Delete this row
+        editRows.splice(idx, 1);
+        renderAllRows(editRows);
+        markUnsaved();
+      }, 1200);
+    }
+
+    function cancelPress(){
+      if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+      pressing = false;
+      card.classList.remove('pressing');
+      var bar = card.querySelector('.sb-task-progress');
+      if(bar) bar.classList.remove('active');
+    }
+
+    card.addEventListener('mousedown', function(e){
+      if(e.button !== 0) return;
+      if(e.target.closest('.sb-task-done-btn')) return;
+      startPress(e);
+    });
+    card.addEventListener('mouseup', cancelPress);
+    card.addEventListener('mouseleave', cancelPress);
+    card.addEventListener('touchstart', function(e){
+      if(e.target.closest('.sb-task-done-btn')) return;
+      e.preventDefault();
+      startPress(e);
+    }, {passive:false});
+    card.addEventListener('touchend', cancelPress);
+    card.addEventListener('touchcancel', cancelPress);
+  }
+
+  function renderRows(rows){
+    renderAllRows(rows && rows.length ? rows : [createEmptyRow()]);
+  }
+
   function addRow(){
-    var rowNum = tableBody ? tableBody.children.length + 1 : 1;
-    renderRow(createEmptyRow(), rowNum);
+    editRows.push(createEmptyRow());
+    renderTaskCards();
+    renderVisualList();
+    updateStatusInfo();
+    updateEmptyState();
     markUnsaved();
     if(tableBody && tableBody.lastElementChild){
       tableBody.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
@@ -3874,12 +3923,12 @@
 
   /* ---------- Status helpers ---------- */
   function updateStatusInfo(){
-    var count = tableBody ? tableBody.children.length : 0;
-    if(sbStatusInfo) sbStatusInfo.textContent = t('共 ','Total: ') + count + t(' 个镜头',' shots');
+    var count = editRows.length;
+    if(sbStatusInfo) sbStatusInfo.textContent = t('共 ','Total: ') + count + t(' 个任务',' tasks');
   }
 
   function updateEmptyState(){
-    var count = tableBody ? tableBody.children.length : 0;
+    var count = editRows.length;
     if(sbEmpty) sbEmpty.style.display = count === 0 ? '' : 'none';
   }
 
@@ -3942,12 +3991,7 @@
           rows: (p.rows || []).map(function(r){
             return {
               shotTask: r.shotTask || '',
-              size: r.size || '',
-              movement: r.movement || '',
-              visual: r.visual || '',
-              audio: r.audio || '',
-              duration: r.duration || '',
-              note: r.note || ''
+              visual: r.visual || ''
             };
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
@@ -3961,7 +4005,7 @@
         window.__vingData.operationLog.push({
           date: bjTime.toISOString().slice(0,10),
           time: bjTime.toISOString().slice(11,16),
-          action: t('画面内容更新：','Visual update: ') + (projData.projectName || t('未命名','Untitled')) + '（' + projData.rows.length + t('个镜头',' shots') + '）',
+          action: t('计划更新：','Plan update: ') + (projData.projectName || t('未命名','Untitled')) + '（' + projData.rows.length + t('个任务',' tasks') + '）',
           status: t('完成','Done')
         });
       }
@@ -4021,7 +4065,7 @@
         projectName: data.projectName || '',
         shootDate: data.shootDate || '',
         rows: Array.isArray(data.rows) ? data.rows.map(function(r){
-          return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+          return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
         }) : [],
         lastUpdated: data.lastUpdated || new Date().toISOString()
       });
@@ -4035,7 +4079,7 @@
           projectName: proj.projectName || '',
           shootDate: proj.shootDate || '',
           rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
-            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }) : [],
           lastUpdated: proj.lastUpdated || new Date().toISOString()
         });
@@ -4109,7 +4153,7 @@
           projectName: p.projectName || '',
           shootDate: p.shootDate || '',
           rows: (p.rows || []).map(function(r){
-            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
@@ -4137,7 +4181,7 @@
             projectName: p.projectName || '',
             shootDate: p.shootDate || '',
             rows: Array.isArray(p.rows) ? p.rows.map(function(r){
-              return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+              return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
             }) : [],
             lastUpdated: p.lastUpdated || '',
             _local: false,
@@ -4166,7 +4210,7 @@
           projectName: sb.projectName || '',
           shootDate: sb.shootDate || '',
           rows: Array.isArray(sb.rows) ? sb.rows.map(function(r){
-            return {shotTask:r.shotTask||'',size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+            return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }) : [],
           lastUpdated: sb.lastUpdated || '',
           _local: false,
@@ -4210,40 +4254,19 @@
           return s.trim().length > 0;
         });
         if(shots.length > 0){
-          // Clear existing empty rows, keep rows with content
-          var existingRows = [];
-          if(tableBody){
-            var trs = tableBody.querySelectorAll('tr');
-            trs.forEach(function(tr){
-              var shotTaskCell = tr.querySelector('[data-field="shotTask"]');
-              var hasContent = false;
-              // Check if any field has content
-              var allInputs = tr.querySelectorAll('[data-field]');
-              allInputs.forEach(function(inp){
-                var v = inp.value || inp.textContent || '';
-                if(v.trim()) hasContent = true;
-              });
-              if(hasContent){
-                existingRows.push({
-                  shotTask: shotTaskCell ? shotTaskCell.value : '',
-                  size: tr.querySelector('[data-field="size"]') ? tr.querySelector('[data-field="size"]').value : '',
-                  movement: tr.querySelector('[data-field="movement"]') ? tr.querySelector('[data-field="movement"]').value : '',
-                  visual: tr.querySelector('[data-field="visual"]') ? tr.querySelector('[data-field="visual"]').value : '',
-                  audio: tr.querySelector('[data-field="audio"]') ? tr.querySelector('[data-field="audio"]').value : '',
-                  duration: tr.querySelector('[data-field="duration"]') ? tr.querySelector('[data-field="duration"]').value : '',
-                  note: tr.querySelector('[data-field="note"]') ? tr.querySelector('[data-field="note"]').value : ''
-                });
-              }
-            });
-          }
+          // Keep rows with content
+          var existingRows = editRows.filter(function(r){
+            return (r.shotTask && r.shotTask.trim()) || (r.visual && r.visual.trim());
+          });
           // Add new rows for each shot
           shots.forEach(function(shotText){
             existingRows.push({
               shotTask: shotText.trim(),
-              size: '', movement: '', visual: '', audio: '', duration: '', note: ''
+              visual: '',
+              done: false
             });
           });
-          renderRows(existingRows);
+          renderAllRows(existingRows);
           markUnsaved();
           // Scroll to last row
           if(tableBody && tableBody.lastElementChild){

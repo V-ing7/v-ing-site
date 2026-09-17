@@ -4528,30 +4528,213 @@ textarea.sb-cell:focus{
 .sb-status-sync.saved{color:#34c759}
 .sb-status-sync.error{color:#ff3b30}
 
-/* Column widths */
-.sb-th-num{width:50px}
-.sb-th-shot{min-width:140px;width:16%}
-.sb-th-size{width:90px}
-.sb-th-move{width:100px}
-.sb-th-dur{width:80px}
+/* Column widths (legacy, kept for detail page if needed) */
+.sb-th-shot{min-width:180px;width:30%}
+.sb-th-desc{width:70%}
 .sb-th-act{width:40px}
+
+/* ===== Two-Section Layout ===== */
+.sb-sections{
+  display:flex;
+  gap:16px;
+  margin-top:12px;
+}
+.sb-section{
+  flex:1;
+  min-width:0;
+}
+.sb-section-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  background:var(--surface-2);
+  border-radius:12px 12px 0 0;
+  border:1px solid var(--border);
+  border-bottom:none;
+}
+.sb-section-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--accent);
+  flex-shrink:0;
+}
+.sb-section-dot-visual{background:#ff9f0a}
+.sb-section-title{
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--text-primary);
+}
+.sb-section-count{
+  margin-left:auto;
+  font-size:.75rem;
+  color:var(--text-tertiary);
+  background:var(--surface-3);
+  padding:2px 8px;
+  border-radius:10px;
+}
+
+/* Task cards */
+.sb-task-list{
+  border:1px solid var(--border);
+  border-radius:0 0 12px 12px;
+  overflow:hidden;
+}
+.sb-task-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+  transition:background .2s ease;
+  background:var(--surface-glass);
+}
+.sb-task-card:last-child{border-bottom:none}
+.sb-task-card.done{
+  background:var(--surface-2);
+  opacity:.7;
+}
+.sb-task-card.done .sb-task-text{
+  text-decoration:line-through;
+  color:var(--text-tertiary);
+}
+.sb-task-card.pressing{
+  background:var(--surface-3);
+}
+.sb-task-card-content{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.sb-task-num{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--accent);
+  color:#fff;
+  border-radius:50%;
+  font-size:.7rem;
+  font-weight:600;
+  flex-shrink:0;
+}
+.sb-task-card.done .sb-task-num{
+  background:var(--text-quaternary);
+}
+.sb-task-text{
+  flex:1;
+  font-size:.88rem;
+  color:var(--text-primary);
+  outline:none;
+  word-break:break-word;
+  min-width:0;
+}
+.sb-task-text:empty::before{
+  content:attr(data-placeholder);
+  color:var(--text-quaternary);
+}
+
+/* Done button (checkmark circle) */
+.sb-task-done-btn{
+  width:28px;height:28px;
+  border-radius:50%;
+  border:2px solid var(--text-quaternary);
+  background:transparent;
+  cursor:pointer;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all .2s ease;
+  position:relative;
+}
+.sb-task-done-btn.completed{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+.sb-task-done-btn.completed::after{
+  content:'✓';
+  color:#fff;
+  font-size:.8rem;
+  font-weight:700;
+}
+
+/* Progress bar for long-press delete */
+.sb-task-progress{
+  position:absolute;
+  bottom:0;left:0;
+  height:3px;
+  width:0;
+  background:var(--accent);
+  border-radius:0 3px 3px 0;
+  transition:width 0s;
+}
+.sb-task-progress.active{
+  width:100%;
+  transition:width 1.2s linear;
+}
+
+/* Badge for completed tasks in detail */
+.sb-task-badge{
+  font-size:.7rem;
+  color:var(--accent);
+  background:rgba(0,122,255,.1);
+  padding:2px 8px;
+  border-radius:10px;
+  flex-shrink:0;
+}
+
+/* Visual content list */
+.sb-visual-list{
+  border:1px solid var(--border);
+  border-radius:0 0 12px 12px;
+  overflow:hidden;
+}
+.sb-visual-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface-glass);
+}
+.sb-visual-item:last-child{border-bottom:none}
+.sb-visual-num{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  background:#ff9f0a;
+  color:#fff;
+  border-radius:50%;
+  font-size:.7rem;
+  font-weight:600;
+  flex-shrink:0;
+  margin-top:4px;
+}
+.sb-visual-text{
+  flex:1;
+  font-size:.85rem;
+  color:var(--text-primary);
+  word-break:break-word;
+}
 
 /* Shot task textarea (smaller) */
 textarea.sb-cell-shot{
-  min-height:32px;
-  font-size:.82rem;
+  min-height:40px;
+  font-size:.9rem;
 }
 /* Visual description textarea (larger) */
 textarea.sb-cell-desc{
   min-height:48px;
-  font-size:.85rem;
+  font-size:.9rem;
 }
-textarea.sb-cell-audio{
-  min-height:48px;
-}
-textarea.sb-cell-note{
-  min-height:32px;
-  font-size:.82rem;
+
+/* Mobile: stack sections vertically */
+@media(max-width:768px){
+  .sb-sections{
+    flex-direction:column;
+  }
 }
 
 /* Batch input button */
