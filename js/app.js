@@ -651,13 +651,15 @@
       // 3. Page is visible
       // 4. At least 90s since last save (protection window)
       // 5. Online
+      // 6. Not during storyboard long-press interaction
       var timeSinceSave = Date.now() - ghLastSaveTime;
       var canRefresh = !editModeActive
         && !subpageEditMode
         && !_saveInProgress
         && !document.hidden
         && timeSinceSave > 90000
-        && _isOnline;
+        && _isOnline
+        && !window.__sbLongPressActive;
 
       if(canRefresh){
         ghLoad({ background: true }).then(function(){
@@ -3164,6 +3166,14 @@
   var currentProjectId = null;  // currently editing project id (null = new)
   var hasUnsavedChanges = false;
 
+  // Long-press guard: prevents DOM rebuild during press
+  var sbLongPressActive = false;
+  var sbPendingRender = false;
+  // Track last touch time to suppress compatibility mouse events
+  var sbLastTouchTime = 0;
+  // Expose long-press state to outer scope (for auto-refresh guard)
+  try{ Object.defineProperty(window, '__sbLongPressActive', {get: function(){ return sbLongPressActive; }}); }catch(e){ window.__sbLongPressActive = false; }
+
   // DOM refs
   var projectListView = document.getElementById('sbProjectListView');
   var editorView = document.getElementById('sbEditorView');
@@ -3219,6 +3229,13 @@
   /* ---------- Project List Rendering ---------- */
   function renderProjectList(){
     if(!projectGrid) return;
+
+    // Defer render if a long-press is in progress to avoid interrupting it
+    if(sbLongPressActive){
+      sbPendingRender = true;
+      return;
+    }
+    sbPendingRender = false;
     projectGrid.innerHTML = '';
 
     if(projects.length === 0){
@@ -3263,13 +3280,26 @@
   /* ---------- Long Press + Progress Bar ---------- */
   function bindLongPress(card, pid){
     var pressTimer = null;
-    var progressTimer = null;
     var triggered = false;
+    var startX = 0, startY = 0;
+    var isPressing = false;
 
     function startPress(e){
-      // Only respond to touch or mouse (not click)
+      if(isPressing) return;  // prevent double-start
+      isPressing = true;
       triggered = false;
+      sbLongPressActive = true;  // block DOM rebuilds
       card.classList.add('long-pressing');
+
+      // Record start position for move tolerance
+      if(e.touches && e.touches[0]){
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      } else if(e.clientX !== undefined){
+        startX = e.clientX;
+        startY = e.clientY;
+      }
+
       // Start progress bar animation on next frame
       requestAnimationFrame(function(){
         var bar = card.querySelector('.sb-pcard-progress');
@@ -3277,8 +3307,11 @@
           bar.classList.add('active');
         }
       });
+
       pressTimer = setTimeout(function(){
         triggered = true;
+        isPressing = false;
+        sbLongPressActive = false;  // release guard
         card.classList.remove('long-pressing');
         var bar2 = card.querySelector('.sb-pcard-progress');
         if(bar2) bar2.classList.remove('active');
@@ -3287,28 +3320,63 @@
     }
 
     function cancelPress(){
+      isPressing = false;
+      sbLongPressActive = false;
       card.classList.remove('long-pressing');
       var bar = card.querySelector('.sb-pcard-progress');
       if(bar) bar.classList.remove('active');
       if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+      // If a render was deferred, do it now
+      if(sbPendingRender){
+        setTimeout(function(){ renderProjectList(); }, 0);
+      }
     }
 
-    // Mouse events
+    // Handle touch move with tolerance (don't cancel on tiny moves)
+    function handleTouchMove(e){
+      if(!isPressing) return;
+      if(e.touches && e.touches[0]){
+        var dx = Math.abs(e.touches[0].clientX - startX);
+        var dy = Math.abs(e.touches[0].clientY - startY);
+        if(dx > 10 || dy > 10){
+          cancelPress();  // moved too much, cancel
+        }
+      }
+    }
+
+    // Mouse events — suppress if we just had a touch event
     card.addEventListener('mousedown', function(e){
-      // Ignore clicks on buttons inside card
       if(e.target.closest('button')) return;
+      if(e.button !== 0) return;  // left click only
+      // Suppress compatibility mouse events after touch
+      if(Date.now() - sbLastTouchTime < 800) return;
       startPress(e);
     });
-    card.addEventListener('mouseup', cancelPress);
+    card.addEventListener('mouseup', function(e){
+      if(triggered){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      cancelPress();
+    });
     card.addEventListener('mouseleave', cancelPress);
 
     // Touch events
     card.addEventListener('touchstart', function(e){
       if(e.target.closest('button')) return;
+      sbLastTouchTime = Date.now();
       startPress(e);
     }, {passive:true});
-    card.addEventListener('touchend', cancelPress);
-    card.addEventListener('touchmove', cancelPress);
+    card.addEventListener('touchend', function(e){
+      sbLastTouchTime = Date.now();
+      if(triggered){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      cancelPress();
+    });
+    card.addEventListener('touchcancel', cancelPress);
+    card.addEventListener('touchmove', handleTouchMove, {passive:true});
 
     // Prevent click navigation if long-press was triggered
     card.addEventListener('click', function(e){
@@ -3446,7 +3514,9 @@
       projectName: sbProjectInput ? sbProjectInput.value.trim() : '',
       shootDate: sbDateInput ? sbDateInput.value : '',
       rows: rows,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
+      _local: !currentProjectId,  // true if this is a new unsaved project
+      _saved: false
     };
   }
 
@@ -3582,13 +3652,16 @@
     // Update or add to projects array
     var existingIdx = projects.findIndex(function(p){ return p.id === projData.id; });
     if(existingIdx >= 0){
+      // Preserve _local/_saved flags from existing project
+      projData._local = projects[existingIdx]._local || projData._local;
+      projData._saved = projects[existingIdx]._saved || false;
       projects[existingIdx] = projData;
     } else {
       projects.push(projData);
       currentProjectId = projData.id;  // now we're editing an existing project
     }
 
-    // Save to window.__vingData
+    // Save to window.__vingData (strip internal flags)
     if(window.__vingData){
       window.__vingData.storyboardProjects = projects.map(function(p){
         return {
@@ -3628,6 +3701,12 @@
           if(st !== undefined){
             if(st === 'saved' || st === 'success'){
               markSaved();
+              // Mark project as saved (no longer local-unsaved)
+              var savedIdx = projects.findIndex(function(p){ return p.id === projData.id; });
+              if(savedIdx >= 0){
+                projects[savedIdx]._saved = true;
+                projects[savedIdx]._local = false;
+              }
               clearInterval(checkInterval);
               // Auto-collapse to project list after save
               setTimeout(function(){
@@ -3661,10 +3740,11 @@
   window.__renderStoryboard = function(data){
     if(!data) return;
 
-    // Migration: handle old single-project format
-    if(data.projectName || data.rows){
-      // Old format: convert to project
-      var oldProj = {
+    var newProjects = [];
+
+    // Handle old single-project format (migration)
+    if(data && !Array.isArray(data) && (data.projectName || data.rows)){
+      newProjects.push({
         id: data.id || genId(),
         projectName: data.projectName || '',
         shootDate: data.shootDate || '',
@@ -3672,35 +3752,101 @@
           return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
         }) : [],
         lastUpdated: data.lastUpdated || new Date().toISOString()
-      };
-      // Only add if not already in projects
-      var exists = projects.find(function(p){ return p.id === oldProj.id; });
-      if(!exists) projects.push(oldProj);
+      });
     }
 
-    // New multi-project format
+    // Handle new multi-project format
     if(Array.isArray(data)){
       data.forEach(function(proj){
-        var p = projects.find(function(x){ return x.id === proj.id; });
-        if(p){
-          p.projectName = proj.projectName || '';
-          p.shootDate = proj.shootDate || '';
-          p.rows = Array.isArray(proj.rows) ? proj.rows.map(function(r){
+        newProjects.push({
+          id: proj.id || genId(),
+          projectName: proj.projectName || '',
+          shootDate: proj.shootDate || '',
+          rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
             return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
-          }) : [];
-          p.lastUpdated = proj.lastUpdated || new Date().toISOString();
-        } else {
-          projects.push({
-            id: proj.id || genId(),
-            projectName: proj.projectName || '',
-            shootDate: proj.shootDate || '',
-            rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
-              return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
-            }) : [],
-            lastUpdated: proj.lastUpdated || new Date().toISOString()
-          });
-        }
+          }) : [],
+          lastUpdated: proj.lastUpdated || new Date().toISOString()
+        });
       });
+    }
+
+    if(newProjects.length === 0){
+      // Remote has no projects — only keep truly local-unsaved ones
+      var localUnsaved = projects.filter(function(p){ return p._local && !p._saved; });
+      if(localUnsaved.length > 0 && localUnsaved.length !== projects.length){
+        projects = localUnsaved;
+        renderProjectList();
+      }
+      return;
+    }
+
+    // Content-based signature for fuzzy matching / dedup
+    function sig(p){
+      // Include row content for stronger dedup
+      var rowSig = (p.rows || []).map(function(r){
+        return [r.size||'',r.movement||'',r.visual||'',r.audio||'',r.duration||'',r.note||''].join(',');
+      }).join('||');
+      return (p.projectName || '') + '|' + (p.shootDate || '') + '|' + (p.rows || []).length + '|' + rowSig;
+    }
+
+    // Deduplicate by ID first (keep last occurrence)
+    var seenIds = {};
+    newProjects = newProjects.filter(function(p){
+      if(seenIds[p.id]) return false;
+      seenIds[p.id] = true;
+      return true;
+    });
+
+    // Deduplicate by content signature (keep first occurrence per signature)
+    // This removes duplicate projects that have different IDs but identical content
+    var seenSigs = {};
+    newProjects = newProjects.filter(function(p){
+      var s = sig(p);
+      if(seenSigs[s]) return false;
+      seenSigs[s] = true;
+      return true;
+    });
+
+    // Build signature map for localOnly matching
+    var remoteSigs = {};
+    newProjects.forEach(function(p){ remoteSigs[sig(p)] = p.id; });
+
+    // Only preserve truly local-unsaved projects (created locally, never saved to remote)
+    // Match by ID first, then by content signature as fallback
+    var localOnly = projects.filter(function(lp){
+      // Skip if already matched by ID
+      if(newProjects.find(function(np){ return np.id === lp.id; })) return false;
+      // Skip if matched by content (same project already in remote with different ID)
+      var lpSig = sig(lp);
+      if(remoteSigs[lpSig]) return false;
+      // Only keep if it's a local-unsaved project
+      return lp._local && !lp._saved;
+    });
+
+    var hadDuplicates = newProjects.length > 0 && window.__vingData
+      && Array.isArray(window.__vingData.storyboardProjects)
+      && window.__vingData.storyboardProjects.length > (newProjects.length + localOnly.length);
+
+    projects = newProjects.concat(localOnly);
+
+    // Sync cleaned data back to __vingData so future saves write clean data
+    if(hadDuplicates && window.__vingData){
+      window.__vingData.storyboardProjects = projects.map(function(p){
+        return {
+          id: p.id,
+          projectName: p.projectName || '',
+          shootDate: p.shootDate || '',
+          rows: (p.rows || []).map(function(r){
+            return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
+          }),
+          lastUpdated: p.lastUpdated || new Date().toISOString()
+        };
+      });
+      // Trigger background save to clean up remote data
+      if(typeof window.__ghSave === 'function'){
+        console.log('[Storyboard] Auto-cleaning duplicate projects in remote data');
+        window.__ghSave(window.__vingData);
+      }
     }
 
     renderProjectList();
@@ -3713,7 +3859,7 @@
     // Load projects from __vingData
     if(window.__vingData){
       if(window.__vingData.storyboardProjects && Array.isArray(window.__vingData.storyboardProjects)){
-        projects = window.__vingData.storyboardProjects.map(function(p){
+        var rawProjects = window.__vingData.storyboardProjects.map(function(p){
           return {
             id: p.id || genId(),
             projectName: p.projectName || '',
@@ -3721,8 +3867,24 @@
             rows: Array.isArray(p.rows) ? p.rows.map(function(r){
               return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
             }) : [],
-            lastUpdated: p.lastUpdated || ''
+            lastUpdated: p.lastUpdated || '',
+            _local: false,
+            _saved: true
           };
+        });
+        // Deduplicate by content signature on initial load too
+        var initSeenIds = {};
+        var initSeenSigs = {};
+        projects = rawProjects.filter(function(p){
+          if(initSeenIds[p.id]) return false;
+          initSeenIds[p.id] = true;
+          var rowSig = (p.rows||[]).map(function(r){
+            return [r.size||'',r.movement||'',r.visual||'',r.audio||'',r.duration||'',r.note||''].join(',');
+          }).join('||');
+          var s = (p.projectName||'')+'|'+(p.shootDate||'')+'|'+(p.rows||[]).length+'|'+rowSig;
+          if(initSeenSigs[s]) return false;
+          initSeenSigs[s] = true;
+          return true;
         });
       } else if(window.__vingData.storyboard){
         // Migrate old single-project format
@@ -3734,7 +3896,9 @@
           rows: Array.isArray(sb.rows) ? sb.rows.map(function(r){
             return {size:r.size||'',movement:r.movement||'',visual:r.visual||'',audio:r.audio||'',duration:r.duration||'',note:r.note||''};
           }) : [],
-          lastUpdated: sb.lastUpdated || ''
+          lastUpdated: sb.lastUpdated || '',
+          _local: false,
+          _saved: true
         }];
       }
     }
