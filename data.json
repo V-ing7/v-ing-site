@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T14:06:49.383Z",
+  "lastUpdated": "2026-09-17T14:09:42.519Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -260,6 +260,12 @@
       "time": "22:06",
       "action": "画面内容更新：测试shotTask（4个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:09",
+      "action": "画面内容更新：验证shotTask（4个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -308,6 +314,7 @@
       "shootDate": "2026-09-17",
       "rows": [
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "12",
@@ -324,6 +331,7 @@
       "shootDate": "",
       "rows": [
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "阳光透过窗户",
@@ -332,6 +340,7 @@
           "note": ""
         },
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -340,6 +349,7 @@
           "note": ""
         },
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -348,6 +358,7 @@
           "note": ""
         },
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -364,6 +375,7 @@
       "shootDate": "",
       "rows": [
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -372,6 +384,7 @@
           "note": ""
         },
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -380,6 +393,7 @@
           "note": ""
         },
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -388,6 +402,7 @@
           "note": ""
         },
         {
+          "shotTask": "",
           "size": "",
           "movement": "",
           "visual": "",
@@ -397,6 +412,50 @@
         }
       ],
       "lastUpdated": "2026-09-17T14:06:49.383Z"
+    },
+    {
+      "id": "sb_mu5lw513_46h1",
+      "projectName": "验证shotTask",
+      "shootDate": "",
+      "rows": [
+        {
+          "shotTask": "",
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "shotTask": "主角走入镜头",
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "shotTask": "特写面部表情",
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "shotTask": "全景展现环境",
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T14:09:42.519Z"
     }
   ]
 }
