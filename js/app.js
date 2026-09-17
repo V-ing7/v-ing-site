@@ -3113,6 +3113,10 @@
     initCinemaHero();
   }
 
+  // Expose save function and sync status for storyboard module
+  window.__ghSave = ghSave;
+  try{ Object.defineProperty(window,'__ghSyncStatus',{get:function(){return ghSyncStatus;}}); }catch(e){ window.__ghSyncStatus = ghSyncStatus; }
+
 })();
 
 /* ================================================================
@@ -3415,15 +3419,16 @@
           status: '完成'
         });
       }
-      if(typeof ghSave === 'function'){
-        ghSave(window.__vingData);
+      if(typeof window.__ghSave === 'function'){
+        window.__ghSave(window.__vingData);
         // Listen for save completion
         var checkInterval = setInterval(function(){
-          if(typeof ghSyncStatus !== 'undefined'){
-            if(ghSyncStatus === 'saved' || ghSyncStatus === 'success'){
+          var st = window.__ghSyncStatus;
+          if(st !== undefined){
+            if(st === 'saved' || st === 'success'){
               markSaved();
               clearInterval(checkInterval);
-            } else if(ghSyncStatus === 'error'){
+            } else if(st === 'error'){
               if(sbStatusSync){
                 sbStatusSync.textContent = t('保存失败','Save failed');
                 sbStatusSync.className = 'sb-status-sync error';
