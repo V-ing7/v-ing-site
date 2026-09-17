@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T14:04:07.362Z",
+  "lastUpdated": "2026-09-17T14:06:49.383Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -254,6 +254,12 @@
       "time": "22:04",
       "action": "画面内容更新：测试项目（4个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:06",
+      "action": "画面内容更新：测试shotTask（4个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -351,6 +357,46 @@
         }
       ],
       "lastUpdated": "2026-09-17T14:04:07.361Z"
+    },
+    {
+      "id": "sb_mu5lsffq_xq9o",
+      "projectName": "测试shotTask",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        },
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T14:06:49.383Z"
     }
   ]
 }
