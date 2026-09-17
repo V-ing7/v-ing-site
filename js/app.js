@@ -3256,9 +3256,12 @@
 
       card.innerHTML =
         '<div class="sb-pcard-action">' +
-          '<button class="sb-pcard-del-btn">' +
-            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>' +
-            '<span>' + t('删除','Delete') + '</span>' +
+          '<button class="sb-pcard-del-btn" type="button">' +
+            '<div class="sb-pcard-del-fill"></div>' +
+            '<div class="sb-pcard-del-icon">' +
+              '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>' +
+            '</div>' +
+            '<span class="sb-pcard-del-label">' + t('删除','Delete') + '</span>' +
           '</button>' +
         '</div>' +
         '<div class="sb-pcard-content">' +
@@ -3271,17 +3274,13 @@
             '</div>' +
             '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
           '</div>' +
-          '<div class="sb-pcard-hint">' + t('左滑删除 · 长按查看','Swipe left to delete · Long-press to view') + '</div>' +
+          '<div class="sb-pcard-hint">' + t('左滑露出删除 · 长按删除按钮确认','Swipe left · Long-press delete to confirm') + '</div>' +
         '</div>';
 
-      // Delete button handler (inside swipe action layer)
+      // Delete button: long-press to delete with progress bar
       var delBtn = card.querySelector('.sb-pcard-del-btn');
       if(delBtn){
-        delBtn.addEventListener('click', function(e){
-          e.preventDefault();
-          e.stopPropagation();
-          confirmDeleteProject(proj.id, proj.projectName || t('未命名项目','Untitled Project'));
-        });
+        bindDeleteLongPress(delBtn, proj.id, proj.projectName || t('未命名项目','Untitled Project'));
       }
 
       // Long-press + swipe handler
@@ -3292,11 +3291,79 @@
   }
 
   /* ---------- Delete Project ---------- */
-  function confirmDeleteProject(pid, name){
-    // Use native confirm dialog
-    var msg = t('确定要删除项目「','Are you sure you want to delete "') + name + t('」吗？此操作不可撤销。','"? This cannot be undone.');
-    if(!confirm(msg)) return;
-    deleteProject(pid);
+
+  /* Delete via long-press: progress bar fills, release early = cancel */
+  var DEL_PRESS_MS = 1200;
+
+  function bindDeleteLongPress(btn, pid, name){
+    var delTimer = null;
+    var delDone = false;
+    var pressing = false;
+    var lastTouch = 0;
+
+    function startDelPress(e){
+      if(pressing) return;
+      // Only start if the card is in swiped-left state
+      var card = btn.closest('.sb-pcard');
+      if(!card || !card.classList.contains('swiped-left')) return;
+
+      pressing = true;
+      delDone = false;
+      e.preventDefault();
+      e.stopPropagation();
+
+      btn.classList.add('pressing');
+
+      delTimer = setTimeout(function(){
+        delDone = true;
+        pressing = false;
+        btn.classList.remove('pressing');
+        btn.classList.add('done');
+        // Small delay for the "done" animation
+        setTimeout(function(){
+          deleteProject(pid);
+        }, 200);
+      }, DEL_PRESS_MS);
+    }
+
+    function endDelPress(e){
+      if(!pressing) return;
+      pressing = false;
+
+      if(delTimer){ clearTimeout(delTimer); delTimer = null; }
+      btn.classList.remove('pressing');
+
+      if(!delDone && e && e.preventDefault){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+
+    // Mouse
+    btn.addEventListener('mousedown', function(e){
+      if(e.button !== 0) return;
+      if(Date.now() - lastTouch < 800) return;
+      startDelPress(e);
+    });
+    btn.addEventListener('mouseup', endDelPress);
+    btn.addEventListener('mouseleave', endDelPress);
+
+    // Touch
+    btn.addEventListener('touchstart', function(e){
+      lastTouch = Date.now();
+      startDelPress(e);
+    }, {passive:false});
+    btn.addEventListener('touchend', function(e){
+      lastTouch = Date.now();
+      endDelPress(e);
+    });
+    btn.addEventListener('touchcancel', endDelPress);
+
+    // Prevent click navigation
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+    });
   }
 
   function deleteProject(pid){

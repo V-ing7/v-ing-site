@@ -4573,11 +4573,12 @@ body{
   width:80px;
   background:linear-gradient(135deg,#ff3b30,#ff453a);
   display:flex;
-  align-items:center;
-  justify-content:center;
+  flex-direction:column;
   z-index:0;
 }
 .sb-pcard-del-btn{
+  flex:1 1 auto;
+  position:relative;
   background:transparent;
   border:none;
   color:#fff;
@@ -4587,11 +4588,47 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
+  justify-content:center;
   gap:4px;
   padding:0;
+  overflow:hidden;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  touch-action:none;
 }
-.sb-pcard-del-btn:active{
-  transform:scale(.9);
+/* Progress fill: bottom → top on long-press */
+.sb-pcard-del-fill{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:0;
+  background:rgba(255,255,255,.28);
+  z-index:0;
+  pointer-events:none;
+}
+.sb-pcard-del-btn.pressing .sb-pcard-del-fill{
+  height:100%;
+  transition:height 1.2s linear;
+}
+.sb-pcard-del-btn.done .sb-pcard-del-fill{
+  height:100%;
+  background:rgba(255,255,255,.45);
+  transition:height .15s ease;
+}
+.sb-pcard-del-icon{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.sb-pcard-del-label{
+  position:relative;
+  z-index:1;
+}
+.sb-pcard-del-btn.pressing .sb-pcard-del-icon{
+  transform:scale(.92);
+  transition:transform .2s ease;
 }
 
 /* Content layer (slides over action on swipe) */
