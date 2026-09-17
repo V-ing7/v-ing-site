@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T04:17:16.785Z",
+  "lastUpdated": "2026-09-17T05:54:55.636Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -188,6 +188,12 @@
       "time": "11:54",
       "action": "更新关于微影段落文案：「被进行」改为「不断进行」，结尾句替换为「我们想记录的，不只是画面，更是正在进行时的生活」",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "13:54",
+      "action": "分镜头脚本更新：未命名（1个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -213,5 +219,20 @@
       "statically CDN (cdn.statically.io)"
     ],
     "version": "v3.0"
+  },
+  "storyboard": {
+    "projectName": "",
+    "shootDate": "",
+    "rows": [
+      {
+        "size": "",
+        "movement": "",
+        "visual": "",
+        "audio": "",
+        "duration": "",
+        "note": ""
+      }
+    ],
+    "lastUpdated": "2026-09-17T05:54:55.634Z"
   }
 }
