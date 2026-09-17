@@ -3798,16 +3798,13 @@
           '<span class="sb-task-num">' + (idx + 1) + '</span>' +
           '<span class="sb-task-text" ' + (row.done ? '' : 'contenteditable="true"') + ' data-field="shotTask">' + escapeHtml(row.shotTask || '') + '</span>' +
         '</div>' +
-        '<button class="sb-task-done-btn' + (row.done ? ' completed' : '') + '" data-idx="' + idx + '" title="' + t('拍摄完成','Done') + '"></button>' +
         '<div class="sb-task-progress"></div>';
       tableBody.appendChild(card);
 
-      // Long-press delete for completed tasks
-      if(row.done){
-        bindTaskLongPress(card, idx);
-      }
+      // Long-press: if not done → mark green/done; if done → delete
+      bindTaskLongPress(card, idx, !!row.done);
 
-      // Editable text
+      // Editable text (only when not done)
       var textEl = card.querySelector('[data-field="shotTask"]');
       if(textEl && !row.done){
         textEl.addEventListener('input', function(){
@@ -3815,18 +3812,6 @@
           markUnsaved();
         });
       }
-    });
-
-    // Bind done buttons
-    tableBody.querySelectorAll('.sb-task-done-btn').forEach(function(btn){
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        var i = parseInt(btn.getAttribute('data-idx'));
-        if(isNaN(i)) return;
-        editRows[i].done = !editRows[i].done;
-        renderTaskCards();
-        markUnsaved();
-      });
     });
 
     // Update count
@@ -3854,29 +3839,36 @@
     });
   }
 
-  // Long-press on completed task to delete with progress bar
-  function bindTaskLongPress(card, idx){
+  // Long-press: if not done → progress fills → turn green (done)
+  //            if already done → progress fills → delete
+  function bindTaskLongPress(card, idx, isDone){
     var pressTimer = null;
-    var triggered = false;
     var pressing = false;
 
     function startPress(e){
       if(pressing) return;
+      // Don't long-press when editing text
+      if(e.target && e.target.closest && e.target.closest('[contenteditable]')) return;
       pressing = true;
-      triggered = false;
       card.classList.add('pressing');
       var bar = card.querySelector('.sb-task-progress');
       if(bar) bar.classList.add('active');
 
       pressTimer = setTimeout(function(){
-        triggered = true;
         pressing = false;
         card.classList.remove('pressing');
         var bar2 = card.querySelector('.sb-task-progress');
         if(bar2) bar2.classList.remove('active');
-        // Delete this row
-        editRows.splice(idx, 1);
-        renderAllRows(editRows);
+
+        if(isDone){
+          // Already green → delete
+          editRows.splice(idx, 1);
+          renderAllRows(editRows);
+        } else {
+          // Not done → mark as done (green)
+          editRows[idx].done = true;
+          renderTaskCards();
+        }
         markUnsaved();
       }, 1200);
     }
@@ -3891,13 +3883,12 @@
 
     card.addEventListener('mousedown', function(e){
       if(e.button !== 0) return;
-      if(e.target.closest('.sb-task-done-btn')) return;
       startPress(e);
     });
     card.addEventListener('mouseup', cancelPress);
     card.addEventListener('mouseleave', cancelPress);
     card.addEventListener('touchstart', function(e){
-      if(e.target.closest('.sb-task-done-btn')) return;
+      if(e.target && e.target.closest && e.target.closest('[contenteditable]')) return;
       e.preventDefault();
       startPress(e);
     }, {passive:false});

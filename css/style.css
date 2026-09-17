@@ -4593,12 +4593,14 @@ textarea.sb-cell:focus{
 }
 .sb-task-card:last-child{border-bottom:none}
 .sb-task-card.done{
-  background:var(--surface-2);
-  opacity:.7;
+  background:rgba(48,209,88,.12);
+  border-color:rgba(48,209,88,.3);
 }
 .sb-task-card.done .sb-task-text{
-  text-decoration:line-through;
-  color:var(--text-tertiary);
+  color:var(--text-secondary);
+}
+.sb-task-card.done .sb-task-num{
+  background:#30d958;
 }
 .sb-task-card.pressing{
   background:var(--surface-3);
@@ -4636,38 +4638,24 @@ textarea.sb-cell:focus{
   color:var(--text-quaternary);
 }
 
-/* Done button (checkmark circle) */
-.sb-task-done-btn{
-  width:28px;height:28px;
-  border-radius:50%;
-  border:2px solid var(--text-quaternary);
-  background:transparent;
-  cursor:pointer;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:all .2s ease;
-  position:relative;
-}
-.sb-task-done-btn.completed{
-  background:var(--accent);
-  border-color:var(--accent);
-}
-.sb-task-done-btn.completed::after{
+/* Green checkmark for completed tasks */
+.sb-task-card.done::after{
   content:'✓';
-  color:#fff;
-  font-size:.8rem;
+  color:#30d958;
+  font-size:1.1rem;
   font-weight:700;
+  flex-shrink:0;
+  margin-left:auto;
+  padding-right:14px;
 }
 
-/* Progress bar for long-press delete */
+/* Progress bar for long-press */
 .sb-task-progress{
   position:absolute;
   bottom:0;left:0;
   height:3px;
   width:0;
-  background:var(--accent);
+  background:#30d958;
   border-radius:0 3px 3px 0;
   transition:width 0s;
 }
