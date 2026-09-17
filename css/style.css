@@ -2958,7 +2958,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   align-items:flex-start;
 }
 /* Kill reveal transform after animation to avoid compositing-layer blur */
-.card-section.reveal.visible{transform:none !important}
+.card-section.reveal.visible:not(.sb-wrap){transform:none !important}
 
 .business-card{
   position:relative;
@@ -4548,15 +4548,14 @@ body{
 /* Project Card */
 .sb-pcard{
   position:relative;
-  background:var(--surface-glass);
   border:1px solid var(--glass-border);
   border-radius:14px;
-  padding:18px 16px 14px;
   cursor:pointer;
   overflow:hidden;
   transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
   user-select:none;
   -webkit-user-select:none;
+  touch-action:pan-y;
 }
 .sb-pcard:hover{
   transform:translateY(-2px);
@@ -4565,6 +4564,46 @@ body{
 }
 .sb-pcard:active{
   transform:translateY(0);
+}
+
+/* Swipe action layer (behind content, revealed on left swipe) */
+.sb-pcard-action{
+  position:absolute;
+  top:0;right:0;bottom:0;
+  width:80px;
+  background:linear-gradient(135deg,#ff3b30,#ff453a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:0;
+}
+.sb-pcard-del-btn{
+  background:transparent;
+  border:none;
+  color:#fff;
+  font-size:.72rem;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  padding:0;
+}
+.sb-pcard-del-btn:active{
+  transform:scale(.9);
+}
+
+/* Content layer (slides over action on swipe) */
+.sb-pcard-content{
+  position:relative;
+  z-index:1;
+  background:var(--surface-glass);
+  padding:18px 16px 14px;
+  transition:transform .3s cubic-bezier(.22,.61,.36,1);
+}
+.sb-pcard.swiped-left .sb-pcard-content{
+  transform:translateX(-80px);
 }
 
 /* Long-press progress bar (on card edge) */
@@ -4641,41 +4680,6 @@ body{
 }
 .sb-pcard:hover .sb-pcard-hint{
   opacity:.7;
-}
-
-/* Delete button on project card */
-.sb-pcard-del{
-  position:absolute;
-  top:10px;
-  right:10px;
-  width:26px;
-  height:26px;
-  border:none;
-  border-radius:50%;
-  background:rgba(255,59,48,.12);
-  color:rgba(255,59,48,.6);
-  font-size:18px;
-  line-height:1;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:.45;
-  transition:opacity .2s ease,background .2s ease,color .2s ease,transform .15s ease;
-  z-index:2;
-  padding:0;
-}
-.sb-pcard:hover .sb-pcard-del{
-  opacity:1;
-}
-.sb-pcard-del:hover{
-  background:rgba(255,59,48,.85);
-  color:#fff;
-}
-.sb-pcard-del:active{
-  transform:scale(.9);
-  background:rgba(255,59,48,.85);
-  color:#fff;
 }
 
 /* Back button */

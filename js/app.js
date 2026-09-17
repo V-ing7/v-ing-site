@@ -3171,6 +3171,8 @@
   var sbPendingRender = false;
   // Track last touch time to suppress compatibility mouse events
   var sbLastTouchTime = 0;
+  // Track currently swiped-open card (for left-swipe delete)
+  var sbSwipedCard = null;
   // Expose long-press state to outer scope (for auto-refresh guard)
   try{ Object.defineProperty(window, '__sbLongPressActive', {get: function(){ return sbLongPressActive; }}); }catch(e){ window.__sbLongPressActive = false; }
 
@@ -3253,20 +3255,27 @@
       var updated = proj.lastUpdated ? new Date(proj.lastUpdated).toLocaleString() : '--';
 
       card.innerHTML =
-        '<div class="sb-pcard-progress"></div>' +
-        '<div class="sb-pcard-body">' +
-          '<div class="sb-pcard-name">' + escapeHtml(proj.projectName || t('未命名项目','Untitled Project')) + '</div>' +
-          '<div class="sb-pcard-meta">' +
-            '<span class="sb-pcard-shots">' + shotCount + ' ' + t('镜头','shots') + '</span>' +
-            (proj.shootDate ? '<span class="sb-pcard-date">' + proj.shootDate + '</span>' : '') +
-          '</div>' +
-          '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
+        '<div class="sb-pcard-action">' +
+          '<button class="sb-pcard-del-btn">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>' +
+            '<span>' + t('删除','Delete') + '</span>' +
+          '</button>' +
         '</div>' +
-        '<button class="sb-pcard-del" title="' + t('删除项目','Delete project') + '">×</button>' +
-        '<div class="sb-pcard-hint">' + t('长按查看','Long-press to view') + '</div>';
+        '<div class="sb-pcard-content">' +
+          '<div class="sb-pcard-progress"></div>' +
+          '<div class="sb-pcard-body">' +
+            '<div class="sb-pcard-name">' + escapeHtml(proj.projectName || t('未命名项目','Untitled Project')) + '</div>' +
+            '<div class="sb-pcard-meta">' +
+              '<span class="sb-pcard-shots">' + shotCount + ' ' + t('镜头','shots') + '</span>' +
+              (proj.shootDate ? '<span class="sb-pcard-date">' + proj.shootDate + '</span>' : '') +
+            '</div>' +
+            '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
+          '</div>' +
+          '<div class="sb-pcard-hint">' + t('左滑删除 · 长按查看','Swipe left to delete · Long-press to view') + '</div>' +
+        '</div>';
 
-      // Delete button handler
-      var delBtn = card.querySelector('.sb-pcard-del');
+      // Delete button handler (inside swipe action layer)
+      var delBtn = card.querySelector('.sb-pcard-del-btn');
       if(delBtn){
         delBtn.addEventListener('click', function(e){
           e.preventDefault();
@@ -3275,7 +3284,7 @@
         });
       }
 
-      // Long-press handler
+      // Long-press + swipe handler
       bindLongPress(card, proj.id);
 
       projectGrid.appendChild(card);
@@ -3341,21 +3350,36 @@
     return div.innerHTML;
   }
 
-  /* ---------- Long Press + Progress Bar ---------- */
+  /* ---------- Long Press + Swipe-to-Delete ---------- */
+  var SWIPE_THRESHOLD = 10;     // px to start swiping
+  var SWIPE_ACTION_W = 80;      // width of delete action
+  var SWIPE_OPEN_THRESHOLD = 40; // px to snap open
+
   function bindLongPress(card, pid){
     var pressTimer = null;
     var triggered = false;
     var startX = 0, startY = 0;
     var isPressing = false;
+    var isSwiping = false;
+    var swipeDx = 0;
+    var contentEl = card.querySelector('.sb-pcard-content');
 
     function startPress(e){
-      if(isPressing) return;  // prevent double-start
+      if(isPressing) return;
       isPressing = true;
       triggered = false;
-      sbLongPressActive = true;  // block DOM rebuilds
+      isSwiping = false;
+      swipeDx = 0;
+
+      // Close any other swiped-open card
+      if(sbSwipedCard && sbSwipedCard !== card){
+        sbSwipedCard.classList.remove('swiped-left');
+        sbSwipedCard = null;
+      }
+
+      sbLongPressActive = true;
       card.classList.add('long-pressing');
 
-      // Record start position for move tolerance
       if(e.touches && e.touches[0]){
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
@@ -3364,7 +3388,6 @@
         startY = e.clientY;
       }
 
-      // Start progress bar animation on next frame
       requestAnimationFrame(function(){
         var bar = card.querySelector('.sb-pcard-progress');
         if(bar){
@@ -3375,7 +3398,7 @@
       pressTimer = setTimeout(function(){
         triggered = true;
         isPressing = false;
-        sbLongPressActive = false;  // release guard
+        sbLongPressActive = false;
         card.classList.remove('long-pressing');
         var bar2 = card.querySelector('.sb-pcard-progress');
         if(bar2) bar2.classList.remove('active');
@@ -3383,71 +3406,148 @@
       }, LONG_PRESS_MS);
     }
 
-    function cancelPress(){
-      isPressing = false;
-      sbLongPressActive = false;
+    function cancelPress(keepPressing){
+      if(!keepPressing){
+        isPressing = false;
+        sbLongPressActive = false;
+      }
       card.classList.remove('long-pressing');
       var bar = card.querySelector('.sb-pcard-progress');
       if(bar) bar.classList.remove('active');
       if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
-      // If a render was deferred, do it now
-      if(sbPendingRender){
+      if(!keepPressing && sbPendingRender){
         setTimeout(function(){ renderProjectList(); }, 0);
       }
     }
 
-    // Handle touch move with tolerance (don't cancel on tiny moves)
-    function handleTouchMove(e){
-      if(!isPressing) return;
+    // Handle touch/mouse move — swipe detection + real-time transform
+    function handleMove(e){
+      if(!isPressing && !isSwiping) return;
+
+      var cx, cy;
       if(e.touches && e.touches[0]){
-        var dx = Math.abs(e.touches[0].clientX - startX);
-        var dy = Math.abs(e.touches[0].clientY - startY);
-        if(dx > 10 || dy > 10){
-          cancelPress();  // moved too much, cancel
+        cx = e.touches[0].clientX;
+        cy = e.touches[0].clientY;
+      } else if(e.clientX !== undefined){
+        cx = e.clientX;
+        cy = e.clientY;
+      } else return;
+
+      var dx = cx - startX;
+      var dy = cy - startY;
+
+      if(!isSwiping){
+        // Not swiping yet — check threshold
+        if(Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD){
+          // Horizontal movement dominates → start swiping
+          if(Math.abs(dx) > Math.abs(dy)){
+            isSwiping = true;
+            cancelPress(true); // cancel long-press timer but keep isPressing for swipe tracking
+          } else {
+            // Vertical movement → just cancel long-press
+            cancelPress();
+            return;
+          }
+        } else {
+          return; // within tolerance, keep long-pressing
         }
+      }
+
+      if(isSwiping && contentEl){
+        swipeDx = dx;
+        var isOpen = card.classList.contains('swiped-left');
+        var base = isOpen ? -SWIPE_ACTION_W : 0;
+        var offset = Math.max(-SWIPE_ACTION_W, Math.min(0, base + dx));
+        contentEl.style.transition = 'none';
+        contentEl.style.transform = 'translateX(' + offset + 'px)';
       }
     }
 
-    // Mouse events — suppress if we just had a touch event
+    function endSwipe(){
+      if(!isSwiping) return false;
+      isSwiping = false;
+
+      if(contentEl){
+        contentEl.style.transition = '';
+        contentEl.style.transform = '';
+      }
+
+      var isOpen = card.classList.contains('swiped-left');
+      var base = isOpen ? -SWIPE_ACTION_W : 0;
+      var total = base + swipeDx;
+
+      if(total < -SWIPE_OPEN_THRESHOLD){
+        card.classList.add('swiped-left');
+        sbSwipedCard = card;
+      } else {
+        card.classList.remove('swiped-left');
+        if(sbSwipedCard === card) sbSwipedCard = null;
+      }
+
+      isPressing = false;
+      sbLongPressActive = false;
+      return true;
+    }
+
+    // ---- Mouse events ----
     card.addEventListener('mousedown', function(e){
       if(e.target.closest('button')) return;
-      if(e.button !== 0) return;  // left click only
-      // Suppress compatibility mouse events after touch
+      if(e.button !== 0) return;
       if(Date.now() - sbLastTouchTime < 800) return;
       startPress(e);
+    });
+    card.addEventListener('mousemove', function(e){
+      if(isPressing && (isSwiping || (e.buttons & 1))){
+        handleMove(e);
+      }
     });
     card.addEventListener('mouseup', function(e){
       if(triggered){
         e.preventDefault();
         e.stopPropagation();
       }
+      if(endSwipe()) return;
       cancelPress();
     });
-    card.addEventListener('mouseleave', cancelPress);
+    card.addEventListener('mouseleave', function(){
+      if(isSwiping){ endSwipe(); }
+      else { cancelPress(); }
+    });
 
-    // Touch events
+    // ---- Touch events ----
     card.addEventListener('touchstart', function(e){
       if(e.target.closest('button')) return;
       sbLastTouchTime = Date.now();
       startPress(e);
     }, {passive:true});
+    card.addEventListener('touchmove', handleMove, {passive:true});
     card.addEventListener('touchend', function(e){
       sbLastTouchTime = Date.now();
       if(triggered){
         e.preventDefault();
         e.stopPropagation();
       }
+      if(endSwipe()) return;
       cancelPress();
     });
-    card.addEventListener('touchcancel', cancelPress);
-    card.addEventListener('touchmove', handleTouchMove, {passive:true});
+    card.addEventListener('touchcancel', function(){
+      if(isSwiping){ endSwipe(); }
+      else { cancelPress(); }
+    });
 
-    // Prevent click navigation if long-press was triggered
+    // ---- Click: close swiped card or prevent long-press navigation ----
     card.addEventListener('click', function(e){
       if(triggered){
         e.preventDefault();
         e.stopPropagation();
         triggered = false;
+        return;
+      }
+      if(card.classList.contains('swiped-left')){
+        e.preventDefault();
+        e.stopPropagation();
+        card.classList.remove('swiped-left');
+        sbSwipedCard = null;
       }
     });
   }
