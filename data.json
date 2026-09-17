@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T14:25:19.076Z",
+  "lastUpdated": "2026-09-17T14:25:23.877Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -272,6 +272,18 @@
       "time": "22:25",
       "action": "删除画面内容项目：莆田",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：测试项目",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：测试shotTask",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -314,94 +326,6 @@
     "lastUpdated": "2026-09-17T05:58:44.500Z"
   },
   "storyboardProjects": [
-    {
-      "id": "sb_mu5loyf5_qy38",
-      "projectName": "测试项目",
-      "shootDate": "",
-      "rows": [
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "阳光透过窗户",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T14:04:07.361Z"
-    },
-    {
-      "id": "sb_mu5lsffq_xq9o",
-      "projectName": "测试shotTask",
-      "shootDate": "",
-      "rows": [
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T14:06:49.383Z"
-    },
     {
       "id": "sb_mu5lw513_46h1",
       "projectName": "验证shotTask",
