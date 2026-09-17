@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T08:03:49.012Z",
+  "lastUpdated": "2026-09-17T08:14:40.376Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -250,38 +250,6 @@
   "storyboardProjects": [
     {
       "id": "sb_mu58rcp1_bcg1",
-      "projectName": "莆田",
-      "shootDate": "",
-      "rows": [
-        {
-          "size": "",
-          "movement": "",
-          "visual": "12",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T05:58:44.500Z"
-    },
-    {
-      "id": "sb_mu58s040_33ye",
-      "projectName": "莆田",
-      "shootDate": "",
-      "rows": [
-        {
-          "size": "",
-          "movement": "",
-          "visual": "12",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T05:58:44.500Z"
-    },
-    {
-      "id": "sb_mu58sn7s_7vfj",
       "projectName": "莆田",
       "shootDate": "",
       "rows": [
