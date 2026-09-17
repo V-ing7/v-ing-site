@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T14:25:27.493Z",
+  "lastUpdated": "2026-09-17T15:12:28.737Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -290,6 +290,12 @@
       "time": "22:25",
       "action": "删除画面内容项目：验证shotTask",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "23:12",
+      "action": "计划更新：两列测试（3个任务）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -331,5 +337,38 @@
     ],
     "lastUpdated": "2026-09-17T05:58:44.500Z"
   },
-  "storyboardProjects": []
+  "storyboardProjects": [
+    {
+      "id": "sb_mu58rcp1_bcg1",
+      "projectName": "莆田",
+      "shootDate": "2026-09-17",
+      "rows": [
+        {
+          "shotTask": "",
+          "visual": "12"
+        }
+      ],
+      "lastUpdated": "2026-09-17T08:16:09.461Z"
+    },
+    {
+      "id": "sb_mu5o4v29_2jwt",
+      "projectName": "两列测试",
+      "shootDate": "",
+      "rows": [
+        {
+          "shotTask": "任务一",
+          "visual": "这是一段很长的画面内容描述用来测试textarea自动高度功能是否正常工作，输入足够多的文字应该能让textarea的高度自动增加以适应内容"
+        },
+        {
+          "shotTask": "任务二",
+          "visual": ""
+        },
+        {
+          "shotTask": "任务三",
+          "visual": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T15:12:28.737Z"
+    }
+  ]
 }
