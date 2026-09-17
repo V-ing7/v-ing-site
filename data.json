@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T14:25:23.877Z",
+  "lastUpdated": "2026-09-17T14:25:27.493Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -284,6 +284,12 @@
       "time": "22:25",
       "action": "删除画面内容项目：测试shotTask",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：验证shotTask",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -325,50 +331,5 @@
     ],
     "lastUpdated": "2026-09-17T05:58:44.500Z"
   },
-  "storyboardProjects": [
-    {
-      "id": "sb_mu5lw513_46h1",
-      "projectName": "验证shotTask",
-      "shootDate": "",
-      "rows": [
-        {
-          "shotTask": "",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "主角走入镜头",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "特写面部表情",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        },
-        {
-          "shotTask": "全景展现环境",
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T14:09:42.519Z"
-    }
-  ]
+  "storyboardProjects": []
 }
