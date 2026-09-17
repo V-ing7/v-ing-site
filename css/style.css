@@ -4534,3 +4534,154 @@ body{
   .sb-table td{padding:4px 4px}
   .sb-cell{font-size:.8rem;padding:4px 6px}
 }
+
+/* ================================================================
+   Storyboard: Project List + Cards + Long Press
+   ================================================================ */
+.sb-project-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:14px;
+  margin-top:8px;
+}
+
+/* Project Card */
+.sb-pcard{
+  position:relative;
+  background:var(--surface-glass);
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  padding:18px 16px 14px;
+  cursor:pointer;
+  overflow:hidden;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.sb-pcard:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-md);
+  border-color:var(--accent);
+}
+.sb-pcard:active{
+  transform:translateY(0);
+}
+
+/* Long-press progress bar (on card edge) */
+.sb-pcard-progress{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:0;
+  background:linear-gradient(180deg,var(--accent),rgba(255,159,10,.6));
+  border-radius:14px 0 0 14px;
+  opacity:0;
+  transition:opacity .15s ease;
+  pointer-events:none;
+  z-index:0;
+}
+.sb-pcard.long-pressing .sb-pcard-progress{
+  opacity:.18;
+  transition:width 1.2s linear;
+}
+.sb-pcard.long-pressing .sb-pcard-progress.active{
+  width:100%;
+}
+
+/* Card content */
+.sb-pcard-body{
+  position:relative;
+  z-index:1;
+}
+.sb-pcard-name{
+  font-size:.95rem;
+  font-weight:700;
+  color:var(--text-primary);
+  margin-bottom:6px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.sb-pcard-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.75rem;
+  color:var(--text-tertiary);
+  flex-wrap:wrap;
+}
+.sb-pcard-shots{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:2px 8px;
+  background:var(--surface-2);
+  border-radius:6px;
+  font-weight:600;
+  color:var(--accent);
+}
+.sb-pcard-date{
+  color:var(--text-quaternary);
+}
+.sb-pcard-updated{
+  font-size:.7rem;
+  color:var(--text-quaternary);
+  margin-top:8px;
+}
+
+/* Hint text on long press */
+.sb-pcard-hint{
+  position:absolute;
+  bottom:10px;
+  right:14px;
+  font-size:.68rem;
+  color:var(--text-quaternary);
+  opacity:0;
+  transition:opacity .2s ease;
+  z-index:1;
+}
+.sb-pcard:hover .sb-pcard-hint{
+  opacity:.7;
+}
+
+/* Back button */
+.sb-btn-back{
+  background:transparent !important;
+  color:var(--text-secondary) !important;
+  border:1px solid var(--glass-border) !important;
+  font-size:.82rem !important;
+}
+.sb-btn-back:hover{
+  border-color:var(--accent) !important;
+  color:var(--accent) !important;
+}
+
+/* Detail page */
+.sb-detail-page{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.sb-detail-info{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  font-size:.82rem;
+  color:var(--text-secondary);
+  padding:8px 0;
+}
+.sb-detail-info span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.sb-detail-info .sb-detail-label{
+  font-weight:600;
+  color:var(--text-tertiary);
+}
+
+/* Mobile for project grid */
+@media(max-width:768px){
+  .sb-project-grid{
+    grid-template-columns:1fr;
+  }
+}
