@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T13:03:46.301Z",
+  "lastUpdated": "2026-09-17T13:04:02.677Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -260,6 +260,12 @@
       "time": "21:03",
       "action": "分镜头脚本更新：未命名（1个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "21:04",
+      "action": "删除分镜头项目：未命名项目",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -301,22 +307,5 @@
     ],
     "lastUpdated": "2026-09-17T05:58:44.500Z"
   },
-  "storyboardProjects": [
-    {
-      "id": "sb_mu5jjce4_vs03",
-      "projectName": "",
-      "shootDate": "",
-      "rows": [
-        {
-          "size": "",
-          "movement": "",
-          "visual": "",
-          "audio": "",
-          "duration": "",
-          "note": ""
-        }
-      ],
-      "lastUpdated": "2026-09-17T13:03:46.300Z"
-    }
-  ]
+  "storyboardProjects": []
 }
