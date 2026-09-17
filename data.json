@@ -36,7 +36,7 @@
       "edit": 5
     }
   },
-  "lastUpdated": "2026-09-17T08:14:40.376Z",
+  "lastUpdated": "2026-09-17T08:14:47.887Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -206,6 +206,12 @@
       "time": "16:03",
       "action": "分镜头脚本更新：好（1个镜头）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:14",
+      "action": "分镜头脚本更新：1（1个镜头）",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -279,6 +285,22 @@
         }
       ],
       "lastUpdated": "2026-09-17T08:03:49.008Z"
+    },
+    {
+      "id": "sb_mu597pzi_sakx",
+      "projectName": "1",
+      "shootDate": "",
+      "rows": [
+        {
+          "size": "",
+          "movement": "",
+          "visual": "",
+          "audio": "",
+          "duration": "",
+          "note": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T08:14:47.886Z"
     }
   ]
 }
