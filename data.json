@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-18T09:38:11.628Z",
+  "lastUpdated": "2026-09-18T14:01:55.684Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -308,6 +308,12 @@
       "time": "09:15",
       "action": "计划更新：两列测试（3个任务）",
       "status": "完成"
+    },
+    {
+      "date": "2026-09-18",
+      "time": "22:01",
+      "action": "安全架构升级v4.0：Worker中间层部署、移除前端Token、密码改为服务端验证、指令模版更新",
+      "status": "完成"
     }
   ],
   "instructionTemplate": {
@@ -315,24 +321,28 @@
     "branch": "main",
     "dataFile": "data.json",
     "siteUrl": "https://v-ing-site.pages.dev",
-    "cloudflareProject": "v-ing-site",
-    "cloudflareAccountId": "edb10972ff8ae9f58d46aa4bdcee3fca",
-    "description": "网站数据存在 GitHub 仓库 data.json 中，编辑时自动同步到云端。",
+    "workerApiUrl": "https://v-ing-api.vkyvkyvky.workers.dev",
+    "description": "网站数据存在 GitHub 仓库 data.json 中，通过 Worker API 读写，修改需密码验证。",
     "syncMechanism": {
-      "saveFlow": "浏览器编辑 → GitHub API PUT → 触发Cloudflare部署",
-      "loadFlow": "并行5源加载 → 先到先用 → 后台检查更新",
+      "saveFlow": "浏览器编辑 → Worker API PUT（带密码）→ GitHub 仓库",
+      "loadFlow": "Worker API GET + 多源加载 → 先到先用 → 后台检查更新",
       "autoRefresh": "30秒间隔，仅当远端时间戳 > 本地时更新",
       "saveProtection": "保存后90秒内跳过自动刷新",
       "manualSync": "点击导航栏同步徽章强制同步"
     },
-    "dataSources": [
-      "GitHub API (api.github.com)",
-      "同源 data.json (Cloudflare Pages)",
-      "raw.githubusercontent.com",
-      "jsDelivr CDN (cdn.jsdelivr.net)",
-      "statically CDN (cdn.statically.io)"
-    ],
-    "version": "v3.0"
+    "security": {
+      "readAccess": "无需密码，任何人可读取",
+      "writeAccess": "需要密码，密码提示：个人英文名",
+      "tokenStorage": "GitHub Token 存于 Cloudflare Worker 密钥中，前端不可见",
+      "passwordVerification": "服务端验证，AI 无法绕过"
+    },
+    "apiEndpoints": {
+      "readData": "GET https://v-ing-api.vkyvkyvky.workers.dev/api/data",
+      "writeData": "PUT https://v-ing-api.vkyvkyvky.workers.dev/api/data",
+      "deploy": "POST https://v-ing-api.vkyvkyvky.workers.dev/api/deploy",
+      "health": "GET https://v-ing-api.vkyvkyvky.workers.dev/api/health"
+    },
+    "version": "v4.0"
   },
   "storyboard": {
     "projectName": "莆田",
