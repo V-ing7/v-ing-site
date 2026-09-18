@@ -15,7 +15,7 @@
   var GH_FILE = 'data.json';
   var GH_BRANCH = 'main';
   var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
-  var WORKER_API = 'https://v-ing-api.vkyvkyvky.workers.dev';
+  var WORKER_API = ''; // Same-origin: Pages Functions at /api/
 
   /* ---- Sync State ---- */
   var ghDataSHA = null;           // Current file SHA for GitHub API
