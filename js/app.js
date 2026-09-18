@@ -12,8 +12,9 @@
      - Online/offline detection with automatic reconnection
      ================================================================== */
   var GH_REPO = 'V-ing7/v-ing-site';
+  var GH_FILE = 'data.json';
   var GH_BRANCH = 'main';
-  var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/data.json';
+  var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
   var WORKER_API = 'https://v-ing-api.vkyvkyvky.workers.dev';
 
   /* ---- Sync State ---- */
