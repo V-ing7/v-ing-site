@@ -2820,15 +2820,15 @@
 '
     + '【API 接口】\
 '
-    + 'Worker API 地址：https://v-ing-api.vkyvkyvky.workers.dev\
+    + 'Pages Function API 地址：https://v-ing-site.pages.dev/api/\
 '
-    + '读取数据：GET https://v-ing-api.vkyvkyvky.workers.dev/api/data （无需密码）\
+    + '读取数据：GET https://v-ing-site.pages.dev/api/data （无需密码）\
 '
-    + '修改数据：PUT https://v-ing-api.vkyvkyvky.workers.dev/api/data （需密码）\
+    + '修改数据：PUT https://v-ing-site.pages.dev/api/data （需密码）\
 '
-    + '触发部署：POST https://v-ing-api.vkyvkyvky.workers.dev/api/deploy （需密码）\
+    + '触发部署：POST https://v-ing-site.pages.dev/api/deploy （需密码）\
 '
-    + '健康检查：GET https://v-ing-api.vkyvkyvky.workers.dev/api/health\
+    + '健康检查：GET https://v-ing-site.pages.dev/api/health\
 \
 '
     + '【安全机制】\
@@ -2848,7 +2848,7 @@
 '
     + '   - Cloudflare Pages（https://v-ing-site.pages.dev）\
 '
-    + '2. 浏览器编辑保存时通过 Worker API 写入 GitHub 仓库 data.json\
+    + '2. 浏览器编辑保存时通过 Pages Function API 写入 GitHub 仓库 data.json\
 '
     + '3. 页面加载时并行请求多个数据源，选择最新数据\
 '
@@ -2861,15 +2861,15 @@
 '
     + '【操作步骤】\
 '
-    + '1. 用 Worker API 读取 data.json（GET https://v-ing-api.vkyvkyvky.workers.dev/api/data）\
+    + '1. 用 Pages Function API 读取 data.json（GET https://v-ing-site.pages.dev/api/data）\
 '
     + '2. 返回 JSON 格式 { sha, data }，直接使用 data 字段\
 '
     + '3. 了解当前数据状态后按我的要求修改\
 '
-    + '4. 修改后用 Worker API PUT 回 data.json：\
+    + '4. 修改后用 Pages Function API PUT 回 data.json：\
 '
-    + '   PUT https://v-ing-api.vkyvkyvky.workers.dev/api/data\
+    + '   PUT https://v-ing-site.pages.dev/api/data\
 '
     + '   Headers: { X-Password: <密码>, Content-Type: application/json }\
 '
