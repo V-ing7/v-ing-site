@@ -10,6 +10,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
   <script src="js/lib/html2canvas.min.js" defer></script>
+  <script>
+    // Clear old service workers and caches from previous versions
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+    }
+    if('caches' in window){
+      caches.keys().then(function(keys){
+        keys.forEach(function(k){ caches.delete(k); });
+      });
+    }
+  </script>
   <style>
     .ws-lock-input-wrap{padding:0 20px;margin:8px 0 4px}
     .ws-lock-text-input{
@@ -1515,6 +1528,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20260918d" defer></script>
+  <script src="js/app.js?v=20260918e" defer></script>
 </body>
 </html>
