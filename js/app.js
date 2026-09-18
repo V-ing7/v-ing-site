@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    微影 V-ing · Interactive System
    ================================================================ */
 (function(){
@@ -11,15 +11,10 @@
      - Adaptive auto-refresh with exponential backoff on failures
      - Online/offline detection with automatic reconnection
      ================================================================== */
-  var GH_TOKEN = 'ghp_2i' + 'w3v2pUn' + 'zAZxxkXD' + 'c7ewdINpjR' + 'nvA2H0P' + 'xB';
   var GH_REPO = 'V-ing7/v-ing-site';
-  var GH_FILE = 'data.json';
   var GH_BRANCH = 'main';
-  var GH_API = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
-  var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
-  var CF_TOKEN = 'cfut_' + 'rS6u3s18' + '78jmZXekQ' + 'a2if1HvpV' + 'tssokeOYAd' + 'Pr0c64e1a21b';
-  var CF_ACCOUNT = 'edb10972ff8ae9f58d46aa4bdcee3fca';
-  window.__cfToken = CF_TOKEN;
+  var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/data.json';
+  var WORKER_API = 'https://v-ing-api.vkyvkyvky.workers.dev';
 
   /* ---- Sync State ---- */
   var ghDataSHA = null;           // Current file SHA for GitHub API
@@ -64,7 +59,8 @@
 
   // UTF-8 safe base64 decode
   function b64Decode(str){
-    var binary = atob(str.replace(/\n/g, ''));
+    var binary = atob(str.replace(/\
+/g, ''));
     var bytes = new Uint8Array(binary.length);
     for(var i=0; i<binary.length; i++){ bytes[i] = binary.charCodeAt(i); }
     return new TextDecoder('utf-8').decode(bytes);
@@ -130,26 +126,14 @@
      Cloudflare Deploy Trigger (non-blocking, best-effort)
      ================================================================ */
   function triggerCloudflareDeploy(){
-    var cfBase = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT + '/pages/projects/v-ing-site';
-    var cfHeaders = {
-      'Authorization': 'Bearer ' + CF_TOKEN,
-      'Content-Type': 'application/json'
-    };
-    // Best-effort: retry latest deployment to refresh CDN
-    fetchWithTimeout(cfBase + '/deployments?per_page=1', { headers: cfHeaders }, 4000)
+    fetchWithTimeout(WORKER_API + '/api/deploy', {
+      method: 'POST',
+      headers: { 'X-Password': _getWsPassword() }
+    }, 4000)
       .then(function(r){ return r.json(); })
-      .then(function(listData){
-        var items = listData.result;
-        if(Array.isArray(items) && items.length > 0){
-          return fetchWithTimeout(cfBase + '/deployments/' + items[0].id + '/retry', {
-            method: 'POST', headers: cfHeaders
-          }, 4000).then(function(r){ return r.json(); });
-        }
-        throw new Error('No deployments');
-      })
       .then(function(d){
-        if(d.success){ _log('✓ Cloudflare deployment retried'); }
-        else{ _log('CF retry: ' + (d.errors ? d.errors[0].message : 'unknown'), 'warn'); }
+        if(d.ok){ _log('Cloudflare deployment retried'); }
+        else{ _log('CF retry: ' + (d.error || 'unknown'), 'warn'); }
       })
       .catch(function(err){ _log('CF deploy best-effort failed: ' + err.message, 'warn'); });
   }
@@ -187,20 +171,16 @@
     // Define sources with priority (lower = higher priority)
     var sources = [
       {
-        name: 'GitHub API',
+        name: 'Worker API',
         priority: 1,
         timeout: 6000,
         fetch: function(){
-          return fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH + '&t=' + cacheBust, {
-            headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-          }, 6000).then(function(res){
+          return fetchWithTimeout(WORKER_API + '/api/data?t=' + cacheBust, {}, 6000).then(function(res){
             if(!res.ok) throw new Error('HTTP ' + res.status);
             return res.json();
           }).then(function(json){
             shaFromAPI = json.sha;
-            var content = b64Decode(json.content);
-            var data = JSON.parse(content);
-            return { data: data, sha: json.sha, fromAPI: true };
+            return { data: json.data, sha: json.sha, fromAPI: true };
           });
         }
       },
@@ -443,24 +423,21 @@
       }
     }, _saveStuckTimeout);
 
-    var content = JSON.stringify(data, null, 2);
-    var b64 = b64Encode(content);
     var payload = {
       message: 'Update data via web editor - ' + new Date().toLocaleString('zh-CN'),
-      content: b64,
       branch: GH_BRANCH
     };
 
     function doPut(sha){
       if(sha) payload.sha = sha;
-      return fetchWithTimeout(GH_API, {
+      var putBody = { data: data, sha: sha, message: payload.message };
+      return fetchWithTimeout(WORKER_API + '/api/data', {
         method: 'PUT',
         headers: {
-          'Authorization': 'token ' + GH_TOKEN,
-          'Accept': 'application/vnd.github.v3+json',
+          'X-Password': _getWsPassword(),
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(putBody)
       }, 10000).then(function(res){
         if(res.status === 409){
           throw { type: 'conflict', message: 'SHA conflict (409)' };
@@ -473,8 +450,8 @@
     }
 
     function handleSuccess(json){
-      if(json.content && json.content.sha){
-        ghDataSHA = json.content.sha;
+      if(json.sha){
+        ghDataSHA = json.sha;
       }
       ghLastSuccessfulSave = Date.now();
       _log('✓ Saved to GitHub (SHA: ' + (ghDataSHA ? ghDataSHA.substring(0,7) : '?') + ')');
@@ -554,11 +531,9 @@
     }
   }
 
-  // Fetch current SHA from GitHub API
+  // Fetch current SHA from Worker API
   function _fetchSHA(){
-    return fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH, {
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-    }, 5000).then(function(res){
+    return fetchWithTimeout(WORKER_API + '/api/data', {}, 5000).then(function(res){
       if(!res.ok) throw new Error('SHA fetch HTTP ' + res.status);
       return res.json();
     }).then(function(json){ return json.sha; });
@@ -566,15 +541,12 @@
 
   // Fetch latest data and merge with local changes
   function _fetchLatestAndMerge(localData){
-    return fetchWithTimeout(GH_API + '?ref=' + GH_BRANCH, {
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
-    }, 5000).then(function(res){
+    return fetchWithTimeout(WORKER_API + '/api/data', {}, 5000).then(function(res){
       if(!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }).then(function(json){
       ghDataSHA = json.sha;
-      var remoteContent = b64Decode(json.content);
-      var remoteData = JSON.parse(remoteContent);
+      var remoteData = json.data;
 
       // Merge strategy: use local data (more recent user edits) but
       // incorporate any remote-only fields we don't have
@@ -1169,104 +1141,83 @@
   }
 
   /* ---------- Workspace Password Lock ---------- */
-  var WS_PASSWORD='123000';
+  var WS_PASSWORD='Vikyi';
   var WS_LOCK_KEY='v_ing_ws_unlocked';
+  var WS_PWD_KEY='v_ing_ws_pwd';
   var wsLockOverlay=document.getElementById('wsLockOverlay');
   var wsLockDots=document.getElementById('wsLockDots');
   var wsLockError=document.getElementById('wsLockError');
   var wsLockInput='';
 
+  function _getWsPassword(){
+    return sessionStorage.getItem(WS_PWD_KEY)||'';
+  }
+
   function isWsUnlocked(){
-    // Use sessionStorage so password resets when browser is closed
     return sessionStorage.getItem(WS_LOCK_KEY)==='1';
   }
   function showWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.add('ws-lock-active');
     wsLockInput='';
-    updateWsLockDots();
     hideWsLockError();
+    setTimeout(function(){
+      var inp=document.getElementById('wsLockTextInput');
+      if(inp){ inp.value=''; inp.focus(); }
+    },100);
   }
   function hideWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
-    // Use sessionStorage: unlocked during this browser session only
     sessionStorage.setItem(WS_LOCK_KEY,'1');
-    // Trigger reveals after unlock
+    sessionStorage.setItem(WS_PWD_KEY,wsLockInput);
     setTimeout(function(){checkReveals()},100);
-  }
-  function updateWsLockDots(){
-    if(!wsLockDots)return;
-    var dots=wsLockDots.querySelectorAll('.ws-lock-dot');
-    dots.forEach(function(dot,i){
-      dot.classList.remove('filled','error');
-      if(i<wsLockInput.length)dot.classList.add('filled');
-    });
   }
   function showWsLockError(msg){
     if(!wsLockError)return;
     wsLockError.textContent=msg;
     wsLockError.classList.add('show');
-    // Shake dots
-    if(wsLockDots){
-      wsLockDots.querySelectorAll('.ws-lock-dot').forEach(function(dot){
-        dot.classList.remove('filled');
-        dot.classList.add('error');
-      });
+    var card=wsLockOverlay.querySelector('.ws-lock-card');
+    if(card){
+      card.classList.add('shake');
+      setTimeout(function(){ card.classList.remove('shake'); },500);
     }
     setTimeout(function(){
       hideWsLockError();
       wsLockInput='';
-      updateWsLockDots();
+      var inp=document.getElementById('wsLockTextInput');
+      if(inp){ inp.value=''; inp.focus(); }
     },800);
   }
   function hideWsLockError(){
     if(wsLockError){
       wsLockError.classList.remove('show');
     }
-    if(wsLockDots){
-      wsLockDots.querySelectorAll('.ws-lock-dot').forEach(function(dot){
-        dot.classList.remove('error');
-      });
+  }
+  function handleWsLockSubmit(){
+    var inp=document.getElementById('wsLockTextInput');
+    if(!inp)return;
+    wsLockInput=inp.value;
+    if(wsLockInput===WS_PASSWORD){
+      hideWsLock();
+    }else{
+      showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
     }
   }
-  function handleWsLockKey(key){
-    if(key==='delete'){
-      wsLockInput=wsLockInput.slice(0,-1);
-      updateWsLockDots();
-      hideWsLockError();
-      return;
+  // Submit on Enter or button click
+  document.addEventListener('keydown',function(e){
+    if(!wsLockOverlay||!wsLockOverlay.classList.contains('ws-lock-active'))return;
+    if(e.key==='Enter'){
+      e.preventDefault();
+      handleWsLockSubmit();
     }
-    if(wsLockInput.length>=6)return;
-    wsLockInput+=key;
-    updateWsLockDots();
-    if(wsLockInput.length===6){
-      setTimeout(function(){
-        if(wsLockInput===WS_PASSWORD){
-          hideWsLock();
-        }else{
-          showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
-        }
-      },150);
-    }
-  }
-  // Keypad clicks
+  });
   if(wsLockOverlay){
     wsLockOverlay.addEventListener('click',function(e){
-      var btn=e.target.closest('.ws-lock-key');
-      if(btn&&!btn.disabled){
-        var key=btn.getAttribute('data-key');
-        if(key)handleWsLockKey(key);
+      var btn=e.target.closest('.ws-lock-submit');
+      if(btn){
+        handleWsLockSubmit();
       }
     });
   }
-  // Physical keyboard support
-  document.addEventListener('keydown',function(e){
-    if(!wsLockOverlay||!wsLockOverlay.classList.contains('ws-lock-active'))return;
-    if(e.key>='0'&&e.key<='9'){
-      handleWsLockKey(e.key);
-    }else if(e.key==='Backspace'||e.key==='Delete'){
-      handleWsLockKey('delete');
-    }
-  });
 
   /* ---------- Workspace: Segmented Control & Sub-pages ---------- */
   var wsTabs=document.getElementById('wsTabs');
@@ -2835,46 +2786,97 @@
   var consoleLastSync = document.getElementById('consoleLastSync');
   var consoleCopyBtn = document.getElementById('consoleCopyBtn');
 
-  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v3.0】\n'
-    + '我的网站数据存在 GitHub 仓库，请帮我拉取最新数据并继续工作。\n\n'
-    + '【项目信息】\n'
-    + '仓库地址：V-ing7/v-ing-site\n'
-    + '分支：main\n'
-    + '数据文件：data.json（含主播数据、主题、语言、操作日志）\n'
-    + '网站地址：https://v-ing-site.pages.dev\n'
-    + 'GitHub Pages：https://V-ing7.github.io/v-ing-site/\n'
-    + 'Cloudflare 项目名：v-ing-site\n'
-    + 'Cloudflare Account ID：edb10972ff8ae9f58d46aa4bdcee3fca\n\n'
-    + '【凭据】\n'
-    + 'GitHub Token：' + GH_TOKEN + '\n'
-    + 'Cloudflare Token：' + (window.__cfToken || '见工作台指令模版') + '\n'
-    + 'Cloudflare Account ID：edb10972ff8ae9f58d46aa4bdcee3fca\n\n'
-    + '【自动部署机制 v3.0】\n'
-    + '1. 推送代码到 GitHub main 分支后，GitHub Actions 自动同时部署到两个平台：\n'
-    + '   - GitHub Pages（https://V-ing7.github.io/v-ing-site/）\n'
-    + '   - Cloudflare Pages（https://v-ing-site.pages.dev）\n'
-    + '2. GitHub Secrets 已配置 CF_API_TOKEN 和 CF_ACCOUNT_ID\n'
-    + '3. 工作流文件：.github/workflows/deploy.yml（修改需在 GitHub 网页端操作）\n'
-    + '4. 浏览器编辑保存时自动写入 GitHub 仓库 data.json\n'
-    + '5. 页面加载时并行请求 5 个数据源，选择最新数据\n'
-    + '6. 每 30 秒自动刷新检查远端是否有新数据（仅当远端时间戳 > 本地时）\n'
-    + '7. 保存后 90 秒内跳过自动刷新，防止旧 CDN 缓存覆盖新数据\n'
-    + '8. 点击导航栏同步徽章可手动强制同步\n\n'
-    + '【操作步骤】\n'
-    + '1. 先用 GitHub API 读取 data.json（GET https://api.github.com/repos/V-ing7/v-ing-site/contents/data.json?ref=main）\n'
-    + '2. 解析 base64 content（UTF-8 安全解码：atob → Uint8Array → TextDecoder）\n'
-    + '3. 了解当前数据状态后按我的要求修改\n'
-    + '4. 修改后用 GitHub API PUT 回 data.json（需带 sha 参数）\n'
-    + '5. 如需部署代码变更，git push origin main 即可自动触发双平台部署\n'
-    + '6. 如需手动部署 Cloudflare Pages（紧急情况）：\n'
-    + '   CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<id> npx wrangler pages deploy . --project-name=v-ing-site --branch=main\n\n'
-    + '【注意事项】\n'
-    + '- 保存到 GitHub 时需先获取当前文件 sha，PUT 时带上 sha 防止冲突\n'
-    + '- 如果遇到 409 冲突，重新获取 sha 后重试\n'
-    + '- data.json 中的中文字符必须用 UTF-8 编码，不能乱码\n'
-    + '- operationLog 记录每次重要操作，格式：{date, time, action, status}\n'
-    + '- instructionTemplate 区域包含项目元信息，保持最新\n'
-    + '- 修改 .github/workflows/deploy.yml 需在 GitHub 网页端操作（PAT 无 workflow 权限）';
+  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.0】\
+'
+    + '我的网站数据存在 GitHub 仓库，请帮我拉取最新数据并继续工作。\
+\
+'
+    + '【项目信息】\
+'
+    + '仓库地址：V-ing7/v-ing-site\
+'
+    + '分支：main\
+'
+    + '数据文件：data.json（含主播数据、主题、语言、操作日志）\
+'
+    + '网站地址：https://v-ing-site.pages.dev\
+'
+    + 'GitHub Pages：https://V-ing7.github.io/v-ing-site/\
+\
+'
+    + '【API 接口】\
+'
+    + 'Worker API 地址：https://v-ing-api.vkyvkyvky.workers.dev\
+'
+    + '读取数据：GET https://v-ing-api.vkyvkyvky.workers.dev/api/data （无需密码）\
+'
+    + '修改数据：PUT https://v-ing-api.vkyvkyvky.workers.dev/api/data （需密码）\
+'
+    + '触发部署：POST https://v-ing-api.vkyvkyvky.workers.dev/api/deploy （需密码）\
+'
+    + '健康检查：GET https://v-ing-api.vkyvkyvky.workers.dev/api/health\
+\
+'
+    + '【安全机制】\
+'
+    + '读取数据无需密码，任何人可查看\
+'
+    + '修改数据需要密码，请向我询问密码后再操作\
+'
+    + '密码提示：个人英文名\
+\
+'
+    + '【自动部署机制 v4.0】\
+'
+    + '1. 推送代码到 GitHub main 分支后，GitHub Actions 自动同时部署到两个平台：\
+'
+    + '   - GitHub Pages（https://V-ing7.github.io/v-ing-site/）\
+'
+    + '   - Cloudflare Pages（https://v-ing-site.pages.dev）\
+'
+    + '2. 浏览器编辑保存时通过 Worker API 写入 GitHub 仓库 data.json\
+'
+    + '3. 页面加载时并行请求多个数据源，选择最新数据\
+'
+    + '4. 每 30 秒自动刷新检查远端是否有新数据（仅当远端时间戳 > 本地时）\
+'
+    + '5. 保存后 90 秒内跳过自动刷新，防止旧 CDN 缓存覆盖新数据\
+'
+    + '6. 点击导航栏同步徽章可手动强制同步\
+\
+'
+    + '【操作步骤】\
+'
+    + '1. 用 Worker API 读取 data.json（GET https://v-ing-api.vkyvkyvky.workers.dev/api/data）\
+'
+    + '2. 返回 JSON 格式 { sha, data }，直接使用 data 字段\
+'
+    + '3. 了解当前数据状态后按我的要求修改\
+'
+    + '4. 修改后用 Worker API PUT 回 data.json：\
+'
+    + '   PUT https://v-ing-api.vkyvkyvky.workers.dev/api/data\
+'
+    + '   Headers: { X-Password: <密码>, Content-Type: application/json }\
+'
+    + '   Body: { data: <修改后的完整JSON>, sha: <步骤1获取的sha> }\
+'
+    + '5. 如遇 409 冲突，重新 GET 获取新 sha 后重试\
+\
+'
+    + '【注意事项】\
+'
+    + '- 修改数据前必须向我询问密码，我不会在指令模版中提供密码\
+'
+    + '- 密码提示：个人英文名\
+'
+    + '- 如果遇到 409 冲突，重新 GET 获取 sha 后重试\
+'
+    + '- data.json 中的中文字符必须用 UTF-8 编码，不能乱码\
+'
+    + '- operationLog 记录每次重要操作，格式：{date, time, action, status}\
+'
+    + '- instructionTemplate 区域包含项目元信息，保持最新';
 
   // Render console panel from GitHub data
   function renderConsolePanel(ghData){
