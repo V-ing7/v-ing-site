@@ -60,8 +60,7 @@
 
   // UTF-8 safe base64 decode
   function b64Decode(str){
-    var binary = atob(str.replace(/\
-/g, ''));
+    var binary = atob(str.replace(/\n/g, ''));
     var bytes = new Uint8Array(binary.length);
     for(var i=0; i<binary.length; i++){ bytes[i] = binary.charCodeAt(i); }
     return new TextDecoder('utf-8').decode(bytes);
