@@ -24,6 +24,7 @@
   var ghLastSuccessfulLoad = 0;   // Timestamp of last successful load
   var ghLastSaveTime = 0;         // Timestamp of last save start
   var ghLastSuccessfulSave = 0;   // Timestamp of last successful save
+  var ghLastAppliedDataTime = ''; // lastUpdated of last applied data (prevents stale overwrites)
 
   /* ---- Save Queue State ---- */
   var _saveQueue = [];            // Pending save data snapshots
@@ -237,12 +238,24 @@
         return;
       }
       var dataTime = result.data.lastUpdated || '';
+
+      // Prevent stale data from overwriting newer data:
+      // - For background refresh: reject data older than ghLastAppliedDataTime
+      // - For initial load: accept first valid data, then only accept newer
+      var isStale = isBackground && ghLastAppliedDataTime && dataTime && dataTime < ghLastAppliedDataTime;
+      if(isStale){
+        _log(sourceName + ': stale data (ts: ' + dataTime + ' < applied: ' + ghLastAppliedDataTime + '), skipped', 'warn');
+        // Still count as completed but don't apply
+        return;
+      }
+
       var isNewer = !bestData || (dataTime && dataTime > bestTime);
 
       if(isNewer){
         bestData = result.data;
         bestTime = dataTime;
         bestSource = sourceName;
+        ghLastAppliedDataTime = dataTime;
         if(result.fromAPI && result.sha){
           ghDataSHA = result.sha;
         }
@@ -453,6 +466,7 @@
       if(json.sha){
         ghDataSHA = json.sha;
       }
+      ghLastAppliedDataTime = data.lastUpdated || _nowISO();
       ghLastSuccessfulSave = Date.now();
       _log('✓ Saved to GitHub (SHA: ' + (ghDataSHA ? ghDataSHA.substring(0,7) : '?') + ')');
       setSyncStatus('saved');
