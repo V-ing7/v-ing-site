@@ -1,0 +1,23 @@
+/*
+  X-Content-Type-Options: nosniff
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/js/*.js
+  Cache-Control: public, max-age=1, must-revalidate
+
+/css/*.css
+  Cache-Control: public, max-age=1, must-revalidate
+
+/data.json
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, PUT, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, X-Password
