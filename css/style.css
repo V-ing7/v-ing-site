@@ -5064,11 +5064,9 @@ textarea.sb-cell-desc{
 .sb-task-list.batch-active .sb-task-card.selected .sb-task-num .sb-check-box{
   background:var(--accent);
   border-color:var(--accent);
-  color:#fff;
 }
 .sb-task-list.batch-active .sb-task-card.selected .sb-task-num .sb-check-box svg{
-  opacity:1;
-  transform:scale(1);
+  display:none;
 }
 .sb-task-list.batch-active .sb-task-card.selected{
   background:rgba(255,107,53,.06);
