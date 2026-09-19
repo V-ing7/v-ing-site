@@ -237,6 +237,12 @@
         _log(sourceName + ': invalid or empty data, skipped', 'warn');
         return;
       }
+
+      // Always capture SHA from API response, even if data isn't newer
+      if(result.fromAPI && result.sha){
+        ghDataSHA = result.sha;
+      }
+
       var dataTime = result.data.lastUpdated || '';
 
       // Prevent stale data from overwriting newer data:
@@ -256,9 +262,6 @@
         bestTime = dataTime;
         bestSource = sourceName;
         ghLastAppliedDataTime = dataTime;
-        if(result.fromAPI && result.sha){
-          ghDataSHA = result.sha;
-        }
         _log('✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
         // Apply to UI immediately
         applyRemoteData(result.data);
@@ -479,6 +482,14 @@
 
     function handleFailure(err){
       _log('Save failed: ' + (err.message || err), 'warn');
+
+      // 403 Auth error: don't retry, fail immediately
+      if(err.status === 403){
+        _log('Auth failed (403) — not retrying', 'error');
+        setSyncStatus('error');
+        _finishSave(false);
+        return;
+      }
 
       if(err.type === 'conflict'){
         // 409 Conflict: fetch latest data, merge, then retry
@@ -1187,7 +1198,7 @@
   var wsLockInput='';
 
   function _getWsPassword(){
-    return sessionStorage.getItem(WS_PWD_KEY)||'';
+    return sessionStorage.getItem(WS_PWD_KEY) || WS_PASSWORD;
   }
 
   function isWsUnlocked(){
