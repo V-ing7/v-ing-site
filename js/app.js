@@ -3760,8 +3760,10 @@
           var item = document.createElement('div');
           item.className = 'sb-visual-item';
           item.innerHTML =
-            '<div class="sb-visual-num">' + (idx + 1) + '</div>' +
-            '<div class="sb-visual-text" style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</div>';
+            '<div class="sb-visual-item-content">' +
+              '<span class="sb-visual-num">' + (idx + 1) + '</span>' +
+              '<div class="sb-visual-text" style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</div>' +
+            '</div>';
           sbDetailVisualList.appendChild(item);
         });
       }
@@ -3932,9 +3934,12 @@
     editRows.forEach(function(row, idx){
       var item = document.createElement('div');
       item.className = 'sb-visual-item';
+      item.setAttribute('data-idx', idx);
       item.innerHTML =
-        '<div class="sb-visual-num">' + (idx + 1) + '</div>' +
-        '<textarea class="sb-cell sb-cell-desc" data-idx="' + idx + '" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row.visual || '') + '</textarea>';
+        '<div class="sb-visual-item-content">' +
+          '<span class="sb-visual-num">' + (idx + 1) + '</span>' +
+          '<textarea class="sb-visual-text" data-idx="' + idx + '" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row.visual || '') + '</textarea>' +
+        '</div>';
       visualList.appendChild(item);
 
       var ta = item.querySelector('textarea');

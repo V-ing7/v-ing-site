@@ -4806,7 +4806,6 @@ textarea.sb-cell:focus{
 .sb-visual-item{
   display:flex;
   align-items:stretch;
-  gap:0;
   border-bottom:1px solid var(--border);
   background:var(--surface-glass);
   position:relative;
@@ -4821,6 +4820,13 @@ textarea.sb-cell:focus{
   background:var(--border);
   z-index:1;
   pointer-events:none;
+}
+.sb-visual-item-content{
+  flex:1;
+  display:flex;
+  align-items:stretch;
+  gap:0;
+  min-width:0;
 }
 .sb-visual-num{
   width:48px;
@@ -4842,6 +4848,18 @@ textarea.sb-cell:focus{
   padding:12px 16px 12px 14px;
   line-height:1.5;
   min-height:calc(.85rem * 1.5 + 24px);
+  outline:none;
+  border:none;
+  background:transparent;
+  resize:none;
+  font-family:inherit;
+  overflow:hidden;
+}
+.sb-visual-text:focus{
+  outline:none;
+}
+.sb-visual-text::placeholder{
+  color:var(--text-quaternary);
 }
 
 /* Shot task textarea (smaller) */
