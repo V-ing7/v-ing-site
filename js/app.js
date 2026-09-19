@@ -4559,48 +4559,54 @@
       if(typeof window.__ghSave === 'function'){
         window.__ghSave(window.__vingData);
 
-        // Use callback-based status watching instead of polling
-        var lastSt = null;
+        // Phase-based status watching:
+        // Phase 1 'waiting': ignore stale status during 1.5s debounce
+        // Phase 2 'saving': watch for saved/success/error
         var watchCount = 0;
-        var watchMax = 60; // 60 * 250ms = 15s max
+        var watchMax = 80; // 80 * 250ms = 20s max (covers 1.5s debounce + save time)
+        var phase = 'waiting';
         var watchTimer = setInterval(function(){
           var st = window.__ghSyncStatus;
           watchCount++;
 
-          // Only react to state changes
-          if(st === lastSt) return;
-          lastSt = st;
-
-          if(st === 'saved' || st === 'success'){
-            markSaved();
-            // Mark project as saved
-            var savedIdx = projects.findIndex(function(p){ return p.id === projData.id; });
-            if(savedIdx >= 0){
-              projects[savedIdx]._saved = true;
-              projects[savedIdx]._local = false;
+          if(phase === 'waiting'){
+            // Wait for the save to actually start (after 1.5s debounce)
+            if(st === 'saving'){
+              phase = 'saving';
+              if(sbStatusSync){
+                sbStatusSync.textContent = t('正在保存...','Saving...');
+                sbStatusSync.className = 'sb-status-sync saving';
+              }
             }
-            clearInterval(watchTimer);
-            // Auto-collapse to project list after save
-            setTimeout(function(){
-              backToProjectList();
-            }, 800);
-          } else if(st === 'error'){
-            sbEditing = false; // Re-allow auto-refresh on save failure
-            if(sbStatusSync){
-              sbStatusSync.textContent = t('保存失败','Save failed');
-              sbStatusSync.className = 'sb-status-sync error';
+            // Ignore stale 'success'/'saved'/'error' from previous saves
+          } else if(phase === 'saving'){
+            // Save has started, now watch for completion
+            if(st === 'saved' || st === 'success'){
+              markSaved();
+              var savedIdx = projects.findIndex(function(p){ return p.id === projData.id; });
+              if(savedIdx >= 0){
+                projects[savedIdx]._saved = true;
+                projects[savedIdx]._local = false;
+              }
+              clearInterval(watchTimer);
+              setTimeout(function(){
+                backToProjectList();
+              }, 800);
+            } else if(st === 'error'){
+              sbEditing = false;
+              if(sbStatusSync){
+                sbStatusSync.textContent = t('保存失败','Save failed');
+                sbStatusSync.className = 'sb-status-sync error';
+              }
+              clearInterval(watchTimer);
             }
-            clearInterval(watchTimer);
           }
 
           if(watchCount >= watchMax){
-            // Timeout — reset editing state
             sbEditing = false;
-            if(window.__ghSyncStatus === 'saving'){
-              if(sbStatusSync){
-                sbStatusSync.textContent = t('保存超时','Save timeout');
-                sbStatusSync.className = 'sb-status-sync error';
-              }
+            if(sbStatusSync){
+              sbStatusSync.textContent = t('保存超时','Save timeout');
+              sbStatusSync.className = 'sb-status-sync error';
             }
             clearInterval(watchTimer);
           }
