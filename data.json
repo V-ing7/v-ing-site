@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-19T04:34:11.981Z",
+  "lastUpdated": "2026-09-19T10:47:54.000Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -72,12 +72,12 @@
       "shootDate": "2026-09-17",
       "rows": [
         {
-          "shotTask": "测试同步任务_1789792451981",
+          "shotTask": "",
           "visual": "12",
-          "done": true
+          "done": false
         }
       ],
-      "lastUpdated": "2026-09-19T04:34:11.981Z"
+      "lastUpdated": "2026-09-19T10:47:54.000Z"
     },
     {
       "id": "sb_mu5o4v29_2jwt",
@@ -396,12 +396,6 @@
       "time": "10:47",
       "action": "任务列表新增批量选择模式：批量删除、批量标记完成/取消完成",
       "status": "完成"
-    },
-    {
-      "date": "2026-09-19",
-      "time": "04:34",
-      "action": "同步测试：直接修改保存",
-      "status": "测试"
     }
   ],
   "instructionTemplate": {
