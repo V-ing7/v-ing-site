@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-19T10:47:54.000Z",
+  "lastUpdated": "2026-09-19T07:50:38.651Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -86,15 +86,18 @@
       "rows": [
         {
           "shotTask": "任务一",
-          "visual": "这是一段很长的画面内容描述用来测试textarea自动高度功能是否正常工作，输入足够多的文字应该能让textarea的高度自动增加以适应内容"
+          "visual": "这是一段很长的画面内容描述用来测试textarea自动高度功能是否正常工作，输入足够多的文字应该能让textarea的高度自动增加以适应内容",
+          "done": false
         },
         {
           "shotTask": "任务二",
-          "visual": ""
+          "visual": "",
+          "done": false
         },
         {
           "shotTask": "任务三",
-          "visual": ""
+          "visual": "",
+          "done": false
         }
       ],
       "lastUpdated": "2026-09-18T01:15:41.986Z"
@@ -106,18 +109,34 @@
       "rows": [
         {
           "shotTask": "任务一",
-          "visual": "阳光透过窗户洒在桌面上，咖啡杯冒着热气，窗外是繁忙的街道，行人匆匆走过，一切显得宁静而美好"
+          "visual": "阳光透过窗户洒在桌面上，咖啡杯冒着热气，窗外是繁忙的街道，行人匆匆走过，一切显得宁静而美好",
+          "done": false
         },
         {
           "shotTask": "任务二",
-          "visual": ""
+          "visual": "",
+          "done": false
         },
         {
           "shotTask": "任务三",
-          "visual": ""
+          "visual": "",
+          "done": false
         }
       ],
       "lastUpdated": "2026-09-17T15:49:27.703Z"
+    },
+    {
+      "id": "sb_mu838d2z_rlc7",
+      "projectName": "【测试】深度同步验证",
+      "shootDate": "2026-09-20",
+      "rows": [
+        {
+          "shotTask": "",
+          "visual": "",
+          "done": false
+        }
+      ],
+      "lastUpdated": "2026-09-19T07:50:38.651Z"
     }
   ],
   "operationLog": [
@@ -335,6 +354,12 @@
       "date": "2026-09-19",
       "time": "10:47",
       "action": "任务列表新增批量选择模式：批量删除、批量标记完成/取消完成",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-19",
+      "time": "15:50",
+      "action": "计划更新：【测试】深度同步验证（1个任务）",
       "status": "完成"
     }
   ],
