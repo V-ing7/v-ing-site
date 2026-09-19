@@ -4616,13 +4616,12 @@ textarea.sb-cell:focus{
 .sb-task-card-content{
   flex:1;
   display:flex;
-  align-items:flex-start;
+  align-items:stretch;
   gap:0;
   min-width:0;
 }
 .sb-task-num{
   width:48px;
-  height:100%;
   flex-shrink:0;
   display:flex;
   align-items:center;
@@ -4631,7 +4630,6 @@ textarea.sb-cell:focus{
   font-size:.82rem;
   font-weight:500;
   font-variant-numeric:tabular-nums;
-  align-self:stretch;
 }
 .sb-task-card.done .sb-task-num{
   color:#30d958;
@@ -5042,15 +5040,7 @@ textarea.sb-cell-desc{
   transition:all .2s cubic-bezier(.22,.61,.36,1);
 }
 .sb-task-num .sb-num-text{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  height:100%;
-  font-size:.82rem;
-  font-weight:500;
-  font-variant-numeric:tabular-nums;
-  color:inherit;
+  display:block;
   transition:all .25s cubic-bezier(.22,.61,.36,1);
 }
 
