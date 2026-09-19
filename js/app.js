@@ -3742,7 +3742,7 @@
           card.className = 'sb-task-card' + (row.done ? ' done' : '');
           card.innerHTML =
             '<div class="sb-task-card-content">' +
-              '<span class="sb-task-num">' + (idx + 1) + '</span>' +
+              '<span class="sb-task-num"><span class="sb-num-text">' + (idx + 1) + '</span></span>' +
               '<span class="sb-task-text">' + escapeHtml(row.shotTask || '') + '</span>' +
             '</div>' +
             (row.done ? '<span class="sb-task-badge">' + t('已完成','Done') + '</span>' : '');
