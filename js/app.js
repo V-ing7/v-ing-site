@@ -3298,7 +3298,7 @@
             '</div>' +
             '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
           '</div>' +
-          '<div class="sb-pcard-hint">' + t('左滑露出删除 · 长按删除按钮确认','Swipe left · Long-press delete to confirm') + '</div>' +
+          '<div class="sb-pcard-hint">' + t('左滑更多操作 · 长按确认','Swipe left for more · Long-press to confirm') + '</div>' +
         '</div>';
 
       // Delete button: long-press to delete with progress bar
@@ -3454,6 +3454,43 @@
     var isSwiping = false;
     var swipeDx = 0;
     var contentEl = card.querySelector('.sb-pcard-content');
+    var actionEl = card.querySelector('.sb-pcard-action');
+    var delBtn = card.querySelector('.sb-pcard-del-btn');
+    var rafPending = false;
+    var pendingOffset = 0;
+    var pendingProgress = 0;
+    var hasPending = false;
+
+    // Apply visual updates via rAF for smooth 60fps rendering
+    function applySwipeVisuals(){
+      rafPending = false;
+      if(!hasPending) return;
+      hasPending = false;
+
+      if(contentEl){
+        contentEl.style.transform = 'translateX(' + pendingOffset + 'px)';
+      }
+      if(actionEl){
+        var blurVal = 8 * (1 - pendingProgress);
+        actionEl.style.filter = 'blur(' + blurVal.toFixed(1) + 'px)';
+        actionEl.style.opacity = pendingProgress.toFixed(2);
+      }
+      if(delBtn){
+        var btnProgress = Math.max(0, (pendingProgress - 0.3) / 0.7);
+        delBtn.style.opacity = btnProgress.toFixed(2);
+        delBtn.style.transform = 'translateX(' + (12 * (1 - pendingProgress)).toFixed(1) + 'px)';
+      }
+    }
+
+    function scheduleVisuals(offset, progress){
+      pendingOffset = offset;
+      pendingProgress = progress;
+      hasPending = true;
+      if(!rafPending){
+        rafPending = true;
+        requestAnimationFrame(applySwipeVisuals);
+      }
+    }
 
     function startPress(e){
       if(isPressing) return;
@@ -3549,18 +3586,36 @@
         var isOpen = card.classList.contains('swiped-left');
         var base = isOpen ? -SWIPE_ACTION_W : 0;
         var offset = Math.max(-SWIPE_ACTION_W, Math.min(0, base + dx));
-        contentEl.style.transition = 'none';
-        contentEl.style.transform = 'translateX(' + offset + 'px)';
+        var progress = Math.abs(offset) / SWIPE_ACTION_W;
+        // Add swiping class and disable transition on first swipe frame
+        if(!card.classList.contains('swiping')){
+          card.classList.add('swiping');
+          contentEl.style.transition = 'none';
+        }
+        // Batch DOM updates via rAF for smooth 60fps
+        scheduleVisuals(offset, progress);
       }
     }
 
     function endSwipe(){
       if(!isSwiping) return false;
       isSwiping = false;
+      // Cancel any pending rAF frame
+      hasPending = false;
+      rafPending = false;
 
+      // Clear inline styles so CSS transitions take over for snap animation
       if(contentEl){
         contentEl.style.transition = '';
         contentEl.style.transform = '';
+      }
+      if(actionEl){
+        actionEl.style.filter = '';
+        actionEl.style.opacity = '';
+      }
+      if(delBtn){
+        delBtn.style.opacity = '';
+        delBtn.style.transform = '';
       }
 
       var isOpen = card.classList.contains('swiped-left');
@@ -3574,6 +3629,11 @@
         card.classList.remove('swiped-left');
         if(sbSwipedCard === card) sbSwipedCard = null;
       }
+
+      // Remove swiping class after transition completes
+      setTimeout(function(){
+        card.classList.remove('swiping');
+      }, 350);
 
       isPressing = false;
       sbLongPressActive = false;
@@ -3597,7 +3657,11 @@
         e.preventDefault();
         e.stopPropagation();
       }
-      if(endSwipe()) return;
+      if(endSwipe()){
+        // Prevent click event from firing after swipe (desktop mouse)
+        e.preventDefault();
+        return;
+      }
       cancelPress();
     });
     card.addEventListener('mouseleave', function(){

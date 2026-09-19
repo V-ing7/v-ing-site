@@ -4868,6 +4868,29 @@ textarea.sb-cell-desc{
   display:flex;
   flex-direction:column;
   z-index:0;
+  opacity:0;
+  filter:blur(8px);
+  transition:opacity .35s cubic-bezier(.22,.61,.36,1), filter .35s cubic-bezier(.22,.61,.36,1);
+}
+.sb-pcard.swiped-left .sb-pcard-action,
+.sb-pcard.swiping .sb-pcard-action{
+  opacity:1;
+  filter:blur(0);
+}
+/* Gradient glow on left edge of action area (soft transition into content) */
+.sb-pcard-action::before{
+  content:'';
+  position:absolute;
+  top:0;bottom:0;left:-24px;
+  width:24px;
+  background:linear-gradient(90deg,rgba(255,59,48,0),rgba(255,59,48,.6));
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.sb-pcard.swiped-left .sb-pcard-action::before,
+.sb-pcard.swiping .sb-pcard-action::before{
+  opacity:1;
 }
 .sb-pcard-del-btn{
   flex:1 1 auto;
@@ -4889,6 +4912,14 @@ textarea.sb-cell-desc{
   user-select:none;
   -webkit-touch-callout:none;
   touch-action:none;
+  opacity:0;
+  transform:translateX(12px);
+  transition:opacity .3s cubic-bezier(.22,.61,.36,1) .05s, transform .3s cubic-bezier(.22,.61,.36,1) .05s;
+}
+.sb-pcard.swiped-left .sb-pcard-del-btn,
+.sb-pcard.swiping .sb-pcard-del-btn{
+  opacity:1;
+  transform:translateX(0);
 }
 /* Progress fill: bottom → top on long-press */
 .sb-pcard-del-fill{
@@ -4934,6 +4965,24 @@ textarea.sb-cell-desc{
 }
 .sb-pcard.swiped-left .sb-pcard-content{
   transform:translateX(-80px);
+}
+/* Gradient blur mask on right edge of content — soft fade during swipe */
+.sb-pcard-content::after{
+  content:'';
+  position:absolute;
+  top:0;right:0;bottom:0;
+  width:32px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),var(--surface-glass) 70%);
+  pointer-events:none;
+  opacity:0;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  transition:opacity .25s ease;
+  z-index:2;
+}
+.sb-pcard.swiped-left .sb-pcard-content::after,
+.sb-pcard.swiping .sb-pcard-content::after{
+  opacity:1;
 }
 
 /* Long-press progress bar (on card edge) */
