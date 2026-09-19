@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-19T04:14:49.298013Z",
+  "lastUpdated": "2026-09-19T04:14:55.195568Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -117,24 +117,6 @@
         }
       ],
       "lastUpdated": "2026-09-17T15:49:27.703Z"
-    },
-    {
-      "id": "test_sync_verify",
-      "projectName": "同步测试",
-      "shootDate": "2026-09-19",
-      "rows": [
-        {
-          "shotTask": "测试任务1",
-          "visual": "测试画面1",
-          "done": true
-        },
-        {
-          "shotTask": "测试任务2",
-          "visual": "测试画面2",
-          "done": false
-        }
-      ],
-      "lastUpdated": "2026-09-19T04:14:49.297927Z"
     }
   ],
   "operationLog": [
