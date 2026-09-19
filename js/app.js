@@ -645,7 +645,8 @@
         && !document.hidden
         && timeSinceSave > 90000
         && _isOnline
-        && !window.__sbLongPressActive;
+        && !window.__sbLongPressActive
+        && !window.__sbEditing;
 
       if(canRefresh){
         ghLoad({ background: true }).then(function(){
@@ -3189,8 +3190,10 @@
   var sbLastTouchTime = 0;
   // Track currently swiped-open card (for left-swipe delete)
   var sbSwipedCard = null;
-  // Expose long-press state to outer scope (for auto-refresh guard)
+  // Expose long-press state and edit state to outer scope (for auto-refresh guard)
+  var sbEditing = false;
   try{ Object.defineProperty(window, '__sbLongPressActive', {get: function(){ return sbLongPressActive; }}); }catch(e){ window.__sbLongPressActive = false; }
+  try{ Object.defineProperty(window, '__sbEditing', {get: function(){ return sbEditing; }}); }catch(e){ window.__sbEditing = false; }
 
   // DOM refs
   var projectListView = document.getElementById('sbProjectListView');
@@ -3777,6 +3780,7 @@
   }
 
   function backToProjectList(){
+    sbEditing = false; // Re-allow auto-refresh
     if(detailView){ detailView.style.display = 'none'; detailView.classList.remove('visible'); }
     if(editorView){ editorView.style.display = 'none'; editorView.classList.remove('visible'); }
     if(projectListView) projectListView.style.display = '';
@@ -3788,6 +3792,7 @@
     // pid = null for new project, or existing project id
     currentProjectId = pid || null;
     hasUnsavedChanges = false;
+    sbEditing = true; // Block auto-refresh while editing
     // Reset batch mode
     isBatchMode = false;
     selectedIdxs.clear();
@@ -4519,32 +4524,51 @@
 
       if(typeof window.__ghSave === 'function'){
         window.__ghSave(window.__vingData);
-        var checkInterval = setInterval(function(){
+
+        // Use callback-based status watching instead of polling
+        var lastSt = null;
+        var watchCount = 0;
+        var watchMax = 60; // 60 * 250ms = 15s max
+        var watchTimer = setInterval(function(){
           var st = window.__ghSyncStatus;
-          if(st !== undefined){
-            if(st === 'saved' || st === 'success'){
-              markSaved();
-              // Mark project as saved (no longer local-unsaved)
-              var savedIdx = projects.findIndex(function(p){ return p.id === projData.id; });
-              if(savedIdx >= 0){
-                projects[savedIdx]._saved = true;
-                projects[savedIdx]._local = false;
-              }
-              clearInterval(checkInterval);
-              // Auto-collapse to project list after save
-              setTimeout(function(){
-                backToProjectList();
-              }, 800);
-            } else if(st === 'error'){
+          watchCount++;
+
+          // Only react to state changes
+          if(st === lastSt) return;
+          lastSt = st;
+
+          if(st === 'saved' || st === 'success'){
+            markSaved();
+            // Mark project as saved
+            var savedIdx = projects.findIndex(function(p){ return p.id === projData.id; });
+            if(savedIdx >= 0){
+              projects[savedIdx]._saved = true;
+              projects[savedIdx]._local = false;
+            }
+            clearInterval(watchTimer);
+            // Auto-collapse to project list after save
+            setTimeout(function(){
+              backToProjectList();
+            }, 800);
+          } else if(st === 'error'){
+            if(sbStatusSync){
+              sbStatusSync.textContent = t('保存失败','Save failed');
+              sbStatusSync.className = 'sb-status-sync error';
+            }
+            clearInterval(watchTimer);
+          }
+
+          if(watchCount >= watchMax){
+            // Timeout — check if save is still in progress
+            if(window.__ghSyncStatus === 'saving'){
               if(sbStatusSync){
-                sbStatusSync.textContent = t('保存失败','Save failed');
+                sbStatusSync.textContent = t('保存超时','Save timeout');
                 sbStatusSync.className = 'sb-status-sync error';
               }
-              clearInterval(checkInterval);
             }
+            clearInterval(watchTimer);
           }
-        }, 500);
-        setTimeout(function(){ clearInterval(checkInterval); }, 15000);
+        }, 250);
       } else {
         if(sbStatusSync){
           sbStatusSync.textContent = t('保存功能未就绪','Save unavailable');
@@ -4562,6 +4586,12 @@
   /* ---------- Data Sync (called from applyRemoteData) ---------- */
   window.__renderStoryboard = function(data){
     if(!data) return;
+
+    // Don't overwrite local data while editing
+    if(sbEditing || hasUnsavedChanges){
+      console.log('[Storyboard] Skipping remote render — editing in progress');
+      return;
+    }
 
     var newProjects = [];
 
