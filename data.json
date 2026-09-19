@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-19T07:53:53.815Z",
+  "lastUpdated": "2026-09-19T07:54:15.912Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -124,34 +124,6 @@
         }
       ],
       "lastUpdated": "2026-09-17T15:49:27.703Z"
-    },
-    {
-      "id": "test_1789804411591",
-      "projectName": "【深度测试】项目A-已编辑",
-      "shootDate": "2026-09-20",
-      "rows": [
-        {
-          "shotTask": "任务1：测试同步",
-          "visual": "画面1：测试内容",
-          "done": true
-        },
-        {
-          "shotTask": "任务2：已编辑验证持久化",
-          "visual": "画面2：验证内容",
-          "done": true
-        },
-        {
-          "shotTask": "任务3：done字段测试",
-          "visual": "画面3：done测试",
-          "done": true
-        },
-        {
-          "shotTask": "任务4：新增行测试",
-          "visual": "画面4：新增",
-          "done": false
-        }
-      ],
-      "lastUpdated": "2026-09-19T07:53:53.815Z"
     }
   ],
   "operationLog": [
