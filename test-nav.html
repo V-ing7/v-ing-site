@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>导航栏居中测试</title>
+<style>
+:root{
+  --text-primary:#1a1a2e;
+  --text-secondary:#64748b;
+  --accent:#6366f1;
+  --accent-glow:rgba(99,102,241,.12);
+  --surface-glass:rgba(255,255,255,.7);
+  --surface-2:rgba(255,255,255,.8);
+  --glass-border:rgba(0,0,0,.06);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+  --nav-glass-bg:rgba(255,255,255,.72);
+  --nav-glass-shadow:rgba(0,0,0,.06);
+  --nav-glass-highlight:rgba(255,255,255,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1a1a2e}
+
+/* === 导航栏 CSS（从 style.css 复制） === */
+.nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+}
+.nav-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:16px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  position:relative;
+  transition:all .4s ease;
+}
+.nav.scrolled .nav-inner{
+  background:var(--nav-glass-bg);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-radius:20px;
+  margin:12px 24px;
+  padding:10px 20px;
+  box-shadow:0 8px 32px var(--nav-glass-shadow);
+  -webkit-font-smoothing:antialiased;
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+}
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+  font-size:1.1rem;
+  letter-spacing:-.02em;
+  cursor:pointer;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-logo:hover{transform:scale(1.03)}
+.logo-mark{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;
+}
+.logo-svg{width:28px;height:auto;color:var(--text-primary);}
+.logo-dot{color:var(--accent)}
+.logo-text{font-weight:700}
+.nav-links{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:4px;
+  background:var(--surface-glass);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  padding:4px;
+  border-radius:14px;
+  border:1px solid var(--glass-border);
+}
+.nav-link{
+  padding:8px 18px;
+  border-radius:10px;
+  font-size:.88rem;
+  font-weight:500;
+  color:var(--text-secondary);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+  cursor:pointer;
+}
+.nav-link:hover{color:var(--text-primary);background:var(--accent-glow);}
+.nav-link.active{color:var(--text-primary);background:var(--surface-2);box-shadow:var(--shadow-sm);}
+.nav-controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.sync-badge{
+  font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:8px;
+  white-space:nowrap;transition:all .3s ease;display:inline-flex;align-items:center;
+  background:rgba(34,197,94,.12);color:#16a34a;
+}
+.ctrl-btn{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--glass-border);
+  background:var(--surface-glass);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.75rem;font-weight:600;color:var(--text-secondary);
+}
+.menu-toggle{display:none}
+
+/* 标尺线 */
+.ruler{
+  position:fixed;top:0;left:50%;width:1px;height:100px;
+  background:red;z-index:9999;pointer-events:none;
+}
+.ruler::after{
+  content:'VP CENTER';
+  position:absolute;top:0;left:4px;color:red;font-size:10px;
+}
+.ruler-inner{
+  position:absolute;top:60px;left:50%;width:1px;height:40px;
+  background:blue;z-index:9998;pointer-events:none;
+}
+.ruler-inner::after{
+  content:'INNER CENTER';
+  position:absolute;top:0;left:4px;color:blue;font-size:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="ruler"></div>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo">
+      <span class="logo-mark">
+        <svg class="logo-svg" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+          <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="logo-text">微影<span class="logo-dot">.</span>ing</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a class="nav-link active">首页</a>
+      <a class="nav-link">关于</a>
+      <a class="nav-link">作品</a>
+      <a class="nav-link">联动</a>
+      <a class="nav-link">工作台</a>
+      <a class="nav-link">联系</a>
+    </div>
+    <div class="nav-controls">
+      <span class="sync-badge">已同步</span>
+      <button class="ctrl-btn">EN</button>
+      <button class="ctrl-btn">☀</button>
+    </div>
+  </div>
+</nav>
+
+<div style="padding:120px 40px;text-align:center">
+  <h1>导航栏居中测试</h1>
+  <p>红色线 = 视口中心（50%）</p>
+  <p>导航链接组应该与红线对齐</p>
+  <div style="margin-top:40px;padding:20px;background:#fff;border-radius:12px;display:inline-block">
+    <p id="measureResult" style="font-family:monospace;font-size:14px;text-align:left"></p>
+  </div>
+</div>
+
+<script>
+function measure(){
+  var w = window.innerWidth;
+  var inner = document.querySelector('.nav-inner').getBoundingClientRect();
+  var logo = document.querySelector('.nav-logo').getBoundingClientRect();
+  var links = document.querySelector('.nav-links').getBoundingClientRect();
+  var controls = document.querySelector('.nav-controls').getBoundingClientRect();
+
+  var linksCenter = (links.left + links.right) / 2;
+  var viewportCenter = w / 2;
+  var innerCenter = (inner.left + inner.right) / 2;
+  var offset = linksCenter - viewportCenter;
+  var leftSpace = links.left - inner.left;
+  var rightSpace = inner.right - links.right;
+  var spaceDiff = rightSpace - leftSpace;
+
+  var result = {
+    windowWidth: w,
+    viewportCenter: Math.round(viewportCenter * 100) / 100,
+    innerCenter: Math.round(innerCenter * 100) / 100,
+    linksCenter: Math.round(linksCenter * 100) / 100,
+    offsetFromViewport: Math.round(offset * 100) / 100,
+    leftSpace: Math.round(leftSpace * 100) / 100,
+    rightSpace: Math.round(rightSpace * 100) / 100,
+    spaceDiff: Math.round(spaceDiff * 100) / 100,
+    logoWidth: Math.round(logo.width * 100) / 100,
+    controlsWidth: Math.round(controls.width * 100) / 100,
+    linksWidth: Math.round(links.width * 100) / 100,
+    linksPosition: getComputedStyle(document.querySelector('.nav-links')).position,
+    linksLeft: getComputedStyle(document.querySelector('.nav-links')).left,
+    linksTransform: getComputedStyle(document.querySelector('.nav-links')).transform,
+    isCentered: Math.abs(offset) < 2
+  };
+
+  document.getElementById('measureResult').innerHTML = 
+    JSON.stringify(result, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+}
+measure();
+window.addEventListener('resize', measure);
+window.addEventListener('scroll', function(){
+  if(window.scrollY > 50){
+    document.querySelector('.nav').classList.add('scrolled');
+  } else {
+    document.querySelector('.nav').classList.remove('scrolled');
+  }
+  measure();
+});
+</script>
+</body>
+</html>
