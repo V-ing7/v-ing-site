@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-19T07:50:38.651Z",
+  "lastUpdated": "2026-09-19T07:52:06.764Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -124,19 +124,6 @@
         }
       ],
       "lastUpdated": "2026-09-17T15:49:27.703Z"
-    },
-    {
-      "id": "sb_mu838d2z_rlc7",
-      "projectName": "【测试】深度同步验证",
-      "shootDate": "2026-09-20",
-      "rows": [
-        {
-          "shotTask": "",
-          "visual": "",
-          "done": false
-        }
-      ],
-      "lastUpdated": "2026-09-19T07:50:38.651Z"
     }
   ],
   "operationLog": [
