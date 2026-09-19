@@ -4805,29 +4805,43 @@ textarea.sb-cell:focus{
 }
 .sb-visual-item{
   display:flex;
-  align-items:flex-start;
-  gap:10px;
-  padding:10px 14px;
+  align-items:stretch;
+  gap:0;
   border-bottom:1px solid var(--border);
   background:var(--surface-glass);
+  position:relative;
 }
 .sb-visual-item:last-child{border-bottom:none}
+.sb-visual-item::before{
+  content:'';
+  position:absolute;
+  top:0;bottom:0;
+  left:48px;
+  width:1px;
+  background:var(--border);
+  z-index:1;
+  pointer-events:none;
+}
 .sb-visual-num{
-  width:24px;height:24px;
-  display:flex;align-items:center;justify-content:center;
-  background:#ff9f0a;
-  color:#fff;
-  border-radius:50%;
-  font-size:.7rem;
-  font-weight:600;
+  width:48px;
   flex-shrink:0;
-  margin-top:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--text-quaternary);
+  font-size:.82rem;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
 }
 .sb-visual-text{
   flex:1;
   font-size:.85rem;
   color:var(--text-primary);
   word-break:break-word;
+  min-width:0;
+  padding:12px 16px 12px 14px;
+  line-height:1.5;
+  min-height:calc(.85rem * 1.5 + 24px);
 }
 
 /* Shot task textarea (smaller) */
