@@ -36,7 +36,7 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-19T10:47:54.000Z",
+  "lastUpdated": "2026-09-19T07:07:08.323Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
@@ -72,12 +72,12 @@
       "shootDate": "2026-09-17",
       "rows": [
         {
-          "shotTask": "",
+          "shotTask": "同步验证_1789801628323",
           "visual": "12",
-          "done": false
+          "done": true
         }
       ],
-      "lastUpdated": "2026-09-19T10:47:54.000Z"
+      "lastUpdated": "2026-09-19T07:07:08.323Z"
     },
     {
       "id": "sb_mu5o4v29_2jwt",
