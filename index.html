@@ -1276,8 +1276,28 @@
                   <span class="sb-section-title" data-cn="拍摄任务" data-en="Shot Tasks">拍摄任务</span>
                   <span class="sb-section-count" id="sbTaskCount">0</span>
                 </div>
+                <div class="sb-batch-toolbar" id="sbBatchToolbar">
+                  <div class="sb-batch-left">
+                    <button class="sb-batch-mode-btn" id="sbBatchModeBtn" type="button">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                      <span data-cn="批量管理" data-en="Batch Select">批量管理</span>
+                    </button>
+                    <div class="sb-batch-count" id="sbBatchCount" style="display:none"><span data-cn="已选" data-en="Selected">已选</span> <strong id="sbSelectedCount">0</strong></div>
+                  </div>
+                  <button class="sb-batch-select-all" id="sbSelectAllBtn" type="button" style="display:none" data-cn="全选" data-en="Select All">全选</button>
+                </div>
                 <div class="sb-task-list" id="sbTaskList">
                   <!-- Task cards injected by JS -->
+                </div>
+                <div class="sb-batch-actions-bar" id="sbBatchActionBar">
+                  <button class="sb-batch-action-btn sb-batch-done" id="sbBatchDoneBtn" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span data-cn="标记完成" data-en="Mark Done">标记完成</span>
+                  </button>
+                  <button class="sb-batch-action-btn sb-batch-delete" id="sbBatchDeleteBtn" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path></svg>
+                    <span data-cn="删除" data-en="Delete">删除</span>
+                  </button>
                 </div>
               </div>
 

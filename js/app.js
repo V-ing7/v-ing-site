@@ -3786,6 +3786,18 @@
     // pid = null for new project, or existing project id
     currentProjectId = pid || null;
     hasUnsavedChanges = false;
+    // Reset batch mode
+    isBatchMode = false;
+    selectedIdxs.clear();
+    if(tableBody) tableBody.classList.remove('batch-active');
+    if(sbBatchModeBtn){
+      sbBatchModeBtn.classList.remove('active');
+      var span = sbBatchModeBtn.querySelector('span');
+      if(span) span.textContent = t('批量管理','Batch Select');
+    }
+    if(sbBatchCount) sbBatchCount.style.display = 'none';
+    if(sbSelectAllBtn) sbSelectAllBtn.style.display = 'none';
+    if(sbBatchActionBar) sbBatchActionBar.classList.remove('visible');
 
     if(projectListView) projectListView.style.display = 'none';
     if(detailView) detailView.style.display = 'none';
@@ -3876,15 +3888,26 @@
     tableBody.innerHTML = '';
     editRows.forEach(function(row, idx){
       var card = document.createElement('div');
-      card.className = 'sb-task-card' + (row.done ? ' done' : '');
+      card.className = 'sb-task-card' + (row.done ? ' done' : '') + (selectedIdxs.has(idx) ? ' selected' : '');
       card.setAttribute('data-idx', idx);
       card.innerHTML =
+        '<div class="sb-task-card-action">' +
+          '<button class="sb-task-del-btn" type="button">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>' +
+          '</button>' +
+        '</div>' +
         '<div class="sb-task-card-content">' +
-          '<span class="sb-task-num">' + (idx + 1) + '</span>' +
+          '<span class="sb-task-num">' +
+            '<span class="sb-num-text">' + (idx + 1) + '</span>' +
+            '<span class="sb-check-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
+          '</span>' +
           '<span class="sb-task-text" ' + (row.done ? '' : 'contenteditable="true"') + ' data-field="shotTask">' + escapeHtml(row.shotTask || '') + '</span>' +
         '</div>' +
         '<div class="sb-task-progress"></div>';
       tableBody.appendChild(card);
+
+      // Swipe-to-delete
+      bindTaskSwipe(card, idx);
 
       // Long-press: if not done → mark green/done; if done → delete
       bindTaskLongPress(card, idx, !!row.done);
@@ -3924,6 +3947,246 @@
     });
   }
 
+  var TASK_SWIPE_W = 64;       // width of task delete action
+  var sbTaskSwipedCard = null;  // track currently swiped-open task card
+
+  // Swipe-to-delete for task cards
+  function bindTaskSwipe(card, idx){
+    var contentEl = card.querySelector('.sb-task-card-content');
+    var actionEl = card.querySelector('.sb-task-card-action');
+    var delBtn = card.querySelector('.sb-task-del-btn');
+    var startX = 0, startY = 0;
+    var isPressing = false;
+    var isSwiping = false;
+    var swipeDx = 0;
+    var lastX = 0, lastTime = 0, velocity = 0;
+    var swipeStartTime = 0;
+    var rafPending = false;
+    var pendingOffset = 0;
+    var pendingProgress = 0;
+    var hasPending = false;
+    var longPressCancelled = false;
+
+    function applyVisuals(){
+      rafPending = false;
+      if(!hasPending) return;
+      hasPending = false;
+      if(contentEl){
+        contentEl.style.transform = 'translateX(' + pendingOffset + 'px)';
+      }
+      if(actionEl){
+        var blurVal = 6 * (1 - pendingProgress);
+        actionEl.style.filter = 'blur(' + blurVal.toFixed(1) + 'px)';
+        actionEl.style.opacity = pendingProgress.toFixed(2);
+      }
+      if(delBtn){
+        var btnProgress = Math.max(0, (pendingProgress - 0.3) / 0.7);
+        delBtn.style.opacity = btnProgress.toFixed(2);
+        delBtn.style.transform = 'translateX(' + (10 * (1 - pendingProgress)).toFixed(1) + 'px)';
+      }
+    }
+
+    function scheduleVisuals(offset, progress){
+      pendingOffset = offset;
+      pendingProgress = progress;
+      hasPending = true;
+      if(!rafPending){
+        rafPending = true;
+        requestAnimationFrame(applyVisuals);
+      }
+    }
+
+    function startPress(e){
+      if(isPressing) return;
+      if(e.target && e.target.closest && e.target.closest('button')) return;
+      // Disable swipe in batch mode
+      if(isBatchMode) return;
+      isPressing = true;
+      isSwiping = false;
+      swipeDx = 0;
+      velocity = 0;
+      longPressCancelled = false;
+
+      // Close other swiped cards
+      if(sbTaskSwipedCard && sbTaskSwipedCard !== card){
+        sbTaskSwipedCard.classList.remove('swiped-left');
+        sbTaskSwipedCard = null;
+      }
+
+      if(e.touches && e.touches[0]){
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        lastX = startX;
+      } else if(e.clientX !== undefined){
+        startX = e.clientX;
+        startY = e.clientY;
+        lastX = startX;
+      }
+      lastTime = Date.now();
+      swipeStartTime = lastTime;
+    }
+
+    function handleMove(e){
+      if(!isPressing && !isSwiping) return;
+      var cx, cy;
+      if(e.touches && e.touches[0]){
+        cx = e.touches[0].clientX;
+        cy = e.touches[0].clientY;
+      } else if(e.clientX !== undefined){
+        cx = e.clientX;
+        cy = e.clientY;
+      } else return;
+
+      var dx = cx - startX;
+      var dy = cy - startY;
+
+      if(!isSwiping){
+        if(Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD){
+          if(Math.abs(dx) > Math.abs(dy)){
+            isSwiping = true;
+            longPressCancelled = true;
+          } else {
+            isPressing = false;
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      if(isSwiping && contentEl){
+        swipeDx = dx;
+        // Track velocity for flick-to-snap
+        var now = Date.now();
+        var dt = now - lastTime;
+        if(dt > 0) velocity = (cx - lastX) / dt;
+        lastX = cx;
+        lastTime = now;
+        var isOpen = card.classList.contains('swiped-left');
+        var base = isOpen ? -TASK_SWIPE_W : 0;
+        var offset = Math.max(-TASK_SWIPE_W, Math.min(0, base + dx));
+        var progress = Math.abs(offset) / TASK_SWIPE_W;
+        if(!card.classList.contains('swiping')){
+          card.classList.add('swiping');
+          contentEl.style.transition = 'none';
+        }
+        scheduleVisuals(offset, progress);
+        if(e.cancelable) e.preventDefault();
+      }
+    }
+
+    function endSwipe(e){
+      if(!isSwiping) return false;
+      isSwiping = false;
+      hasPending = false;
+      rafPending = false;
+
+      if(contentEl){ contentEl.style.transition = ''; contentEl.style.transform = ''; }
+      if(actionEl){ actionEl.style.filter = ''; actionEl.style.opacity = ''; }
+      if(delBtn){ delBtn.style.opacity = ''; delBtn.style.transform = ''; }
+
+      // Get final position from the end event (more accurate than last move event)
+      var endX = startX + swipeDx;
+      if(e){
+        if(e.changedTouches && e.changedTouches[0]){
+          endX = e.changedTouches[0].clientX;
+        } else if(e.clientX !== undefined){
+          endX = e.clientX;
+        }
+      }
+      var finalDx = endX - startX;
+
+      // Average velocity over the full swipe (more reliable than last-frame velocity)
+      var totalTime = Date.now() - swipeStartTime;
+      var avgVelocity = totalTime > 10 ? finalDx / totalTime : 0;
+
+      var isOpen = card.classList.contains('swiped-left');
+      var base = isOpen ? -TASK_SWIPE_W : 0;
+      var total = base + finalDx;
+
+      // Snap open if: distance > 20% of swipe width, OR flick velocity is fast enough
+      var shouldOpen = total < -TASK_SWIPE_W * 0.20 || avgVelocity < -0.2;
+      if(shouldOpen){
+        card.classList.add('swiped-left');
+        sbTaskSwipedCard = card;
+      } else {
+        card.classList.remove('swiped-left');
+        if(sbTaskSwipedCard === card) sbTaskSwipedCard = null;
+      }
+
+      setTimeout(function(){ card.classList.remove('swiping'); }, 260);
+      isPressing = false;
+      return true;
+    }
+
+    function cancelPress(){ isPressing = false; }
+
+    // Mouse
+    card.addEventListener('mousedown', function(e){
+      if(e.button !== 0) return;
+      if(e.target.closest('button')) return;
+      startPress(e);
+    });
+    card.addEventListener('mousemove', function(e){
+      if(isPressing && (isSwiping || (e.buttons & 1))){ handleMove(e); }
+    });
+    card.addEventListener('mouseup', function(e){
+      if(endSwipe(e)){ e.preventDefault(); return; }
+      cancelPress();
+    });
+    card.addEventListener('mouseleave', function(e){
+      if(isSwiping){ endSwipe(e); } else { cancelPress(); }
+    });
+
+    // Touch
+    card.addEventListener('touchstart', function(e){
+      if(e.target.closest('button')) return;
+      startPress(e);
+    }, {passive:true});
+    card.addEventListener('touchmove', handleMove, {passive:false});
+    card.addEventListener('touchend', function(e){
+      if(endSwipe(e)) return;
+      cancelPress();
+    });
+    card.addEventListener('touchcancel', function(){
+      if(isSwiping){ endSwipe(); } else { cancelPress(); }
+    });
+
+    // Delete button click
+    if(delBtn){
+      delBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        editRows.splice(idx, 1);
+        if(editRows.length === 0){
+          editRows.push(createEmptyRow());
+        }
+        renderAllRows(editRows);
+        markUnsaved();
+        sbTaskSwipedCard = null;
+      });
+    }
+
+    // Click on content to close swipe, or select in batch mode
+    card.addEventListener('click', function(e){
+      if(e.target.closest('button')) return;
+      if(e.target.closest('[contenteditable="true"]')) return;
+      if(isBatchMode){
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSelectIdx(idx);
+        return;
+      }
+      if(card.classList.contains('swiped-left')){
+        e.preventDefault();
+        e.stopPropagation();
+        card.classList.remove('swiped-left');
+        sbTaskSwipedCard = null;
+        setTimeout(function(){ card.classList.remove('swiping'); }, 260);
+      }
+    });
+  }
+
   // Long-press: if not done → progress fills → turn green (done)
   //            if already done → progress fills → delete
   function bindTaskLongPress(card, idx, isDone){
@@ -3932,8 +4195,9 @@
 
     function startPress(e){
       if(pressing) return;
-      // Don't long-press when editing text
+      // Don't long-press when editing text or in batch mode
       if(e.target && e.target.closest && e.target.closest('[contenteditable]')) return;
+      if(isBatchMode) return;
       pressing = true;
       card.classList.add('pressing');
       var bar = card.querySelector('.sb-task-progress');
@@ -4006,6 +4270,169 @@
   function updateEmptyState(){
     var count = editRows.length;
     if(sbEmpty) sbEmpty.style.display = count === 0 ? '' : 'none';
+  }
+
+  /* ---------- Batch Select Mode ---------- */
+  var isBatchMode = false;
+  var selectedIdxs = new Set();
+
+  var sbBatchModeBtn = document.getElementById('sbBatchModeBtn');
+  var sbBatchCount = document.getElementById('sbBatchCount');
+  var sbSelectedCount = document.getElementById('sbSelectedCount');
+  var sbSelectAllBtn = document.getElementById('sbSelectAllBtn');
+  var sbBatchActionBar = document.getElementById('sbBatchActionBar');
+  var sbBatchDoneBtn = document.getElementById('sbBatchDoneBtn');
+  var sbBatchDeleteBtn = document.getElementById('sbBatchDeleteBtn');
+
+  function updateBatchUI(){
+    var n = selectedIdxs.size;
+    if(sbSelectedCount) sbSelectedCount.textContent = n;
+
+    if(sbBatchActionBar){
+      if(n > 0){
+        sbBatchActionBar.classList.add('visible');
+        if(sbBatchDoneBtn) sbBatchDoneBtn.disabled = false;
+        if(sbBatchDeleteBtn) sbBatchDeleteBtn.disabled = false;
+      } else {
+        sbBatchActionBar.classList.remove('visible');
+        if(sbBatchDoneBtn) sbBatchDoneBtn.disabled = true;
+        if(sbBatchDeleteBtn) sbBatchDeleteBtn.disabled = true;
+      }
+    }
+
+    // Update select all text
+    if(sbSelectAllBtn){
+      var total = editRows.length;
+      sbSelectAllBtn.textContent = (n === total && n > 0) ? t('取消全选','Deselect All') : t('全选','Select All');
+    }
+
+    // Smart done/undone button text
+    if(sbBatchDoneBtn){
+      var allDone = true;
+      var anySelected = false;
+      editRows.forEach(function(row, i){
+        if(selectedIdxs.has(i)){
+          anySelected = true;
+          if(!row.done) allDone = false;
+        }
+      });
+      var label = sbBatchDoneBtn.querySelector('span');
+      if(label){
+        label.textContent = (anySelected && allDone) ? t('取消完成','Mark Undone') : t('标记完成','Mark Done');
+      }
+    }
+  }
+
+  function enterBatchMode(){
+    isBatchMode = true;
+    selectedIdxs.clear();
+    if(tableBody) tableBody.classList.add('batch-active');
+    if(sbBatchModeBtn){
+      sbBatchModeBtn.classList.add('active');
+      var span = sbBatchModeBtn.querySelector('span');
+      if(span) span.textContent = t('完成','Done');
+    }
+    if(sbBatchCount) sbBatchCount.style.display = 'block';
+    if(sbSelectAllBtn) sbSelectAllBtn.style.display = 'block';
+    renderTaskCards();
+    updateBatchUI();
+  }
+
+  function exitBatchMode(){
+    isBatchMode = false;
+    selectedIdxs.clear();
+    if(tableBody) tableBody.classList.remove('batch-active');
+    if(sbBatchModeBtn){
+      sbBatchModeBtn.classList.remove('active');
+      var span = sbBatchModeBtn.querySelector('span');
+      if(span) span.textContent = t('批量管理','Batch Select');
+    }
+    if(sbBatchCount) sbBatchCount.style.display = 'none';
+    if(sbSelectAllBtn) sbSelectAllBtn.style.display = 'none';
+    if(sbBatchActionBar) sbBatchActionBar.classList.remove('visible');
+    renderTaskCards();
+  }
+
+  function toggleSelectIdx(idx){
+    if(selectedIdxs.has(idx)){
+      selectedIdxs.delete(idx);
+    } else {
+      selectedIdxs.add(idx);
+    }
+    // Update card class
+    if(tableBody){
+      var card = tableBody.querySelector('.sb-task-card[data-idx="' + idx + '"]');
+      if(card){
+        if(selectedIdxs.has(idx)) card.classList.add('selected');
+        else card.classList.remove('selected');
+      }
+    }
+    updateBatchUI();
+  }
+
+  if(sbBatchModeBtn){
+    sbBatchModeBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(isBatchMode) exitBatchMode();
+      else enterBatchMode();
+    });
+  }
+
+  if(sbSelectAllBtn){
+    sbSelectAllBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var total = editRows.length;
+      if(selectedIdxs.size === total){
+        selectedIdxs.clear();
+      } else {
+        for(var i = 0; i < total; i++) selectedIdxs.add(i);
+      }
+      renderTaskCards();
+      updateBatchUI();
+    });
+  }
+
+  if(sbBatchDoneBtn){
+    sbBatchDoneBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(selectedIdxs.size === 0) return;
+      // Check if all selected are done
+      var allDone = true;
+      selectedIdxs.forEach(function(i){
+        if(!editRows[i].done) allDone = false;
+      });
+      selectedIdxs.forEach(function(i){
+        editRows[i].done = !allDone;
+      });
+      markUnsaved();
+      selectedIdxs.clear();
+      renderTaskCards();
+      renderVisualList();
+      updateBatchUI();
+    });
+  }
+
+  if(sbBatchDeleteBtn){
+    sbBatchDeleteBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(selectedIdxs.size === 0) return;
+      // Delete from last to first to preserve indices
+      var sorted = Array.from(selectedIdxs).sort(function(a,b){ return b - a; });
+      sorted.forEach(function(i){
+        editRows.splice(i, 1);
+      });
+      if(editRows.length === 0){
+        editRows.push(createEmptyRow());
+      }
+      markUnsaved();
+      selectedIdxs.clear();
+      renderAllRows(editRows);
+      updateBatchUI();
+    });
   }
 
   function markUnsaved(){

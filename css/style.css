@@ -4582,25 +4582,33 @@ textarea.sb-cell:focus{
 }
 .sb-task-card{
   display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 14px;
+  align-items:flex-start;
+  gap:0;
+  padding:0;
   border-bottom:1px solid var(--border);
   position:relative;
   overflow:hidden;
   transition:background .2s ease;
   background:var(--surface-glass);
 }
+/* Full-height separator line */
+.sb-task-card::before{
+  content:'';
+  position:absolute;
+  top:0;bottom:0;
+  left:48px;
+  width:1px;
+  background:var(--border);
+  z-index:1;
+  pointer-events:none;
+}
 .sb-task-card:last-child{border-bottom:none}
 .sb-task-card.done{
-  background:rgba(48,209,88,.12);
-  border-color:rgba(48,209,88,.3);
+  background:rgba(48,209,88,.08);
+  border-color:rgba(48,209,88,.2);
 }
 .sb-task-card.done .sb-task-text{
   color:var(--text-secondary);
-}
-.sb-task-card.done .sb-task-num{
-  background:#30d958;
 }
 .sb-task-card.pressing{
   background:var(--surface-3);
@@ -4608,22 +4616,26 @@ textarea.sb-cell:focus{
 .sb-task-card-content{
   flex:1;
   display:flex;
-  align-items:center;
-  gap:10px;
+  align-items:flex-start;
+  gap:0;
   min-width:0;
 }
 .sb-task-num{
-  width:24px;height:24px;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--accent);
-  color:#fff;
-  border-radius:50%;
-  font-size:.7rem;
-  font-weight:600;
+  width:48px;
+  height:100%;
   flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--text-quaternary);
+  font-size:.82rem;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+  align-self:stretch;
 }
 .sb-task-card.done .sb-task-num{
-  background:var(--text-quaternary);
+  color:#30d958;
+  font-weight:600;
 }
 .sb-task-text{
   flex:1;
@@ -4632,6 +4644,9 @@ textarea.sb-cell:focus{
   outline:none;
   word-break:break-word;
   min-width:0;
+  padding:12px 16px 12px 14px;
+  line-height:1.5;
+  min-height:calc(.88rem * 1.5 + 24px);
 }
 .sb-task-text:empty::before{
   content:attr(data-placeholder);
@@ -4647,6 +4662,116 @@ textarea.sb-cell:focus{
   flex-shrink:0;
   margin-left:auto;
   padding-right:14px;
+  position:relative;
+  z-index:2;
+}
+
+/* Swipe-to-delete for task cards */
+.sb-task-card-action{
+  position:absolute;
+  top:0;right:0;bottom:0;
+  width:64px;
+  background:linear-gradient(135deg,#ff3b30,#ff453a);
+  display:flex;
+  z-index:0;
+  opacity:0;
+  filter:blur(6px);
+  transition:opacity .3s cubic-bezier(.22,.61,.36,1), filter .3s cubic-bezier(.22,.61,.36,1);
+}
+.sb-task-card.swiped-left .sb-task-card-action,
+.sb-task-card.swiping .sb-task-card-action{
+  opacity:1;
+  filter:blur(0);
+}
+.sb-task-card-action::before{
+  content:'';
+  position:absolute;
+  top:0;bottom:0;left:-20px;
+  width:20px;
+  background:linear-gradient(90deg,rgba(255,59,48,0),rgba(255,59,48,.5));
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.sb-task-card.swiped-left .sb-task-card-action::before,
+.sb-task-card.swiping .sb-task-card-action::before{
+  opacity:1;
+}
+.sb-task-del-btn{
+  flex:1;
+  background:transparent;
+  border:none;
+  color:#fff;
+  font-size:.7rem;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:0;
+  -webkit-user-select:none;
+  user-select:none;
+  touch-action:none;
+  opacity:0;
+  transform:translateX(10px);
+  transition:opacity .25s cubic-bezier(.22,.61,.36,1) .04s, transform .25s cubic-bezier(.22,.61,.36,1) .04s;
+}
+.sb-task-card.swiped-left .sb-task-del-btn,
+.sb-task-card.swiping .sb-task-del-btn{
+  opacity:1;
+  transform:translateX(0);
+}
+/* Gradient blur mask on right edge of content */
+.sb-task-card-content::after{
+  content:'';
+  position:absolute;
+  top:0;right:0;bottom:0;
+  width:24px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),var(--surface-glass) 70%);
+  pointer-events:none;
+  opacity:0;
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+  transition:opacity .2s ease;
+  z-index:2;
+}
+[data-theme="dark"] .sb-task-card-content::after{
+  background:linear-gradient(90deg,rgba(0,0,0,0),var(--surface-glass) 70%);
+}
+.sb-task-card.swiped-left .sb-task-card-content::after,
+.sb-task-card.swiping .sb-task-card-content::after{
+  opacity:1;
+}
+.sb-task-card-content{
+  position:relative;
+  z-index:1;
+  transition:transform .3s cubic-bezier(.22,.61,.36,1);
+  background:var(--surface-glass);
+}
+.sb-task-card.swiped-left .sb-task-card-content{
+  transform:translateX(-64px);
+}
+/* Faster transition when closing (no swiping class needed after snap) */
+.sb-task-card:not(.swiping) .sb-task-card-content{
+  transition:transform .25s cubic-bezier(.22,.61,.36,1);
+}
+.sb-task-card:not(.swiping) .sb-task-card-action{
+  transition:opacity .25s cubic-bezier(.22,.61,.36,1), filter .25s cubic-bezier(.22,.61,.36,1);
+}
+.sb-task-card:not(.swiping) .sb-task-del-btn{
+  transition:opacity .2s cubic-bezier(.22,.61,.36,1), transform .2s cubic-bezier(.22,.61,.36,1);
+}
+.sb-task-card:not(.swiping) .sb-task-card-content::after{
+  transition:opacity .18s ease;
+}
+.sb-task-card:not(.swiping) .sb-task-card-action::before{
+  transition:opacity .18s ease;
+}
+/* Full-height separator line — adjust for swiping context */
+.sb-task-card::before{
+  z-index:2;
 }
 
 /* Progress bar for long-press */
@@ -4836,6 +4961,156 @@ textarea.sb-cell-desc{
   grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   gap:14px;
   margin-top:8px;
+}
+
+/* ===== Batch Select Mode for Task Cards ===== */
+.sb-batch-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 2px 8px;
+}
+.sb-batch-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.sb-batch-mode-btn{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 10px;
+  border:1px solid var(--glass-border);
+  border-radius:8px;
+  background:var(--surface-glass);
+  color:var(--text-primary);
+  font-size:.76rem;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .2s ease;
+  backdrop-filter:blur(10px);
+}
+.sb-batch-mode-btn:hover{
+  background:rgba(255,107,53,.08);
+  border-color:rgba(255,107,53,.3);
+  color:var(--accent);
+}
+.sb-batch-mode-btn.active{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+.sb-batch-count{
+  font-size:.74rem;
+  color:var(--text-secondary);
+}
+.sb-batch-count strong{
+  color:var(--accent);
+  font-weight:600;
+}
+.sb-batch-select-all{
+  padding:4px 9px;
+  border:1px solid var(--glass-border);
+  border-radius:6px;
+  background:transparent;
+  color:var(--text-secondary);
+  font-size:.72rem;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.sb-batch-select-all:hover{
+  color:var(--accent);
+  border-color:rgba(255,107,53,.3);
+}
+
+/* Checkbox in num area */
+.sb-task-num .sb-check-box{
+  display:none;
+  width:20px;
+  height:20px;
+  border:2px solid var(--text-quaternary);
+  border-radius:50%;
+  align-items:center;
+  justify-content:center;
+  color:transparent;
+  transition:all .2s cubic-bezier(.22,.61,.36,1);
+}
+.sb-task-num .sb-check-box svg{
+  opacity:0;
+  transform:scale(.5);
+  transition:all .2s cubic-bezier(.22,.61,.36,1);
+}
+.sb-task-num .sb-num-text{
+  display:block;
+  transition:all .25s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Batch mode active */
+.sb-task-list.batch-active .sb-task-num .sb-num-text{
+  display:none;
+}
+.sb-task-list.batch-active .sb-task-num .sb-check-box{
+  display:flex;
+}
+.sb-task-list.batch-active .sb-task-card.selected .sb-task-num .sb-check-box{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+.sb-task-list.batch-active .sb-task-card.selected .sb-task-num .sb-check-box svg{
+  opacity:1;
+  transform:scale(1);
+}
+.sb-task-list.batch-active .sb-task-card.selected{
+  background:rgba(255,107,53,.06);
+}
+
+/* Batch actions bar */
+.sb-batch-actions-bar{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  opacity:0;
+  transform:translateY(8px);
+  pointer-events:none;
+  transition:all .3s cubic-bezier(.22,.61,.36,1);
+}
+.sb-batch-actions-bar.visible{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+.sb-batch-action-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-size:.8rem;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.sb-batch-action-btn.sb-batch-done{
+  background:rgba(48,217,88,.12);
+  color:#30d958;
+}
+.sb-batch-action-btn.sb-batch-done:hover{
+  background:rgba(48,217,88,.2);
+}
+.sb-batch-action-btn.sb-batch-delete{
+  background:rgba(255,59,48,.1);
+  color:#ff3b30;
+}
+.sb-batch-action-btn.sb-batch-delete:hover{
+  background:rgba(255,59,48,.18);
+}
+.sb-batch-action-btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
 }
 
 /* Project Card */
