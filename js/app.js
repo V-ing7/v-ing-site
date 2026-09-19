@@ -615,6 +615,28 @@
         merged.operationLog = combined;
       }
 
+      // Merge storyboardProjects: local data is authoritative (user just edited)
+      // but ensure we don't lose remote-only projects
+      if(Array.isArray(remoteData.storyboardProjects)){
+        if(!Array.isArray(merged.storyboardProjects)){
+          merged.storyboardProjects = remoteData.storyboardProjects;
+        } else {
+          // Add remote-only projects (by ID)
+          var localIds = {};
+          merged.storyboardProjects.forEach(function(p){ localIds[p.id] = true; });
+          remoteData.storyboardProjects.forEach(function(p){
+            if(!localIds[p.id]){
+              merged.storyboardProjects.push(p);
+            }
+          });
+        }
+      }
+
+      // Merge kanbanTasks: local data is authoritative
+      if(!merged.kanbanTasks && remoteData.kanbanTasks){
+        merged.kanbanTasks = remoteData.kanbanTasks;
+      }
+
       // Update timestamp
       merged.lastUpdated = _nowISO();
 
@@ -4503,7 +4525,8 @@
           rows: (p.rows || []).map(function(r){
             return {
               shotTask: r.shotTask || '',
-              visual: r.visual || ''
+              visual: r.visual || '',
+              done: r.done || false
             };
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
@@ -4551,6 +4574,7 @@
               backToProjectList();
             }, 800);
           } else if(st === 'error'){
+            sbEditing = false; // Re-allow auto-refresh on save failure
             if(sbStatusSync){
               sbStatusSync.textContent = t('保存失败','Save failed');
               sbStatusSync.className = 'sb-status-sync error';
@@ -4559,7 +4583,8 @@
           }
 
           if(watchCount >= watchMax){
-            // Timeout — check if save is still in progress
+            // Timeout — reset editing state
+            sbEditing = false;
             if(window.__ghSyncStatus === 'saving'){
               if(sbStatusSync){
                 sbStatusSync.textContent = t('保存超时','Save timeout');

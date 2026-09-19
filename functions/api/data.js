@@ -14,6 +14,7 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, PUT, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, X-Password',
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
 };
 
 function jsonResp(data, status) {
