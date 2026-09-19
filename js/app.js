@@ -3949,6 +3949,8 @@
 
   var TASK_SWIPE_W = 64;       // width of task delete action
   var sbTaskSwipedCard = null;  // track currently swiped-open task card
+  var isBatchMode = false;      // batch select mode state
+  var selectedIdxs = new Set(); // selected task indices in batch mode
 
   // Swipe-to-delete for task cards
   function bindTaskSwipe(card, idx){
@@ -4273,9 +4275,6 @@
   }
 
   /* ---------- Batch Select Mode ---------- */
-  var isBatchMode = false;
-  var selectedIdxs = new Set();
-
   var sbBatchModeBtn = document.getElementById('sbBatchModeBtn');
   var sbBatchCount = document.getElementById('sbBatchCount');
   var sbSelectedCount = document.getElementById('sbSelectedCount');
