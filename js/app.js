@@ -102,6 +102,14 @@
     return true;
   }
 
+  // HTML escape utility (SEC-002 fix: needed by renderConsolePanel at IIFE top level)
+  function escapeHtml(str){
+    if(str == null) return '';
+    var div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+  }
+
   /* ================================================================
      Sync Status UI
      ================================================================ */
