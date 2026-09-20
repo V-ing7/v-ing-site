@@ -60,6 +60,47 @@
       60%{transform:translateX(-6px)}
       80%{transform:translateX(6px)}
     }
+    /* Creator Quick Tools */
+    .creator-quick-tools{margin-top:32px;padding:24px;border-radius:20px;
+      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+    .cqt-head{margin-bottom:18px}
+    .cqt-title{font-size:1.1rem;font-weight:700;margin:0 0 4px 0}
+    .cqt-desc{font-size:.82rem;color:rgba(235,235,245,.4);margin:0}
+    .cqt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .cqt-btn{display:flex;flex-direction:column;align-items:center;gap:10px;
+      padding:20px 12px;border-radius:16px;text-decoration:none;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+      transition:all .25s ease;cursor:pointer}
+    .cqt-btn:hover{transform:translateY(-2px);
+      background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12)}
+    .cqt-btn:active{transform:scale(.97)}
+    .cqt-icon{width:44px;height:44px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;font-size:22px}
+    .cqt-icon svg{width:24px;height:24px}
+    .cqt-dy .cqt-icon{background:linear-gradient(135deg,#ff0050,#00f2ea);color:#fff}
+    .cqt-sph .cqt-icon{background:linear-gradient(135deg,#07c160,#57ffb4);color:#fff}
+    .cqt-xhs .cqt-icon{background:linear-gradient(135deg,#ff2442,#ff6b6b);color:#fff}
+    .cqt-info{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .cqt-name{font-size:.82rem;font-weight:600;color:rgba(235,235,245,.85)}
+    .cqt-arrow{font-size:.7rem;color:rgba(235,235,245,.3);
+      transition:transform .2s,color .2s}
+    .cqt-btn:hover .cqt-arrow{transform:translateX(3px);color:rgba(255,255,255,.6)}
+    @media(max-width:600px){
+      .cqt-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+      .cqt-btn{padding:14px 8px}
+      .cqt-icon{width:36px;height:36px;font-size:18px}
+      .cqt-name{font-size:.72rem}
+    }
+    /* Light theme support */
+    [data-theme="light"] .creator-quick-tools{
+      background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+    [data-theme="light"] .cqt-desc{color:rgba(60,60,67,.4)}
+    [data-theme="light"] .cqt-btn{
+      background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+    [data-theme="light"] .cqt-btn:hover{
+      background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
+    [data-theme="light"] .cqt-name{color:rgba(60,60,67,.85)}
+    [data-theme="light"] .cqt-arrow{color:rgba(60,60,67,.3)}
   </style>
 </head>
 <body>
@@ -374,7 +415,7 @@
                 <div>
                   <h2 class="bc-name">LIN WEI</h2>
                   <div class="bc-name-cn" data-cn="林威" data-en="LIN WEI">林威</div>
-                  <p class="bc-title" data-cn="高级摄影师" data-en="Senior Photographer">高级摄影师</p>
+                  <p class="bc-title" data-cn="高级摄影师 · 主创导演" data-en="Senior Photographer · Lead Director">高级摄影师 · 主创导演</p>
                   <div class="bc-tags-row">
                     <span class="bc-tag" data-cn="Vlog" data-en="Vlog">Vlog</span>
                     <span class="bc-tag" data-cn="宣传片" data-en="Promo">宣传片</span>
@@ -404,7 +445,7 @@
                     </div>
                     <div class="bc-info-text">
                       <span class="bc-info-label" data-cn="联系邮箱" data-en="Email">联系邮箱</span>
-                      <span class="bc-info-value" data-mail="moc.361@ykyvykykv"></span>
+                      <span class="bc-info-value">vkyvkyvky@163.com</span>
                     </div>
                   </div>
                   <div class="bc-info-item">
@@ -606,6 +647,49 @@
                   <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
                   <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
                 </div>
+              </div>
+            </div>
+
+            <!-- 创作者快捷工具 -->
+            <div class="creator-quick-tools reveal">
+              <div class="cqt-head">
+                <h3 class="cqt-title" data-cn="创作者快捷工具" data-en="Creator Quick Tools">创作者快捷工具</h3>
+                <p class="cqt-desc" data-cn="一键打开各大平台创作者中心" data-en="Open creator centers with one click">一键打开各大平台创作者中心</p>
+              </div>
+              <div class="cqt-grid">
+                <a class="cqt-btn cqt-dy" href="https://creator.douyin.com/" target="_blank" rel="noopener">
+                  <div class="cqt-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                    </svg>
+                  </div>
+                  <div class="cqt-info">
+                    <span class="cqt-name" data-cn="抖音创作者中心" data-en="Douyin Creator">抖音创作者中心</span>
+                    <span class="cqt-arrow">→</span>
+                  </div>
+                </a>
+                <a class="cqt-btn cqt-sph" href="https://channels.weixin.qq.com/" target="_blank" rel="noopener">
+                  <div class="cqt-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
+                    </svg>
+                  </div>
+                  <div class="cqt-info">
+                    <span class="cqt-name" data-cn="视频号助手" data-en="WeChat Channels">视频号助手</span>
+                    <span class="cqt-arrow">→</span>
+                  </div>
+                </a>
+                <a class="cqt-btn cqt-xhs" href="https://creator.xiaohongshu.com/" target="_blank" rel="noopener">
+                  <div class="cqt-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                  </div>
+                  <div class="cqt-info">
+                    <span class="cqt-name" data-cn="小红书创作者中心" data-en="Xiaohongshu Creator">小红书创作者中心</span>
+                    <span class="cqt-arrow">→</span>
+                  </div>
+                </a>
               </div>
             </div>
           </div>
@@ -971,7 +1055,7 @@
           <div class="segmented-control seg-4 reveal" id="wsTabs">
             <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
             <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
-            <button class="seg-btn" data-ws-tab="storyboard" data-cn="拍摄计划项目" data-en="Shot Plan">拍摄计划项目</button>
+            <button class="seg-btn" data-ws-tab="storyboard" data-cn="计划表" data-en="Plan">计划表</button>
             <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
             <span class="seg-indicator seg-4-indicator" id="segIndicator"></span>
           </div>
@@ -1276,28 +1360,8 @@
                   <span class="sb-section-title" data-cn="拍摄任务" data-en="Shot Tasks">拍摄任务</span>
                   <span class="sb-section-count" id="sbTaskCount">0</span>
                 </div>
-                <div class="sb-batch-toolbar" id="sbBatchToolbar">
-                  <div class="sb-batch-left">
-                    <button class="sb-batch-mode-btn" id="sbBatchModeBtn" type="button">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                      <span data-cn="批量管理" data-en="Batch Select">批量管理</span>
-                    </button>
-                    <div class="sb-batch-count" id="sbBatchCount" style="display:none"><span data-cn="已选" data-en="Selected">已选</span> <strong id="sbSelectedCount">0</strong></div>
-                  </div>
-                  <button class="sb-batch-select-all" id="sbSelectAllBtn" type="button" style="display:none" data-cn="全选" data-en="Select All">全选</button>
-                </div>
                 <div class="sb-task-list" id="sbTaskList">
                   <!-- Task cards injected by JS -->
-                </div>
-                <div class="sb-batch-actions-bar" id="sbBatchActionBar">
-                  <button class="sb-batch-action-btn sb-batch-done" id="sbBatchDoneBtn" type="button">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span data-cn="标记完成" data-en="Mark Done">标记完成</span>
-                  </button>
-                  <button class="sb-batch-action-btn sb-batch-delete" id="sbBatchDeleteBtn" type="button">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path></svg>
-                    <span data-cn="删除" data-en="Delete">删除</span>
-                  </button>
                 </div>
               </div>
 
@@ -1472,7 +1536,7 @@
                 </div>
                 <div class="info-text">
                   <span class="info-label" data-cn="邮箱" data-en="Email">邮箱</span>
-                  <span class="info-value" data-mail="oiduts.gni-v@olleh"></span>
+                  <span class="info-value">hello@v-ing.studio</span>
                 </div>
               </div>
               <div class="info-card">
@@ -1534,7 +1598,7 @@
         </div>
         <div class="footer-col">
           <h4 data-cn="联系" data-en="Contact">联系</h4>
-          <a href="#" data-mailto="oiduts.gni-v@olleh" onclick="return false"></a>
+          <a href="mailto:hello@v-ing.studio">hello@v-ing.studio</a>
           <span data-cn="上海 · 中国" data-en="Shanghai · China">上海 · 中国</span>
         </div>
       </div>
@@ -1547,26 +1611,7 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" integrity="sha384-50pczvCB0no/P1Foou0eD0Bul/9JKfIgx04I0bMpay6npYYwWTUgQxlGS5T7yKmn" crossorigin="anonymous" defer></script>
-  <script>
-    // SEC-009: Email obfuscation - decode reversed email addresses
-    (function(){
-      function decodeMail(s){return s.split('').reverse().join('');}
-      document.querySelectorAll('[data-mail]').forEach(function(el){
-        var enc=el.getAttribute('data-mail');
-        if(enc){el.textContent=decodeMail(enc);}
-      });
-      document.querySelectorAll('a[data-mailto]').forEach(function(el){
-        var enc=el.getAttribute('data-mailto');
-        if(enc){
-          var email=decodeMail(enc);
-          el.href='mailto:'+email;
-          el.textContent=email;
-          el.removeAttribute('onclick');
-        }
-      });
-    })();
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
   <script src="js/app.js?v=20260920a" defer></script>
 </body>
 </html>
