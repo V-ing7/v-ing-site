@@ -33,7 +33,7 @@
     "streamer_6": {
       "name": "Tina",
       "shoot": 8,
-      "edit": 6
+      "edit": 7
     }
   },
   "theme": "light",
@@ -418,5 +418,5 @@
       "lastUpdated": "2026-09-17T15:49:27.703Z"
     }
   ],
-  "lastUpdated": "2026-09-20T11:58:06.129Z"
+  "lastUpdated": "2026-09-20T11:58:12.726Z"
 }
