@@ -263,8 +263,17 @@
         bestSource = sourceName;
         ghLastAppliedDataTime = dataTime;
         _log('✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
-        // Apply to UI immediately
-        applyRemoteData(result.data);
+        // Bug fix v4.1: Don't overwrite UI during active editing or saving
+        // Only apply remote data to UI if user is not actively editing
+        var _isEditingNow = (typeof editModeActive !== 'undefined' && editModeActive)
+          || (typeof subpageEditMode !== 'undefined' && subpageEditMode)
+          || _saveInProgress
+          || (typeof window.__sbEditing !== 'undefined' && window.__sbEditing);
+        if(!isBackground || !_isEditingNow){
+          applyRemoteData(result.data);
+        } else {
+          _log('Skipping UI apply during active edit (background refresh)', 'info');
+        }
 
         if(!resolvedFirst){
           resolvedFirst = true;
@@ -275,6 +284,8 @@
           ghLastSuccessfulLoad = Date.now();
           _refreshConsecutiveFailures = 0;
           _refreshCurrentInterval = _refreshBaseInterval;
+          // Bug fix v4.1: event-driven resolve instead of polling
+          _tryResolve();
         } else {
           _log('↻ Newer data from ' + sourceName + ', UI updated');
         }
@@ -298,19 +309,25 @@
       }, delay);
     });
 
+    // Bug fix v4.1: replaced setInterval(50ms) polling with event-driven resolve
+    // Hoist resolve/reject so considerResult can call them directly
+    var _resolveFn = null;
+    var _rejectFn = null;
+    var _failTimer = null;
+
+    function _tryResolve(){
+      if(resolvedFirst && firstResolveData){
+        if(_failTimer) clearTimeout(_failTimer);
+        if(_resolveFn) _resolveFn(firstResolveData);
+      }
+    }
+
     var promise = new Promise(function(resolve, reject){
-      // Fast resolve: as soon as we have valid data
-      var fastTimer = setInterval(function(){
-        if(resolvedFirst && firstResolveData){
-          clearInterval(fastTimer);
-          clearTimeout(failTimer);
-          resolve(firstResolveData);
-        }
-      }, 50);
+      _resolveFn = resolve;
+      _rejectFn = reject;
 
       // Fail-safe timeout: if no data after 7s, fail or use whatever we have
-      var failTimer = setTimeout(function(){
-        clearInterval(fastTimer);
+      _failTimer = setTimeout(function(){
         if(bestData){
           _log('Partial success: ' + sourcesCompleted + '/' + totalSources + ' sources responded');
           resolve(bestData);
@@ -391,8 +408,15 @@
     ghLastSaveTime = Date.now();
 
     // Add to queue (merge with existing pending saves)
+    // Bug fix v4.1: use structuredClone for better performance, fallback to JSON parse
+    var snapshot;
+    try {
+      snapshot = (typeof structuredClone === 'function') ? structuredClone(data) : JSON.parse(JSON.stringify(data));
+    } catch(e) {
+      snapshot = JSON.parse(JSON.stringify(data));
+    }
     _saveQueue.push({
-      data: JSON.parse(JSON.stringify(data)), // deep copy snapshot
+      data: snapshot,
       timestamp: Date.now()
     });
 
@@ -573,24 +597,21 @@
       ghDataSHA = json.sha;
       var remoteData = json.data;
 
-      // Merge strategy: use local data (more recent user edits) but
-      // incorporate any remote-only fields we don't have
+      // Merge strategy v4.1: local data is authoritative for user-editable fields
+      // but incorporate any remote-only data we don't have locally
       var merged = JSON.parse(JSON.stringify(localData));
 
-      // Keep remote lastUpdated if it's newer
-      if(remoteData.lastUpdated && (!merged.lastUpdated || remoteData.lastUpdated > merged.lastUpdated)){
-        // But our local changes are newer — keep our timestamp
-        // Actually, we want to keep local changes authoritative
-        // Just make sure structure is complete
-      }
+      // Keep local lastUpdated (user just made changes, so local is newer)
+      merged.lastUpdated = _nowISO();
 
-      // Merge streamers: per-streamer, use higher values (shoot/edit are counts that only go up)
+      // Merge streamers: per-streamer, use local values but add remote-only streamers
       if(remoteData.streamers && merged.streamers){
         Object.keys(merged.streamers).forEach(function(key){
           if(remoteData.streamers[key]){
-            // For numeric fields, take the max (safer merge)
             var localS = merged.streamers[key];
             var remoteS = remoteData.streamers[key];
+            // Bug fix v4.1: use local values for shoot/edit (user may have changed them)
+            // but take max if local somehow has lower values (data integrity)
             if(typeof localS.shoot === 'number' && typeof remoteS.shoot === 'number'){
               localS.shoot = Math.max(localS.shoot, remoteS.shoot);
             }
@@ -626,25 +647,58 @@
         merged.operationLog = combined;
       }
 
-      // Merge storyboardProjects: local data is authoritative (user just edited)
-      // but ensure we don't lose remote-only projects
+      // Bug fix v4.1: Deep merge storyboardProjects instead of just adding remote-only
+      // For each local project, merge remote changes (rows that exist only in remote)
       if(Array.isArray(remoteData.storyboardProjects)){
         if(!Array.isArray(merged.storyboardProjects)){
           merged.storyboardProjects = remoteData.storyboardProjects;
         } else {
-          // Add remote-only projects (by ID)
-          var localIds = {};
-          merged.storyboardProjects.forEach(function(p){ localIds[p.id] = true; });
-          remoteData.storyboardProjects.forEach(function(p){
-            if(!localIds[p.id]){
-              merged.storyboardProjects.push(p);
+          var localProjMap = {};
+          merged.storyboardProjects.forEach(function(p){ localProjMap[p.id] = p; });
+          remoteData.storyboardProjects.forEach(function(rp){
+            if(!localProjMap[rp.id]){
+              // Remote-only project, add it
+              merged.storyboardProjects.push(rp);
+            } else {
+              // Project exists in both: merge rows
+              var lp = localProjMap[rp.id];
+              if(Array.isArray(rp.rows) && Array.isArray(lp.rows)){
+                // Local rows are authoritative, but add remote-only rows
+                var localRowIds = {};
+                lp.rows.forEach(function(r){
+                  if(r.id) localRowIds[r.id] = true;
+                });
+                rp.rows.forEach(function(r){
+                  if(r.id && !localRowIds[r.id]){
+                    lp.rows.push(r);
+                  }
+                });
+              }
+              // Use remote visual data if local doesn't have it
+              if(rp.visualList && (!lp.visualList || lp.visualList.length === 0)){
+                lp.visualList = rp.visualList;
+              }
             }
           });
         }
       }
 
-      // Merge kanbanTasks: local data is authoritative
-      if(!merged.kanbanTasks && remoteData.kanbanTasks){
+      // Merge kanbanTasks: local is authoritative but add remote-only items
+      if(remoteData.kanbanTasks && merged.kanbanTasks){
+        ['todo','wip','done'].forEach(function(col){
+          if(Array.isArray(remoteData.kanbanTasks[col]) && Array.isArray(merged.kanbanTasks[col])){
+            var localIds = {};
+            merged.kanbanTasks[col].forEach(function(t){
+              if(t.id) localIds[t.id] = true;
+            });
+            remoteData.kanbanTasks[col].forEach(function(t){
+              if(t.id && !localIds[t.id]){
+                merged.kanbanTasks[col].push(t);
+              }
+            });
+          }
+        });
+      } else if(!merged.kanbanTasks && remoteData.kanbanTasks){
         merged.kanbanTasks = remoteData.kanbanTasks;
       }
 
@@ -3040,6 +3094,9 @@
       return;
     }
     _log('Manual sync triggered');
+    // Bug fix v4.1: reset save time so auto-refresh doesn't skip for 90s after manual sync
+    ghLastLoadTime = Date.now();
+    ghLastSuccessfulLoad = Date.now();
     ghLoad().then(function(){
       _log('✓ Manual sync complete');
     }).catch(function(err){
