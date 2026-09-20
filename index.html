@@ -404,7 +404,7 @@
                     </div>
                     <div class="bc-info-text">
                       <span class="bc-info-label" data-cn="联系邮箱" data-en="Email">联系邮箱</span>
-                      <span class="bc-info-value">vkyvkyvky@163.com</span>
+                      <span class="bc-info-value" data-mail="moc.361@ykyvykykv"></span>
                     </div>
                   </div>
                   <div class="bc-info-item">
@@ -1472,7 +1472,7 @@
                 </div>
                 <div class="info-text">
                   <span class="info-label" data-cn="邮箱" data-en="Email">邮箱</span>
-                  <span class="info-value">hello@v-ing.studio</span>
+                  <span class="info-value" data-mail="oiduts.gni-v@olleh"></span>
                 </div>
               </div>
               <div class="info-card">
@@ -1534,7 +1534,7 @@
         </div>
         <div class="footer-col">
           <h4 data-cn="联系" data-en="Contact">联系</h4>
-          <a href="mailto:hello@v-ing.studio">hello@v-ing.studio</a>
+          <a href="#" data-mailto="oiduts.gni-v@olleh" onclick="return false"></a>
           <span data-cn="上海 · 中国" data-en="Shanghai · China">上海 · 中国</span>
         </div>
       </div>
@@ -1548,6 +1548,25 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" integrity="sha384-50pczvCB0no/P1Foou0eD0Bul/9JKfIgx04I0bMpay6npYYwWTUgQxlGS5T7yKmn" crossorigin="anonymous" defer></script>
+  <script>
+    // SEC-009: Email obfuscation - decode reversed email addresses
+    (function(){
+      function decodeMail(s){return s.split('').reverse().join('');}
+      document.querySelectorAll('[data-mail]').forEach(function(el){
+        var enc=el.getAttribute('data-mail');
+        if(enc){el.textContent=decodeMail(enc);}
+      });
+      document.querySelectorAll('a[data-mailto]').forEach(function(el){
+        var enc=el.getAttribute('data-mailto');
+        if(enc){
+          var email=decodeMail(enc);
+          el.href='mailto:'+email;
+          el.textContent=email;
+          el.removeAttribute('onclick');
+        }
+      });
+    })();
+  </script>
   <script src="js/app.js?v=20260918e" defer></script>
 </body>
 </html>
