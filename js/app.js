@@ -1243,7 +1243,8 @@
   }
 
   /* ---------- Workspace Password Lock ---------- */
-  var WS_PASSWORD='Vikyi';
+  // Security fix SEC-001: Removed hardcoded password constant
+  // Password is now verified server-side via API, never stored in frontend code
   var WS_LOCK_KEY='v_ing_ws_unlocked';
   var WS_PWD_KEY='v_ing_ws_pwd';
   var WS_PWD_TS_KEY='v_ing_ws_pwd_ts';
@@ -1254,16 +1255,16 @@
   var wsLockInput='';
   var wsPwdTimer=null;
 
-  // Security: check password timeout before returning password
+  // Security SEC-001: No more hardcoded password fallback — only use sessionStorage
   function _getWsPassword(){
     var ts=parseInt(sessionStorage.getItem(WS_PWD_TS_KEY)||'0',10);
     if(ts && (Date.now()-ts>WS_PWD_TIMEOUT)){
       sessionStorage.removeItem(WS_PWD_KEY);
       sessionStorage.removeItem(WS_LOCK_KEY);
       sessionStorage.removeItem(WS_PWD_TS_KEY);
-      return WS_PASSWORD;
+      return null;
     }
-    return sessionStorage.getItem(WS_PWD_KEY) || WS_PASSWORD;
+    return sessionStorage.getItem(WS_PWD_KEY) || null;
   }
 
   // Security: auto-lock after timeout
@@ -1331,11 +1332,23 @@
     var inp=document.getElementById('wsLockTextInput');
     if(!inp)return;
     wsLockInput=inp.value;
-    if(wsLockInput===WS_PASSWORD){
-      hideWsLock();
-    }else{
-      showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
-    }
+    // Security SEC-001: Verify password via API instead of local comparison
+    fetch('/api/data?verify=1', {
+      headers: { 'X-Password': wsLockInput }
+    }).then(function(r){
+      if(r.ok){
+        hideWsLock();
+      } else if (r.status === 429) {
+        r.json().then(function(d){
+          showWsLockError((lang==='zh' ? '尝试过多，IP 已锁定 ' + (d.retryAfter?Math.ceil(d.retryAfter/60):15) + ' 分钟' : 'Too many attempts, IP locked for ' + (d.retryAfter?Math.ceil(d.retryAfter/60):15) + ' min'));
+        });
+      } else {
+        showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
+      }
+    }).catch(function(){
+      // Network error — fallback to direct comparison disabled (SEC-001 fix)
+      showWsLockError(lang==='zh'?'网络错误，无法验证密码':'Network error, cannot verify password');
+    });
   }
   // Submit on Enter or button click
   document.addEventListener('keydown',function(e){
@@ -3032,11 +3045,15 @@
         consoleLogList.innerHTML = '<div class="console-log-empty">暂无操作记录</div>';
       } else {
         consoleLogList.innerHTML = logs.map(function(log){
+          // Security fix SEC-002: Escape all user-controlled fields to prevent stored XSS
+          var safeDate = escapeHtml(log.date || '');
+          var safeTime = escapeHtml(log.time || '');
+          var safeAction = escapeHtml(log.action || '');
           return '<div class="console-log-item">'
             + '<div class="console-log-dot"></div>'
             + '<div class="console-log-body">'
-            + '<div class="console-log-meta">' + log.date + ' ' + log.time + '</div>'
-            + '<div class="console-log-text">' + log.action + '</div>'
+            + '<div class="console-log-meta">' + safeDate + ' ' + safeTime + '</div>'
+            + '<div class="console-log-text">' + safeAction + '</div>'
             + '</div></div>';
         }).join('');
       }
