@@ -3,6 +3,7 @@
  *
  * GET  /api/data  — Read data.json (no auth)
  * PUT  /api/data  — Update data.json (requires X-Password header)
+ * Security: Rate limiting + brute-force lockout (v4.0+)
  */
 
 const GH_REPO = 'V-ing7/v-ing-site';
@@ -17,10 +18,60 @@ const corsHeaders = {
   'Cache-Control': 'no-cache, no-store, must-revalidate',
 };
 
-function jsonResp(data, status) {
+// --- Security: Rate Limiting & Brute-Force Protection ---
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60000;   // 1 minute
+const RATE_LIMIT_MAX = 8;          // max PUT requests per minute per IP
+const LOCKOUT_THRESHOLD = 10;      // failed attempts before lockout
+const LOCKOUT_DURATION = 900000;   // 15 minutes lockout
+
+function getClientIP(request) {
+  return request.headers.get('CF-Connecting-IP') ||
+         request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
+         'unknown';
+}
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  let record = rateLimitMap.get(ip);
+  if (!record) {
+    record = { count: 0, firstAttempt: now, failures: 0, lockedUntil: 0 };
+    rateLimitMap.set(ip, record);
+  }
+  // Check lockout
+  if (record.lockedUntil > now) {
+    return { allowed: false, locked: true, retryAfter: Math.ceil((record.lockedUntil - now) / 1000) };
+  }
+  // Reset window if expired
+  if (now - record.firstAttempt > RATE_LIMIT_WINDOW) {
+    record.count = 0;
+    record.firstAttempt = now;
+  }
+  record.count++;
+  rateLimitMap.set(ip, record);
+  return { allowed: record.count <= RATE_LIMIT_MAX, locked: false };
+}
+
+function recordFailedAttempt(ip) {
+  const now = Date.now();
+  let record = rateLimitMap.get(ip);
+  if (!record) {
+    record = { count: 0, firstAttempt: now, failures: 0, lockedUntil: 0 };
+    rateLimitMap.set(ip, record);
+  }
+  record.failures++;
+  if (record.failures >= LOCKOUT_THRESHOLD) {
+    record.lockedUntil = now + LOCKOUT_DURATION;
+    record.failures = 0;
+  }
+  rateLimitMap.set(ip, record);
+}
+
+// --- Helpers ---
+function jsonResp(data, status, extraHeaders) {
   return new Response(JSON.stringify(data), {
     status: status || 200,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    headers: { 'Content-Type': 'application/json', ...corsHeaders, ...(extraHeaders || {}) },
   });
 }
 
@@ -60,9 +111,27 @@ export async function onRequestGet(context) {
 
 export async function onRequestPut(context) {
   const { request, env } = context;
+  const clientIP = getClientIP(request);
+
+  // Security: Rate limit check
+  const rl = checkRateLimit(clientIP);
+  if (rl.locked) {
+    return jsonResp({
+      error: 'IP 已被锁定，请 ' + Math.ceil(rl.retryAfter / 60) + ' 分钟后再试',
+      locked: true,
+      retryAfter: rl.retryAfter,
+    }, 429, { 'Retry-After': String(rl.retryAfter) });
+  }
+  if (!rl.allowed) {
+    return jsonResp({ error: '请求过于频繁，请稍后再试', rateLimited: true }, 429);
+  }
+
+  // Password check
   if (!checkPassword(request, env)) {
+    recordFailedAttempt(clientIP);
     return jsonResp({ error: '密码错误，写入被拒绝' }, 403);
   }
+
   try {
     const body = await request.json();
     const content = JSON.stringify(body.data, null, 2);
