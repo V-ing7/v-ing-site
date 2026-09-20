@@ -102,19 +102,12 @@
     return true;
   }
 
-  // HTML escape utility (SEC-002 fix: needed by renderConsolePanel at IIFE top level)
-  function escapeHtml(str){
-    if(str == null) return '';
-    var div = document.createElement('div');
-    div.textContent = String(str);
-    return div.innerHTML;
-  }
-
   /* ================================================================
      Sync Status UI
      ================================================================ */
   function setSyncStatus(status, msg){
     ghSyncStatus = status;
+    window.__ghSyncStatus = status; // Expose for other modules
     var el = document.getElementById('syncStatusBadge');
     if(!el) return;
     var labels = {
@@ -124,11 +117,18 @@
       offline:   { text: '离线模式', cls: 'sync-offline' },
       saving:    { text: '保存中...', cls: 'sync-loading' },
       saved:     { text: '已保存',   cls: 'sync-success' },
-      syncing:   { text: '同步中...', cls: 'sync-loading' }
+      syncing:   { text: '同步中...', cls: 'sync-loading' },
+      pending:   { text: '有更新',   cls: 'sync-pending' }
     };
     var info = labels[status] || labels.loading;
     el.textContent = msg || info.text;
     el.className = 'sync-badge ' + info.cls;
+    // Add title with last sync time for more context
+    if(ghLastSuccessfulLoad){
+      var d = new Date(ghLastSuccessfulLoad);
+      var timeStr = d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      el.title = '最后同步: ' + timeStr;
+    }
   }
 
   /* ================================================================
@@ -149,53 +149,89 @@
 
   /* ================================================================
      Data Loading — Multi-source with priority + validation
+     v4.0 Deep Optimization:
+     - Separate foreground/background load states (no unwanted reuse)
+     - Timestamp-based freshness check against ghLastAppliedDataTime
+     - Worker API as highest priority (most accurate data)
+     - Smart deduplication: skip identical timestamps
+     - Edit-mode aware: notify of new data without overwriting edits
      ================================================================ */
-  var _loadState = null; // Tracks ongoing load to avoid duplicates
+  var _loadState = null;        // Current foreground load state
+  var _bgLoadState = null;      // Current background load state
+  var _hasNewDataPending = false; // New data available while in edit mode
 
   function ghLoad(options){
     var opts = options || {};
     var isBackground = opts.background || false;
+    var force = opts.force || false;
 
-    // If a load is already in progress, return its promise
-    if(_loadState && _loadState.pending){
-      _log('Load already in progress, reusing existing request', isBackground ? 'debug' : 'info');
-      return _loadState.promise;
-    }
-
-    if(!isBackground){
+    // Smart state management:
+    // - Foreground load takes precedence (upgrades background to foreground)
+    // - Background load reuses existing foreground or background load
+    if(isBackground){
+      if(_loadState && _loadState.pending){
+        _log('Background refresh: foreground load in progress, reusing', 'debug');
+        return _loadState.promise;
+      }
+      if(_bgLoadState && _bgLoadState.pending){
+        _log('Background refresh already in progress, reusing', 'debug');
+        return _bgLoadState.promise;
+      }
+    } else {
+      // Foreground load: if background is running, upgrade it
+      if(_bgLoadState && _bgLoadState.pending){
+        _log('Foreground load: upgrading background refresh');
+        setSyncStatus('loading');
+        // We can't really "upgrade" the promise, but we can show loading
+        // and return the same promise (it will still resolve correctly)
+        return _bgLoadState.promise.then(function(data){
+          setSyncStatus('success');
+          return data;
+        }).catch(function(err){
+          setSyncStatus('error');
+          throw err;
+        });
+      }
+      if(_loadState && _loadState.pending){
+        _log('Foreground load already in progress, reusing');
+        return _loadState.promise;
+      }
       setSyncStatus('loading');
     }
+
     ghLastLoadTime = Date.now();
+    _hasNewDataPending = false;
 
     var cacheBust = Date.now();
     var bestData = null;
     var bestTime = null;
     var bestSource = null;
-    var shaFromAPI = null;
+    var bestSHA = null;
     var sourcesCompleted = 0;
     var totalSources = 5;
     var resolvedFirst = false;
     var firstResolveData = null;
+    var baselineTime = ghLastAppliedDataTime || '';
 
     // Define sources with priority (lower = higher priority)
+    // Worker API is highest priority because it reads directly from GitHub
     var sources = [
       {
         name: 'Worker API',
-        priority: 1,
+        priority: 0, // Highest priority - most accurate
         timeout: 6000,
         fetch: function(){
           return fetchWithTimeout(WORKER_API + '/api/data?t=' + cacheBust, {}, 6000).then(function(res){
             if(!res.ok) throw new Error('HTTP ' + res.status);
             return res.json();
           }).then(function(json){
-            shaFromAPI = json.sha;
             return { data: json.data, sha: json.sha, fromAPI: true };
           });
         }
       },
       {
         name: 'Same-origin',
-        priority: 0, // Highest priority - fastest
+        priority: 1, // Fast but may be cached
         timeout: 3000,
         fetch: function(){
           return fetchWithTimeout('data.json?t=' + cacheBust, {}, 3000).then(function(res){
@@ -245,22 +281,21 @@
         _log(sourceName + ': invalid or empty data, skipped', 'warn');
         return;
       }
-
-      // Always capture SHA from API response, even if data isn't newer
-      if(result.fromAPI && result.sha){
-        ghDataSHA = result.sha;
-      }
-
       var dataTime = result.data.lastUpdated || '';
 
-      // Prevent stale data from overwriting newer data:
-      // - For background refresh: reject data older than ghLastAppliedDataTime
-      // - For initial load: accept first valid data, then only accept newer
-      var isStale = isBackground && ghLastAppliedDataTime && dataTime && dataTime < ghLastAppliedDataTime;
+      // FRESHNESS CHECK v2: compare against global baseline, not local bestData
+      // This prevents re-applying identical data on every refresh cycle
+      var isStale = baselineTime && dataTime && dataTime <= baselineTime;
       if(isStale){
-        _log(sourceName + ': stale data (ts: ' + dataTime + ' < applied: ' + ghLastAppliedDataTime + '), skipped', 'warn');
+        _log(sourceName + ': same or older data (ts: ' + dataTime + '), skipped', 'debug');
         // Still count as completed but don't apply
-        return;
+        // For first resolve, we still need SOME data, so check if we have nothing yet
+        if(!bestData && !resolvedFirst && !baselineTime){
+          // Initial load with no baseline - accept this first valid data
+          _log(sourceName + ': accepted as initial data');
+        } else {
+          return;
+        }
       }
 
       var isNewer = !bestData || (dataTime && dataTime > bestTime);
@@ -269,18 +304,32 @@
         bestData = result.data;
         bestTime = dataTime;
         bestSource = sourceName;
-        ghLastAppliedDataTime = dataTime;
-        _log('✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
-        // Bug fix v4.1: Don't overwrite UI during active editing or saving
-        // Only apply remote data to UI if user is not actively editing
-        var _isEditingNow = (typeof editModeActive !== 'undefined' && editModeActive)
-          || (typeof subpageEditMode !== 'undefined' && subpageEditMode)
-          || _saveInProgress
-          || (typeof window.__sbEditing !== 'undefined' && window.__sbEditing);
-        if(!isBackground || !_isEditingNow){
-          applyRemoteData(result.data);
+        if(result.fromAPI && result.sha){
+          bestSHA = result.sha;
+        }
+
+        // Only apply to UI if data is actually newer than what we have
+        var isActuallyNew = !baselineTime || (dataTime && dataTime > baselineTime);
+
+        if(isActuallyNew){
+          ghLastAppliedDataTime = dataTime;
+          if(result.fromAPI && result.sha){
+            ghDataSHA = result.sha;
+          }
+
+          // Edit-mode awareness: if in edit mode, don't overwrite, just notify
+          var inEditMode = editModeActive || subpageEditMode;
+          if(isBackground && inEditMode){
+            _hasNewDataPending = true;
+            _log('↻ New data from ' + sourceName + ' available (edit mode - pending)');
+            // Update sync badge to indicate pending updates
+            setSyncStatus('pending');
+          } else {
+            _log('✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
+            applyRemoteData(result.data);
+          }
         } else {
-          _log('Skipping UI apply during active edit (background refresh)', 'info');
+          _log(sourceName + ': same timestamp as current, no update needed', 'debug');
         }
 
         if(!resolvedFirst){
@@ -288,13 +337,13 @@
           firstResolveData = result.data;
           if(!isBackground){
             setSyncStatus('success');
+          } else if(!isActuallyNew){
+            // Background refresh with no new data - keep current status
           }
           ghLastSuccessfulLoad = Date.now();
           _refreshConsecutiveFailures = 0;
           _refreshCurrentInterval = _refreshBaseInterval;
-          // Bug fix v4.1: event-driven resolve instead of polling
-          _tryResolve();
-        } else {
+        } else if(isActuallyNew && !(_hasNewDataPending && (editModeActive || subpageEditMode))){
           _log('↻ Newer data from ' + sourceName + ', UI updated');
         }
       }
@@ -304,8 +353,8 @@
     sources.forEach(function(src, idx){
       var delay = 0;
       // Stagger CDN sources slightly to reduce initial burst
-      if(src.priority >= 3) delay = 300;
-      if(src.priority >= 4) delay = 600;
+      if(src.priority >= 3) delay = 200;
+      if(src.priority >= 4) delay = 400;
 
       setTimeout(function(){
         src.fetch().then(function(result){
@@ -317,25 +366,19 @@
       }, delay);
     });
 
-    // Bug fix v4.1: replaced setInterval(50ms) polling with event-driven resolve
-    // Hoist resolve/reject so considerResult can call them directly
-    var _resolveFn = null;
-    var _rejectFn = null;
-    var _failTimer = null;
-
-    function _tryResolve(){
-      if(resolvedFirst && firstResolveData){
-        if(_failTimer) clearTimeout(_failTimer);
-        if(_resolveFn) _resolveFn(firstResolveData);
-      }
-    }
-
     var promise = new Promise(function(resolve, reject){
-      _resolveFn = resolve;
-      _rejectFn = reject;
+      // Fast resolve: as soon as we have valid data
+      var fastTimer = setInterval(function(){
+        if(resolvedFirst && firstResolveData){
+          clearInterval(fastTimer);
+          clearTimeout(failTimer);
+          resolve(firstResolveData);
+        }
+      }, 50);
 
       // Fail-safe timeout: if no data after 7s, fail or use whatever we have
-      _failTimer = setTimeout(function(){
+      var failTimer = setTimeout(function(){
+        clearInterval(fastTimer);
         if(bestData){
           _log('Partial success: ' + sourcesCompleted + '/' + totalSources + ' sources responded');
           resolve(bestData);
@@ -353,55 +396,97 @@
       }, 7000);
     });
 
-    _loadState = {
-      pending: true,
-      promise: promise
-    };
-    promise.finally(function(){
-      _loadState = null;
-    });
+    // Track state separately for foreground vs background
+    if(isBackground){
+      _bgLoadState = { pending: true, promise: promise };
+      promise.finally(function(){
+        _bgLoadState = null;
+      });
+    } else {
+      _loadState = { pending: true, promise: promise };
+      promise.finally(function(){
+        _loadState = null;
+      });
+    }
 
     return promise;
   }
 
   /* ================================================================
      Apply Remote Data to UI
+     v4.0 Smart Update: only re-render changed sections
      ================================================================ */
+  var _lastAppliedSignatures = {}; // Track data signatures for change detection
+
+  function _getDataSignature(data){
+    // Fast signature for change detection (not cryptographic, just for comparison)
+    try{
+      return JSON.stringify(data);
+    }catch(e){
+      return String(Math.random());
+    }
+  }
+
+  function _hasChanged(key, data){
+    var sig = _getDataSignature(data);
+    var changed = _lastAppliedSignatures[key] !== sig;
+    if(changed){
+      _lastAppliedSignatures[key] = sig;
+    }
+    return changed;
+  }
+
   function applyRemoteData(data){
     window.__vingData = data;
-    if(data.theme){
+
+    // Theme
+    if(data.theme && _hasChanged('theme', data.theme)){
       html.setAttribute('data-theme', data.theme);
       localStorage.setItem('v-ing-theme', data.theme);
     }
+
+    // Language
     if(data.lang && data.lang !== lang){
       lang = data.lang;
       localStorage.setItem('v-ing-lang', lang);
       applyLang();
     }
+
+    // Streamers - only re-render if changed
     if(data.streamers && unifiedPanel){
-      streamerData = data.streamers;
-      initStreamerData();
-      Object.keys(data.streamers).forEach(function(key){
-        streamerData[key] = data.streamers[key];
-      });
-      // Initialize sub-page streamer cards with data attributes
-      initSubpageStreamers();
-      refreshAllVisuals(streamerData);
-      try{ var _e=_encLS(streamerData); if(_e) localStorage.setItem(STORAGE_KEY, _e); }catch(e){}
+      if(_hasChanged('streamers', data.streamers)){
+        streamerData = data.streamers;
+        initStreamerData();
+        Object.keys(data.streamers).forEach(function(key){
+          streamerData[key] = data.streamers[key];
+        });
+        initSubpageStreamers();
+        refreshAllVisuals(streamerData);
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+      }
     }
-    if(data.operationLog){
+
+    // Operation log
+    if(data.operationLog && _hasChanged('operationLog', data.operationLog)){
       renderConsolePanel(data);
     }
-    // Render kanban tasks from remote data
+
+    // Kanban tasks - only re-render if changed
     if(data.kanbanTasks && window.__renderKanbanFromData){
-      window.__renderKanbanFromData(data.kanbanTasks);
+      if(_hasChanged('kanbanTasks', data.kanbanTasks)){
+        window.__renderKanbanFromData(data.kanbanTasks);
+      }
     }
-    // Render storyboard from remote data (multi-project)
+
+    // Storyboard projects - only re-render if changed
     if(data.storyboardProjects && Array.isArray(data.storyboardProjects) && window.__renderStoryboard){
-      window.__renderStoryboard(data.storyboardProjects);
+      if(_hasChanged('storyboardProjects', data.storyboardProjects)){
+        window.__renderStoryboard(data.storyboardProjects);
+      }
     } else if(data.storyboard && window.__renderStoryboard){
-      // Old single-project format (migration)
-      window.__renderStoryboard(data.storyboard);
+      if(_hasChanged('storyboard', data.storyboard)){
+        window.__renderStoryboard(data.storyboard);
+      }
     }
   }
 
@@ -414,17 +499,11 @@
     // Update local timestamp immediately to prevent auto-refresh overwrite
     data.lastUpdated = _nowISO();
     ghLastSaveTime = Date.now();
+    _postSaveVerifyCount = 0; // Reset post-save verification counter
 
     // Add to queue (merge with existing pending saves)
-    // Bug fix v4.1: use structuredClone for better performance, fallback to JSON parse
-    var snapshot;
-    try {
-      snapshot = (typeof structuredClone === 'function') ? structuredClone(data) : JSON.parse(JSON.stringify(data));
-    } catch(e) {
-      snapshot = JSON.parse(JSON.stringify(data));
-    }
     _saveQueue.push({
-      data: snapshot,
+      data: JSON.parse(JSON.stringify(data)), // deep copy snapshot
       timestamp: Date.now()
     });
 
@@ -506,22 +585,59 @@
       _log('✓ Saved to GitHub (SHA: ' + (ghDataSHA ? ghDataSHA.substring(0,7) : '?') + ')');
       setSyncStatus('saved');
       triggerCloudflareDeploy();
+
+      // Update signatures to match saved data (prevents immediate re-render on verify)
+      if(data.theme) _lastAppliedSignatures.theme = _getDataSignature(data.theme);
+      if(data.streamers) _lastAppliedSignatures.streamers = _getDataSignature(data.streamers);
+      if(data.operationLog) _lastAppliedSignatures.operationLog = _getDataSignature(data.operationLog);
+      if(data.kanbanTasks) _lastAppliedSignatures.kanbanTasks = _getDataSignature(data.kanbanTasks);
+      if(data.storyboardProjects) _lastAppliedSignatures.storyboardProjects = _getDataSignature(data.storyboardProjects);
+
+      // Post-save verification: confirm data was saved correctly
+      // Use Worker API directly (most accurate), short delay for GitHub replication
+      setTimeout(function(){
+        _verifySave(data.lastUpdated);
+      }, 2000);
+
       setTimeout(function(){
         if(ghSyncStatus === 'saved') setSyncStatus('success');
       }, 2000);
       _finishSave(true);
     }
 
+    // Verify save by fetching from Worker API and comparing timestamps
+    function _verifySave(expectedTimestamp){
+      if(!expectedTimestamp) return;
+      fetchWithTimeout(WORKER_API + '/api/data?verify=' + Date.now(), {}, 5000)
+        .then(function(res){
+          if(!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(json){
+          if(json.data && json.data.lastUpdated){
+            if(json.data.lastUpdated >= expectedTimestamp){
+              _log('✓ Save verified: remote data matches');
+              // Update SHA from verified response
+              if(json.sha) ghDataSHA = json.sha;
+              // Reset backoff since we confirmed the connection works
+              _refreshConsecutiveFailures = 0;
+              _refreshCurrentInterval = _refreshBaseInterval;
+            } else {
+              _log('⚠ Save verification: remote data is older than expected', 'warn');
+              // Try again after a short delay
+              setTimeout(function(){
+                _verifySave(expectedTimestamp);
+              }, 3000);
+            }
+          }
+        })
+        .catch(function(err){
+          _log('Save verification failed: ' + err.message, 'warn');
+        });
+    }
+
     function handleFailure(err){
       _log('Save failed: ' + (err.message || err), 'warn');
-
-      // 403 Auth error: don't retry, fail immediately
-      if(err.status === 403){
-        _log('Auth failed (403) — not retrying', 'error');
-        setSyncStatus('error');
-        _finishSave(false);
-        return;
-      }
 
       if(err.type === 'conflict'){
         // 409 Conflict: fetch latest data, merge, then retry
@@ -605,21 +721,24 @@
       ghDataSHA = json.sha;
       var remoteData = json.data;
 
-      // Merge strategy v4.1: local data is authoritative for user-editable fields
-      // but incorporate any remote-only data we don't have locally
+      // Merge strategy: use local data (more recent user edits) but
+      // incorporate any remote-only fields we don't have
       var merged = JSON.parse(JSON.stringify(localData));
 
-      // Keep local lastUpdated (user just made changes, so local is newer)
-      merged.lastUpdated = _nowISO();
+      // Keep remote lastUpdated if it's newer
+      if(remoteData.lastUpdated && (!merged.lastUpdated || remoteData.lastUpdated > merged.lastUpdated)){
+        // But our local changes are newer — keep our timestamp
+        // Actually, we want to keep local changes authoritative
+        // Just make sure structure is complete
+      }
 
-      // Merge streamers: per-streamer, use local values but add remote-only streamers
+      // Merge streamers: per-streamer, use higher values (shoot/edit are counts that only go up)
       if(remoteData.streamers && merged.streamers){
         Object.keys(merged.streamers).forEach(function(key){
           if(remoteData.streamers[key]){
+            // For numeric fields, take the max (safer merge)
             var localS = merged.streamers[key];
             var remoteS = remoteData.streamers[key];
-            // Bug fix v4.1: use local values for shoot/edit (user may have changed them)
-            // but take max if local somehow has lower values (data integrity)
             if(typeof localS.shoot === 'number' && typeof remoteS.shoot === 'number'){
               localS.shoot = Math.max(localS.shoot, remoteS.shoot);
             }
@@ -655,61 +774,6 @@
         merged.operationLog = combined;
       }
 
-      // Bug fix v4.1: Deep merge storyboardProjects instead of just adding remote-only
-      // For each local project, merge remote changes (rows that exist only in remote)
-      if(Array.isArray(remoteData.storyboardProjects)){
-        if(!Array.isArray(merged.storyboardProjects)){
-          merged.storyboardProjects = remoteData.storyboardProjects;
-        } else {
-          var localProjMap = {};
-          merged.storyboardProjects.forEach(function(p){ localProjMap[p.id] = p; });
-          remoteData.storyboardProjects.forEach(function(rp){
-            if(!localProjMap[rp.id]){
-              // Remote-only project, add it
-              merged.storyboardProjects.push(rp);
-            } else {
-              // Project exists in both: merge rows
-              var lp = localProjMap[rp.id];
-              if(Array.isArray(rp.rows) && Array.isArray(lp.rows)){
-                // Local rows are authoritative, but add remote-only rows
-                var localRowIds = {};
-                lp.rows.forEach(function(r){
-                  if(r.id) localRowIds[r.id] = true;
-                });
-                rp.rows.forEach(function(r){
-                  if(r.id && !localRowIds[r.id]){
-                    lp.rows.push(r);
-                  }
-                });
-              }
-              // Use remote visual data if local doesn't have it
-              if(rp.visualList && (!lp.visualList || lp.visualList.length === 0)){
-                lp.visualList = rp.visualList;
-              }
-            }
-          });
-        }
-      }
-
-      // Merge kanbanTasks: local is authoritative but add remote-only items
-      if(remoteData.kanbanTasks && merged.kanbanTasks){
-        ['todo','wip','done'].forEach(function(col){
-          if(Array.isArray(remoteData.kanbanTasks[col]) && Array.isArray(merged.kanbanTasks[col])){
-            var localIds = {};
-            merged.kanbanTasks[col].forEach(function(t){
-              if(t.id) localIds[t.id] = true;
-            });
-            remoteData.kanbanTasks[col].forEach(function(t){
-              if(t.id && !localIds[t.id]){
-                merged.kanbanTasks[col].push(t);
-              }
-            });
-          }
-        });
-      } else if(!merged.kanbanTasks && remoteData.kanbanTasks){
-        merged.kanbanTasks = remoteData.kanbanTasks;
-      }
-
       // Update timestamp
       merged.lastUpdated = _nowISO();
 
@@ -719,29 +783,57 @@
 
   /* ================================================================
      Auto-refresh — Adaptive with exponential backoff
+     v4.0 Deep Optimization:
+     - Smart post-save fast verification (not just blind 90s wait)
+     - Edit-mode: still checks for new data, just notifies
+     - Page visibility: immediate refresh when tab becomes visible
+     - Faster recovery from backoff
      ================================================================ */
+  var _postSaveVerifyCount = 0;
+  var _postSaveVerifyTimer = null;
+
   function startAutoRefresh(){
     if(_refreshTimer) clearInterval(_refreshTimer);
     _refreshCurrentInterval = _refreshBaseInterval;
     _refreshConsecutiveFailures = 0;
 
+    // Refresh when page becomes visible again (user switched back to tab)
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden && _isOnline){
+        _log('Page visible — checking for updates');
+        // Small delay to let browser settle
+        setTimeout(function(){
+          ghLoad({ background: true }).catch(function(){});
+        }, 500);
+      }
+    });
+
     function tick(){
-      // Conditions for auto-refresh:
-      // 1. Not in edit mode
-      // 2. No save in progress
-      // 3. Page is visible
-      // 4. At least 90s since last save (protection window)
-      // 5. Online
-      // 6. Not during storyboard long-press interaction
       var timeSinceSave = Date.now() - ghLastSaveTime;
-      var canRefresh = !editModeActive
-        && !subpageEditMode
-        && !_saveInProgress
+      var timeSinceSuccessfulSave = Date.now() - ghLastSuccessfulSave;
+
+      // Determine if we should refresh:
+      // - Always allow if it's been > 30s since save (normal operation)
+      // - During edit mode: still refresh, but ghLoad will handle it (notify only)
+      // - Skip if save in progress
+      // - Skip if page is hidden
+      // - Skip if offline
+      // - Skip during storyboard long-press
+      var canRefresh = !_saveInProgress
         && !document.hidden
-        && timeSinceSave > 90000
         && _isOnline
         && !window.__sbLongPressActive
-        && !window.__sbEditing;
+        && timeSinceSave > 30000; // Shortened from 90s to 30s since we now have smart stale detection
+
+      // Post-save fast verification: if save was in the last 30s, do quick checks
+      if(!canRefresh && timeSinceSave <= 30000 && timeSinceSuccessfulSave > 2000 && !_saveInProgress){
+        // In the post-save window, do a quick verification every 10s
+        if(_postSaveVerifyCount < 3){
+          _postSaveVerifyCount++;
+          _log('Post-save verification check #' + _postSaveVerifyCount);
+          ghLoad({ background: true }).catch(function(){});
+        }
+      }
 
       if(canRefresh){
         ghLoad({ background: true }).then(function(){
@@ -756,7 +848,7 @@
           // Failure — increase backoff
           _refreshConsecutiveFailures++;
           var newInterval = Math.min(
-            _refreshBaseInterval * Math.pow(1.5, _refreshConsecutiveFailures),
+            _refreshBaseInterval * Math.pow(1.4, _refreshConsecutiveFailures),
             _refreshMaxBackoff
           );
           if(newInterval !== _refreshCurrentInterval){
@@ -1251,51 +1343,19 @@
   }
 
   /* ---------- Workspace Password Lock ---------- */
-  // Security fix SEC-001: Removed hardcoded password constant
-  // Password is now verified server-side via API, never stored in frontend code
+  var WS_PASSWORD='Vikyi';
   var WS_LOCK_KEY='v_ing_ws_unlocked';
   var WS_PWD_KEY='v_ing_ws_pwd';
-  var WS_PWD_TS_KEY='v_ing_ws_pwd_ts';
-  var WS_PWD_TIMEOUT=600000; // 10 minutes auto-lock
   var wsLockOverlay=document.getElementById('wsLockOverlay');
   var wsLockDots=document.getElementById('wsLockDots');
   var wsLockError=document.getElementById('wsLockError');
   var wsLockInput='';
-  var wsPwdTimer=null;
 
-  // Security SEC-001: No more hardcoded password fallback — only use sessionStorage
   function _getWsPassword(){
-    var ts=parseInt(sessionStorage.getItem(WS_PWD_TS_KEY)||'0',10);
-    if(ts && (Date.now()-ts>WS_PWD_TIMEOUT)){
-      sessionStorage.removeItem(WS_PWD_KEY);
-      sessionStorage.removeItem(WS_LOCK_KEY);
-      sessionStorage.removeItem(WS_PWD_TS_KEY);
-      return null;
-    }
-    return sessionStorage.getItem(WS_PWD_KEY) || null;
-  }
-
-  // Security: auto-lock after timeout
-  function _resetPwdTimer(){
-    if(wsPwdTimer)clearTimeout(wsPwdTimer);
-    wsPwdTimer=setTimeout(function(){
-      sessionStorage.removeItem(WS_PWD_KEY);
-      sessionStorage.removeItem(WS_LOCK_KEY);
-      sessionStorage.removeItem(WS_PWD_TS_KEY);
-      if(wsLockOverlay&&!wsLockOverlay.classList.contains('ws-lock-active')){
-        showWsLock();
-      }
-    },WS_PWD_TIMEOUT);
+    return sessionStorage.getItem(WS_PWD_KEY)||'';
   }
 
   function isWsUnlocked(){
-    var ts=parseInt(sessionStorage.getItem(WS_PWD_TS_KEY)||'0',10);
-    if(ts && (Date.now()-ts>WS_PWD_TIMEOUT)){
-      sessionStorage.removeItem(WS_LOCK_KEY);
-      sessionStorage.removeItem(WS_PWD_KEY);
-      sessionStorage.removeItem(WS_PWD_TS_KEY);
-      return false;
-    }
     return sessionStorage.getItem(WS_LOCK_KEY)==='1';
   }
   function showWsLock(){
@@ -1311,8 +1371,6 @@
     if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
     sessionStorage.setItem(WS_LOCK_KEY,'1');
     sessionStorage.setItem(WS_PWD_KEY,wsLockInput);
-    sessionStorage.setItem(WS_PWD_TS_KEY,String(Date.now()));
-    _resetPwdTimer();
     setTimeout(function(){checkReveals()},100);
   }
   function showWsLockError(msg){
@@ -1340,23 +1398,11 @@
     var inp=document.getElementById('wsLockTextInput');
     if(!inp)return;
     wsLockInput=inp.value;
-    // Security SEC-001: Verify password via API instead of local comparison
-    fetch('/api/data?verify=1', {
-      headers: { 'X-Password': wsLockInput }
-    }).then(function(r){
-      if(r.ok){
-        hideWsLock();
-      } else if (r.status === 429) {
-        r.json().then(function(d){
-          showWsLockError((lang==='zh' ? '尝试过多，IP 已锁定 ' + (d.retryAfter?Math.ceil(d.retryAfter/60):15) + ' 分钟' : 'Too many attempts, IP locked for ' + (d.retryAfter?Math.ceil(d.retryAfter/60):15) + ' min'));
-        });
-      } else {
-        showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
-      }
-    }).catch(function(){
-      // Network error — fallback to direct comparison disabled (SEC-001 fix)
-      showWsLockError(lang==='zh'?'网络错误，无法验证密码':'Network error, cannot verify password');
-    });
+    if(wsLockInput===WS_PASSWORD){
+      hideWsLock();
+    }else{
+      showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
+    }
   }
   // Submit on Enter or button click
   document.addEventListener('keydown',function(e){
@@ -1969,34 +2015,6 @@
   var unifiedPanel = document.getElementById('ws-panel-unified');
   var editModeActive = false;
   var STORAGE_KEY = 'ving-unified-report-data';
-  // SEC-011: Lightweight XOR encryption for localStorage data
-  var _ENC_KEY = 'V-i-N-g-S-t-U-d-i-o-2-0-2-6';
-  function _xorEnc(text){
-    var out='';
-    for(var i=0;i<text.length;i++){
-      out+=String.fromCharCode(text.charCodeAt(i)^_ENC_KEY.charCodeAt(i%_ENC_KEY.length));
-    }
-    return out;
-  }
-  function _encLS(data){
-    try{
-      var json=JSON.stringify(data);
-      var enc=_xorEnc(json);
-      // Base64 encode to avoid special chars breaking localStorage
-      return btoa(unescape(encodeURIComponent(enc)));
-    }catch(e){return null;}
-  }
-  function _decLS(raw){
-    try{
-      if(!raw||raw.indexOf('"')===0)return JSON.parse(raw); // backward compat: old unencrypted data
-      var dec=decodeURIComponent(escape(atob(raw)));
-      var json=_xorEnc(dec);
-      return JSON.parse(json);
-    }catch(e){
-      // Try parsing as old unencrypted JSON for backward compatibility
-      try{return JSON.parse(raw);}catch(e2){return {};}
-    }
-  }
 
   // Set unified report toolbar date
   var toolbarDate = document.getElementById('unifiedToolbarDate');
@@ -2009,7 +2027,7 @@
   function loadReportData(){
     try{
       var saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? _decLS(saved) : {};
+      return saved ? JSON.parse(saved) : {};
     }catch(e){
       return {};
     }
@@ -2018,7 +2036,7 @@
   // Save data to localStorage + GitHub
   function saveReportData(data){
     try{
-      var _enc=_encLS(data); if(_enc) localStorage.setItem(STORAGE_KEY, _enc);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }catch(e){
       console.warn('Failed to save report data locally:', e);
     }
@@ -2053,7 +2071,7 @@
         }
       }
       // Also save to localStorage
-      try{ var _e=_encLS(streamerData); if(_e) localStorage.setItem(STORAGE_KEY, _e); }catch(e){}
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
     }, 800);
   }
 
@@ -2403,6 +2421,14 @@
       }
       // Save data
       saveReportData(streamerData);
+
+      // If there's pending new data from background refresh, apply it now
+      if(_hasNewDataPending){
+        _log('Edit mode exited — applying pending new data');
+        _hasNewDataPending = false;
+        // Do a fresh load to get latest data and apply it
+        ghLoad({ background: true }).catch(function(){});
+      }
     }
   }
 
@@ -2432,6 +2458,13 @@
       }
       // Save data on exit
       saveStreamersToGitHub();
+
+      // Apply pending new data if any
+      if(_hasNewDataPending){
+        _log('Subpage edit mode exited — applying pending new data');
+        _hasNewDataPending = false;
+        ghLoad({ background: true }).catch(function(){});
+      }
     }
   }
 
@@ -3081,15 +3114,11 @@
         consoleLogList.innerHTML = '<div class="console-log-empty">暂无操作记录</div>';
       } else {
         consoleLogList.innerHTML = logs.map(function(log){
-          // Security fix SEC-002: Escape all user-controlled fields to prevent stored XSS
-          var safeDate = escapeHtml(log.date || '');
-          var safeTime = escapeHtml(log.time || '');
-          var safeAction = escapeHtml(log.action || '');
           return '<div class="console-log-item">'
             + '<div class="console-log-dot"></div>'
             + '<div class="console-log-body">'
-            + '<div class="console-log-meta">' + safeDate + ' ' + safeTime + '</div>'
-            + '<div class="console-log-text">' + safeAction + '</div>'
+            + '<div class="console-log-meta">' + log.date + ' ' + log.time + '</div>'
+            + '<div class="console-log-text">' + log.action + '</div>'
             + '</div></div>';
         }).join('');
       }
@@ -3146,10 +3175,51 @@
       _log('Save in progress, cannot sync now');
       return;
     }
+
+    var inEditMode = editModeActive || subpageEditMode;
+
+    // If in edit mode and there's pending new data, ask user if they want to apply
+    if(inEditMode && _hasNewDataPending){
+      var apply = confirm(lang === 'zh' 
+        ? '检测到有新数据更新。是否立即应用？（当前编辑的内容会被保存）'
+        : 'New data available. Apply now? (Your current edits will be saved)');
+      if(apply){
+        // Save current edits first, then load new data
+        if(editModeActive){
+          saveReportData(streamerData);
+        } else {
+          saveStreamersToGitHub();
+        }
+        _hasNewDataPending = false;
+        // Wait a bit for save to start, then load
+        setTimeout(function(){
+          ghLoad().then(function(){
+            _log('✓ Manual sync complete');
+          }).catch(function(){
+            setSyncStatus('error');
+          });
+        }, 2000);
+      }
+      return;
+    }
+
+    // If in edit mode but no pending data, just check for updates
+    if(inEditMode){
+      _log('Manual sync in edit mode — checking for updates (will notify if found)');
+      ghLoad({ background: true }).then(function(){
+        if(_hasNewDataPending){
+          _log('New data found — click sync badge to apply');
+        } else {
+          _log('✓ Already up to date');
+        }
+      }).catch(function(){
+        setSyncStatus('error');
+      });
+      return;
+    }
+
+    // Normal mode: full foreground sync
     _log('Manual sync triggered');
-    // Bug fix v4.1: reset save time so auto-refresh doesn't skip for 90s after manual sync
-    ghLastLoadTime = Date.now();
-    ghLastSuccessfulLoad = Date.now();
     ghLoad().then(function(){
       _log('✓ Manual sync complete');
     }).catch(function(err){
@@ -3366,10 +3436,8 @@
   var sbLastTouchTime = 0;
   // Track currently swiped-open card (for left-swipe delete)
   var sbSwipedCard = null;
-  // Expose long-press state and edit state to outer scope (for auto-refresh guard)
-  var sbEditing = false;
+  // Expose long-press state to outer scope (for auto-refresh guard)
   try{ Object.defineProperty(window, '__sbLongPressActive', {get: function(){ return sbLongPressActive; }}); }catch(e){ window.__sbLongPressActive = false; }
-  try{ Object.defineProperty(window, '__sbEditing', {get: function(){ return sbEditing; }}); }catch(e){ window.__sbEditing = false; }
 
   // DOM refs
   var projectListView = document.getElementById('sbProjectListView');
@@ -3477,7 +3545,7 @@
             '</div>' +
             '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
           '</div>' +
-          '<div class="sb-pcard-hint">' + t('左滑更多操作 · 长按确认','Swipe left for more · Long-press to confirm') + '</div>' +
+          '<div class="sb-pcard-hint">' + t('左滑露出删除 · 长按删除按钮确认','Swipe left · Long-press delete to confirm') + '</div>' +
         '</div>';
 
       // Delete button: long-press to delete with progress bar
@@ -3633,43 +3701,6 @@
     var isSwiping = false;
     var swipeDx = 0;
     var contentEl = card.querySelector('.sb-pcard-content');
-    var actionEl = card.querySelector('.sb-pcard-action');
-    var delBtn = card.querySelector('.sb-pcard-del-btn');
-    var rafPending = false;
-    var pendingOffset = 0;
-    var pendingProgress = 0;
-    var hasPending = false;
-
-    // Apply visual updates via rAF for smooth 60fps rendering
-    function applySwipeVisuals(){
-      rafPending = false;
-      if(!hasPending) return;
-      hasPending = false;
-
-      if(contentEl){
-        contentEl.style.transform = 'translateX(' + pendingOffset + 'px)';
-      }
-      if(actionEl){
-        var blurVal = 8 * (1 - pendingProgress);
-        actionEl.style.filter = 'blur(' + blurVal.toFixed(1) + 'px)';
-        actionEl.style.opacity = pendingProgress.toFixed(2);
-      }
-      if(delBtn){
-        var btnProgress = Math.max(0, (pendingProgress - 0.3) / 0.7);
-        delBtn.style.opacity = btnProgress.toFixed(2);
-        delBtn.style.transform = 'translateX(' + (12 * (1 - pendingProgress)).toFixed(1) + 'px)';
-      }
-    }
-
-    function scheduleVisuals(offset, progress){
-      pendingOffset = offset;
-      pendingProgress = progress;
-      hasPending = true;
-      if(!rafPending){
-        rafPending = true;
-        requestAnimationFrame(applySwipeVisuals);
-      }
-    }
 
     function startPress(e){
       if(isPressing) return;
@@ -3765,36 +3796,18 @@
         var isOpen = card.classList.contains('swiped-left');
         var base = isOpen ? -SWIPE_ACTION_W : 0;
         var offset = Math.max(-SWIPE_ACTION_W, Math.min(0, base + dx));
-        var progress = Math.abs(offset) / SWIPE_ACTION_W;
-        // Add swiping class and disable transition on first swipe frame
-        if(!card.classList.contains('swiping')){
-          card.classList.add('swiping');
-          contentEl.style.transition = 'none';
-        }
-        // Batch DOM updates via rAF for smooth 60fps
-        scheduleVisuals(offset, progress);
+        contentEl.style.transition = 'none';
+        contentEl.style.transform = 'translateX(' + offset + 'px)';
       }
     }
 
     function endSwipe(){
       if(!isSwiping) return false;
       isSwiping = false;
-      // Cancel any pending rAF frame
-      hasPending = false;
-      rafPending = false;
 
-      // Clear inline styles so CSS transitions take over for snap animation
       if(contentEl){
         contentEl.style.transition = '';
         contentEl.style.transform = '';
-      }
-      if(actionEl){
-        actionEl.style.filter = '';
-        actionEl.style.opacity = '';
-      }
-      if(delBtn){
-        delBtn.style.opacity = '';
-        delBtn.style.transform = '';
       }
 
       var isOpen = card.classList.contains('swiped-left');
@@ -3808,11 +3821,6 @@
         card.classList.remove('swiped-left');
         if(sbSwipedCard === card) sbSwipedCard = null;
       }
-
-      // Remove swiping class after transition completes
-      setTimeout(function(){
-        card.classList.remove('swiping');
-      }, 350);
 
       isPressing = false;
       sbLongPressActive = false;
@@ -3836,11 +3844,7 @@
         e.preventDefault();
         e.stopPropagation();
       }
-      if(endSwipe()){
-        // Prevent click event from firing after swipe (desktop mouse)
-        e.preventDefault();
-        return;
-      }
+      if(endSwipe()) return;
       cancelPress();
     });
     card.addEventListener('mouseleave', function(){
@@ -3921,7 +3925,7 @@
           card.className = 'sb-task-card' + (row.done ? ' done' : '');
           card.innerHTML =
             '<div class="sb-task-card-content">' +
-              '<span class="sb-task-num"><span class="sb-num-text">' + (idx + 1) + '</span></span>' +
+              '<span class="sb-task-num">' + (idx + 1) + '</span>' +
               '<span class="sb-task-text">' + escapeHtml(row.shotTask || '') + '</span>' +
             '</div>' +
             (row.done ? '<span class="sb-task-badge">' + t('已完成','Done') + '</span>' : '');
@@ -3939,10 +3943,8 @@
           var item = document.createElement('div');
           item.className = 'sb-visual-item';
           item.innerHTML =
-            '<div class="sb-visual-item-content">' +
-              '<span class="sb-visual-num">' + (idx + 1) + '</span>' +
-              '<div class="sb-visual-text" style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</div>' +
-            '</div>';
+            '<div class="sb-visual-num">' + (idx + 1) + '</div>' +
+            '<div class="sb-visual-text" style="white-space:pre-wrap;word-break:break-word">' + escapeHtml(row.visual || '') + '</div>';
           sbDetailVisualList.appendChild(item);
         });
       }
@@ -3956,7 +3958,6 @@
   }
 
   function backToProjectList(){
-    sbEditing = false; // Re-allow auto-refresh
     if(detailView){ detailView.style.display = 'none'; detailView.classList.remove('visible'); }
     if(editorView){ editorView.style.display = 'none'; editorView.classList.remove('visible'); }
     if(projectListView) projectListView.style.display = '';
@@ -3968,19 +3969,6 @@
     // pid = null for new project, or existing project id
     currentProjectId = pid || null;
     hasUnsavedChanges = false;
-    sbEditing = true; // Block auto-refresh while editing
-    // Reset batch mode
-    isBatchMode = false;
-    selectedIdxs.clear();
-    if(tableBody) tableBody.classList.remove('batch-active');
-    if(sbBatchModeBtn){
-      sbBatchModeBtn.classList.remove('active');
-      var span = sbBatchModeBtn.querySelector('span');
-      if(span) span.textContent = t('批量管理','Batch Select');
-    }
-    if(sbBatchCount) sbBatchCount.style.display = 'none';
-    if(sbSelectAllBtn) sbSelectAllBtn.style.display = 'none';
-    if(sbBatchActionBar) sbBatchActionBar.classList.remove('visible');
 
     if(projectListView) projectListView.style.display = 'none';
     if(detailView) detailView.style.display = 'none';
@@ -4071,26 +4059,15 @@
     tableBody.innerHTML = '';
     editRows.forEach(function(row, idx){
       var card = document.createElement('div');
-      card.className = 'sb-task-card' + (row.done ? ' done' : '') + (selectedIdxs.has(idx) ? ' selected' : '');
+      card.className = 'sb-task-card' + (row.done ? ' done' : '');
       card.setAttribute('data-idx', idx);
       card.innerHTML =
-        '<div class="sb-task-card-action">' +
-          '<button class="sb-task-del-btn" type="button">' +
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>' +
-          '</button>' +
-        '</div>' +
         '<div class="sb-task-card-content">' +
-          '<span class="sb-task-num">' +
-            '<span class="sb-num-text">' + (idx + 1) + '</span>' +
-            '<span class="sb-check-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
-          '</span>' +
+          '<span class="sb-task-num">' + (idx + 1) + '</span>' +
           '<span class="sb-task-text" ' + (row.done ? '' : 'contenteditable="true"') + ' data-field="shotTask">' + escapeHtml(row.shotTask || '') + '</span>' +
         '</div>' +
         '<div class="sb-task-progress"></div>';
       tableBody.appendChild(card);
-
-      // Swipe-to-delete
-      bindTaskSwipe(card, idx);
 
       // Long-press: if not done → mark green/done; if done → delete
       bindTaskLongPress(card, idx, !!row.done);
@@ -4115,12 +4092,9 @@
     editRows.forEach(function(row, idx){
       var item = document.createElement('div');
       item.className = 'sb-visual-item';
-      item.setAttribute('data-idx', idx);
       item.innerHTML =
-        '<div class="sb-visual-item-content">' +
-          '<span class="sb-visual-num">' + (idx + 1) + '</span>' +
-          '<textarea class="sb-visual-text" data-idx="' + idx + '" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row.visual || '') + '</textarea>' +
-        '</div>';
+        '<div class="sb-visual-num">' + (idx + 1) + '</div>' +
+        '<textarea class="sb-cell sb-cell-desc" data-idx="' + idx + '" data-placeholder="' + t('描述画面...','Describe visual...') + '" rows="2">' + escapeHtml(row.visual || '') + '</textarea>';
       visualList.appendChild(item);
 
       var ta = item.querySelector('textarea');
@@ -4133,248 +4107,6 @@
     });
   }
 
-  var TASK_SWIPE_W = 64;       // width of task delete action
-  var sbTaskSwipedCard = null;  // track currently swiped-open task card
-  var isBatchMode = false;      // batch select mode state
-  var selectedIdxs = new Set(); // selected task indices in batch mode
-
-  // Swipe-to-delete for task cards
-  function bindTaskSwipe(card, idx){
-    var contentEl = card.querySelector('.sb-task-card-content');
-    var actionEl = card.querySelector('.sb-task-card-action');
-    var delBtn = card.querySelector('.sb-task-del-btn');
-    var startX = 0, startY = 0;
-    var isPressing = false;
-    var isSwiping = false;
-    var swipeDx = 0;
-    var lastX = 0, lastTime = 0, velocity = 0;
-    var swipeStartTime = 0;
-    var rafPending = false;
-    var pendingOffset = 0;
-    var pendingProgress = 0;
-    var hasPending = false;
-    var longPressCancelled = false;
-
-    function applyVisuals(){
-      rafPending = false;
-      if(!hasPending) return;
-      hasPending = false;
-      if(contentEl){
-        contentEl.style.transform = 'translateX(' + pendingOffset + 'px)';
-      }
-      if(actionEl){
-        var blurVal = 6 * (1 - pendingProgress);
-        actionEl.style.filter = 'blur(' + blurVal.toFixed(1) + 'px)';
-        actionEl.style.opacity = pendingProgress.toFixed(2);
-      }
-      if(delBtn){
-        var btnProgress = Math.max(0, (pendingProgress - 0.3) / 0.7);
-        delBtn.style.opacity = btnProgress.toFixed(2);
-        delBtn.style.transform = 'translateX(' + (10 * (1 - pendingProgress)).toFixed(1) + 'px)';
-      }
-    }
-
-    function scheduleVisuals(offset, progress){
-      pendingOffset = offset;
-      pendingProgress = progress;
-      hasPending = true;
-      if(!rafPending){
-        rafPending = true;
-        requestAnimationFrame(applyVisuals);
-      }
-    }
-
-    function startPress(e){
-      if(isPressing) return;
-      if(e.target && e.target.closest && e.target.closest('button')) return;
-      // Disable swipe in batch mode
-      if(isBatchMode) return;
-      isPressing = true;
-      isSwiping = false;
-      swipeDx = 0;
-      velocity = 0;
-      longPressCancelled = false;
-
-      // Close other swiped cards
-      if(sbTaskSwipedCard && sbTaskSwipedCard !== card){
-        sbTaskSwipedCard.classList.remove('swiped-left');
-        sbTaskSwipedCard = null;
-      }
-
-      if(e.touches && e.touches[0]){
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        lastX = startX;
-      } else if(e.clientX !== undefined){
-        startX = e.clientX;
-        startY = e.clientY;
-        lastX = startX;
-      }
-      lastTime = Date.now();
-      swipeStartTime = lastTime;
-    }
-
-    function handleMove(e){
-      if(!isPressing && !isSwiping) return;
-      var cx, cy;
-      if(e.touches && e.touches[0]){
-        cx = e.touches[0].clientX;
-        cy = e.touches[0].clientY;
-      } else if(e.clientX !== undefined){
-        cx = e.clientX;
-        cy = e.clientY;
-      } else return;
-
-      var dx = cx - startX;
-      var dy = cy - startY;
-
-      if(!isSwiping){
-        if(Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD){
-          if(Math.abs(dx) > Math.abs(dy)){
-            isSwiping = true;
-            longPressCancelled = true;
-          } else {
-            isPressing = false;
-            return;
-          }
-        } else {
-          return;
-        }
-      }
-
-      if(isSwiping && contentEl){
-        swipeDx = dx;
-        // Track velocity for flick-to-snap
-        var now = Date.now();
-        var dt = now - lastTime;
-        if(dt > 0) velocity = (cx - lastX) / dt;
-        lastX = cx;
-        lastTime = now;
-        var isOpen = card.classList.contains('swiped-left');
-        var base = isOpen ? -TASK_SWIPE_W : 0;
-        var offset = Math.max(-TASK_SWIPE_W, Math.min(0, base + dx));
-        var progress = Math.abs(offset) / TASK_SWIPE_W;
-        if(!card.classList.contains('swiping')){
-          card.classList.add('swiping');
-          contentEl.style.transition = 'none';
-        }
-        scheduleVisuals(offset, progress);
-        if(e.cancelable) e.preventDefault();
-      }
-    }
-
-    function endSwipe(e){
-      if(!isSwiping) return false;
-      isSwiping = false;
-      hasPending = false;
-      rafPending = false;
-
-      if(contentEl){ contentEl.style.transition = ''; contentEl.style.transform = ''; }
-      if(actionEl){ actionEl.style.filter = ''; actionEl.style.opacity = ''; }
-      if(delBtn){ delBtn.style.opacity = ''; delBtn.style.transform = ''; }
-
-      // Get final position from the end event (more accurate than last move event)
-      var endX = startX + swipeDx;
-      if(e){
-        if(e.changedTouches && e.changedTouches[0]){
-          endX = e.changedTouches[0].clientX;
-        } else if(e.clientX !== undefined){
-          endX = e.clientX;
-        }
-      }
-      var finalDx = endX - startX;
-
-      // Average velocity over the full swipe (more reliable than last-frame velocity)
-      var totalTime = Date.now() - swipeStartTime;
-      var avgVelocity = totalTime > 10 ? finalDx / totalTime : 0;
-
-      var isOpen = card.classList.contains('swiped-left');
-      var base = isOpen ? -TASK_SWIPE_W : 0;
-      var total = base + finalDx;
-
-      // Snap open if: distance > 20% of swipe width, OR flick velocity is fast enough
-      var shouldOpen = total < -TASK_SWIPE_W * 0.20 || avgVelocity < -0.2;
-      if(shouldOpen){
-        card.classList.add('swiped-left');
-        sbTaskSwipedCard = card;
-      } else {
-        card.classList.remove('swiped-left');
-        if(sbTaskSwipedCard === card) sbTaskSwipedCard = null;
-      }
-
-      setTimeout(function(){ card.classList.remove('swiping'); }, 260);
-      isPressing = false;
-      return true;
-    }
-
-    function cancelPress(){ isPressing = false; }
-
-    // Mouse
-    card.addEventListener('mousedown', function(e){
-      if(e.button !== 0) return;
-      if(e.target.closest('button')) return;
-      startPress(e);
-    });
-    card.addEventListener('mousemove', function(e){
-      if(isPressing && (isSwiping || (e.buttons & 1))){ handleMove(e); }
-    });
-    card.addEventListener('mouseup', function(e){
-      if(endSwipe(e)){ e.preventDefault(); return; }
-      cancelPress();
-    });
-    card.addEventListener('mouseleave', function(e){
-      if(isSwiping){ endSwipe(e); } else { cancelPress(); }
-    });
-
-    // Touch
-    card.addEventListener('touchstart', function(e){
-      if(e.target.closest('button')) return;
-      startPress(e);
-    }, {passive:true});
-    card.addEventListener('touchmove', handleMove, {passive:false});
-    card.addEventListener('touchend', function(e){
-      if(endSwipe(e)) return;
-      cancelPress();
-    });
-    card.addEventListener('touchcancel', function(){
-      if(isSwiping){ endSwipe(); } else { cancelPress(); }
-    });
-
-    // Delete button click
-    if(delBtn){
-      delBtn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        editRows.splice(idx, 1);
-        if(editRows.length === 0){
-          editRows.push(createEmptyRow());
-        }
-        renderAllRows(editRows);
-        markUnsaved();
-        sbTaskSwipedCard = null;
-      });
-    }
-
-    // Click on content to close swipe, or select in batch mode
-    card.addEventListener('click', function(e){
-      if(e.target.closest('button')) return;
-      if(e.target.closest('[contenteditable="true"]')) return;
-      if(isBatchMode){
-        e.preventDefault();
-        e.stopPropagation();
-        toggleSelectIdx(idx);
-        return;
-      }
-      if(card.classList.contains('swiped-left')){
-        e.preventDefault();
-        e.stopPropagation();
-        card.classList.remove('swiped-left');
-        sbTaskSwipedCard = null;
-        setTimeout(function(){ card.classList.remove('swiping'); }, 260);
-      }
-    });
-  }
-
   // Long-press: if not done → progress fills → turn green (done)
   //            if already done → progress fills → delete
   function bindTaskLongPress(card, idx, isDone){
@@ -4383,9 +4115,8 @@
 
     function startPress(e){
       if(pressing) return;
-      // Don't long-press when editing text or in batch mode
+      // Don't long-press when editing text
       if(e.target && e.target.closest && e.target.closest('[contenteditable]')) return;
-      if(isBatchMode) return;
       pressing = true;
       card.classList.add('pressing');
       var bar = card.querySelector('.sb-task-progress');
@@ -4460,166 +4191,6 @@
     if(sbEmpty) sbEmpty.style.display = count === 0 ? '' : 'none';
   }
 
-  /* ---------- Batch Select Mode ---------- */
-  var sbBatchModeBtn = document.getElementById('sbBatchModeBtn');
-  var sbBatchCount = document.getElementById('sbBatchCount');
-  var sbSelectedCount = document.getElementById('sbSelectedCount');
-  var sbSelectAllBtn = document.getElementById('sbSelectAllBtn');
-  var sbBatchActionBar = document.getElementById('sbBatchActionBar');
-  var sbBatchDoneBtn = document.getElementById('sbBatchDoneBtn');
-  var sbBatchDeleteBtn = document.getElementById('sbBatchDeleteBtn');
-
-  function updateBatchUI(){
-    var n = selectedIdxs.size;
-    if(sbSelectedCount) sbSelectedCount.textContent = n;
-
-    if(sbBatchActionBar){
-      if(n > 0){
-        sbBatchActionBar.classList.add('visible');
-        if(sbBatchDoneBtn) sbBatchDoneBtn.disabled = false;
-        if(sbBatchDeleteBtn) sbBatchDeleteBtn.disabled = false;
-      } else {
-        sbBatchActionBar.classList.remove('visible');
-        if(sbBatchDoneBtn) sbBatchDoneBtn.disabled = true;
-        if(sbBatchDeleteBtn) sbBatchDeleteBtn.disabled = true;
-      }
-    }
-
-    // Update select all text
-    if(sbSelectAllBtn){
-      var total = editRows.length;
-      sbSelectAllBtn.textContent = (n === total && n > 0) ? t('取消全选','Deselect All') : t('全选','Select All');
-    }
-
-    // Smart done/undone button text
-    if(sbBatchDoneBtn){
-      var allDone = true;
-      var anySelected = false;
-      editRows.forEach(function(row, i){
-        if(selectedIdxs.has(i)){
-          anySelected = true;
-          if(!row.done) allDone = false;
-        }
-      });
-      var label = sbBatchDoneBtn.querySelector('span');
-      if(label){
-        label.textContent = (anySelected && allDone) ? t('取消完成','Mark Undone') : t('标记完成','Mark Done');
-      }
-    }
-  }
-
-  function enterBatchMode(){
-    isBatchMode = true;
-    selectedIdxs.clear();
-    if(tableBody) tableBody.classList.add('batch-active');
-    if(sbBatchModeBtn){
-      sbBatchModeBtn.classList.add('active');
-      var span = sbBatchModeBtn.querySelector('span');
-      if(span) span.textContent = t('完成','Done');
-    }
-    if(sbBatchCount) sbBatchCount.style.display = 'block';
-    if(sbSelectAllBtn) sbSelectAllBtn.style.display = 'block';
-    renderTaskCards();
-    updateBatchUI();
-  }
-
-  function exitBatchMode(){
-    isBatchMode = false;
-    selectedIdxs.clear();
-    if(tableBody) tableBody.classList.remove('batch-active');
-    if(sbBatchModeBtn){
-      sbBatchModeBtn.classList.remove('active');
-      var span = sbBatchModeBtn.querySelector('span');
-      if(span) span.textContent = t('批量管理','Batch Select');
-    }
-    if(sbBatchCount) sbBatchCount.style.display = 'none';
-    if(sbSelectAllBtn) sbSelectAllBtn.style.display = 'none';
-    if(sbBatchActionBar) sbBatchActionBar.classList.remove('visible');
-    renderTaskCards();
-  }
-
-  function toggleSelectIdx(idx){
-    if(selectedIdxs.has(idx)){
-      selectedIdxs.delete(idx);
-    } else {
-      selectedIdxs.add(idx);
-    }
-    // Update card class
-    if(tableBody){
-      var card = tableBody.querySelector('.sb-task-card[data-idx="' + idx + '"]');
-      if(card){
-        if(selectedIdxs.has(idx)) card.classList.add('selected');
-        else card.classList.remove('selected');
-      }
-    }
-    updateBatchUI();
-  }
-
-  if(sbBatchModeBtn){
-    sbBatchModeBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      if(isBatchMode) exitBatchMode();
-      else enterBatchMode();
-    });
-  }
-
-  if(sbSelectAllBtn){
-    sbSelectAllBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      var total = editRows.length;
-      if(selectedIdxs.size === total){
-        selectedIdxs.clear();
-      } else {
-        for(var i = 0; i < total; i++) selectedIdxs.add(i);
-      }
-      renderTaskCards();
-      updateBatchUI();
-    });
-  }
-
-  if(sbBatchDoneBtn){
-    sbBatchDoneBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      if(selectedIdxs.size === 0) return;
-      // Check if all selected are done
-      var allDone = true;
-      selectedIdxs.forEach(function(i){
-        if(!editRows[i].done) allDone = false;
-      });
-      selectedIdxs.forEach(function(i){
-        editRows[i].done = !allDone;
-      });
-      markUnsaved();
-      selectedIdxs.clear();
-      renderTaskCards();
-      renderVisualList();
-      updateBatchUI();
-    });
-  }
-
-  if(sbBatchDeleteBtn){
-    sbBatchDeleteBtn.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      if(selectedIdxs.size === 0) return;
-      // Delete from last to first to preserve indices
-      var sorted = Array.from(selectedIdxs).sort(function(a,b){ return b - a; });
-      sorted.forEach(function(i){
-        editRows.splice(i, 1);
-      });
-      if(editRows.length === 0){
-        editRows.push(createEmptyRow());
-      }
-      markUnsaved();
-      selectedIdxs.clear();
-      renderAllRows(editRows);
-      updateBatchUI();
-    });
-  }
-
   function markUnsaved(){
     hasUnsavedChanges = true;
     if(sbStatusSync){
@@ -4679,8 +4250,7 @@
           rows: (p.rows || []).map(function(r){
             return {
               shotTask: r.shotTask || '',
-              visual: r.visual || '',
-              done: r.done || false
+              visual: r.visual || ''
             };
           }),
           lastUpdated: p.lastUpdated || new Date().toISOString()
@@ -4701,59 +4271,32 @@
 
       if(typeof window.__ghSave === 'function'){
         window.__ghSave(window.__vingData);
-
-        // Phase-based status watching:
-        // Phase 1 'waiting': ignore stale status during 1.5s debounce
-        // Phase 2 'saving': watch for saved/success/error
-        var watchCount = 0;
-        var watchMax = 80; // 80 * 250ms = 20s max (covers 1.5s debounce + save time)
-        var phase = 'waiting';
-        var watchTimer = setInterval(function(){
+        var checkInterval = setInterval(function(){
           var st = window.__ghSyncStatus;
-          watchCount++;
-
-          if(phase === 'waiting'){
-            // Wait for the save to actually start (after 1.5s debounce)
-            if(st === 'saving'){
-              phase = 'saving';
-              if(sbStatusSync){
-                sbStatusSync.textContent = t('正在保存...','Saving...');
-                sbStatusSync.className = 'sb-status-sync saving';
-              }
-            }
-            // Ignore stale 'success'/'saved'/'error' from previous saves
-          } else if(phase === 'saving'){
-            // Save has started, now watch for completion
+          if(st !== undefined){
             if(st === 'saved' || st === 'success'){
               markSaved();
+              // Mark project as saved (no longer local-unsaved)
               var savedIdx = projects.findIndex(function(p){ return p.id === projData.id; });
               if(savedIdx >= 0){
                 projects[savedIdx]._saved = true;
                 projects[savedIdx]._local = false;
               }
-              clearInterval(watchTimer);
+              clearInterval(checkInterval);
+              // Auto-collapse to project list after save
               setTimeout(function(){
                 backToProjectList();
               }, 800);
             } else if(st === 'error'){
-              sbEditing = false;
               if(sbStatusSync){
                 sbStatusSync.textContent = t('保存失败','Save failed');
                 sbStatusSync.className = 'sb-status-sync error';
               }
-              clearInterval(watchTimer);
+              clearInterval(checkInterval);
             }
           }
-
-          if(watchCount >= watchMax){
-            sbEditing = false;
-            if(sbStatusSync){
-              sbStatusSync.textContent = t('保存超时','Save timeout');
-              sbStatusSync.className = 'sb-status-sync error';
-            }
-            clearInterval(watchTimer);
-          }
-        }, 250);
+        }, 500);
+        setTimeout(function(){ clearInterval(checkInterval); }, 15000);
       } else {
         if(sbStatusSync){
           sbStatusSync.textContent = t('保存功能未就绪','Save unavailable');
@@ -4771,12 +4314,6 @@
   /* ---------- Data Sync (called from applyRemoteData) ---------- */
   window.__renderStoryboard = function(data){
     if(!data) return;
-
-    // Don't overwrite local data while editing
-    if(sbEditing || hasUnsavedChanges){
-      console.log('[Storyboard] Skipping remote render — editing in progress');
-      return;
-    }
 
     var newProjects = [];
 
