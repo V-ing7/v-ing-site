@@ -1192,16 +1192,47 @@
   var WS_PASSWORD='Vikyi';
   var WS_LOCK_KEY='v_ing_ws_unlocked';
   var WS_PWD_KEY='v_ing_ws_pwd';
+  var WS_PWD_TS_KEY='v_ing_ws_pwd_ts';
+  var WS_PWD_TIMEOUT=600000; // 10 minutes auto-lock
   var wsLockOverlay=document.getElementById('wsLockOverlay');
   var wsLockDots=document.getElementById('wsLockDots');
   var wsLockError=document.getElementById('wsLockError');
   var wsLockInput='';
+  var wsPwdTimer=null;
 
+  // Security: check password timeout before returning password
   function _getWsPassword(){
+    var ts=parseInt(sessionStorage.getItem(WS_PWD_TS_KEY)||'0',10);
+    if(ts && (Date.now()-ts>WS_PWD_TIMEOUT)){
+      sessionStorage.removeItem(WS_PWD_KEY);
+      sessionStorage.removeItem(WS_LOCK_KEY);
+      sessionStorage.removeItem(WS_PWD_TS_KEY);
+      return WS_PASSWORD;
+    }
     return sessionStorage.getItem(WS_PWD_KEY) || WS_PASSWORD;
   }
 
+  // Security: auto-lock after timeout
+  function _resetPwdTimer(){
+    if(wsPwdTimer)clearTimeout(wsPwdTimer);
+    wsPwdTimer=setTimeout(function(){
+      sessionStorage.removeItem(WS_PWD_KEY);
+      sessionStorage.removeItem(WS_LOCK_KEY);
+      sessionStorage.removeItem(WS_PWD_TS_KEY);
+      if(wsLockOverlay&&!wsLockOverlay.classList.contains('ws-lock-active')){
+        showWsLock();
+      }
+    },WS_PWD_TIMEOUT);
+  }
+
   function isWsUnlocked(){
+    var ts=parseInt(sessionStorage.getItem(WS_PWD_TS_KEY)||'0',10);
+    if(ts && (Date.now()-ts>WS_PWD_TIMEOUT)){
+      sessionStorage.removeItem(WS_LOCK_KEY);
+      sessionStorage.removeItem(WS_PWD_KEY);
+      sessionStorage.removeItem(WS_PWD_TS_KEY);
+      return false;
+    }
     return sessionStorage.getItem(WS_LOCK_KEY)==='1';
   }
   function showWsLock(){
@@ -1217,6 +1248,8 @@
     if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
     sessionStorage.setItem(WS_LOCK_KEY,'1');
     sessionStorage.setItem(WS_PWD_KEY,wsLockInput);
+    sessionStorage.setItem(WS_PWD_TS_KEY,String(Date.now()));
+    _resetPwdTimer();
     setTimeout(function(){checkReveals()},100);
   }
   function showWsLockError(msg){
