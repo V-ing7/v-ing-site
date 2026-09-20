@@ -5,12 +5,14 @@
  * GET  /api/data?verify=1 — Verify password (SEC-001 fix)
  * PUT  /api/data          — Update data.json (requires X-Password header)
  * Security: Rate limiting + brute-force lockout (v4.0+) + error sanitization (v4.2)
+ * Branch protection fallback: PR-based write (v4.3+)
  */
 
 const GH_REPO = 'V-ing7/v-ing-site';
 const GH_FILE = 'data.json';
 const GH_BRANCH = 'main';
 const GH_API_BASE = 'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE;
+const SYNC_BRANCH = 'data-sync'; // Branch for PR-based writes (bypasses branch protection)
 
 // Security fix SEC-005: Restrict CORS to specific origins instead of wildcard
 const ALLOWED_ORIGINS = [
@@ -101,6 +103,164 @@ function checkPassword(request, env) {
   return pwd === (env.WS_PASSWORD || env.WS_PWD);
 }
 
+function ghHeaders(env) {
+  return {
+    'Authorization': 'token ' + (env.GH_TOKEN || env.GITHUB_TOKEN),
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+    'User-Agent': 'v-ing-pages-function',
+  };
+}
+
+/**
+ * PR-based write fallback for branch protection (v4.3)
+ * When direct commit to main fails with 409 (branch protection),
+ * create/update a sync branch, commit there, and merge via PR.
+ */
+async function writeViaPullRequest(env, body, b64, headers, currentSha) {
+  try {
+    // 1. Get the latest commit SHA of main
+    const mainResp = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/git/refs/heads/' + GH_BRANCH,
+      { headers }
+    );
+    if (!mainResp.ok) return { ok: false, error: 'Cannot read main ref' };
+    const mainData = await mainResp.json();
+    const mainSha = mainData.object.sha;
+
+    // 2. Check if sync branch exists
+    const branchResp = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/git/refs/heads/' + SYNC_BRANCH,
+      { headers }
+    );
+
+    if (branchResp.status === 404) {
+      // Create the sync branch from main
+      await fetch('https://api.github.com/repos/' + GH_REPO + '/git/refs', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ ref: 'refs/heads/' + SYNC_BRANCH, sha: mainSha })
+      });
+    } else if (branchResp.ok) {
+      // Update sync branch to match main (force)
+      await fetch('https://api.github.com/repos/' + GH_REPO + '/git/refs/heads/' + SYNC_BRANCH, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ sha: mainSha, force: true })
+      });
+    }
+
+    // 3. Get the SHA of data.json on the sync branch (after updating branch)
+    const syncFileResp = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_FILE + '?ref=' + SYNC_BRANCH,
+      { headers }
+    );
+    let syncFileSha = null;
+    if (syncFileResp.ok) {
+      const syncFileData = await syncFileResp.json();
+      syncFileSha = syncFileData.sha;
+    }
+
+    // 4. Commit the new data to the sync branch
+    const commitPayload = {
+      message: body.message || ('Update data via API - ' + new Date().toISOString()),
+      content: b64,
+      branch: SYNC_BRANCH,
+    };
+    if (syncFileSha) commitPayload.sha = syncFileSha;
+
+    const commitResp = await fetch(GH_API_BASE, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(commitPayload),
+    });
+
+    if (!commitResp.ok) {
+      const errBody = await commitResp.text();
+      return { ok: false, error: 'Commit to sync branch failed: ' + commitResp.status };
+    }
+
+    const commitData = await commitResp.json();
+
+    // 5. Check for existing open PR
+    const prListResp = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/pulls?head=' + GH_REPO + ':' + SYNC_BRANCH + '&base=' + GH_BRANCH + '&state=open',
+      { headers }
+    );
+    let prNumber = null;
+    if (prListResp.ok) {
+      const prList = await prListResp.json();
+      if (prList.length > 0) prNumber = prList[0].number;
+    }
+
+    // 6. Create PR if none exists
+    if (!prNumber) {
+      const prResp = await fetch('https://api.github.com/repos/' + GH_REPO + '/pulls', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          title: 'chore: data sync update',
+          head: SYNC_BRANCH,
+          base: GH_BRANCH,
+          body: 'Automated data sync via Pages Function API'
+        })
+      });
+      if (prResp.ok) {
+        const prData = await prResp.json();
+        prNumber = prData.number;
+      }
+    }
+
+    if (!prNumber) {
+      return { ok: false, error: 'Cannot create PR' };
+    }
+
+    // 7. Wait for PR to be mergeable (GitHub needs a moment to compute mergeability)
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // 8. Merge the PR (squash)
+    let mergeOk = false;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const mergeResp = await fetch(
+        'https://api.github.com/repos/' + GH_REPO + '/pulls/' + prNumber + '/merge',
+        {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({
+            merge_method: 'squash',
+            commit_title: body.message || 'Update data via API'
+          })
+        }
+      );
+      if (mergeResp.ok) {
+        mergeOk = true;
+        break;
+      }
+      if (mergeResp.status === 405) {
+        // Not mergeable yet, wait and retry
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } else {
+        break;
+      }
+    }
+
+    if (!mergeOk) {
+      return { ok: false, error: 'PR merge failed' };
+    }
+
+    // 9. Get the new SHA of data.json on main after merge
+    const finalResp = await fetch(GH_API_BASE + '?ref=' + GH_BRANCH, { headers });
+    if (finalResp.ok) {
+      const finalData = await finalResp.json();
+      return { ok: true, sha: finalData.sha };
+    }
+
+    return { ok: true, sha: commitData.content ? commitData.content.sha : null };
+  } catch (err) {
+    return { ok: false, error: 'PR workflow error' };
+  }
+}
+
 export async function onRequestOptions(context) {
   const { request } = context;
   return new Response(null, { status: 204, headers: corsHeaders(request) });
@@ -135,11 +295,7 @@ export async function onRequestGet(context) {
   // Normal data read
   try {
     const resp = await fetch(GH_API_BASE + '?ref=' + GH_BRANCH, {
-      headers: {
-        'Authorization': 'token ' + (env.GH_TOKEN || env.GITHUB_TOKEN),
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'v-ing-pages-function',
-      },
+      headers: ghHeaders(env),
     });
     if (!resp.ok) {
       // Security fix SEC-004: Sanitize error message — don't leak upstream status
@@ -190,6 +346,8 @@ export async function onRequestPut(context) {
     for (let i = 0; i < encoded.length; i++) binary += String.fromCharCode(encoded[i]);
     const b64 = btoa(binary);
 
+    const headers = ghHeaders(env);
+
     let payload = {
       message: body.message || ('Update data via API - ' + new Date().toISOString()),
       content: b64,
@@ -197,18 +355,27 @@ export async function onRequestPut(context) {
     };
     if (body.sha) payload.sha = body.sha;
 
+    // Try direct commit to main first
     const resp = await fetch(GH_API_BASE, {
       method: 'PUT',
-      headers: {
-        'Authorization': 'token ' + (env.GH_TOKEN || env.GITHUB_TOKEN),
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'v-ing-pages-function',
-      },
+      headers,
       body: JSON.stringify(payload),
     });
 
     if (resp.status === 409) {
+      // Check if SHA matches (branch protection) or is stale
+      const currentFileResp = await fetch(GH_API_BASE + '?ref=' + GH_BRANCH, { headers });
+      if (currentFileResp.ok) {
+        const currentFile = await currentFileResp.json();
+        if (currentFile.sha === body.sha) {
+          // SHA matches — it's branch protection, use PR workflow
+          const prResult = await writeViaPullRequest(env, body, b64, headers, currentFile.sha);
+          if (prResult.ok) {
+            return jsonResp({ sha: prResult.sha, ok: true, viaPR: true }, 200, hdrs);
+          }
+        }
+      }
+      // SHA mismatch or PR workflow failed
       return jsonResp({ error: 'SHA conflict, please re-fetch', conflict: true }, 409, hdrs);
     }
     if (!resp.ok) {
