@@ -1,3 +1,422 @@
 {
-  "test": "sync check"
+  "streamers": {
+    "streamer_0": {
+      "name": "可欣",
+      "shoot": 60,
+      "edit": 35
+    },
+    "streamer_1": {
+      "name": "小许",
+      "shoot": 25,
+      "edit": 16
+    },
+    "streamer_2": {
+      "name": "珊珊",
+      "shoot": 29,
+      "edit": 24
+    },
+    "streamer_3": {
+      "name": "CC",
+      "shoot": 20,
+      "edit": 20
+    },
+    "streamer_4": {
+      "name": "小凡",
+      "shoot": 11,
+      "edit": 5
+    },
+    "streamer_5": {
+      "name": "东哥",
+      "shoot": 1,
+      "edit": 1
+    },
+    "streamer_6": {
+      "name": "Tina",
+      "shoot": 8,
+      "edit": 6
+    }
+  },
+  "theme": "light",
+  "lang": "zh",
+  "kanbanTasks": {
+    "todo": [
+      {
+        "title": "打扫卫生",
+        "desc": "",
+        "deadline": ""
+      }
+    ],
+    "wip": [],
+    "done": []
+  },
+  "operationLog": [
+    {
+      "date": "2026-09-11",
+      "time": "07:20",
+      "action": "修复截图功能：从 DOM 克隆改为直接元素捕获",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:25",
+      "action": "修复品牌汇总数据显示零值",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:28",
+      "action": "修复进度条同步问题（主播卡片/品牌汇总/总计）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:30",
+      "action": "修复白屏：移除 Google Fonts + html2canvas 本地化",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:35",
+      "action": "部署到 Cloudflare Pages（pages.dev 域名国内可访问）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:45",
+      "action": "实现跨设备数据同步：通过 GitHub API 存取 data.json",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "07:50",
+      "action": "创建工作台指令模版区，记录项目信息和操作日志",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "08:00",
+      "action": "将工作台指令模版集成到网站中，实现实时同步显示",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "08:10",
+      "action": "修复UTF-8编码乱码：修复data.json中所有中文内容",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "08:20",
+      "action": "完整同步系统重写：4源加载、自动刷新、同步状态指示器、修复重试bug",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "20:30",
+      "action": "同步保障修复：保存后触发CF部署、保存锁防冲突、409冲突自动重取SHA、手动同步按钮、30秒自动刷新",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "20:45",
+      "action": "修复自动刷新覆盖问题：!==改为>、90秒保存保护期、立即更新时间戳、手动同步保护",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-11",
+      "time": "21:00",
+      "action": "更新跨AI会话指令模版v2.0：完整同步机制说明、操作步骤、注意事项",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "10:30",
+      "action": "删除名片页面保存名片按钮（HTML+JS+CSS）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "10:38",
+      "action": "修复卡顿bug：修复JS语法错误+数据加载改为按需到按需使用模式",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "10:50",
+      "action": "修复实时同步：ghLoad后台自动更新UI+简化自动刷新逻辑",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "11:00",
+      "action": "修复工作台密码保护：localStorage改为sessionStorage + 清空计划表数据",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "11:46",
+      "action": "录入9/11统一日报数据：拍摄总计125条，剪辑总计67条",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "11:55",
+      "action": "优化名片二维码设计：渐变色点、精致外框、四角装饰、深色模式适配",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-12",
+      "time": "12:05",
+      "action": "深度优化同步稳定性v3.0：加载去重+数据校验、保存队列+冲突合并+防卡死、自适应退避刷新、离线重连",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-14",
+      "time": "16:45",
+      "action": "联动零跑主播实时同步：防抖保存到GitHub、子页面主播卡片同步更新、子页面编辑模式、自动刷新保护",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-15",
+      "time": "09:30",
+      "action": "品牌联动logo更新：零跑logo集成、哔哩哔哩图标+文字组合logo、抖音官方logo（深色主题适配）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "11:54",
+      "action": "更新关于微影段落文案：「被进行」改为「不断进行」，结尾句替换为「我们想记录的，不只是画面，更是正在进行时的生活」",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "13:54",
+      "action": "分镜头脚本更新：未命名（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "13:58",
+      "action": "分镜头脚本更新：莆田（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:03",
+      "action": "分镜头脚本更新：好（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:14",
+      "action": "分镜头脚本更新：1（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:15",
+      "action": "分镜头脚本更新：2（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:16",
+      "action": "分镜头脚本更新：莆田（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:16",
+      "action": "分镜头脚本更新：莆田（1个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:35",
+      "action": "删除分镜头项目：好",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:36",
+      "action": "删除分镜头项目：2",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "16:36",
+      "action": "删除分镜头项目：1",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:04",
+      "action": "画面内容更新：测试项目（4个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:06",
+      "action": "画面内容更新：测试shotTask（4个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:09",
+      "action": "画面内容更新：验证shotTask（4个镜头）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：莆田",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：测试项目",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：测试shotTask",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "22:25",
+      "action": "删除画面内容项目：验证shotTask",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "23:12",
+      "action": "计划更新：两列测试（3个任务）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-17",
+      "time": "23:49",
+      "action": "计划更新：交互测试（3个任务）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-18",
+      "time": "09:15",
+      "action": "计划更新：两列测试（3个任务）",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-18",
+      "time": "22:01",
+      "action": "安全架构升级v4.0：Worker中间层部署、移除前端Token、密码改为服务端验证、指令模版更新",
+      "status": "完成"
+    },
+    {
+      "date": "2026-09-20",
+      "time": "17:17",
+      "action": "修复实时同步：escapeHtml未定义导致同步卡死（PR#10）+ 分支保护导致写入失败（PR#11 PR回退机制）",
+      "status": "完成"
+    }
+  ],
+  "instructionTemplate": {
+    "repoUrl": "V-ing7/v-ing-site",
+    "branch": "main",
+    "dataFile": "data.json",
+    "siteUrl": "https://v-ing-site.pages.dev",
+    "workerApiUrl": "",
+    "description": "网站数据存在 GitHub 仓库 data.json 中，通过 Pages Function API 读写，修改需密码验证。",
+    "syncMechanism": {
+      "saveFlow": "浏览器编辑 → Pages Function API PUT（带密码）→ GitHub 仓库",
+      "loadFlow": "Pages Function API GET + 多源加载 → 最新优先 → 后台检查更新",
+      "autoRefresh": "30秒间隔，仅当远端时间戳 > 本地时更新",
+      "saveProtection": "保存后90秒内跳过自动刷新",
+      "manualSync": "点击导航栏同步徽章强制同步"
+    },
+    "security": {
+      "readAccess": "无需密码，任何人可读取",
+      "writeAccess": "需要密码，密码提示：个人英文名",
+      "tokenStorage": "GitHub Token 存于 Cloudflare Pages 环境变量中，前端不可见",
+      "passwordVerification": "服务端验证（Pages Function env.WS_PASSWORD），AI 无法绕过"
+    },
+    "apiEndpoints": {
+      "readData": "GET https://v-ing-site.pages.dev/api/data",
+      "writeData": "PUT https://v-ing-site.pages.dev/api/data",
+      "deploy": "POST https://v-ing-site.pages.dev/api/deploy",
+      "health": "GET https://v-ing-site.pages.dev/api/health"
+    },
+    "version": "v4.3"
+  },
+  "storyboard": {
+    "projectName": "莆田",
+    "shootDate": "",
+    "rows": [
+      {
+        "size": "",
+        "movement": "",
+        "visual": "12",
+        "audio": "",
+        "duration": "",
+        "note": ""
+      }
+    ],
+    "lastUpdated": "2026-09-17T05:58:44.500Z"
+  },
+  "storyboardProjects": [
+    {
+      "id": "sb_mu58rcp1_bcg1",
+      "projectName": "莆田",
+      "shootDate": "2026-09-17",
+      "rows": [
+        {
+          "shotTask": "",
+          "visual": "12"
+        }
+      ],
+      "lastUpdated": "2026-09-17T08:16:09.461Z"
+    },
+    {
+      "id": "sb_mu5o4v29_2jwt",
+      "projectName": "两列测试",
+      "shootDate": "",
+      "rows": [
+        {
+          "shotTask": "任务一",
+          "visual": "这是一段很长的画面内容描述用来测试textarea自动高度功能是否正常工作，输入足够多的文字应该能让textarea的高度自动增加以适应内容"
+        },
+        {
+          "shotTask": "任务二",
+          "visual": ""
+        },
+        {
+          "shotTask": "任务三",
+          "visual": ""
+        }
+      ],
+      "lastUpdated": "2026-09-18T01:15:41.986Z"
+    },
+    {
+      "id": "sb_mu5pgf87_2cc3",
+      "projectName": "交互测试",
+      "shootDate": "",
+      "rows": [
+        {
+          "shotTask": "任务一",
+          "visual": "阳光透过窗户洒在桌面上，咖啡杯冒着热气，窗外是繁忙的街道，行人匆匆走过，一切显得宁静而美好"
+        },
+        {
+          "shotTask": "任务二",
+          "visual": ""
+        },
+        {
+          "shotTask": "任务三",
+          "visual": ""
+        }
+      ],
+      "lastUpdated": "2026-09-17T15:49:27.703Z"
+    }
+  ],
+  "lastUpdated": "2026-09-20T09:17:35.765571+00:00"
 }
