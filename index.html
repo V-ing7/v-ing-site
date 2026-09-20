@@ -101,6 +101,26 @@
       background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
     [data-theme="light"] .cqt-name{color:rgba(60,60,67,.85)}
     [data-theme="light"] .cqt-arrow{color:rgba(60,60,67,.3)}
+    /* Sync status badge styles */
+    .sync-badge{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;
+      cursor:pointer;transition:all .2s ease;user-select:none}
+    .sync-badge:hover{opacity:.8}
+    .sync-badge:active{transform:scale(.96)}
+    .sync-loading{background:rgba(255,159,10,.15);color:#FF9F0A}
+    .sync-success{background:rgba(52,199,89,.15);color:#34C759}
+    .sync-error{background:rgba(255,69,58,.15);color:#FF453A}
+    .sync-offline{background:rgba(142,142,147,.15);color:#8E8E93}
+    .sync-pending{background:rgba(10,132,255,.15);color:#0A84FF;
+      animation:syncPulse 1.5s ease-in-out infinite}
+    @keyframes syncPulse{
+      0%,100%{opacity:1}
+      50%{opacity:.6}
+    }
+    [data-theme="light"] .sync-loading{background:rgba(255,149,0,.1);color:#FF9500}
+    [data-theme="light"] .sync-success{background:rgba(52,199,89,.1);color:#34C759}
+    [data-theme="light"] .sync-error{background:rgba(255,59,48,.1);color:#FF3B30}
+    [data-theme="light"] .sync-offline{background:rgba(142,142,147,.1);color:#8E8E93}
+    [data-theme="light"] .sync-pending{background:rgba(0,122,255,.1);color:#007AFF}
   </style>
 </head>
 <body>
@@ -1612,6 +1632,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20260920a" defer></script>
+  <script src="js/app.js?v=20260921a" defer></script>
 </body>
 </html>
