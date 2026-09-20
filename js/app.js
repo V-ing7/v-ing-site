@@ -379,7 +379,7 @@
       // Initialize sub-page streamer cards with data attributes
       initSubpageStreamers();
       refreshAllVisuals(streamerData);
-      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+      try{ var _e=_encLS(streamerData); if(_e) localStorage.setItem(STORAGE_KEY, _e); }catch(e){}
     }
     if(data.operationLog){
       renderConsolePanel(data);
@@ -1961,6 +1961,34 @@
   var unifiedPanel = document.getElementById('ws-panel-unified');
   var editModeActive = false;
   var STORAGE_KEY = 'ving-unified-report-data';
+  // SEC-011: Lightweight XOR encryption for localStorage data
+  var _ENC_KEY = 'V-i-N-g-S-t-U-d-i-o-2-0-2-6';
+  function _xorEnc(text){
+    var out='';
+    for(var i=0;i<text.length;i++){
+      out+=String.fromCharCode(text.charCodeAt(i)^_ENC_KEY.charCodeAt(i%_ENC_KEY.length));
+    }
+    return out;
+  }
+  function _encLS(data){
+    try{
+      var json=JSON.stringify(data);
+      var enc=_xorEnc(json);
+      // Base64 encode to avoid special chars breaking localStorage
+      return btoa(unescape(encodeURIComponent(enc)));
+    }catch(e){return null;}
+  }
+  function _decLS(raw){
+    try{
+      if(!raw||raw.indexOf('"')===0)return JSON.parse(raw); // backward compat: old unencrypted data
+      var dec=decodeURIComponent(escape(atob(raw)));
+      var json=_xorEnc(dec);
+      return JSON.parse(json);
+    }catch(e){
+      // Try parsing as old unencrypted JSON for backward compatibility
+      try{return JSON.parse(raw);}catch(e2){return {};}
+    }
+  }
 
   // Set unified report toolbar date
   var toolbarDate = document.getElementById('unifiedToolbarDate');
@@ -1973,7 +2001,7 @@
   function loadReportData(){
     try{
       var saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : {};
+      return saved ? _decLS(saved) : {};
     }catch(e){
       return {};
     }
@@ -1982,7 +2010,7 @@
   // Save data to localStorage + GitHub
   function saveReportData(data){
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      var _enc=_encLS(data); if(_enc) localStorage.setItem(STORAGE_KEY, _enc);
     }catch(e){
       console.warn('Failed to save report data locally:', e);
     }
@@ -2017,7 +2045,7 @@
         }
       }
       // Also save to localStorage
-      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(streamerData)); }catch(e){}
+      try{ var _e=_encLS(streamerData); if(_e) localStorage.setItem(STORAGE_KEY, _e); }catch(e){}
     }, 800);
   }
 
