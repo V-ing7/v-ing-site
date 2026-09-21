@@ -135,7 +135,7 @@
      Cloudflare Deploy Trigger (non-blocking, best-effort)
      ================================================================ */
   function triggerCloudflareDeploy(){
-    fetchWithTimeout(WORKER_API + '/api/deploy', {
+    fetchWithTimeout(WORKER_API + '/api/v-ing-deploy', {
       method: 'POST',
       headers: { 'X-Password': _getWsPassword() }
     }, 4000)
@@ -217,7 +217,7 @@
         priority: 0,
         timeout: 6000,
         fetch: function(){
-          return fetchWithTimeout(WORKER_API + '/api/data?t=' + cacheBust, {}, 6000).then(function(res){
+          return fetchWithTimeout(WORKER_API + '/api/v-ing-data?t=' + cacheBust, {}, 6000).then(function(res){
             if(!res.ok) throw new Error('HTTP ' + res.status);
             return res.json();
           }).then(function(json){
@@ -599,7 +599,7 @@
     function doPut(sha){
       if(sha) payload.sha = sha;
       var putBody = { data: data, sha: sha, message: payload.message };
-      return fetchWithTimeout(WORKER_API + '/api/data', {
+      return fetchWithTimeout(WORKER_API + '/api/v-ing-data', {
         method: 'PUT',
         headers: {
           'X-Password': _getWsPassword(),
@@ -644,7 +644,7 @@
     // Verify save by fetching from Worker API and comparing timestamps
     function _verifySave(expectedTimestamp){
       if(!expectedTimestamp) return;
-      fetchWithTimeout(WORKER_API + '/api/data?verify=' + Date.now(), {}, 5000)
+      fetchWithTimeout(WORKER_API + '/api/v-ing-data?verify=' + Date.now(), {}, 5000)
         .then(function(res){
           if(!res.ok) throw new Error('HTTP ' + res.status);
           return res.json();
@@ -751,7 +751,7 @@
 
   // Fetch current SHA from Worker API
   function _fetchSHA(){
-    return fetchWithTimeout(WORKER_API + '/api/data', {}, 5000).then(function(res){
+    return fetchWithTimeout(WORKER_API + '/api/v-ing-data', {}, 5000).then(function(res){
       if(!res.ok) throw new Error('SHA fetch HTTP ' + res.status);
       return res.json();
     }).then(function(json){ return json.sha; });
@@ -759,7 +759,7 @@
 
   // Fetch latest data and merge with local changes
   function _fetchLatestAndMerge(localData){
-    return fetchWithTimeout(WORKER_API + '/api/data', {}, 5000).then(function(res){
+    return fetchWithTimeout(WORKER_API + '/api/v-ing-data', {}, 5000).then(function(res){
       if(!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }).then(function(json){
@@ -3071,13 +3071,13 @@
 '
     + 'Pages Function API 地址：https://v-ing-site.pages.dev/api/\
 '
-    + '读取数据：GET https://v-ing-site.pages.dev/api/data （无需密码）\
+    + '读取数据：GET https://v-ing-site.pages.dev/api/v-ing-data （无需密码）\
 '
-    + '修改数据：PUT https://v-ing-site.pages.dev/api/data （需密码）\
+    + '修改数据：PUT https://v-ing-site.pages.dev/api/v-ing-data （需密码）\
 '
-    + '触发部署：POST https://v-ing-site.pages.dev/api/deploy （需密码）\
+    + '触发部署：POST https://v-ing-site.pages.dev/api/v-ing-deploy （需密码）\
 '
-    + '健康检查：GET https://v-ing-site.pages.dev/api/health\
+    + '健康检查：GET https://v-ing-site.pages.dev/api/v-ing-health\
 \
 '
     + '【安全机制】\
@@ -3110,7 +3110,7 @@
 '
     + '【操作步骤】\
 '
-    + '1. 用 Pages Function API 读取 data.json（GET https://v-ing-site.pages.dev/api/data）\
+    + '1. 用 Pages Function API 读取 data.json（GET https://v-ing-site.pages.dev/api/v-ing-data）\
 '
     + '2. 返回 JSON 格式 { sha, data }，直接使用 data 字段\
 '
@@ -3118,7 +3118,7 @@
 '
     + '4. 修改后用 Pages Function API PUT 回 data.json：\
 '
-    + '   PUT https://v-ing-site.pages.dev/api/data\
+    + '   PUT https://v-ing-site.pages.dev/api/v-ing-data\
 '
     + '   Headers: { X-Password: <密码>, Content-Type: application/json }\
 '
