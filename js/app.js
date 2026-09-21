@@ -3,6 +3,19 @@
    ================================================================ */
 (function(){
   'use strict';
+  // Safety fallback: force hide loader after 5s no matter what
+  setTimeout(function(){
+    var ld=document.getElementById('loader');
+    if(ld&&!ld.classList.contains('hidden')){
+      ld.classList.add('hidden');
+      console.warn('[Safety] Loader force-hidden after 5s timeout');
+    }
+  },5000);
+  // Global error handler: hide loader on any error
+  window.addEventListener('error',function(){
+    var ld=document.getElementById('loader');
+    if(ld) ld.classList.add('hidden');
+  });
 
   /* ================================================================
      GitHub Data Sync — v3.0 (Deep Stability Optimization)
