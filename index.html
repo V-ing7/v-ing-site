@@ -3977,6 +3977,202 @@ qr-code-styling.js" defer></script>
   <script
  src="js/app.js?v=20260921a" defer></script>
 
+
+<script>
+/* 摄影表增强：折叠 + 口播稿 + 单画面描述 */
+(function(){
+  'use strict';
+
+  var visualDescValue = '';
+  var voiceoverValue = '';
+  var currentProjId = null;
+  var hasUnsaved = false;
+
+  function setupCollapsible(scope){
+    if(!scope) scope = document;
+    var headers = scope.querySelectorAll('.sb-section-header');
+    headers.forEach(function(h){
+      if(h._toggled) return;
+      h._toggled = true;
+      h.classList.add('sb-section-header-toggle');
+      if(!h.querySelector('.sb-section-toggle-icon')){
+        var ic = document.createElement('span');
+        ic.className = 'sb-section-toggle-icon';
+        ic.textContent = '▼';
+        h.appendChild(ic);
+      }
+      h.addEventListener('click', function(){
+        var s = h.closest('.sb-section');
+        if(s) s.classList.toggle('collapsed');
+      });
+    });
+  }
+
+  function setupVisualDesc(){
+    var vl = document.getElementById('sbVisualList');
+    if(!vl) return;
+    if(document.getElementById('sbVisualDescSection')) return;
+    var wrap = document.createElement('div');
+    wrap.id = 'sbVisualDescSection';
+    wrap.innerHTML = '<textarea class="sb-cell sb-visual-desc-textarea" id="sbVisualDescInput" placeholder="描述画面内容..." rows="3"></textarea>';
+    vl.parentNode.insertBefore(wrap, vl);
+    vl.style.display = 'none';
+    var ta = wrap.querySelector('textarea');
+    ta.addEventListener('input', function(){
+      visualDescValue = ta.value;
+      hasUnsaved = true;
+      updateStatus();
+    });
+  }
+
+  function setupVoiceover(){
+    var ta = document.getElementById('sbVoiceoverInput');
+    if(!ta || ta._bound) return;
+    ta._bound = true;
+    ta.addEventListener('input', function(){
+      voiceoverValue = ta.value;
+      hasUnsaved = true;
+      updateStatus();
+      ta.style.height = '0px';
+      ta.style.height = Math.max(ta.scrollHeight, 60) + 'px';
+    });
+  }
+
+  function setupDetailFields(){
+    var vl = document.getElementById('sbDetailVisualList');
+    if(vl && !document.getElementById('sbDetailVisualDescSection')){
+      var d = document.createElement('div');
+      d.id = 'sbDetailVisualDescSection';
+      d.innerHTML = '<div class="sb-visual-text" id="sbDetailVisualDesc" style="white-space:pre-wrap;word-break:break-word;padding:14px;color:var(--text-secondary);font-size:.88rem;line-height:1.7;"></div>';
+      vl.parentNode.insertBefore(d, vl);
+      vl.style.display = 'none';
+    }
+  }
+
+  function updateStatus(){
+    var el = document.getElementById('sbStatusSync');
+    if(el){ el.textContent = '未保存'; el.className = 'sb-status-sync'; }
+  }
+
+  function findProjectByName(name){
+    var vd = window.__vingData;
+    if(!vd || !vd.storyboardProjects) return null;
+    return vd.storyboardProjects.find(function(p){ return p.projectName === name; }) || null;
+  }
+
+  function loadProjectValues(){
+    var nameEl = document.getElementById('sbProjectName');
+    if(!nameEl) return;
+    var name = nameEl.textContent.trim();
+    var proj = findProjectByName(name);
+    if(proj){
+      currentProjId = proj.id;
+      visualDescValue = proj.visualDesc || '';
+      voiceoverValue = proj.voiceover || '';
+      var vt = document.getElementById('sbVisualDescInput');
+      if(vt){ vt.value = visualDescValue; vt.style.height='0px'; vt.style.height=Math.max(vt.scrollHeight,60)+'px'; }
+      var vo = document.getElementById('sbVoiceoverInput');
+      if(vo){ vo.value = voiceoverValue; vo.style.height='0px'; vo.style.height=Math.max(vo.scrollHeight,60)+'px'; }
+    } else {
+      currentProjId = null;
+      visualDescValue = '';
+      voiceoverValue = '';
+    }
+    hasUnsaved = false;
+  }
+
+  function loadDetailValues(){
+    var titleEl = document.getElementById('sbDetailTitle');
+    if(!titleEl) return;
+    var name = titleEl.textContent.trim();
+    var proj = findProjectByName(name);
+    if(proj){
+      var vd = document.getElementById('sbDetailVisualDesc');
+      if(vd){
+        if(proj.visualDesc){ vd.textContent = proj.visualDesc; }
+        else{ vd.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-quaternary)">暂无画面描述</div>'; }
+      }
+      var vo = document.getElementById('sbDetailVoiceover');
+      if(vo){
+        if(proj.voiceover){ vo.textContent = proj.voiceover; }
+        else{ vo.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-quaternary)">暂无口播稿</div>'; }
+      }
+    }
+  }
+
+  // Patch save
+  var _origSave = null;
+  function patchSave(){
+    if(_origSave) return;
+    if(typeof window.__ghSave !== 'function') return;
+    _origSave = window.__ghSave;
+    window.__ghSave = function(data){
+      if(data && data.storyboardProjects && currentProjId){
+        data.storyboardProjects.forEach(function(p){
+          if(p.id === currentProjId){
+            p.visualDesc = visualDescValue;
+            p.voiceover = voiceoverValue;
+          }
+        });
+      }
+      hasUnsaved = false;
+      return _origSave.call(this, data);
+    };
+  }
+
+  // Patch render to ensure fields exist
+  function patchRender(){
+    if(typeof window.__renderStoryboard !== 'function') return;
+    var _orig = window.__renderStoryboard;
+    window.__renderStoryboard = function(data){
+      var arr = Array.isArray(data) ? data : (data ? [data] : []);
+      arr.forEach(function(p){
+        if(p.visualDesc === undefined) p.visualDesc = '';
+        if(p.voiceover === undefined) p.voiceover = '';
+      });
+      return _orig.call(this, data);
+    };
+  }
+
+  // Watch for editor/detail visibility changes
+  function watchViews(){
+    var obs = new MutationObserver(function(){
+      var ev = document.getElementById('sbEditorView');
+      if(ev && ev.style.display !== 'none'){
+        setupVisualDesc();
+        setupVoiceover();
+        setupCollapsible(document.getElementById('ws-panel-storyboard'));
+        if(!currentProjId) loadProjectValues();
+      }
+      var dv = document.getElementById('sbDetailView');
+      if(dv && dv.style.display !== 'none'){
+        setupDetailFields();
+        setupCollapsible(document.getElementById('ws-panel-storyboard'));
+        loadDetailValues();
+      }
+    });
+    obs.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+  }
+
+  function init(){
+    try {
+      setupCollapsible();
+      patchSave();
+      patchRender();
+      watchViews();
+      console.log('[Storyboard+] Loaded');
+    } catch(e){
+      console.warn('[Storyboard+] Error:', e);
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 300); });
+  } else {
+    setTimeout(init, 300);
+  }
+})();
+</script>
 </body>
 </html>
 
