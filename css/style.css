@@ -3662,8 +3662,15 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:opacity .5s cubic-bezier(.4,0,.2,1), visibility .5s cubic-bezier(.4,0,.2,1);
-  will-change:opacity;
+  transition:opacity .6s ease,visibility .6s ease;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+.loader.loading{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
 }
 .loader.hidden{
   opacity:0;
@@ -3678,14 +3685,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .loader:not(.hidden){
   animation:loader-autohide 3s ease forwards;
 }
-/* Safety fallback: force hide loader after 5s even if JS fails */
-@keyframes loader-safety-hide{
-  0%,80%{opacity:1;visibility:visible;}
-  100%{opacity:0;visibility:hidden;pointer-events:none;}
-}
-#loader{
-  animation:loader-safety-hide 5s ease forwards;
-}
+
 .loader-inner{
   display:flex;
   flex-direction:column;
