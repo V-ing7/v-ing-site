@@ -1,7 +1,6 @@
 /* ================================================================
    微影 V-ing · Interactive System
    ================================================================ */
-.safety-fallback{display:none}
 (function(){
   'use strict';
   // Safety fallback: force hide loader after 5s no matter what
