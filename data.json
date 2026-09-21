@@ -7,7 +7,7 @@
     },
     "streamer_1": {
       "name": "小许",
-      "shoot": 35,
+      "shoot": 30,
       "edit": 21
     },
     "streamer_2": {
@@ -36,7 +36,7 @@
       "edit": 7
     }
   },
-  "lastUpdated": "2026-09-21T05:00:48.989Z",
+  "lastUpdated": "2026-09-21T05:03:01.868Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
