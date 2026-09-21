@@ -598,10 +598,10 @@
       clearTimeout(_saveDebounceTimer);
     }
 
-    // Debounce: wait 500ms of inactivity before saving (reduced from 1500ms for faster sync)
+    // Debounce: 200ms — below human perception threshold, avoids API spam
     _saveDebounceTimer = setTimeout(function(){
       _processSaveQueue();
-    }, 500);
+    }, 200);
   }
 
   // Process the save queue: merge all pending saves into one, then execute
@@ -695,11 +695,11 @@
       // Use Worker API directly (most accurate), short delay for GitHub replication
       setTimeout(function(){
         _verifySave(data.lastUpdated);
-      }, 800);
+      }, 500);
 
       setTimeout(function(){
         if(ghSyncStatus === 'saved') setSyncStatus('success');
-      }, 800);
+      }, 500);
       _finishSave(true);
     }
 
@@ -2172,7 +2172,7 @@
   var _streamerSaveTimer = null;
   function saveStreamersToGitHub(){
     if(_streamerSaveTimer) clearTimeout(_streamerSaveTimer);
-    // Reduced from 800ms to 300ms for faster save response
+    // 150ms — fast enough to feel instant, avoids API spam on rapid clicks
     _streamerSaveTimer = setTimeout(function(){
       if(window.__vingData){
         window.__vingData.streamers = {};
