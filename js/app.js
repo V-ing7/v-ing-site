@@ -148,14 +148,11 @@
   }
 
   /* ================================================================
-     Data Loading — Multi-source with priority + validation
-     v4.0 Deep Optimization:
-     - Separate foreground/background load states (no unwanted reuse)
-     - Timestamp-based freshness check against ghLastAppliedDataTime
-     - Worker API as highest priority (most accurate data)
-     - Smart deduplication: skip identical timestamps
-     - Edit-mode aware: notify of new data without overwriting edits
-     ================================================================ */
+       Data Loading — D1 API single source
+       - Reads directly from Cloudflare D1 database via Pages Functions
+       - Timestamp-based freshness check
+       - Edit-mode aware: notify of new data without overwriting edits
+       ================================================================ */
   var _loadState = null;        // Current foreground load state
   var _bgLoadState = null;      // Current background load state
   var _hasNewDataPending = false; // New data available while in edit mode
@@ -208,69 +205,24 @@
     var bestSource = null;
     var bestSHA = null;
     var sourcesCompleted = 0;
-    var totalSources = 5;
+    var totalSources = 1;
     var resolvedFirst = false;
     var firstResolveData = null;
     var baselineTime = ghLastAppliedDataTime || '';
 
-    // Define sources with priority (lower = higher priority)
-    // Worker API is highest priority because it reads directly from GitHub
+    // Single source: D1 API (same-origin Pages Functions)
     var sources = [
       {
-        name: 'Worker API',
-        priority: 0, // Highest priority - most accurate
+        name: 'D1 API',
+        priority: 0,
         timeout: 6000,
         fetch: function(){
           return fetchWithTimeout(WORKER_API + '/api/data?t=' + cacheBust, {}, 6000).then(function(res){
             if(!res.ok) throw new Error('HTTP ' + res.status);
             return res.json();
           }).then(function(json){
-            return { data: json.data, sha: json.sha, fromAPI: true };
+            return { data: json.data, fromAPI: true };
           });
-        }
-      },
-      {
-        name: 'Same-origin',
-        priority: 1, // Fast but may be cached
-        timeout: 3000,
-        fetch: function(){
-          return fetchWithTimeout('data.json?t=' + cacheBust, {}, 3000).then(function(res){
-            if(!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          }).then(function(data){ return { data: data }; });
-        }
-      },
-      {
-        name: 'raw.githubusercontent',
-        priority: 2,
-        timeout: 6000,
-        fetch: function(){
-          return fetchWithTimeout(GH_RAW + '?t=' + cacheBust, {}, 6000).then(function(res){
-            if(!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          }).then(function(data){ return { data: data }; });
-        }
-      },
-      {
-        name: 'jsDelivr CDN',
-        priority: 3,
-        timeout: 5000,
-        fetch: function(){
-          return fetchWithTimeout('https://cdn.jsdelivr.net/gh/' + GH_REPO + '@' + GH_BRANCH + '/' + GH_FILE + '?t=' + cacheBust, {}, 5000).then(function(res){
-            if(!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          }).then(function(data){ return { data: data }; });
-        }
-      },
-      {
-        name: 'statically CDN',
-        priority: 4,
-        timeout: 5000,
-        fetch: function(){
-          return fetchWithTimeout('https://cdn.statically.io/gh/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE + '?t=' + cacheBust, {}, 5000).then(function(res){
-            if(!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-          }).then(function(data){ return { data: data }; });
         }
       }
     ];
@@ -355,21 +307,12 @@
       }
     }
 
-    // Launch all sources in parallel, with staggered start for lower-priority CDNs
-    sources.forEach(function(src, idx){
-      var delay = 0;
-      // Stagger CDN sources slightly to reduce initial burst
-      if(src.priority >= 3) delay = 200;
-      if(src.priority >= 4) delay = 400;
-
-      setTimeout(function(){
-        src.fetch().then(function(result){
-          considerResult(src.name, result, idx);
-        }).catch(function(err){
-          sourcesCompleted++;
-          _log(src.name + ' failed: ' + err.message, 'warn');
-        });
-      }, delay);
+    // Launch single source
+    sources[0].fetch().then(function(result){
+      considerResult(sources[0].name, result, 0);
+    }).catch(function(err){
+      sourcesCompleted++;
+      _log(sources[0].name + ' failed: ' + err.message, 'warn');
     });
 
     var promise = new Promise(function(resolve, reject){
@@ -675,14 +618,10 @@
     }
 
     function handleSuccess(json){
-      if(json.sha){
-        ghDataSHA = json.sha;
-      }
       ghLastAppliedDataTime = data.lastUpdated || _nowISO();
       ghLastSuccessfulSave = Date.now();
-      _log('✓ Saved to GitHub (SHA: ' + (ghDataSHA ? ghDataSHA.substring(0,7) : '?') + ')');
+      _log('✓ Saved to D1 database');
       setSyncStatus('saved');
-      triggerCloudflareDeploy();
 
       // Update signatures to match saved data (prevents immediate re-render on verify)
       if(data.theme) _lastAppliedSignatures.theme = _getDataSignature(data.theme);
@@ -692,7 +631,6 @@
       if(data.storyboardProjects) _lastAppliedSignatures.storyboardProjects = _getDataSignature(data.storyboardProjects);
 
       // Post-save verification: confirm data was saved correctly
-      // Use Worker API directly (most accurate), short delay for GitHub replication
       setTimeout(function(){
         _verifySave(data.lastUpdated);
       }, 500);
@@ -778,16 +716,8 @@
       _retrySave(data);
     }
 
-    // Execute PUT
-    if(ghDataSHA){
-      doPut(ghDataSHA).then(handleSuccess).catch(handleFailure);
-    } else {
-      // No SHA: fetch it first
-      _fetchSHA().then(function(sha){
-        ghDataSHA = sha;
-        return doPut(sha);
-      }).then(handleSuccess).catch(handleFailure);
-    }
+    // Execute PUT — D1 doesn't use SHA
+    doPut(null).then(handleSuccess).catch(handleFailure);
   }
 
   function _retrySave(data){
