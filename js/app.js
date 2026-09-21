@@ -500,6 +500,86 @@
      Save System — Queue-based with merge-on-conflict + backoff
      ================================================================ */
 
+  // Password prompt modal — shown when save needs a password
+  function _promptForPassword(){
+    return new Promise(function(resolve, reject){
+      var existing = document.getElementById('pwdPromptOverlay');
+      if(existing) existing.remove();
+
+      var overlay = document.createElement('div');
+      overlay.id = 'pwdPromptOverlay';
+      var isLight = html.getAttribute('data-theme') === 'light';
+      var bg = isLight ? '#ffffff' : '#1c1c1e';
+      var fg = isLight ? '#1c1c1e' : '#ffffff';
+      var sub = isLight ? '#8e8e93' : '#8e8e93';
+      var border = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)';
+      var inputBg = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)';
+
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease;';
+      overlay.innerHTML =
+        '<div id="pwdPromptCard" style="background:' + bg + ';border-radius:16px;padding:28px 24px;max-width:340px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,0.3);transform:scale(0.9);transition:transform .2s ease;">' +
+          '<h3 style="margin:0 0 6px;color:' + fg + ';font-size:1.15rem;font-weight:700;">' + (lang==='zh'?'需要密码':'Password Required') + '</h3>' +
+          '<p style="margin:0 0 18px;color:' + sub + ';font-size:0.85rem;">' + (lang==='zh'?'保存数据需要工作台密码<br>提示：个人英文名':'Enter workspace password to save<br>Hint: personal English name') + '</p>' +
+          '<input type="text" id="pwdPromptInput" placeholder="' + (lang==='zh'?'输入密码':'Enter password') + '" style="width:100%;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid ' + border + ';background:' + inputBg + ';color:' + fg + ';font-size:1rem;margin-bottom:14px;outline:none;" />' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button id="pwdPromptCancel" style="flex:1;padding:11px;border-radius:10px;border:none;background:' + inputBg + ';color:' + fg + ';cursor:pointer;font-size:0.9rem;">' + (lang==='zh'?'取消':'Cancel') + '</button>' +
+            '<button id="pwdPromptOK" style="flex:1;padding:11px;border-radius:10px;border:none;background:#ffdcb4;color:#1c1c1e;cursor:pointer;font-size:0.9rem;font-weight:600;">' + (lang==='zh'?'确认':'OK') + '</button>' +
+          '</div>' +
+          '<p id="pwdPromptError" style="margin:10px 0 0;color:#ff453a;font-size:0.8rem;display:none;">' + (lang==='zh'?'密码错误，请重试':'Wrong password, try again') + '</p>' +
+        '</div>';
+
+      document.body.appendChild(overlay);
+      requestAnimationFrame(function(){
+        overlay.style.opacity = '1';
+        var card = document.getElementById('pwdPromptCard');
+        if(card) card.style.transform = 'scale(1)';
+      });
+
+      var input = document.getElementById('pwdPromptInput');
+      var error = document.getElementById('pwdPromptError');
+      var card = document.getElementById('pwdPromptCard');
+
+      setTimeout(function(){ if(input) input.focus(); }, 200);
+
+      function cleanup(){
+        overlay.style.opacity = '0';
+        if(card) card.style.transform = 'scale(0.9)';
+        setTimeout(function(){ overlay.remove(); }, 200);
+      }
+
+      function submit(){
+        var pwd = input.value.trim();
+        if(pwd === WS_PASSWORD){
+          sessionStorage.setItem(WS_PWD_KEY, pwd);
+          sessionStorage.setItem(WS_LOCK_KEY, '1');
+          cleanup();
+          resolve(pwd);
+        } else {
+          error.style.display = 'block';
+          input.value = '';
+          input.focus();
+          if(card){
+            card.style.animation = 'none';
+            void card.offsetWidth;
+            card.style.animation = 'shake 0.4s';
+          }
+        }
+      }
+
+      function cancel(){
+        cleanup();
+        reject(new Error('Password input cancelled'));
+      }
+
+      document.getElementById('pwdPromptOK').addEventListener('click', submit);
+      document.getElementById('pwdPromptCancel').addEventListener('click', cancel);
+      input.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); submit(); }
+        if(e.key === 'Escape'){ e.preventDefault(); cancel(); }
+      });
+    });
+  }
+
   // Public: queue a save with debounce
   function ghSave(data){
     // Update local timestamp immediately to prevent auto-refresh overwrite
@@ -539,6 +619,18 @@
 
   // Execute a single save with retry logic
   function _executeSave(data){
+    // Check if password is available before attempting save
+    if(!_getWsPassword()){
+      _log('No password set, prompting for password before save');
+      _promptForPassword().then(function(){
+        _executeSave(data);
+      }).catch(function(){
+        _log('Password input cancelled, save aborted', 'warn');
+        setSyncStatus('error');
+      });
+      return;
+    }
+
     _saveInProgress = true;
     setSyncStatus('saving');
 
@@ -644,6 +736,23 @@
 
     function handleFailure(err){
       _log('Save failed: ' + (err.message || err), 'warn');
+
+      // Handle 403 Forbidden: password missing or incorrect
+      if(err.status === 403){
+        _log('403 Forbidden — password missing or incorrect, prompting for password');
+        sessionStorage.removeItem(WS_PWD_KEY);
+        sessionStorage.removeItem(WS_LOCK_KEY);
+        _saveInProgress = false;
+        if(_saveStuckGuard) clearTimeout(_saveStuckGuard);
+        _promptForPassword().then(function(){
+          _executeSave(data);
+        }).catch(function(){
+          _log('Password input cancelled after 403, save failed', 'warn');
+          setSyncStatus('error');
+          _finishSave(false);
+        });
+        return;
+      }
 
       if(err.type === 'conflict'){
         // 409 Conflict: fetch latest data, merge, then retry
