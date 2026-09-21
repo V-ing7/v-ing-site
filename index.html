@@ -1,1644 +1,3973 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-lang="zh">
+﻿﻿<!DOCTYPE html>
+<html lang="zh-CN" data-th
+eme="dark" data-lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>微影 V-ing | 影视创作工作室</title>
-  <meta name="description" content="微影 V-ing - 影视创作工作室 | Film & Video Creation Studio">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-  <script src="js/lib/html2canvas.min.js" defer></script>
+  <meta cha
+rset="UTF-8">
+  <meta name="viewport" content
+="width=device-width, initial-scale=1.0, maxi
+mum-scale=1.0, minimum-scale=1.0, user-scalab
+le=no, viewport-fit=cover">
+  <title>微影 V
+-ing | 影视创作工作室</title>
+  <meta 
+name="description" content="微影 V-ing - �
+�视创作工作室 | Film & Video Creation S
+tudio">
+  <link rel="stylesheet" href="css/st
+yle.css">
+  <link rel="preconnect" href="http
+s://fonts.googleapis.com">
+  <link rel="preco
+nnect" href="https://fonts.gstatic.com" cross
+origin>
+  <link href="https://fonts.googleapi
+s.com/css2?family=ZCOOL+XiaoWei&family=JetBra
+ins+Mono:wght@300;400&display=swap" rel="styl
+esheet">
+  <script src="js/lib/html2canvas.mi
+n.js" defer></script>
   <script>
-    // Clear old service workers and caches from previous versions
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(function(regs){
-        regs.forEach(function(r){ r.unregister(); });
-      });
+    // Clear
+ old service workers and caches from previous
+ versions
+    if('serviceWorker' in navigator
+){
+      navigator.serviceWorker.getRegistrat
+ions().then(function(regs){
+        regs.forE
+ach(function(r){ r.unregister(); });
+      })
+;
     }
     if('caches' in window){
-      caches.keys().then(function(keys){
-        keys.forEach(function(k){ caches.delete(k); });
-      });
+      cac
+hes.keys().then(function(keys){
+        keys.
+forEach(function(k){ caches.delete(k); });
+  
+    });
     }
   </script>
   <style>
-    .ws-lock-input-wrap{padding:0 20px;margin:8px 0 4px}
+    .ws-l
+ock-input-wrap{padding:0 20px;margin:8px 0 4p
+x}
     .ws-lock-text-input{
-      width:100%;box-sizing:border-box;
-      padding:12px 16px;
-      border:2px solid rgba(255,255,255,.15);
+      width:100%;
+box-sizing:border-box;
+      padding:12px 16p
+x;
+      border:2px solid rgba(255,255,255,.1
+5);
       border-radius:12px;
-      background:rgba(255,255,255,.05);
-      color:#fff;font-size:18px;letter-spacing:2px;
-      text-align:center;outline:none;
-      transition:border-color .3s,background .3s;
+      backgroun
+d:rgba(255,255,255,.05);
+      color:#fff;fon
+t-size:18px;letter-spacing:2px;
+      text-al
+ign:center;outline:none;
+      transition:bor
+der-color .3s,background .3s;
     }
-    .ws-lock-text-input:focus{
-      border-color:rgba(120,180,255,.5);
-      background:rgba(255,255,255,.08)
+    .ws-l
+ock-text-input:focus{
+      border-color:rgba
+(120,180,255,.5);
+      background:rgba(255,2
+55,255,.08)
     }
-    .ws-lock-text-input::placeholder{
+    .ws-lock-text-input::pl
+aceholder{
       color:rgba(255,255,255,.3);
+
       letter-spacing:1px;font-size:14px
     }
+
     .ws-lock-actions{padding:8px 20px 4px}
-    .ws-lock-submit{
-      width:100%;padding:12px;
+ 
+   .ws-lock-submit{
+      width:100%;padding:
+12px;
       border:none;border-radius:12px;
-      background:linear-gradient(135deg,#5b8def,#7b6ff0);
-      color:#fff;font-size:16px;font-weight:600;
-      cursor:pointer;transition:opacity .2s,transform .1s
+ 
+     background:linear-gradient(135deg,#5b8de
+f,#7b6ff0);
+      color:#fff;font-size:16px;f
+ont-weight:600;
+      cursor:pointer;transiti
+on:opacity .2s,transform .1s
     }
-    .ws-lock-submit:active{transform:scale(.97);opacity:.85}
-    .ws-lock-card.shake{animation:wsShake .4s ease}
+    .ws-lo
+ck-submit:active{transform:scale(.97);opacity
+:.85}
+    .ws-lock-card.shake{animation:wsSha
+ke .4s ease}
     @keyframes wsShake{
-      0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-8px)}
-      40%{transform:translateX(8px)}
-      60%{transform:translateX(-6px)}
+      0%
+,100%{transform:translateX(0)}
+      20%{tran
+sform:translateX(-8px)}
+      40%{transform:t
+ranslateX(8px)}
+      60%{transform:translate
+X(-6px)}
       80%{transform:translateX(6px)}
+
     }
     @keyframes shake{
-      0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-8px)}
-      40%{transform:translateX(8px)}
+      0%,100%{tr
+ansform:translateX(0)}
+      20%{transform:tr
+anslateX(-8px)}
+      40%{transform:translate
+X(8px)}
       60%{transform:translateX(-6px)}
+
       80%{transform:translateX(6px)}
     }
-    /* Creator Quick Tools */
-    .creator-quick-tools{margin-top:32px;padding:24px;border-radius:20px;
-      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+ 
+   /* Creator Quick Tools */
+    .creator-qui
+ck-tools{margin-top:32px;padding:24px;border-
+radius:20px;
+      background:rgba(255,255,25
+5,.03);border:1px solid rgba(255,255,255,.06)
+}
     .cqt-head{margin-bottom:18px}
-    .cqt-title{font-size:1.1rem;font-weight:700;margin:0 0 4px 0}
-    .cqt-desc{font-size:.82rem;color:rgba(235,235,245,.4);margin:0}
-    .cqt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .cqt-btn{display:flex;flex-direction:column;align-items:center;gap:10px;
-      padding:20px 12px;border-radius:16px;text-decoration:none;
-      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
-      transition:all .25s ease;cursor:pointer}
-    .cqt-btn:hover{transform:translateY(-2px);
-      background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12)}
+    .cqt-
+title{font-size:1.1rem;font-weight:700;margin
+:0 0 4px 0}
+    .cqt-desc{font-size:.82rem;co
+lor:rgba(235,235,245,.4);margin:0}
+    .cqt-g
+rid{display:grid;grid-template-columns:repeat
+(3,1fr);gap:12px}
+    .cqt-btn{display:flex;f
+lex-direction:column;align-items:center;gap:1
+0px;
+      padding:20px 12px;border-radius:16
+px;text-decoration:none;
+      background:rgb
+a(255,255,255,.04);border:1px solid rgba(255,
+255,255,.06);
+      transition:all .25s ease;
+cursor:pointer}
+    .cqt-btn:hover{transform:
+translateY(-2px);
+      background:rgba(255,2
+55,255,.07);border-color:rgba(255,255,255,.12
+)}
     .cqt-btn:active{transform:scale(.97)}
-    .cqt-icon{width:44px;height:44px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;font-size:22px}
-    .cqt-icon svg{width:24px;height:24px}
-    .cqt-dy .cqt-icon{background:linear-gradient(135deg,#ff0050,#00f2ea);color:#fff}
-    .cqt-sph .cqt-icon{background:linear-gradient(135deg,#07c160,#57ffb4);color:#fff}
-    .cqt-xhs .cqt-icon{background:linear-gradient(135deg,#ff2442,#ff6b6b);color:#fff}
-    .cqt-info{display:flex;flex-direction:column;align-items:center;gap:2px}
-    .cqt-name{font-size:.82rem;font-weight:600;color:rgba(235,235,245,.85)}
-    .cqt-arrow{font-size:.7rem;color:rgba(235,235,245,.3);
-      transition:transform .2s,color .2s}
-    .cqt-btn:hover .cqt-arrow{transform:translateX(3px);color:rgba(255,255,255,.6)}
+
+    .cqt-icon{width:44px;height:44px;border-r
+adius:12px;
+      display:flex;align-items:ce
+nter;justify-content:center;font-size:22px}
+ 
+   .cqt-icon svg{width:24px;height:24px}
+    
+.cqt-dy .cqt-icon{background:linear-gradient(
+135deg,#ff0050,#00f2ea);color:#fff}
+    .cqt-
+sph .cqt-icon{background:linear-gradient(135d
+eg,#07c160,#57ffb4);color:#fff}
+    .cqt-xhs 
+.cqt-icon{background:linear-gradient(135deg,#
+ff2442,#ff6b6b);color:#fff}
+    .cqt-info{dis
+play:flex;flex-direction:column;align-items:c
+enter;gap:2px}
+    .cqt-name{font-size:.82rem
+;font-weight:600;color:rgba(235,235,245,.85)}
+
+    .cqt-arrow{font-size:.7rem;color:rgba(23
+5,235,245,.3);
+      transition:transform .2s
+,color .2s}
+    .cqt-btn:hover .cqt-arrow{tra
+nsform:translateX(3px);color:rgba(255,255,255
+,.6)}
     @media(max-width:600px){
-      .cqt-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+      .cqt
+-grid{grid-template-columns:repeat(3,1fr);gap
+:8px}
       .cqt-btn{padding:14px 8px}
-      .cqt-icon{width:36px;height:36px;font-size:18px}
+      
+.cqt-icon{width:36px;height:36px;font-size:18
+px}
       .cqt-name{font-size:.72rem}
     }
-    /* Light theme support */
-    [data-theme="light"] .creator-quick-tools{
-      background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
-    [data-theme="light"] .cqt-desc{color:rgba(60,60,67,.4)}
-    [data-theme="light"] .cqt-btn{
-      background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
-    [data-theme="light"] .cqt-btn:hover{
-      background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
-    [data-theme="light"] .cqt-name{color:rgba(60,60,67,.85)}
-    [data-theme="light"] .cqt-arrow{color:rgba(60,60,67,.3)}
-    /* Sync status badge styles */
-    .sync-badge{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;
-      cursor:pointer;transition:all .2s ease;user-select:none}
-    .sync-badge:hover{opacity:.8}
-    .sync-badge:active{transform:scale(.96)}
-    .sync-loading{background:rgba(255,159,10,.15);color:#FF9F0A}
-    .sync-success{background:rgba(52,199,89,.15);color:#34C759}
-    .sync-error{background:rgba(255,69,58,.15);color:#FF453A}
-    .sync-offline{background:rgba(142,142,147,.15);color:#8E8E93}
-    .sync-pending{background:rgba(10,132,255,.15);color:#0A84FF;
-      animation:syncPulse 1.5s ease-in-out infinite}
-    @keyframes syncPulse{
+ 
+   /* Light theme support */
+    [data-theme=
+"light"] .creator-quick-tools{
+      backgrou
+nd:rgba(0,0,0,.02);border-color:rgba(0,0,0,.0
+6)}
+    [data-theme="light"] .cqt-desc{color:
+rgba(60,60,67,.4)}
+    [data-theme="light"] .
+cqt-btn{
+      background:rgba(0,0,0,.02);bor
+der-color:rgba(0,0,0,.06)}
+    [data-theme="l
+ight"] .cqt-btn:hover{
+      background:rgba(
+0,0,0,.04);border-color:rgba(0,0,0,.1)}
+    [
+data-theme="light"] .cqt-name{color:rgba(60,6
+0,67,.85)}
+    [data-theme="light"] .cqt-arro
+w{color:rgba(60,60,67,.3)}
+    /* Sync status
+ badge styles */
+    .sync-badge{padding:4px 
+10px;border-radius:20px;font-size:.75rem;font
+-weight:600;
+      cursor:pointer;transition:
+all .2s ease;user-select:none}
+    .sync-badg
+e:hover{opacity:.8}
+    .sync-badge:active{tr
+ansform:scale(.96)}
+    .sync-loading{backgro
+und:rgba(255,159,10,.15);color:#FF9F0A}
+    .
+sync-success{background:rgba(52,199,89,.15);c
+olor:#34C759}
+    .sync-error{background:rgba
+(255,69,58,.15);color:#FF453A}
+    .sync-offl
+ine{background:rgba(142,142,147,.15);color:#8
+E8E93}
+    .sync-pending{background:rgba(10,1
+32,255,.15);color:#0A84FF;
+      animation:sy
+ncPulse 1.5s ease-in-out infinite}
+    @keyfr
+ames syncPulse{
       0%,100%{opacity:1}
-      50%{opacity:.6}
+    
+  50%{opacity:.6}
     }
-    [data-theme="light"] .sync-loading{background:rgba(255,149,0,.1);color:#FF9500}
-    [data-theme="light"] .sync-success{background:rgba(52,199,89,.1);color:#34C759}
-    [data-theme="light"] .sync-error{background:rgba(255,59,48,.1);color:#FF3B30}
-    [data-theme="light"] .sync-offline{background:rgba(142,142,147,.1);color:#8E8E93}
-    [data-theme="light"] .sync-pending{background:rgba(0,122,255,.1);color:#007AFF}
-  </style>
+    [data-theme="ligh
+t"] .sync-loading{background:rgba(255,149,0,.
+1);color:#FF9500}
+    [data-theme="light"] .s
+ync-success{background:rgba(52,199,89,.1);col
+or:#34C759}
+    [data-theme="light"] .sync-er
+ror{background:rgba(255,59,48,.1);color:#FF3B
+30}
+    [data-theme="light"] .sync-offline{ba
+ckground:rgba(142,142,147,.1);color:#8E8E93}
+
+    [data-theme="light"] .sync-pending{backgr
+ound:rgba(0,122,255,.1);color:#007AFF}
+  </st
+yle>
 </head>
 <body>
   <!-- 加载动画 -->
-  <div class="loader" id="loader">
-    <div class="loader-inner">
-      <div class="loader-logo-wrap">
-        <svg class="loader-logo" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
-          <path class="loader-path" d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/>
+ 
+ <div class="loader" id="loader">
+    <div cl
+ass="loader-inner">
+      <div class="loader-
+logo-wrap">
+        <svg class="loader-logo" 
+viewBox="0 0 354.9 295.83" xmlns="http://www.
+w3.org/2000/svg">
+          <path class="load
+er-path" d="M321.7,4.36c1.21-1.89-.15-4.36-2.
+39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31
+.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-
+47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C2
+7.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,
+2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.4
+5,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c
+.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2
+.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1
+.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.
+23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2
+.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,
+27.87,58.51,27.79,76.54,0l130.39-201.26c15.19
+-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-
+.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12
+,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.1
+7c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.
+84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1
+.7,4.76-.03L321.71,4.36h0Z"/>
         </svg>
+
       </div>
-      <div class="loader-text" data-cn="微影 V-ing" data-en="V-ing Studio">微影 V-ing</div>
-      <div class="loader-progress"><span></span></div>
+      <div class="loader-text" d
+ata-cn="微影 V-ing" data-en="V-ing Studio">
+微影 V-ing</div>
+      <div class="loader-p
+rogress"><span></span></div>
     </div>
-  </div>
-  <!-- ========== Animated Background ========== -->
-  <div class="bg-gradient" aria-hidden="true">
-    <div class="blob blob-1"></div>
+  </d
+iv>
+  <!-- ========== Animated Background ===
+======= -->
+  <div class="bg-gradient" aria-h
+idden="true">
+    <div class="blob blob-1"></
+div>
     <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    <div class="grain"></div>
+    
+<div class="blob blob-3"></div>
+    <div clas
+s="grain"></div>
   </div>
 
-  <!-- ========== Navigation ========== -->
-  <nav class="nav" id="nav">
+  <!-- ========== 
+Navigation ========== -->
+  <nav class="nav" 
+id="nav">
     <div class="nav-inner">
-      <a href="#home" class="nav-logo" data-nav="home">
+      <
+a href="#home" class="nav-logo" data-nav="hom
+e">
         <span class="logo-mark">
-          <svg class="logo-svg" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
-            <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+        
+  <svg class="logo-svg" viewBox="0 0 354.9 29
+5.83" xmlns="http://www.w3.org/2000/svg">
+   
+         <path d="M321.7,4.36c1.21-1.89-.15-4
+.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.
+57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-
+31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H5
+6.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82
+,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.2
+8l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-
+90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0
+,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17
+.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h
+0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4
+.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c
+17.91,27.87,58.51,27.79,76.54,0l130.39-201.26
+c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13
+-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24
+c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.3
+1,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.9
+5,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,
+3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="curre
+ntColor"/>
           </svg>
         </span>
-        <span class="logo-text">微影<span class="logo-dot">.</span>ing</span>
+ 
+       <span class="logo-text">微影<span cl
+ass="logo-dot">.</span>ing</span>
       </a>
+
       <div class="nav-links" id="navLinks">
-        <a href="#home" class="nav-link active" data-nav="home" data-cn="首页" data-en="Home">首页</a>
-        <a href="#about" class="nav-link" data-nav="about" data-cn="关于" data-en="About">关于</a>
-        <a href="#works" class="nav-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
-        <a href="#collab" class="nav-link" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
-        <a href="#workspace" class="nav-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
-        <a href="#contact" class="nav-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
+ 
+       <a href="#home" class="nav-link active
+" data-nav="home" data-cn="首页" data-en="H
+ome">首页</a>
+        <a href="#about" clas
+s="nav-link" data-nav="about" data-cn="关于
+" data-en="About">关于</a>
+        <a href=
+"#works" class="nav-link" data-nav="works" da
+ta-cn="作品" data-en="Works">作品</a>
+   
+     <a href="#collab" class="nav-link" data-
+nav="collab" data-cn="联动" data-en="Collab
+s">联动</a>
+        <a href="#workspace" cl
+ass="nav-link" data-nav="workspace" data-cn="
+工作台" data-en="Workspace">工作台</a>
+
+        <a href="#contact" class="nav-link" d
+ata-nav="contact" data-cn="联系" data-en="C
+ontact">联系</a>
       </div>
-      <div class="nav-controls">
-        <span class="sync-badge sync-loading" id="syncStatusBadge" data-cn="同步中..." data-en="Syncing..." title="点击强制同步" role="button" tabindex="0">同步中...</span>
-        <button class="ctrl-btn lang-toggle" id="langToggle" aria-label="Toggle language">
-          <span class="lang-current" id="langCurrent">EN</span>
+      <div cl
+ass="nav-controls">
+        <span class="sync
+-badge sync-loading" id="syncStatusBadge" dat
+a-cn="同步中..." data-en="Syncing..." titl
+e="点击强制同步" role="button" tabindex
+="0">同步中...</span>
+        <button clas
+s="ctrl-btn lang-toggle" id="langToggle" aria
+-label="Toggle language">
+          <span cla
+ss="lang-current" id="langCurrent">EN</span>
+
         </button>
-        <button class="ctrl-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.8" y2="4.2"/></g></svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <button class="ctrl
+-btn theme-toggle" id="themeToggle" aria-labe
+l="Toggle theme">
+          <svg class="icon-
+sun" viewBox="0 0 24 24" width="18" height="1
+8"><circle cx="12" cy="12" r="5" fill="none" 
+stroke="currentColor" stroke-width="2"/><g st
+roke="currentColor" stroke-width="2" stroke-l
+inecap="round"><line x1="12" y1="1" x2="12" y
+2="4"/><line x1="12" y1="20" x2="12" y2="23"/
+><line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><
+line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/
+><line x1="1" y1="12" x2="4" y2="12"/><line x
+1="20" y1="12" x2="23" y2="12"/><line x1="4.2
+" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.
+7" y1="6.3" x2="19.8" y2="4.2"/></g></svg>
+  
+        <svg class="icon-moon" viewBox="0 0 2
+4 24" width="18" height="18"><path d="M21 12.
+79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fil
+l="none" stroke="currentColor" stroke-width="
+2" stroke-linecap="round" stroke-linejoin="ro
+und"/></svg>
         </button>
-        <button class="ctrl-btn menu-toggle" id="menuToggle" aria-label="Menu">
-          <span></span><span></span><span></span>
+        <butto
+n class="ctrl-btn menu-toggle" id="menuToggle
+" aria-label="Menu">
+          <span></span><
+span></span><span></span>
         </button>
-      </div>
+ 
+     </div>
     </div>
-    <div class="mobile-menu" id="mobileMenu">
-      <a href="#home" class="mobile-link active" data-nav="home" data-cn="首页" data-en="Home">首页</a>
-      <a href="#about" class="mobile-link" data-nav="about" data-cn="关于" data-en="About">关于</a>
-      <a href="#works" class="mobile-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
-      <a href="#collab" class="mobile-link" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
-      <a href="#workspace" class="mobile-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
-      <a href="#contact" class="mobile-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
+    <div class="mobile
+-menu" id="mobileMenu">
+      <a href="#home"
+ class="mobile-link active" data-nav="home" d
+ata-cn="首页" data-en="Home">首页</a>
+   
+   <a href="#about" class="mobile-link" data-
+nav="about" data-cn="关于" data-en="About">
+关于</a>
+      <a href="#works" class="mobi
+le-link" data-nav="works" data-cn="作品" da
+ta-en="Works">作品</a>
+      <a href="#coll
+ab" class="mobile-link" data-nav="collab" dat
+a-cn="联动" data-en="Collabs">联动</a>
+  
+    <a href="#workspace" class="mobile-link" 
+data-nav="workspace" data-cn="工作台" data
+-en="Workspace">工作台</a>
+      <a href="
+#contact" class="mobile-link" data-nav="conta
+ct" data-cn="联系" data-en="Contact">联系
+</a>
     </div>
   </nav>
 
-  <!-- ========== Cinema Hero ========== -->
-  <div class="cinema-letterbox top"></div>
-  <div class="cinema-letterbox bottom"></div>
-  <div class="cinema-cam tl"><span class="cinema-rec-dot"></span>REC</div>
-  <div class="cinema-cam tr" id="cinemaTc">00:00:00:00</div>
-  <div class="cinema-cam bl">V-ING · CINEMA</div>
-  <div class="cinema-cam br">F2.8 · 1/50 · ISO 800</div>
+  <!-- ========== C
+inema Hero ========== -->
+  <div class="cinem
+a-letterbox top"></div>
+  <div class="cinema-
+letterbox bottom"></div>
+  <div class="cinema
+-cam tl"><span class="cinema-rec-dot"></span>
+REC</div>
+  <div class="cinema-cam tr" id="ci
+nemaTc">00:00:00:00</div>
+  <div class="cinem
+a-cam bl">V-ING · CINEMA</div>
+  <div class=
+"cinema-cam br">F2.8 · 1/50 · ISO 800</div>
+
   <div class="cinema-scroll-hint">
-    <span data-cn="滚动" data-en="Scroll">滚动</span>
+    <span
+ data-cn="滚动" data-en="Scroll">滚动</sp
+an>
   </div>
-  <section class="cinema-hero" aria-hidden="true">
-    <div class="cinema-stage">
+  <section class="cinema-hero" a
+ria-hidden="true">
+    <div class="cinema-sta
+ge">
       <div class="cinema-bg"></div>
-      <div class="cinema-leak"></div>
-      <div class="cinema-beam"></div>
-      <div class="cinema-spotlight"></div>
-      <div class="cinema-edge-fade top"></div>
-      <div class="cinema-edge-fade bottom"></div>
-      <div class="cinema-vignette"></div>
-      <div class="cinema-scanlines"></div>
-      <div class="cinema-grain"></div>
-      <div class="cinema-dust" id="cinemaDust"></div>
-      <div class="cinema-title-wrap">
-        <div class="cinema-title-line">
-          <span class="cinema-char" style="--d:1s">我</span>
-          <span class="cinema-char" style="--d:1.15s">们</span>
+    
+  <div class="cinema-leak"></div>
+      <div 
+class="cinema-beam"></div>
+      <div class="
+cinema-spotlight"></div>
+      <div class="ci
+nema-edge-fade top"></div>
+      <div class="
+cinema-edge-fade bottom"></div>
+      <div cl
+ass="cinema-vignette"></div>
+      <div class
+="cinema-scanlines"></div>
+      <div class="
+cinema-grain"></div>
+      <div class="cinema
+-dust" id="cinemaDust"></div>
+      <div clas
+s="cinema-title-wrap">
+        <div class="ci
+nema-title-line">
+          <span class="cine
+ma-char" style="--d:1s">我</span>
+          
+<span class="cinema-char" style="--d:1.15s">�
+��</span>
         </div>
-        <div class="cinema-sep"></div>
-        <div class="cinema-title-line">
-          <span class="cinema-char" style="--d:1.6s">正</span>
-          <span class="cinema-char" style="--d:1.75s">在</span>
-          <span class="cinema-char" style="--d:1.9s">进</span>
-          <span class="cinema-char" style="--d:2.05s">行</span>
-          <span class="cinema-char" style="--d:2.2s">时</span>
+        <div class="
+cinema-sep"></div>
+        <div class="cinema
+-title-line">
+          <span class="cinema-c
+har" style="--d:1.6s">正</span>
+          <s
+pan class="cinema-char" style="--d:1.75s">在
+</span>
+          <span class="cinema-char" s
+tyle="--d:1.9s">进</span>
+          <span cl
+ass="cinema-char" style="--d:2.05s">行</span
+>
+          <span class="cinema-char" style="
+--d:2.2s">时</span>
         </div>
-        <div class="cinema-subtitle" data-cn="Present Continuous" data-en="Present Continuous">Present Continuous</div>
+        <
+div class="cinema-subtitle" data-cn="Present 
+Continuous" data-en="Present Continuous">Pres
+ent Continuous</div>
       </div>
-      <div class="cinema-bottom-fade"></div>
+      <div 
+class="cinema-bottom-fade"></div>
     </div>
+
   </section>
 
-  <!-- ========== Main Content ========== -->
-  <main class="main" id="main">
+  <!-- ========== Main Content 
+========== -->
+  <main class="main" id="main"
+>
 
-    <!-- ========== HOME VIEW ========== -->
-    <section class="view view-active" id="view-home" data-view="home">
-      <!-- Hero Spacer (cinema hero is fixed above) -->
-      <div class="cinema-hero-spacer"></div>
+    <!-- ========== HOME VIEW ========== -
+->
+    <section class="view view-active" id="
+view-home" data-view="home">
+      <!-- Hero 
+Spacer (cinema hero is fixed above) -->
+     
+ <div class="cinema-hero-spacer"></div>
 
-      <!-- Stats Section -->
-      <section class="stats-section">
-        <div class="container">
+    
+  <!-- Stats Section -->
+      <section class
+="stats-section">
+        <div class="contain
+er">
           <div class="stats-grid">
-            <div class="stat-card reveal">
-              <span class="stat-num" data-target="156" data-suffix="+">0</span>
-              <span class="stat-label" data-cn="原创作品" data-en="Original Works">原创作品</span>
+     
+       <div class="stat-card reveal">
+       
+       <span class="stat-num" data-target="15
+6" data-suffix="+">0</span>
+              <sp
+an class="stat-label" data-cn="原创作品" 
+data-en="Original Works">原创作品</span>
+
             </div>
+            <div class="st
+at-card reveal">
+              <span class="s
+tat-num" data-target="2800" data-suffix="W+">
+0</span>
+              <span class="stat-labe
+l" data-cn="全网播放量" data-en="Total V
+iews">全网播放量</span>
+            </di
+v>
             <div class="stat-card reveal">
-              <span class="stat-num" data-target="2800" data-suffix="W+">0</span>
-              <span class="stat-label" data-cn="全网播放量" data-en="Total Views">全网播放量</span>
+
+              <span class="stat-num" data-ta
+rget="48" data-suffix="W+">0</span>
+         
+     <span class="stat-label" data-cn="平台
+粉丝" data-en="Followers">平台粉丝</spa
+n>
             </div>
-            <div class="stat-card reveal">
-              <span class="stat-num" data-target="48" data-suffix="W+">0</span>
-              <span class="stat-label" data-cn="平台粉丝" data-en="Followers">平台粉丝</span>
+            <div class=
+"stat-card reveal">
+              <span class
+="stat-num" data-target="32" data-suffix="+">
+0</span>
+              <span class="stat-labe
+l" data-cn="合作品牌" data-en="Brand Part
+ners">合作品牌</span>
             </div>
-            <div class="stat-card reveal">
-              <span class="stat-num" data-target="32" data-suffix="+">0</span>
-              <span class="stat-label" data-cn="合作品牌" data-en="Brand Partners">合作品牌</span>
-            </div>
+
           </div>
         </div>
-      </section>
+      </secti
+on>
 
-      <!-- Featured Works (Placeholder) -->
+      <!-- Featured Works (Placeholder) 
+-->
       <section class="featured-section">
+
         <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="精选作品" data-en="Featured Works">精选作品</span>
-            <h2 class="section-title" data-cn="光影之间的故事" data-en="Stories Between Light and Shadow">光影之间的故事</h2>
+          <di
+v class="section-head reveal">
+            <s
+pan class="section-eyebrow" data-cn="精选�
+�品" data-en="Featured Works">精选作品</
+span>
+            <h2 class="section-title" d
+ata-cn="光影之间的故事" data-en="Stori
+es Between Light and Shadow">光影之间的�
+��事</h2>
           </div>
-          <div class="works-grid">
-            <div class="work-card work-card-lg reveal" data-category="短片">
+          <div cl
+ass="works-grid">
+            <div class="wor
+k-card work-card-lg reveal" data-category="�
+�片">
               <div class="work-thumb">
+
                 <div class="work-overlay">
-                  <span class="work-play">▶</span>
+ 
+                 <span class="work-play">▶<
+/span>
                 </div>
-                <div class="work-badges">
+               
+ <div class="work-badges">
+                </
+div>
+              </div>
+              <div 
+class="work-info">
+                <h3 data-c
+n="城市光影志" data-en="Urban Light Chro
+nicles">城市光影志</h3>
+                
+<p data-cn="城市人文短片系列" data-en
+="Urban culture short film series">城市人�
+��短片系列</p>
+              </div>
+     
+       </div>
+            <div class="work-ca
+rd reveal" data-category="广告">
+          
+    <div class="work-thumb">
+                
+<div class="work-overlay"><span class="work-p
+lay">▶</span></div>
+                <div cl
+ass="work-badges"></div>
+              </div>
+
+              <div class="work-info">
+      
+          <h3 data-cn="品牌叙事" data-en=
+"Brand Narrative">品牌叙事</h3>
+         
+       <p data-cn="商业广告创作" data-e
+n="Commercial production">商业广告创作<
+/p>
+              </div>
+            </div>
+ 
+           <div class="work-card reveal" data
+-category="纪录">
+              <div class=
+"work-thumb">
+                <div class="wor
+k-overlay"><span class="work-play">▶</span>
+</div>
+                <div class="work-badge
+s"></div>
+              </div>
+              
+<div class="work-info">
+                <h3 d
+ata-cn="生活纪事" data-en="Life Chronicle
+">生活纪事</h3>
+                <p data-c
+n="日常纪录片系列" data-en="Daily docu
+mentary series">日常纪录片系列</p>
+   
+           </div>
+            </div>
+        
+    <div class="work-card work-card-wide reve
+al" data-category="MV">
+              <div cl
+ass="work-thumb">
+                <div class=
+"work-overlay"><span class="work-play">▶</s
+pan></div>
+                <div class="work-b
+adges">
                 </div>
-              </div>
+              
+</div>
               <div class="work-info">
-                <h3 data-cn="城市光影志" data-en="Urban Light Chronicles">城市光影志</h3>
-                <p data-cn="城市人文短片系列" data-en="Urban culture short film series">城市人文短片系列</p>
-              </div>
+
+                <h3 data-cn="音乐视觉" da
+ta-en="Music Visual">音乐视觉</h3>
+      
+          <p data-cn="MV创意拍摄" data-en
+="Creative music video">MV创意拍摄</p>
+  
             </div>
-            <div class="work-card reveal" data-category="广告">
-              <div class="work-thumb">
-                <div class="work-overlay"><span class="work-play">▶</span></div>
-                <div class="work-badges"></div>
-              </div>
-              <div class="work-info">
-                <h3 data-cn="品牌叙事" data-en="Brand Narrative">品牌叙事</h3>
-                <p data-cn="商业广告创作" data-en="Commercial production">商业广告创作</p>
-              </div>
             </div>
-            <div class="work-card reveal" data-category="纪录">
-              <div class="work-thumb">
-                <div class="work-overlay"><span class="work-play">▶</span></div>
-                <div class="work-badges"></div>
-              </div>
-              <div class="work-info">
-                <h3 data-cn="生活纪事" data-en="Life Chronicle">生活纪事</h3>
-                <p data-cn="日常纪录片系列" data-en="Daily documentary series">日常纪录片系列</p>
-              </div>
-            </div>
-            <div class="work-card work-card-wide reveal" data-category="MV">
-              <div class="work-thumb">
-                <div class="work-overlay"><span class="work-play">▶</span></div>
-                <div class="work-badges">
-                </div>
-              </div>
-              <div class="work-info">
-                <h3 data-cn="音乐视觉" data-en="Music Visual">音乐视觉</h3>
-                <p data-cn="MV创意拍摄" data-en="Creative music video">MV创意拍摄</p>
-              </div>
-            </div>
+       
+   </div>
+          <div class="section-cta r
+eveal">
+            <button class="btn btn-ou
+tline" data-nav="works" data-cn="查看全部
+作品" data-en="View All Works">查看全部
+作品</button>
           </div>
-          <div class="section-cta reveal">
-            <button class="btn btn-outline" data-nav="works" data-cn="查看全部作品" data-en="View All Works">查看全部作品</button>
-          </div>
-        </div>
+        </di
+v>
       </section>
 
-      <!-- Platforms Section -->
-      <section class="platforms-section">
+      <!-- Platforms Sec
+tion -->
+      <section class="platforms-sect
+ion">
         <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="内容平台" data-en="Content Platforms">内容平台</span>
-            <h2 class="section-title" data-cn="在哪里找到我们" data-en="Where to Find Us">在哪里找到我们</h2>
+       
+   <div class="section-head reveal">
+        
+    <span class="section-eyebrow" data-cn="�
+�容平台" data-en="Content Platforms">内�
+�平台</span>
+            <h2 class="section
+-title" data-cn="在哪里找到我们" data-
+en="Where to Find Us">在哪里找到我们</
+h2>
           </div>
-          <div class="platforms-grid">
-            <a href="https://space.bilibili.com" target="_blank" rel="noopener" class="platform-card reveal">
-              <div class="platform-logo-bili">
-                <img src="assets/bilibili-icon.svg" alt="哔哩哔哩" class="bili-icon-svg" />
-                <img src="assets/bilibili-text.svg" alt="哔哩哔哩" class="bili-text-svg" />
+          <div class="pl
+atforms-grid">
+            <a href="https://s
+pace.bilibili.com" target="_blank" rel="noope
+ner" class="platform-card reveal">
+          
+    <div class="platform-logo-bili">
+        
+        <img src="assets/bilibili-icon.svg" a
+lt="哔哩哔哩" class="bili-icon-svg" />
+  
+              <img src="assets/bilibili-text.
+svg" alt="哔哩哔哩" class="bili-text-svg"
+ />
               </div>
-              <p data-cn="长视频 · 短片 · 纪录片" data-en="Long video · Shorts · Documentary">长视频 · 短片 · 纪录片</p>
-              <div class="platform-stat">
-                <span class="num" data-target="26" data-suffix="W+">0</span>
-                <span class="label" data-cn="粉丝" data-en="Followers">粉丝</span>
+              <p dat
+a-cn="长视频 · 短片 · 纪录片" data-
+en="Long video · Shorts · Documentary">长�
+��频 · 短片 · 纪录片</p>
+            
+  <div class="platform-stat">
+               
+ <span class="num" data-target="26" data-suff
+ix="W+">0</span>
+                <span class=
+"label" data-cn="粉丝" data-en="Followers">
+粉丝</span>
               </div>
-              <span class="platform-arrow" data-cn="前往关注 →" data-en="Follow →">前往关注 →</span>
+          
+    <span class="platform-arrow" data-cn="前
+往关注 →" data-en="Follow →">前往关
+注 →</span>
             </a>
-            <a href="https://www.douyin.com" target="_blank" rel="noopener" class="platform-card reveal">
-              <div class="platform-logo-dy">
-                <img src="assets/douyin-logo.svg" alt="抖音" class="dy-logo-light" />
-                <img src="assets/douyin-logo-dark.svg" alt="抖音" class="dy-logo-dark" />
+            <
+a href="https://www.douyin.com" target="_blan
+k" rel="noopener" class="platform-card reveal
+">
+              <div class="platform-logo-dy
+">
+                <img src="assets/douyin-lo
+go.svg" alt="抖音" class="dy-logo-light" />
+
+                <img src="assets/douyin-logo
+-dark.svg" alt="抖音" class="dy-logo-dark" 
+/>
               </div>
-              <p data-cn="短视频 · 创意 · 热点" data-en="Short video · Creative · Trends">短视频 · 创意 · 热点</p>
-              <div class="platform-stat">
-                <span class="num" data-target="22" data-suffix="W+">0</span>
-                <span class="label" data-cn="粉丝" data-en="Followers">粉丝</span>
+              <p data
+-cn="短视频 · 创意 · 热点" data-en="
+Short video · Creative · Trends">短视频 
+· 创意 · 热点</p>
+              <div cl
+ass="platform-stat">
+                <span cl
+ass="num" data-target="22" data-suffix="W+">0
+</span>
+                <span class="label" d
+ata-cn="粉丝" data-en="Followers">粉丝</s
+pan>
               </div>
-              <span class="platform-arrow" data-cn="前往关注 →" data-en="Follow →">前往关注 →</span>
+              <span
+ class="platform-arrow" data-cn="前往关注
+ →" data-en="Follow →">前往关注 →</
+span>
             </a>
           </div>
-        </div>
+     
+   </div>
       </section>
     </section>
 
-    <!-- ========== ABOUT VIEW ========== -->
-    <section class="view" id="view-about" data-view="about">
+  
+  <!-- ========== ABOUT VIEW ========== -->
+ 
+   <section class="view" id="view-about" data
+-view="about">
       <!-- Brand Story -->
-      <div class="about-hero">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="关于微影" data-en="About V-ing">关于微影</span>
-            <h2 class="section-title section-title-lg" data-cn="我们正在进行时" data-en="We Are In Present Continuous">我们正在进行时</h2>
+   
+   <div class="about-hero">
+        <div clas
+s="container">
+          <div class="section-
+head reveal">
+            <span class="sectio
+n-eyebrow" data-cn="关于微影" data-en="Ab
+out V-ing">关于微影</span>
+            <h
+2 class="section-title section-title-lg" data
+-cn="我们正在进行时" data-en="We Are I
+n Present Continuous">我们正在进行时</
+h2>
           </div>
-          <div class="about-narrative reveal">
-            <p data-cn="微影 V-ing 是一支年轻的影视创作团队。我们相信，最好的影像不是被「完成」的，而是不断「进行」的——每一帧画面都在生长，每一个故事都在呼吸。" data-en="V-ing is a young film and video creation team. We believe the best images are not 'finished' but constantly 'in progress' — every frame is growing, every story is breathing.">微影 V-ing 是一支年轻的影视创作团队。我们相信，最好的影像不是被「完成」的，而是不断「进行」的——每一帧画面都在生长，每一个故事都在呼吸。</p>
-            <p data-cn="从城市纪实到品牌叙事，从音乐视觉到生活纪录，我们持续在哔哩哔哩与抖音平台输出原创内容，我们想记录的，不只是画面，更是正在进行时的生活。" data-en="From urban documentaries to brand narratives, from music visuals to life chronicles, we continuously produce original content on Bilibili and Douyin. What we want to capture is not just images, but life in the present continuous.">从城市纪实到品牌叙事，从音乐视觉到生活纪录，我们持续在哔哩哔哩与抖音平台输出原创内容，我们想记录的，不只是画面，更是正在进行时的生活。</p>
+          <div class="ab
+out-narrative reveal">
+            <p data-cn
+="微影 V-ing 是一支年轻的影视创作
+团队。我们相信，最好的影像不是
+被「完成」的，而是不断「进行」
+的——每一帧画面都在生长，每一
+个故事都在呼吸。" data-en="V-ing is a
+ young film and video creation team. We belie
+ve the best images are not 'finished' but con
+stantly 'in progress' — every frame is grow
+ing, every story is breathing.">微影 V-ing 
+是一支年轻的影视创作团队。我们
+相信，最好的影像不是被「完成」
+的，而是不断「进行」的——每一
+帧画面都在生长，每一个故事都在
+呼吸。</p>
+            <p data-cn="从城�
+��纪实到品牌叙事，从音乐视觉到�
+��活纪录，我们持续在哔哩哔哩与�
+��音平台输出原创内容，我们想记�
+��的，不只是画面，更是正在进行�
+��的生活。" data-en="From urban documenta
+ries to brand narratives, from music visuals 
+to life chronicles, we continuously produce o
+riginal content on Bilibili and Douyin. What 
+we want to capture is not just images, but li
+fe in the present continuous.">从城市纪�
+�到品牌叙事，从音乐视觉到生活�
+�录，我们持续在哔哩哔哩与抖音�
+�台输出原创内容，我们想记录的�
+�不只是画面，更是正在进行时的�
+�活。</p>
           </div>
-          <div class="about-values">
-            <div class="value-card reveal">
-              <div class="value-icon">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-              </div>
-              <h3 data-cn="视觉先行" data-en="Visual First">视觉先行</h3>
-              <p data-cn="每一帧画面都经过精心构图与调色" data-en="Every frame is carefully composed and color-graded">每一帧画面都经过精心构图与调色</p>
+          <div c
+lass="about-values">
+            <div class="
+value-card reveal">
+              <div class=
+"value-icon">
+                <svg viewBox="0
+ 0 24 24" width="28" height="28" fill="none" 
+stroke="currentColor" stroke-width="1.5"><rec
+t x="3" y="5" width="18" height="14" rx="2"/>
+<circle cx="12" cy="12" r="3"/></svg>
+       
+       </div>
+              <h3 data-cn="视�
+��先行" data-en="Visual First">视觉先行
+</h3>
+              <p data-cn="每一帧画�
+��都经过精心构图与调色" data-en="Ev
+ery frame is carefully composed and color-gra
+ded">每一帧画面都经过精心构图与�
+��色</p>
             </div>
-            <div class="value-card reveal">
-              <div class="value-icon">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <div
+ class="value-card reveal">
+              <di
+v class="value-icon">
+                <svg vi
+ewBox="0 0 24 24" width="28" height="28" fill
+="none" stroke="currentColor" stroke-width="1
+.5"><path d="M9 18V5l12-2v13"/><circle cx="6"
+ cy="18" r="3"/><circle cx="18" cy="16" r="3"
+/></svg>
               </div>
-              <h3 data-cn="叙事为本" data-en="Narrative Driven">叙事为本</h3>
-              <p data-cn="好故事是影像的灵魂所在" data-en="A good story is the soul of imagery">好故事是影像的灵魂所在</p>
-            </div>
-            <div class="value-card reveal">
-              <div class="value-icon">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-              </div>
-              <h3 data-cn="持续生长" data-en="Always Growing">持续生长</h3>
-              <p data-cn="正在进行时，永不停歇的创作" data-en="Present continuous, never-ending creation">正在进行时，永不停歇的创作</p>
-            </div>
+              <
+h3 data-cn="叙事为本" data-en="Narrative 
+Driven">叙事为本</h3>
+              <p da
+ta-cn="好故事是影像的灵魂所在" dat
+a-en="A good story is the soul of imagery">�
+�故事是影像的灵魂所在</p>
+         
+   </div>
+            <div class="value-card 
+reveal">
+              <div class="value-icon
+">
+                <svg viewBox="0 0 24 24" w
+idth="28" height="28" fill="none" stroke="cur
+rentColor" stroke-width="1.5"><path d="M13 2L
+3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          
+    </div>
+              <h3 data-cn="持续�
+��长" data-en="Always Growing">持续生长<
+/h3>
+              <p data-cn="正在进行�
+�，永不停歇的创作" data-en="Present c
+ontinuous, never-ending creation">正在进�
+�时，永不停歇的创作</p>
+            
+</div>
           </div>
         </div>
-      </div>
+      
+</div>
 
       <!-- Team Section -->
-      <section class="team-section">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="核心团队" data-en="Core Team">核心团队</span>
-            <h2 class="section-title" data-cn="镜头背后的人" data-en="People Behind the Lens">镜头背后的人</h2>
+      <se
+ction class="team-section">
+        <div clas
+s="container">
+          <div class="section-
+head reveal">
+            <span class="sectio
+n-eyebrow" data-cn="核心团队" data-en="Co
+re Team">核心团队</span>
+            <h2 
+class="section-title" data-cn="镜头背后�
+�人" data-en="People Behind the Lens">镜头
+背后的人</h2>
           </div>
-          <div class="team-grid team-grid-single">
-            <!-- Business Card -->
-          <div class="card-section reveal">
-            <div class="business-card bc-card-v2">
-              <!-- Paper texture layers -->
-              <div class="bc-paper-fiber"></div>
-              <div class="bc-sheen"></div>
-              <div class="bc-light-leak"></div>
+          
+<div class="team-grid team-grid-single">
+    
+        <!-- Business Card -->
+          <div
+ class="card-section reveal">
+            <di
+v class="business-card bc-card-v2">
+         
+     <!-- Paper texture layers -->
+          
+    <div class="bc-paper-fiber"></div>
+      
+        <div class="bc-sheen"></div>
+        
+      <div class="bc-light-leak"></div>
 
-              <!-- Logo watermark - debossed -->
+    
+          <!-- Logo watermark - debossed -->
+
               <div class="bc-logo-watermark">
-                <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
-                  <path fill="currentColor" d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/>
+
+                <svg viewBox="0 0 354.9 295.
+83" xmlns="http://www.w3.org/2000/svg">
+     
+             <path fill="currentColor" d="M32
+1.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c
+-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12
+,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.7
+3-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.
+04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.6
+7c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.
+7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.2
+8,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-
+64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1
+.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.
+81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46
+-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.
+79,76.54,0l130.39-201.26c15.19-23.42,11.28-45
+.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-14
+6.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68
+-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13
+-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28
+l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321
+.71,4.36h0Z"/>
                 </svg>
+       
+       </div>
+
+              <!-- Perforation
+ notches -->
+              <div class="bc-not
+ch-top"></div>
+              <div class="bc-n
+otch-bottom"></div>
+              <div class=
+"bc-perforation"></div>
+
+              <!-- L
+eft stub section: QR -->
+              <div c
+lass="bc-stub">
+                <div class="b
+c-stub-top">ADMIT ONE</div>
+                <
+div class="bc-qr-frame" id="bcQRCode"></div>
+
+                <div class="bc-stub-bottom">V
+-ING</div>
               </div>
 
-              <!-- Perforation notches -->
-              <div class="bc-notch-top"></div>
-              <div class="bc-notch-bottom"></div>
-              <div class="bc-perforation"></div>
+            
+  <!-- Right main section -->
+              <
+div class="bc-main-section">
+                
+<div>
+                  <h2 class="bc-name">L
+IN WEI</h2>
+                  <div class="bc-
+name-cn" data-cn="林威" data-en="LIN WEI">�
+��威</div>
+                  <p class="bc-ti
+tle" data-cn="高级摄影师 · 主创导演
+" data-en="Senior Photographer · Lead Direct
+or">高级摄影师 · 主创导演</p>
+     
+             <div class="bc-tags-row">
+      
+              <span class="bc-tag" data-cn="V
+log" data-en="Vlog">Vlog</span>
+             
+       <span class="bc-tag" data-cn="宣传�
+�" data-en="Promo">宣传片</span>
+         
+           <span class="bc-tag" data-cn="纪�
+��片" data-en="Doc">纪录片</span>
+       
+           </div>
+                </div>
+    
+            <div class="bc-divider"></div>
+  
+              <div class="bc-info-grid">
+    
+              <div class="bc-info-item">
+    
+                <div class="bc-info-icon">
+  
+                    <svg viewBox="0 0 24 24" 
+width="10" height="10" fill="none" stroke="cu
+rrentColor" stroke-width="2" stroke-linecap="
+round" stroke-linejoin="round">
+             
+           <path d="M21 10c0 7-9 13-9 13s-9-6
+-9-13a9 9 0 0 1 18 0z"/>
+                    
+    <circle cx="12" cy="10" r="3"/>
+         
+             </svg>
+                    </div
+>
+                    <div class="bc-info-tex
+t">
+                      <span class="bc-inf
+o-label" data-cn="所在城市" data-en="City
+">所在城市</span>
+                      <
+span class="bc-info-value" data-cn="福建 ·
+ 泉州" data-en="Quanzhou, Fujian">福建 ·
+ 泉州</span>
+                    </div>
+   
+               </div>
+                  <div 
+class="bc-info-item">
+                    <di
+v class="bc-info-icon">
+                     
+ <svg viewBox="0 0 24 24" width="10" height="
+10" fill="none" stroke="currentColor" stroke-
+width="2" stroke-linecap="round" stroke-linej
+oin="round">
+                        <path d=
+"M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-
+1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          
+              <polyline points="22,6 12,13 2,
+6"/>
+                      </svg>
+           
+         </div>
+                    <div clas
+s="bc-info-text">
+                      <span
+ class="bc-info-label" data-cn="联系邮箱"
+ data-en="Email">联系邮箱</span>
+        
+              <span class="bc-info-value">vky
+vkyvky@163.com</span>
+                    </d
+iv>
+                  </div>
+                
+  <div class="bc-info-item">
+                
+    <div class="bc-info-icon">
+              
+        <svg viewBox="0 0 24 24" width="10" h
+eight="10" fill="none" stroke="currentColor" 
+stroke-width="2" stroke-linecap="round" strok
+e-linejoin="round">
+                        <
+circle cx="12" cy="12" r="10"/>
+             
+           <polyline points="12,6 12,12 16,14
+"/>
+                      </svg>
+            
+        </div>
+                    <div class
+="bc-info-text">
+                      <span 
+class="bc-info-label" data-cn="从业经验" 
+data-en="Exp">从业经验</span>
+           
+           <span class="bc-info-value" data-c
+n="3-5 年" data-en="3-5 Years">3-5 年</span
+>
+                    </div>
+                
+  </div>
+                  <div class="bc-inf
+o-item">
+                    <div class="bc-i
+nfo-icon">
+                      <svg viewBox
+="0 0 24 24" width="10" height="10" fill="non
+e" stroke="currentColor" stroke-width="2" str
+oke-linecap="round" stroke-linejoin="round">
 
-              <!-- Left stub section: QR -->
-              <div class="bc-stub">
-                <div class="bc-stub-top">ADMIT ONE</div>
-                <div class="bc-qr-frame" id="bcQRCode"></div>
-                <div class="bc-stub-bottom">V-ING</div>
-              </div>
-
-              <!-- Right main section -->
-              <div class="bc-main-section">
-                <div>
-                  <h2 class="bc-name">LIN WEI</h2>
-                  <div class="bc-name-cn" data-cn="林威" data-en="LIN WEI">林威</div>
-                  <p class="bc-title" data-cn="高级摄影师 · 主创导演" data-en="Senior Photographer · Lead Director">高级摄影师 · 主创导演</p>
-                  <div class="bc-tags-row">
-                    <span class="bc-tag" data-cn="Vlog" data-en="Vlog">Vlog</span>
-                    <span class="bc-tag" data-cn="宣传片" data-en="Promo">宣传片</span>
-                    <span class="bc-tag" data-cn="纪录片" data-en="Doc">纪录片</span>
-                  </div>
+                        <path d="M20 21v-2a4 
+4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            
+            <circle cx="12" cy="7" r="4"/>
+  
+                    </svg>
+                  
+  </div>
+                    <div class="bc-i
+nfo-text">
+                      <span class=
+"bc-info-label" data-cn="所属团队" data-e
+n="Team">所属团队</span>
+                
+      <span class="bc-info-value" data-cn="�
+�影 V-ing" data-en="V-ing">微影 V-ing</spa
+n>
+                    </div>
+               
+   </div>
                 </div>
-                <div class="bc-divider"></div>
-                <div class="bc-info-grid">
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="所在城市" data-en="City">所在城市</span>
-                      <span class="bc-info-value" data-cn="福建 · 泉州" data-en="Quanzhou, Fujian">福建 · 泉州</span>
-                    </div>
-                  </div>
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="联系邮箱" data-en="Email">联系邮箱</span>
-                      <span class="bc-info-value">vkyvkyvky@163.com</span>
-                    </div>
-                  </div>
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="从业经验" data-en="Exp">从业经验</span>
-                      <span class="bc-info-value" data-cn="3-5 年" data-en="3-5 Years">3-5 年</span>
-                    </div>
-                  </div>
-                  <div class="bc-info-item">
-                    <div class="bc-info-icon">
-                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    </div>
-                    <div class="bc-info-text">
-                      <span class="bc-info-label" data-cn="所属团队" data-en="Team">所属团队</span>
-                      <span class="bc-info-value" data-cn="微影 V-ing" data-en="V-ing">微影 V-ing</span>
-                    </div>
-                  </div>
+            
+    <div class="bc-bottom-mark">
+            
+      <span class="bc-studio" data-cn="V-ing 
+Studio" data-en="V-ing Studio">V-ing Studio</
+span>
+                  <span class="bc-seat"
+>NO. 001</span>
                 </div>
-                <div class="bc-bottom-mark">
-                  <span class="bc-studio" data-cn="V-ing Studio" data-en="V-ing Studio">V-ing Studio</span>
-                  <span class="bc-seat">NO. 001</span>
-                </div>
-              </div>
+      
+        </div>
 
             </div>
-          </div>
+          
+</div>
         </div>
       </section>
-      <section class="timeline-section">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="发展历程" data-en="Our Journey">发展历程</span>
-            <h2 class="section-title" data-cn="一路走来" data-en="The Road So Far">一路走来</h2>
+      
+<section class="timeline-section">
+        <d
+iv class="container">
+          <div class="s
+ection-head reveal">
+            <span class=
+"section-eyebrow" data-cn="发展历程" data
+-en="Our Journey">发展历程</span>
+       
+     <h2 class="section-title" data-cn="一�
+�走来" data-en="The Road So Far">一路走�
+��</h2>
           </div>
-          <div class="timeline">
-            <div class="timeline-item reveal">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <span class="timeline-year">2023</span>
-                <h3 data-cn="微影成立" data-en="V-ing Founded">微影成立</h3>
-                <p data-cn="团队组建，发布首支作品" data-en="Team formed, first work released">团队组建，发布首支作品</p>
+          <div class
+="timeline">
+            <div class="timeline
+-item reveal">
+              <div class="time
+line-dot"></div>
+              <div class="ti
+meline-content">
+                <span class=
+"timeline-year">2023</span>
+                <
+h3 data-cn="微影成立" data-en="V-ing Foun
+ded">微影成立</h3>
+                <p dat
+a-cn="团队组建，发布首支作品" data
+-en="Team formed, first work released">团队
+组建，发布首支作品</p>
+             
+ </div>
+            </div>
+            <div c
+lass="timeline-item reveal">
+              <d
+iv class="timeline-dot"></div>
+              
+<div class="timeline-content">
+              
+  <span class="timeline-year">2024</span>
+   
+             <h3 data-cn="双平台运营" da
+ta-en="Dual Platform Launch">双平台运营<
+/h3>
+                <p data-cn="入驻哔哩
+哔哩与抖音，粉丝突破10万" data-en=
+"Joined Bilibili & Douyin, 100K followers">�
+�驻哔哩哔哩与抖音，粉丝突破10万
+</p>
               </div>
             </div>
-            <div class="timeline-item reveal">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <span class="timeline-year">2024</span>
-                <h3 data-cn="双平台运营" data-en="Dual Platform Launch">双平台运营</h3>
-                <p data-cn="入驻哔哩哔哩与抖音，粉丝突破10万" data-en="Joined Bilibili & Douyin, 100K followers">入驻哔哩哔哩与抖音，粉丝突破10万</p>
+
+            <div class="timeline-item reveal"
+>
+              <div class="timeline-dot"></d
+iv>
+              <div class="timeline-conten
+t">
+                <span class="timeline-yea
+r">2025</span>
+                <h3 data-cn="�
+��牌合作" data-en="Brand Collaborations">�
+��牌合作</h3>
+                <p data-cn="
+开启商业内容创作，合作品牌超30�
+��" data-en="Commercial content creation, 30+
+ brand partners">开启商业内容创作，�
+��作品牌超30家</p>
               </div>
+
             </div>
-            <div class="timeline-item reveal">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <span class="timeline-year">2025</span>
-                <h3 data-cn="品牌合作" data-en="Brand Collaborations">品牌合作</h3>
-                <p data-cn="开启商业内容创作，合作品牌超30家" data-en="Commercial content creation, 30+ brand partners">开启商业内容创作，合作品牌超30家</p>
+            <div class="ti
+meline-item reveal">
+              <div class
+="timeline-dot timeline-dot-active"></div>
+  
+            <div class="timeline-content">
+  
+              <span class="timeline-year">202
+6</span>
+                <h3 data-cn="正在�
+��行时" data-en="Present Continuous">正在
+进行时</h3>
+                <p data-cn="�
+�续创作中，敬请期待" data-en="Contin
+uously creating, stay tuned">持续创作中�
+��敬请期待</p>
               </div>
-            </div>
-            <div class="timeline-item reveal">
-              <div class="timeline-dot timeline-dot-active"></div>
-              <div class="timeline-content">
-                <span class="timeline-year">2026</span>
-                <h3 data-cn="正在进行时" data-en="Present Continuous">正在进行时</h3>
-                <p data-cn="持续创作中，敬请期待" data-en="Continuously creating, stay tuned">持续创作中，敬请期待</p>
-              </div>
-            </div>
+     
+       </div>
           </div>
         </div>
+
       </section>
     </section>
 
-    <!-- ========== WORKS VIEW ========== -->
-    <section class="view" id="view-works" data-view="works">
+    <!-- ==
+======== WORKS VIEW ========== -->
+    <secti
+on class="view" id="view-works" data-view="wo
+rks">
       <div class="works-hero">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="作品集" data-en="Portfolio">作品集</span>
-            <h2 class="section-title section-title-lg" data-cn="即将上线" data-en="Coming Soon">即将上线</h2>
-            <p class="section-desc reveal" data-cn="我们正在整理完整的作品集，精彩内容即将呈现。" data-en="We are curating our complete portfolio. Exciting content is on the way.">我们正在整理完整的作品集，精彩内容即将呈现。</p>
+        
+<div class="container">
+          <div class=
+"section-head reveal">
+            <span clas
+s="section-eyebrow" data-cn="作品集" data-
+en="Portfolio">作品集</span>
+            <
+h2 class="section-title section-title-lg" dat
+a-cn="即将上线" data-en="Coming Soon">即
+将上线</h2>
+            <p class="section-
+desc reveal" data-cn="我们正在整理完�
+�的作品集，精彩内容即将呈现。" 
+data-en="We are curating our complete portfol
+io. Exciting content is on the way.">我们�
+�在整理完整的作品集，精彩内容�
+�将呈现。</p>
           </div>
-          <div class="works-placeholder reveal">
-            <div class="placeholder-grid">
-              <div class="placeholder-card"></div>
-              <div class="placeholder-card"></div>
-              <div class="placeholder-card"></div>
-              <div class="placeholder-card"></div>
-              <div class="placeholder-card"></div>
-              <div class="placeholder-card"></div>
+          
+<div class="works-placeholder reveal">
+      
+      <div class="placeholder-grid">
+        
+      <div class="placeholder-card"></div>
+  
+            <div class="placeholder-card"></d
+iv>
+              <div class="placeholder-car
+d"></div>
+              <div class="placehold
+er-card"></div>
+              <div class="pla
+ceholder-card"></div>
+              <div clas
+s="placeholder-card"></div>
+            </div
+>
+            <div class="placeholder-notice"
+>
+              <svg viewBox="0 0 24 24" widt
+h="24" height="24" fill="none" stroke="curren
+tColor" stroke-width="1.5"><circle cx="12" cy
+="12" r="10"/><polyline points="12 6 12 12 16
+ 14"/></svg>
+              <span data-cn="作
+品正在持续更新中，请稍后再来" d
+ata-en="Works are being updated, please check
+ back later">作品正在持续更新中，�
+�稍后再来</span>
             </div>
-            <div class="placeholder-notice">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span data-cn="作品正在持续更新中，请稍后再来" data-en="Works are being updated, please check back later">作品正在持续更新中，请稍后再来</span>
-            </div>
-          </div>
-          <div class="works-cta reveal">
-            <button class="btn btn-primary" data-nav="contact" data-cn="抢先联系" data-en="Get in Touch">抢先联系</button>
-            <button class="btn btn-ghost" data-nav="home" data-cn="返回首页" data-en="Back Home">返回首页</button>
-          </div>
+     
+     </div>
+          <div class="works-cta r
+eveal">
+            <button class="btn btn-pr
+imary" data-nav="contact" data-cn="抢先联�
+��" data-en="Get in Touch">抢先联系</butt
+on>
+            <button class="btn btn-ghost"
+ data-nav="home" data-cn="返回首页" data-
+en="Back Home">返回首页</button>
+        
+  </div>
         </div>
       </div>
-    </section>
+    </se
+ction>
 
-    <!-- ========== COLLAB VIEW ========== -->
-    <section class="view" id="view-collab" data-view="collab">
-      <div class="collab-view-wrap">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="品牌联动" data-en="Collaborations">品牌联动</span>
-            <h2 class="section-title section-title-lg" data-cn="品牌联动项目" data-en="Brand Collaboration Projects">品牌联动项目</h2>
-            <p class="section-desc reveal" data-cn="与优秀品牌伙伴共同创作影像故事" data-en="Creating visual stories with outstanding brand partners">与优秀品牌伙伴共同创作影像故事</p>
+    <!-- ========== COLLAB VIEW =====
+===== -->
+    <section class="view" id="view-
+collab" data-view="collab">
+      <div class=
+"collab-view-wrap">
+        <div class="conta
+iner">
+          <div class="section-head rev
+eal">
+            <span class="section-eyebro
+w" data-cn="品牌联动" data-en="Collaborat
+ions">品牌联动</span>
+            <h2 cla
+ss="section-title section-title-lg" data-cn="
+品牌联动项目" data-en="Brand Collaborat
+ion Projects">品牌联动项目</h2>
+       
+     <p class="section-desc reveal" data-cn="
+与优秀品牌伙伴共同创作影像故事
+" data-en="Creating visual stories with outst
+anding brand partners">与优秀品牌伙伴�
+��同创作影像故事</p>
           </div>
+
         </div>
-        <div class="container">
+        <div class="container"
+>
           <!-- Collab Hub -->
-          <div class="collab-hub reveal" id="collabHub">
-            <div class="collab-hub-head">
-              <h3 class="collab-hub-title" data-cn="合作品牌" data-en="Partner Brands">合作品牌</h3>
-              <p class="collab-hub-desc" data-cn="点击品牌卡片查看详细合作内容" data-en="Click a brand card to view collaboration details">点击品牌卡片查看详细合作内容</p>
-            </div>
-            <div class="collab-cards">
+          <di
+v class="collab-hub reveal" id="collabHub">
+ 
+           <div class="collab-hub-head">
+    
+          <h3 class="collab-hub-title" data-c
+n="合作品牌" data-en="Partner Brands">合
+作品牌</h3>
+              <p class="collab
+-hub-desc" data-cn="点击品牌卡片查看�
+��细合作内容" data-en="Click a brand car
+d to view collaboration details">点击品牌
+卡片查看详细合作内容</p>
+          
+  </div>
+            <div class="collab-cards
+">
               <!-- 零跑 -->
-              <div class="collab-card reveal" data-collab-target="leap">
-                <div class="collab-card-glow collab-glow-leap"></div>
-                <div class="collab-card-head">
-                  <div class="collab-logo collab-logo-leap">
-                    <img src="assets/leapmotor.svg" alt="零跑汽车" class="collab-logo-img" />
-                  </div>
-                  <div class="collab-card-info">
-                    <h4 data-cn="零跑汽车" data-en="Leapmotor">零跑汽车</h4>
-                    <span class="collab-tag" data-cn="智能电动汽车" data-en="Smart EV">智能电动汽车</span>
-                  </div>
-                </div>
-                <div class="collab-card-body">
-                  <div class="collab-stat-row">
-                    <div class="collab-stat">
-                      <span class="cs-num">3</span>
-                      <span class="cs-label" data-cn="进行中项目" data-en="Active Projects">进行中项目</span>
-                    </div>
-                    <div class="collab-stat">
-                      <span class="cs-num">8</span>
-                      <span class="cs-label" data-cn="已完成项目" data-en="Completed">已完成项目</span>
-                    </div>
-                    <div class="collab-stat">
-                      <span class="cs-num">1</span>
-                      <span class="cs-label" data-cn="平台投放" data-en="Platforms">平台投放</span>
-                    </div>
-                  </div>
-                  <p class="collab-desc" data-cn="技术驱动的智能电动汽车品牌，致力于让智能出行惠及大众。联合创作品牌短片、产品体验视觉与智能驾驶场景内容。" data-en="Technology-driven smart EV brand, making intelligent mobility accessible. Co-creating brand films, product experience visuals and smart driving content.">技术驱动的智能电动汽车品牌，致力于让智能出行惠及大众。联合创作品牌短片、产品体验视觉与智能驾驶场景内容。</p>
-                  <div class="collab-platforms">
-                  </div>
-                </div>
-                <div class="collab-card-foot">
-                  <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
-                  <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
-                </div>
-              </div>
-              <!-- 中鑫之宝 -->
-              <div class="collab-card reveal" data-collab-target="zxzb">
-                <div class="collab-card-glow collab-glow-zxzb"></div>
-                <div class="collab-card-head">
-                  <div class="collab-logo collab-logo-zxzb">
-                    <span class="collab-logo-text">中</span>
-                  </div>
-                  <div class="collab-card-info">
-                    <h4 data-cn="中鑫之宝" data-en="Zhongxin Zhibao">中鑫之宝</h4>
-                    <span class="collab-tag" data-cn="汽车高端服务" data-en="Premium Auto Service">汽车高端服务</span>
-                  </div>
-                </div>
-                <div class="collab-card-body">
-                  <div class="collab-stat-row">
-                    <div class="collab-stat">
-                      <span class="cs-num">2</span>
-                      <span class="cs-label" data-cn="进行中项目" data-en="Active Projects">进行中项目</span>
-                    </div>
-                    <div class="collab-stat">
-                      <span class="cs-num">5</span>
-                      <span class="cs-label" data-cn="已完成项目" data-en="Completed">已完成项目</span>
-                    </div>
-                    <div class="collab-stat">
-                      <span class="cs-num">2</span>
-                      <span class="cs-label" data-cn="平台投放" data-en="Platforms">平台投放</span>
-                    </div>
-                  </div>
-                  <p class="collab-desc" data-cn="中高端及豪华车独立售后服务品牌，覆盖维修保养、钣金喷漆、审车等全链路。联合创作服务宣传片与门店体验纪实内容。" data-en="Premium auto aftermarket service brand, covering maintenance, paint, inspection and more. Co-creating service promos and store experience documentaries.">中高端及豪华车独立售后服务品牌，覆盖维修保养、钣金喷漆、审车等全链路。联合创作服务宣传片与门店体验纪实内容。</p>
-                  <div class="collab-platforms">
-                  </div>
-                </div>
-                <div class="collab-card-foot">
-                  <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
-                  <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
-                </div>
-              </div>
-            </div>
+            
+  <div class="collab-card reveal" data-collab
+-target="leap">
+                <div class="c
+ollab-card-glow collab-glow-leap"></div>
+    
+            <div class="collab-card-head">
+  
+                <div class="collab-logo colla
+b-logo-leap">
+                    <img src="a
+ssets/leapmotor.svg" alt="零跑汽车" class
+="collab-logo-img" />
+                  </div
+>
+                  <div class="collab-card-i
+nfo">
+                    <h4 data-cn="零跑
+汽车" data-en="Leapmotor">零跑汽车</h4>
 
-            <!-- 创作者快捷工具 -->
-            <div class="creator-quick-tools reveal">
-              <div class="cqt-head">
-                <h3 class="cqt-title" data-cn="创作者快捷工具" data-en="Creator Quick Tools">创作者快捷工具</h3>
-                <p class="cqt-desc" data-cn="一键打开各大平台创作者中心" data-en="Open creator centers with one click">一键打开各大平台创作者中心</p>
-              </div>
-              <div class="cqt-grid">
-                <a class="cqt-btn cqt-dy" href="https://creator.douyin.com/" target="_blank" rel="noopener">
-                  <div class="cqt-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                    </svg>
-                  </div>
-                  <div class="cqt-info">
-                    <span class="cqt-name" data-cn="抖音创作者中心" data-en="Douyin Creator">抖音创作者中心</span>
-                    <span class="cqt-arrow">→</span>
-                  </div>
-                </a>
-                <a class="cqt-btn cqt-sph" href="https://channels.weixin.qq.com/" target="_blank" rel="noopener">
-                  <div class="cqt-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
-                    </svg>
-                  </div>
-                  <div class="cqt-info">
-                    <span class="cqt-name" data-cn="视频号助手" data-en="WeChat Channels">视频号助手</span>
-                    <span class="cqt-arrow">→</span>
-                  </div>
-                </a>
-                <a class="cqt-btn cqt-xhs" href="https://creator.xiaohongshu.com/" target="_blank" rel="noopener">
-                  <div class="cqt-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                    </svg>
-                  </div>
-                  <div class="cqt-info">
-                    <span class="cqt-name" data-cn="小红书创作者中心" data-en="Xiaohongshu Creator">小红书创作者中心</span>
-                    <span class="cqt-arrow">→</span>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
+                    <span class="collab-tag"
+ data-cn="智能电动汽车" data-en="Smart 
+EV">智能电动汽车</span>
+               
+   </div>
+                </div>
+            
+    <div class="collab-card-body">
+          
+        <div class="collab-stat-row">
+       
+             <div class="collab-stat">
+      
+                <span class="cs-num">3</span>
 
-          <!-- Sub-page: 零跑汽车 -->
-          <div class="ws-subpage" id="ws-sub-leap">
-            <button class="ws-back-btn" data-cn="← 返回联动" data-en="← Back to Collaborations">← 返回联动</button>
-            <div class="subpage-header reveal">
-              <div class="subpage-brand">
-                <img src="assets/leapmotor-zh.svg" alt="零跑汽车" class="subpage-brand-logo" />
-              </div>
-              <div class="subpage-stats">
-                <div class="subpage-stat">
-                  <span class="ss-num">3</span>
-                  <span class="ss-label" data-cn="进行中" data-en="Active">进行中</span>
-                </div>
-                <div class="subpage-stat">
-                  <span class="ss-num">8</span>
-                  <span class="ss-label" data-cn="已完成" data-en="Done">已完成</span>
-                </div>
-                <div class="subpage-stat">
-                  <span class="ss-num">320W+</span>
-                  <span class="ss-label" data-cn="总播放量" data-en="Total Views">总播放量</span>
-                </div>
-              </div>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="合作概述" data-en="Overview">合作概述</h3>
-              <p class="subpage-sec-text" data-cn="零跑汽车是一家技术驱动的智能电动汽车公司，坚持核心技术全域自研。微影与零跑联合创作品牌短片、产品体验视觉与智能驾驶场景内容，用影像传递智能出行的温度与科技感。" data-en="Leapmotor is a technology-driven smart EV company committed to full-stack self-development. V-ing co-creates brand films, product experience visuals and smart driving content, conveying the warmth and tech feel of intelligent mobility.">零跑汽车是一家技术驱动的智能电动汽车公司，坚持核心技术全域自研。微影与零跑联合创作品牌短片、产品体验视觉与智能驾驶场景内容，用影像传递智能出行的温度与科技感。</p>
-            </div>
-            <!-- 主播拍摄剪辑日报 -->
-            <div class="report-section reveal" id="report-leap">
-              <img src="assets/leapmotor-h.svg" alt="LEAPMOTOR" class="report-brand-watermark" />
-              <div class="report-head">
-                <div>
-                  <h3 class="subpage-sec-title" data-cn="主播拍摄剪辑日报" data-en="Streamer Shoot & Edit Daily Report">主播拍摄剪辑日报</h3>
-                  <p class="report-sub" data-cn="零跑汽车 · 月度目标：每位主播拍摄+剪辑各 40 条 · 空镜头 10 条" data-en="Leapmotor · Monthly Goal: 40 clips each (shoot+edit) · 10 B-roll clips">零跑汽车 · 月度目标：每位主播拍摄+剪辑各 40 条 · 空镜头 10 条</p>
-                </div>
-                <div class="report-head-actions">
-                  <button class="edit-toggle-btn" id="subpageEditBtn" data-cn="编辑" data-en="Edit">编辑</button>
-                  <button class="screenshot-btn" data-report="report-leap" data-cn="一键截图" data-en="Screenshot">一键截图</button>
-                </div>
-              </div>
-                  <div class="brand-progress-summary">
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="拍摄" data-en="Shot">拍摄</span>
-                      <div class="bps-bar"><span style="width:69%"></span></div>
-                      <span class="bps-num">110</span>
-                    </div>
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="剪辑" data-en="Edited">剪辑</span>
-                      <div class="bps-bar bps-green"><span style="width:34%"></span></div>
-                      <span class="bps-num">55</span>
-                    </div>
-                  </div>
-              <div class="streamer-grid">
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>可欣</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:150%"></span></span><span class="sr-pct">60</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:78%"></span></span><span class="sr-pct">31</span></div>
-                  </div>
-                </div>
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>小许</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:50%"></span></span><span class="sr-pct">20</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:15%"></span></span><span class="sr-pct">6</span></div>
-                  </div>
-                </div>
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>珊珊</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">15</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">9</span></div>
-                  </div>
-                </div>
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>CC</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">15</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">9</span></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                      <span class="cs-label"
+ data-cn="进行中项目" data-en="Active Pr
+ojects">进行中项目</span>
+              
+      </div>
+                    <div class="
+collab-stat">
+                      <span cla
+ss="cs-num">8</span>
+                      <s
+pan class="cs-label" data-cn="已完成项目
+" data-en="Completed">已完成项目</span>
 
-          <!-- Sub-page: 中鑫之宝 -->
-          <div class="ws-subpage" id="ws-sub-zxzb">
-            <button class="ws-back-btn" data-cn="← 返回联动" data-en="← Back to Collaborations">← 返回联动</button>
-            <div class="subpage-header reveal">
-              <div class="subpage-brand">
-                <div class="collab-logo collab-logo-zxzb collab-logo-lg">
-                  <span class="collab-logo-text">中</span>
-                </div>
-                <div>
-                  <h2 data-cn="中鑫之宝" data-en="Zhongxin Zhibao">中鑫之宝</h2>
-                  <span class="collab-tag" data-cn="汽车高端独立售后服务" data-en="Premium Auto Aftermarket Service">汽车高端独立售后服务</span>
-                </div>
-              </div>
-              <div class="subpage-stats">
-                <div class="subpage-stat">
-                  <span class="ss-num">2</span>
-                  <span class="ss-label" data-cn="进行中" data-en="Active">进行中</span>
-                </div>
-                <div class="subpage-stat">
-                  <span class="ss-num">5</span>
-                  <span class="ss-label" data-cn="已完成" data-en="Done">已完成</span>
-                </div>
-                <div class="subpage-stat">
-                  <span class="ss-num">180W+</span>
-                  <span class="ss-label" data-cn="总播放量" data-en="Total Views">总播放量</span>
-                </div>
-              </div>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="合作概述" data-en="Overview">合作概述</h3>
-              <p class="subpage-sec-text" data-cn="中鑫之宝是中鑫集团旗下汽车独立售后服务品牌，覆盖奔驰、宝马、奥迪、保时捷等豪华品牌维修保养全链路，全国百余家门店。微影与中鑫之宝联合创作服务宣传片、门店体验纪实与技师故事内容，用影像传递专业与信赖。" data-en="Zhongxin Zhibao is a premium auto aftermarket service brand under Zhongxin Group, covering full-service chain for luxury brands. V-ing co-creates service promos, store experience documentaries and technician stories, conveying professionalism and trust.">中鑫之宝是中鑫集团旗下汽车独立售后服务品牌，覆盖奔驰、宝马、奥迪、保时捷等豪华品牌维修保养全链路，全国百余家门店。微影与中鑫之宝联合创作服务宣传片、门店体验纪实与技师故事内容，用影像传递专业与信赖。</p>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="进行中项目" data-en="Active Projects">进行中项目</h3>
-              <div class="subpage-projects">
-                <div class="subpage-project">
-                  <div class="sp-proj-head">
-                    <h4 data-cn="中鑫之宝 · 服务流程宣传片" data-en="Zhongxin Zhibao · Service Promo">中鑫之宝 · 服务流程宣传片</h4>
-                    <span class="sp-proj-status sp-proj-wip" data-cn="拍摄中" data-en="Shooting">拍摄中</span>
-                  </div>
-                  <p data-cn="实拍门店接待、检测、维修、交付全流程，呈现标准化服务品质。" data-en="Filming the full store workflow: reception, inspection, repair, delivery.">实拍门店接待、检测、维修、交付全流程，呈现标准化服务品质。</p>
-                  <div class="sp-proj-meta">
-                    <span data-cn="交付：9/28" data-en="Delivery: 9/28">交付：9/28</span>
-                    <span data-cn="平台：抖音 + 视频号" data-en="Platform: Douyin + WeChat Video">平台：抖音 + 视频号</span>
-                  </div>
-                  <div class="sp-proj-progress">
-                    <span class="sp-prog-bar"><span style="width:30%"></span></span>
-                    <span class="sp-prog-text">30%</span>
-                  </div>
-                </div>
-                <div class="subpage-project">
-                  <div class="sp-proj-head">
-                    <h4 data-cn="技师故事 · 匠人纪实系列" data-en="Technician Stories · Craftsman Doc">技师故事 · 匠人纪实系列</h4>
-                    <span class="sp-proj-status sp-proj-wip" data-cn="策划中" data-en="Planning">策划中</span>
-                  </div>
-                  <p data-cn="聚焦资深技师的成长故事与专业精神，打造有温度的人物纪实。" data-en="Focusing on senior technicians' growth stories and craftsmanship, creating warm human documentaries.">聚焦资深技师的成长故事与专业精神，打造有温度的人物纪实。</p>
-                  <div class="sp-proj-meta">
-                    <span data-cn="交付：10/15" data-en="Delivery: 10/15">交付：10/15</span>
-                    <span data-cn="平台：视频号" data-en="Platform: WeChat Video">平台：视频号</span>
-                  </div>
-                  <div class="sp-proj-progress">
-                    <span class="sp-prog-bar"><span style="width:10%"></span></span>
-                    <span class="sp-prog-text">10%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="交付清单" data-en="Deliverables">交付清单</h3>
-              <div class="deliverable-list">
-                <div class="deliverable-item done">
-                  <span class="del-check">✓</span>
-                  <span data-cn="门店形象宣传片 ×1（45s）" data-en="Store image promo ×1 (45s)">门店形象宣传片 ×1（45s）</span>
-                </div>
-                <div class="deliverable-item done">
-                  <span class="del-check">✓</span>
-                  <span data-cn="抖音竖版服务短视频 ×8" data-en="Douyin vertical service clips ×8">抖音竖版服务短视频 ×8</span>
-                </div>
-                <div class="deliverable-item wip">
-                  <span class="del-check del-check-wip">○</span>
-                  <span data-cn="服务流程长片 ×1" data-en="Service workflow long film ×1">服务流程长片 ×1</span>
-                </div>
-                <div class="deliverable-item wip">
-                  <span class="del-check del-check-wip">○</span>
-                  <span data-cn="技师人物纪实 ×3" data-en="Technician documentaries ×3">技师人物纪实 ×3</span>
-                </div>
-                <div class="deliverable-item todo">
-                  <span class="del-check del-check-todo">□</span>
-                  <span data-cn="年度品牌微电影 ×1" data-en="Annual brand micro-film ×1">年度品牌微电影 ×1</span>
-                </div>
-              </div>
-            </div>
-            <!-- 主播拍摄剪辑日报 -->
-            <div class="report-section reveal" id="report-zxzb">
-              <div class="report-head">
-                <div>
-                  <h3 class="subpage-sec-title" data-cn="主播拍摄剪辑日报" data-en="Streamer Shoot & Edit Daily Report">主播拍摄剪辑日报</h3>
-                  <p class="report-sub" data-cn="中鑫之宝 · 无月度拍摄条数要求" data-en="Zhongxin Zhibao · No monthly target">中鑫之宝 · 无月度拍摄条数要求</p>
-                </div>
-                <button class="screenshot-btn" data-report="report-zxzb" data-cn="一键截图" data-en="Screenshot">一键截图</button>
-              </div>
-                  <div class="brand-progress-summary">
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="拍摄" data-en="Shot">拍摄</span>
-                      <div class="bps-bar"><span style="width:100%"></span></div>
-                      <span class="bps-num">6</span>
                     </div>
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="剪辑" data-en="Edited">剪辑</span>
-                      <div class="bps-bar bps-green"><span style="width:83%"></span></div>
-                      <span class="bps-num">5</span>
+                  
+  <div class="collab-stat">
+                 
+     <span class="cs-num">1</span>
+          
+            <span class="cs-label" data-cn="�
+��台投放" data-en="Platforms">平台投放
+</span>
                     </div>
-                  </div>
-              <div class="streamer-grid streamer-grid-2">
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>小凡</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">5</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:80%"></span></span><span class="sr-pct">4</span></div>
-                  </div>
-                </div>
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>东哥</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">1</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">1</span></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sub-page: 人设IP账号 -->
-          <div class="ws-subpage" id="ws-sub-ip">
-            <button class="ws-back-btn" data-cn="← 返回联动" data-en="← Back to Collaborations">← 返回联动</button>
-            <div class="subpage-header reveal">
-              <div class="subpage-brand">
-                <div class="collab-logo collab-logo-ip collab-logo-lg">
-                  <span class="collab-logo-text">T</span>
-                </div>
-                <div>
-                  <h2 data-cn="人设IP账号" data-en="Personal IP">人设IP账号</h2>
-                  <span class="collab-tag" data-cn="主播 Tina · 暂定名" data-en="Streamer Tina · Tentative">主播 Tina · 暂定名</span>
-                </div>
-              </div>
-              <div class="subpage-stats">
-                <div class="subpage-stat">
-                  <span class="ss-num">20</span>
-                  <span class="ss-label" data-cn="月度目标" data-en="Monthly Goal">月度目标</span>
-                </div>
-                <div class="subpage-stat">
-                  <span class="ss-num">5</span>
-                  <span class="ss-label" data-cn="已拍摄" data-en="Shot">已拍摄</span>
-                </div>
-                <div class="subpage-stat">
-                  <span class="ss-num">2</span>
-                  <span class="ss-label" data-cn="已剪辑" data-en="Edited">已剪辑</span>
-                </div>
-              </div>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="合作概述" data-en="Overview">合作概述</h3>
-              <p class="subpage-sec-text" data-cn="打造专属人设IP账号，以主播 Tina（暂定名）为核心人物，持续输出个人风格短视频内容。通过日常拍摄、主题策划与品牌植入，建立粉丝连接与稳定人设输出，为品牌矩阵建立人格化入口。" data-en="Building a dedicated personal IP account centered on streamer Tina (tentative name), continuously producing personality-driven short videos. Through daily shooting, themed planning and brand integration, establishing fan connections and stable persona output for the brand matrix.">打造专属人设IP账号，以主播 Tina（暂定名）为核心人物，持续输出个人风格短视频内容。通过日常拍摄、主题策划与品牌植入，建立粉丝连接与稳定人设输出，为品牌矩阵建立人格化入口。</p>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="进行中项目" data-en="Active Projects">进行中项目</h3>
-              <div class="subpage-projects">
-                <div class="subpage-project">
-                  <div class="sp-proj-head">
-                    <h4 data-cn="Tina 日常人设短视频" data-en="Tina Daily Persona Shorts">Tina 日常人设短视频</h4>
-                    <span class="sp-proj-status sp-proj-wip" data-cn="拍摄中" data-en="Shooting">拍摄中</span>
-                  </div>
-                  <p data-cn="围绕 Tina 个人风格与日常场景，拍摄与剪辑人设短视频内容。" data-en="Shooting and editing persona-driven short videos around Tina's personal style and daily scenarios.">围绕 Tina 个人风格与日常场景，拍摄与剪辑人设短视频内容。</p>
-                  <div class="sp-proj-meta">
-                    <span data-cn="月度目标：20 条" data-en="Monthly Goal: 20 clips">月度目标：20 条</span>
-                    <span data-cn="平台：抖音" data-en="Platform: Douyin">平台：抖音</span>
-                  </div>
-                  <div class="sp-proj-progress">
-                    <span class="sp-prog-bar"><span style="width:10%"></span></span>
-                    <span class="sp-prog-text">10%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="subpage-section reveal">
-              <h3 class="subpage-sec-title" data-cn="交付清单" data-en="Deliverables">交付清单</h3>
-              <div class="deliverable-list">
-                <div class="deliverable-item done">
-                  <span class="del-check">✓</span>
-                  <span data-cn="Tina 人设定位方案 ×1" data-en="Tina persona plan ×1">Tina 人设定位方案 ×1</span>
-                </div>
-                <div class="deliverable-item wip">
-                  <span class="del-check del-check-wip">○</span>
-                  <span data-cn="日常短视频 ×20（月度）" data-en="Daily shorts ×20 (monthly)">日常短视频 ×20（月度）</span>
-                </div>
-                <div class="deliverable-item todo">
-                  <span class="del-check del-check-todo">□</span>
-                  <span data-cn="品牌植入内容 ×5" data-en="Brand-integrated content ×5">品牌植入内容 ×5</span>
-                </div>
-                <div class="deliverable-item todo">
-                  <span class="del-check del-check-todo">□</span>
-                  <span data-cn="粉丝互动直播 ×2" data-en="Fan interactive livestream ×2">粉丝互动直播 ×2</span>
-                </div>
-              </div>
-            </div>
-            <!-- 主播拍摄剪辑日报 -->
-            <div class="report-section reveal" id="report-ip">
-              <div class="report-head">
-                <div>
-                  <h3 class="subpage-sec-title" data-cn="主播拍摄剪辑日报" data-en="Streamer Shoot & Edit Daily Report">主播拍摄剪辑日报</h3>
-                  <p class="report-sub" data-cn="人设IP账号 · 月度目标：20 条" data-en="Personal IP · Monthly Goal: 20 clips">人设IP账号 · 月度目标：20 条</p>
-                </div>
-                <button class="screenshot-btn" data-report="report-ip" data-cn="一键截图" data-en="Screenshot">一键截图</button>
-              </div>
-                  <div class="brand-progress-summary">
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="拍摄" data-en="Shot">拍摄</span>
-                      <div class="bps-bar"><span style="width:25%"></span></div>
-                      <span class="bps-num">5</span>
-                    </div>
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="剪辑" data-en="Edited">剪辑</span>
-                      <div class="bps-bar bps-green"><span style="width:10%"></span></div>
-                      <span class="bps-num">2</span>
-                    </div>
-                  </div>
-              <div class="streamer-grid streamer-grid-1">
-                <div class="streamer-card">
-                  <div class="streamer-info"><h4>Tina</h4></div>
-                      <div class="streamer-progress">
-                    <div class="sr-bar-row"><span data-cn="拍摄进度" data-en="Shoot">拍摄进度</span><span class="sr-bar"><span style="width:25%"></span></span><span class="sr-pct">5</span></div>
-                    <div class="sr-bar-row"><span data-cn="剪辑进度" data-en="Edit">剪辑进度</span><span class="sr-bar"><span style="width:10%"></span></span><span class="sr-pct">2</span></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
+                  <p class="co
+llab-desc" data-cn="技术驱动的智能电�
+��汽车品牌，致力于让智能出行惠�
+��大众。联合创作品牌短片、产品�
+��验视觉与智能驾驶场景内容。" da
+ta-en="Technology-driven smart EV brand, maki
+ng intelligent mobility accessible. Co-creati
+ng brand films, product experience visuals an
+d smart driving content.">技术驱动的智�
+��电动汽车品牌，致力于让智能出�
+��惠及大众。联合创作品牌短片、�
+��品体验视觉与智能驾驶场景内容�
+��</p>
+                  <div class="collab-p
+latforms">
+                  </div>
+         
+       </div>
+                <div class="col
+lab-card-foot">
+                  <span class
+="collab-status collab-status-active" data-cn
+="● 合作进行中" data-en="● Active Pa
+rtnership">● 合作进行中</span>
+       
+           <span class="collab-enter" data-cn
+="查看详情 →" data-en="View Details →
+">查看详情 →</span>
+                </d
+iv>
+              </div>
+              <!-- �
+��鑫之宝 -->
+              <div class="col
+lab-card reveal" data-collab-target="zxzb">
+ 
+               <div class="collab-card-glow c
+ollab-glow-zxzb"></div>
+                <div 
+class="collab-card-head">
+                  <
+div class="collab-logo collab-logo-zxzb">
+   
+                 <span class="collab-logo-tex
+t">中</span>
+                  </div>
+      
+            <div class="collab-card-info">
+  
+                  <h4 data-cn="中鑫之宝" 
+data-en="Zhongxin Zhibao">中鑫之宝</h4>
+ 
+                   <span class="collab-tag" d
+ata-cn="汽车高端服务" data-en="Premium 
+Auto Service">汽车高端服务</span>
+     
+             </div>
+                </div>
+  
+              <div class="collab-card-body">
+
+                  <div class="collab-stat-row
+">
+                    <div class="collab-sta
+t">
+                      <span class="cs-num
+">2</span>
+                      <span class=
+"cs-label" data-cn="进行中项目" data-en=
+"Active Projects">进行中项目</span>
+    
+                </div>
+                    <d
+iv class="collab-stat">
+                     
+ <span class="cs-num">5</span>
+              
+        <span class="cs-label" data-cn="已�
+�成项目" data-en="Completed">已完成项�
+��</span>
+                    </div>
+        
+            <div class="collab-stat">
+       
+               <span class="cs-num">2</span>
+
+                      <span class="cs-label" 
+data-cn="平台投放" data-en="Platforms">�
+�台投放</span>
+                    </div>
+
+                  </div>
+                  <p
+ class="collab-desc" data-cn="中高端及豪
+华车独立售后服务品牌，覆盖维修
+保养、钣金喷漆、审车等全链路。
+联合创作服务宣传片与门店体验纪
+实内容。" data-en="Premium auto aftermark
+et service brand, covering maintenance, paint
+, inspection and more. Co-creating service pr
+omos and store experience documentaries.">中
+高端及豪华车独立售后服务品牌，
+覆盖维修保养、钣金喷漆、审车等
+全链路。联合创作服务宣传片与门
+店体验纪实内容。</p>
+                
+  <div class="collab-platforms">
+            
+      </div>
+                </div>
+         
+       <div class="collab-card-foot">
+       
+           <span class="collab-status collab-
+status-active" data-cn="● 合作进行中" 
+data-en="● Active Partnership">● 合作�
+�行中</span>
+                  <span class=
+"collab-enter" data-cn="查看详情 →" dat
+a-en="View Details →">查看详情 →</spa
+n>
+                </div>
+              </div
+>
+            </div>
+
+            <!-- 创作
+者快捷工具 -->
+            <div class="c
+reator-quick-tools reveal">
+              <di
+v class="cqt-head">
+                <h3 class
+="cqt-title" data-cn="创作者快捷工具" 
+data-en="Creator Quick Tools">创作者快捷
+工具</h3>
+                <p class="cqt-des
+c" data-cn="一键打开各大平台创作者
+中心" data-en="Open creator centers with on
+e click">一键打开各大平台创作者中
+心</p>
+              </div>
+              <d
+iv class="cqt-grid">
+                <a class
+="cqt-btn cqt-dy" href="https://creator.douyi
+n.com/" target="_blank" rel="noopener">
+     
+             <div class="cqt-icon">
+         
+           <svg viewBox="0 0 24 24" fill="cur
+rentColor">
+                      <path d="M1
+9.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v1
+3.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1
+ 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.
+84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.
+34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1
+.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+           
+         </svg>
+                  </div>
+    
+              <div class="cqt-info">
+        
+            <span class="cqt-name" data-cn="�
+��音创作者中心" data-en="Douyin Creator
+">抖音创作者中心</span>
+              
+      <span class="cqt-arrow">→</span>
+    
+              </div>
+                </a>
+   
+             <a class="cqt-btn cqt-sph" href=
+"https://channels.weixin.qq.com/" target="_bl
+ank" rel="noopener">
+                  <div c
+lass="cqt-icon">
+                    <svg vie
+wBox="0 0 24 24" fill="currentColor">
+       
+               <path d="M8.691 2.188C3.891 2.
+188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5
+.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-
+.048.141-.048.213 0 .163.13.295.29.295a.326.3
+26 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1
+ .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0
+ .543-.027.811-.05-.857-2.578.157-4.972 1.932
+-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.57
+6-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c
+.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1
+.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.
+52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 
+1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1
+.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.
+18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.7
+86-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 
+3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361
+-.336a.722.722 0 0 1 .598.082l1.584.926a.272.
+272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.
+06-.023-.12-.038-.177l-.327-1.233a.582.582 0 
+0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18
+.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.65
+6-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.
+53 3.274c.535 0 .969.44.969.982a.976.976 0 0 
+1-.969.983.976.976 0 0 1-.969-.983c0-.542.434
+-.982.97-.982zm4.844 0c.535 0 .969.44.969.982
+a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.
+983c0-.542.434-.982.969-.982z"/>
+            
+        </svg>
+                  </div>
+     
+             <div class="cqt-info">
+         
+           <span class="cqt-name" data-cn="�
+�频号助手" data-en="WeChat Channels">视�
+��号助手</span>
+                    <span 
+class="cqt-arrow">→</span>
+                
+  </div>
+                </a>
+               
+ <a class="cqt-btn cqt-xhs" href="https://cre
+ator.xiaohongshu.com/" target="_blank" rel="n
+oopener">
+                  <div class="cqt-i
+con">
+                    <svg viewBox="0 0 2
+4 24" fill="currentColor">
+                  
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10
+ 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-
+2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h
+2v6z"/>
+                    </svg>
+          
+        </div>
+                  <div class="
+cqt-info">
+                    <span class="c
+qt-name" data-cn="小红书创作者中心" d
+ata-en="Xiaohongshu Creator">小红书创作�
+��中心</span>
+                    <span cla
+ss="cqt-arrow">→</span>
+                  <
+/div>
+                </a>
+              </di
+v>
+            </div>
+          </div>
+
+     
+     <!-- Sub-page: 零跑汽车 -->
+        
+  <div class="ws-subpage" id="ws-sub-leap">
+ 
+           <button class="ws-back-btn" data-c
+n="← 返回联动" data-en="← Back to Col
+laborations">← 返回联动</button>
+      
+      <div class="subpage-header reveal">
+   
+           <div class="subpage-brand">
+      
+          <img src="assets/leapmotor-zh.svg" 
+alt="零跑汽车" class="subpage-brand-logo"
+ />
+              </div>
+              <div c
+lass="subpage-stats">
+                <div cl
+ass="subpage-stat">
+                  <span c
+lass="ss-num">3</span>
+                  <spa
+n class="ss-label" data-cn="进行中" data-e
+n="Active">进行中</span>
+                <
+/div>
+                <div class="subpage-sta
+t">
+                  <span class="ss-num">8<
+/span>
+                  <span class="ss-labe
+l" data-cn="已完成" data-en="Done">已完�
+��</span>
+                </div>
+            
+    <div class="subpage-stat">
+              
+    <span class="ss-num">320W+</span>
+       
+           <span class="ss-label" data-cn="�
+�播放量" data-en="Total Views">总播放�
+�</span>
+                </div>
+             
+ </div>
+            </div>
+            <div c
+lass="subpage-section reveal">
+              
+<h3 class="subpage-sec-title" data-cn="合作
+概述" data-en="Overview">合作概述</h3>
+
+              <p class="subpage-sec-text" dat
+a-cn="零跑汽车是一家技术驱动的智
+能电动汽车公司，坚持核心技术全
+域自研。微影与零跑联合创作品牌
+短片、产品体验视觉与智能驾驶场
+景内容，用影像传递智能出行的温
+度与科技感。" data-en="Leapmotor is a t
+echnology-driven smart EV company committed t
+o full-stack self-development. V-ing co-creat
+es brand films, product experience visuals an
+d smart driving content, conveying the warmth
+ and tech feel of intelligent mobility.">零�
+��汽车是一家技术驱动的智能电动�
+��车公司，坚持核心技术全域自研�
+��微影与零跑联合创作品牌短片、�
+��品体验视觉与智能驾驶场景内容�
+��用影像传递智能出行的温度与科�
+��感。</p>
+            </div>
+            <
+!-- 主播拍摄剪辑日报 -->
+            
+<div class="report-section reveal" id="report
+-leap">
+              <img src="assets/leapmo
+tor-h.svg" alt="LEAPMOTOR" class="report-bran
+d-watermark" />
+              <div class="rep
+ort-head">
+                <div>
+            
+      <h3 class="subpage-sec-title" data-cn="
+主播拍摄剪辑日报" data-en="Streamer S
+hoot & Edit Daily Report">主播拍摄剪辑�
+��报</h3>
+                  <p class="report
+-sub" data-cn="零跑汽车 · 月度目标�
+�每位主播拍摄+剪辑各 40 条 · 空�
+�头 10 条" data-en="Leapmotor · Monthly Go
+al: 40 clips each (shoot+edit) · 10 B-roll c
+lips">零跑汽车 · 月度目标：每位�
+�播拍摄+剪辑各 40 条 · 空镜头 10 �
+��</p>
+                </div>
+               
+ <div class="report-head-actions">
+          
+        <button class="edit-toggle-btn" id="s
+ubpageEditBtn" data-cn="编辑" data-en="Edit
+">编辑</button>
+                  <button c
+lass="screenshot-btn" data-report="report-lea
+p" data-cn="一键截图" data-en="Screenshot
+">一键截图</button>
+                </div
+>
+              </div>
+                  <div
+ class="brand-progress-summary">
+            
+        <div class="bps-row">
+               
+       <span class="bps-label" data-cn="拍�
+�" data-en="Shot">拍摄</span>
+             
+         <div class="bps-bar"><span style="wi
+dth:69%"></span></div>
+                      
+<span class="bps-num">110</span>
+            
+        </div>
+                    <div class
+="bps-row">
+                      <span class
+="bps-label" data-cn="剪辑" data-en="Edited
+">剪辑</span>
+                      <div cl
+ass="bps-bar bps-green"><span style="width:34
+%"></span></div>
+                      <span 
+class="bps-num">55</span>
+                   
+ </div>
+                  </div>
+            
+  <div class="streamer-grid">
+               
+ <div class="streamer-card">
+                
+  <div class="streamer-info"><h4>可欣</h4><
+/div>
+                      <div class="strea
+mer-progress">
+                    <div class
+="sr-bar-row"><span data-cn="拍摄" data-en=
+"Shoot">拍摄</span><span class="sr-bar"><sp
+an style="width:150%"></span></span><span cla
+ss="sr-pct">60</span></div>
+                 
+   <div class="sr-bar-row"><span data-cn="剪
+辑" data-en="Edit">剪辑</span><span class=
+"sr-bar"><span style="width:78%"></span></spa
+n><span class="sr-pct">31</span></div>
+      
+            </div>
+                </div>
+   
+             <div class="streamer-card">
+    
+              <div class="streamer-info"><h4>
+小许</h4></div>
+                      <div 
+class="streamer-progress">
+                  
+  <div class="sr-bar-row"><span data-cn="拍�
+��" data-en="Shoot">拍摄</span><span class=
+"sr-bar"><span style="width:50%"></span></spa
+n><span class="sr-pct">20</span></div>
+      
+              <div class="sr-bar-row"><span d
+ata-cn="剪辑" data-en="Edit">剪辑</span><
+span class="sr-bar"><span style="width:15%"><
+/span></span><span class="sr-pct">6</span></d
+iv>
+                  </div>
+                
+</div>
+                <div class="streamer-c
+ard">
+                  <div class="streamer-
+info"><h4>珊珊</h4></div>
+                 
+     <div class="streamer-progress">
+        
+            <div class="sr-bar-row"><span dat
+a-cn="拍摄" data-en="Shoot">拍摄</span><s
+pan class="sr-bar"><span style="width:38%"></
+span></span><span class="sr-pct">15</span></d
+iv>
+                    <div class="sr-bar-ro
+w"><span data-cn="剪辑" data-en="Edit">剪�
+��</span><span class="sr-bar"><span style="wi
+dth:23%"></span></span><span class="sr-pct">9
+</span></div>
+                  </div>
+      
+          </div>
+                <div class="
+streamer-card">
+                  <div class=
+"streamer-info"><h4>CC</h4></div>
+           
+           <div class="streamer-progress">
+  
+                  <div class="sr-bar-row"><sp
+an data-cn="拍摄" data-en="Shoot">拍摄</s
+pan><span class="sr-bar"><span style="width:3
+8%"></span></span><span class="sr-pct">15</sp
+an></div>
+                    <div class="sr-
+bar-row"><span data-cn="剪辑" data-en="Edit
+">剪辑</span><span class="sr-bar"><span sty
+le="width:23%"></span></span><span class="sr-
+pct">9</span></div>
+                  </div>
+
+                </div>
+              </div>
+ 
+           </div>
+          </div>
+
+         
+ <!-- Sub-page: 中鑫之宝 -->
+          <d
+iv class="ws-subpage" id="ws-sub-zxzb">
+     
+       <button class="ws-back-btn" data-cn="�
+�� 返回联动" data-en="← Back to Collabo
+rations">← 返回联动</button>
+          
+  <div class="subpage-header reveal">
+       
+       <div class="subpage-brand">
+          
+      <div class="collab-logo collab-logo-zxz
+b collab-logo-lg">
+                  <span cl
+ass="collab-logo-text">中</span>
+           
+     </div>
+                <div>
+           
+       <h2 data-cn="中鑫之宝" data-en="Zh
+ongxin Zhibao">中鑫之宝</h2>
+            
+      <span class="collab-tag" data-cn="汽�
+�高端独立售后服务" data-en="Premium A
+uto Aftermarket Service">汽车高端独立�
+�后服务</span>
+                </div>
+    
+          </div>
+              <div class="su
+bpage-stats">
+                <div class="sub
+page-stat">
+                  <span class="ss
+-num">2</span>
+                  <span class=
+"ss-label" data-cn="进行中" data-en="Activ
+e">进行中</span>
+                </div>
+  
+              <div class="subpage-stat">
+    
+              <span class="ss-num">5</span>
+ 
+                 <span class="ss-label" data-
+cn="已完成" data-en="Done">已完成</span
+>
+                </div>
+                <div
+ class="subpage-stat">
+                  <spa
+n class="ss-num">180W+</span>
+               
+   <span class="ss-label" data-cn="总播放�
+��" data-en="Total Views">总播放量</span>
+
+                </div>
+              </div>
+
+            </div>
+            <div class="su
+bpage-section reveal">
+              <h3 clas
+s="subpage-sec-title" data-cn="合作概述" 
+data-en="Overview">合作概述</h3>
+        
+      <p class="subpage-sec-text" data-cn="�
+�鑫之宝是中鑫集团旗下汽车独立�
+�后服务品牌，覆盖奔驰、宝马、�
+�迪、保时捷等豪华品牌维修保养�
+�链路，全国百余家门店。微影与�
+�鑫之宝联合创作服务宣传片、门�
+�体验纪实与技师故事内容，用影�
+�传递专业与信赖。" data-en="Zhongxin 
+Zhibao is a premium auto aftermarket service 
+brand under Zhongxin Group, covering full-ser
+vice chain for luxury brands. V-ing co-create
+s service promos, store experience documentar
+ies and technician stories, conveying profess
+ionalism and trust.">中鑫之宝是中鑫集
+团旗下汽车独立售后服务品牌，覆
+盖奔驰、宝马、奥迪、保时捷等豪
+华品牌维修保养全链路，全国百余
+家门店。微影与中鑫之宝联合创作
+服务宣传片、门店体验纪实与技师
+故事内容，用影像传递专业与信赖
+。</p>
+            </div>
+            <div c
+lass="subpage-section reveal">
+              
+<h3 class="subpage-sec-title" data-cn="进行
+中项目" data-en="Active Projects">进行�
+�项目</h3>
+              <div class="subpag
+e-projects">
+                <div class="subp
+age-project">
+                  <div class="s
+p-proj-head">
+                    <h4 data-cn
+="中鑫之宝 · 服务流程宣传片" data
+-en="Zhongxin Zhibao · Service Promo">中鑫
+之宝 · 服务流程宣传片</h4>
+        
+            <span class="sp-proj-status sp-pr
+oj-wip" data-cn="拍摄中" data-en="Shooting
+">拍摄中</span>
+                  </div>
+ 
+                 <p data-cn="实拍门店接�
+��、检测、维修、交付全流程，呈�
+��标准化服务品质。" data-en="Filming 
+the full store workflow: reception, inspectio
+n, repair, delivery.">实拍门店接待、�
+�测、维修、交付全流程，呈现标�
+�化服务品质。</p>
+                  <di
+v class="sp-proj-meta">
+                    <
+span data-cn="交付：9/28" data-en="Deliver
+y: 9/28">交付：9/28</span>
+               
+     <span data-cn="平台：抖音 + 视频�
+��" data-en="Platform: Douyin + WeChat Video"
+>平台：抖音 + 视频号</span>
+         
+         </div>
+                  <div class=
+"sp-proj-progress">
+                    <span
+ class="sp-prog-bar"><span style="width:30%">
+</span></span>
+                    <span clas
+s="sp-prog-text">30%</span>
+                 
+ </div>
+                </div>
+              
+  <div class="subpage-project">
+             
+     <div class="sp-proj-head">
+             
+       <h4 data-cn="技师故事 · 匠人纪
+实系列" data-en="Technician Stories · Cra
+ftsman Doc">技师故事 · 匠人纪实系�
+�</h4>
+                    <span class="sp-pr
+oj-status sp-proj-wip" data-cn="策划中" da
+ta-en="Planning">策划中</span>
+           
+       </div>
+                  <p data-cn="�
+��焦资深技师的成长故事与专业精�
+��，打造有温度的人物纪实。" data-
+en="Focusing on senior technicians' growth st
+ories and craftsmanship, creating warm human 
+documentaries.">聚焦资深技师的成长�
+�事与专业精神，打造有温度的人�
+�纪实。</p>
+                  <div class="
+sp-proj-meta">
+                    <span data
+-cn="交付：10/15" data-en="Delivery: 10/15
+">交付：10/15</span>
+                    <
+span data-cn="平台：视频号" data-en="Pl
+atform: WeChat Video">平台：视频号</spa
+n>
+                  </div>
+                 
+ <div class="sp-proj-progress">
+             
+       <span class="sp-prog-bar"><span style=
+"width:10%"></span></span>
+                  
+  <span class="sp-prog-text">10%</span>
+     
+             </div>
+                </div>
+  
+            </div>
+            </div>
+       
+     <div class="subpage-section reveal">
+   
+           <h3 class="subpage-sec-title" data
+-cn="交付清单" data-en="Deliverables">交
+付清单</h3>
+              <div class="deli
+verable-list">
+                <div class="de
+liverable-item done">
+                  <span
+ class="del-check">✓</span>
+               
+   <span data-cn="门店形象宣传片 ×1�
+�45s）" data-en="Store image promo ×1 (45s)
+">门店形象宣传片 ×1（45s）</span>
+ 
+               </div>
+                <div cl
+ass="deliverable-item done">
+                
+  <span class="del-check">✓</span>
+        
+          <span data-cn="抖音竖版服务�
+�视频 ×8" data-en="Douyin vertical service
+ clips ×8">抖音竖版服务短视频 ×8</
+span>
+                </div>
+                
+<div class="deliverable-item wip">
+          
+        <span class="del-check del-check-wip"
+>○</span>
+                  <span data-cn="
+服务流程长片 ×1" data-en="Service work
+flow long film ×1">服务流程长片 ×1</s
+pan>
+                </div>
+                <
+div class="deliverable-item wip">
+           
+       <span class="del-check del-check-wip">
+○</span>
+                  <span data-cn="�
+��师人物纪实 ×3" data-en="Technician do
+cumentaries ×3">技师人物纪实 ×3</span
+>
+                </div>
+                <div
+ class="deliverable-item todo">
+             
+     <span class="del-check del-check-todo">�
+��</span>
+                  <span data-cn="�
+�度品牌微电影 ×1" data-en="Annual bran
+d micro-film ×1">年度品牌微电影 ×1</
+span>
+                </div>
+              </
+div>
+            </div>
+            <!-- 主�
+��拍摄剪辑日报 -->
+            <div cla
+ss="report-section reveal" id="report-zxzb">
+
+              <div class="report-head">
+     
+           <div>
+                  <h3 class=
+"subpage-sec-title" data-cn="主播拍摄剪�
+��日报" data-en="Streamer Shoot & Edit Dail
+y Report">主播拍摄剪辑日报</h3>
+     
+             <p class="report-sub" data-cn="�
+��鑫之宝 · 无月度拍摄条数要求" d
+ata-en="Zhongxin Zhibao · No monthly target"
+>中鑫之宝 · 无月度拍摄条数要求<
+/p>
+                </div>
+                <b
+utton class="screenshot-btn" data-report="rep
+ort-zxzb" data-cn="一键截图" data-en="Scr
+eenshot">一键截图</button>
+              
+</div>
+                  <div class="brand-pr
+ogress-summary">
+                    <div cla
+ss="bps-row">
+                      <span cla
+ss="bps-label" data-cn="拍摄" data-en="Shot
+">拍摄</span>
+                      <div cl
+ass="bps-bar"><span style="width:100%"></span
+></div>
+                      <span class="bp
+s-num">6</span>
+                    </div>
+  
+                  <div class="bps-row">
+     
+                 <span class="bps-label" data
+-cn="剪辑" data-en="Edited">剪辑</span>
+ 
+                     <div class="bps-bar bps-
+green"><span style="width:83%"></span></div>
+
+                      <span class="bps-num">5
+</span>
+                    </div>
+          
+        </div>
+              <div class="stre
+amer-grid streamer-grid-2">
+                <
+div class="streamer-card">
+                  
+<div class="streamer-info"><h4>小凡</h4></d
+iv>
+                      <div class="streame
+r-progress">
+                    <div class="
+sr-bar-row"><span data-cn="拍摄进度" data
+-en="Shoot">拍摄进度</span><span class="s
+r-bar"><span style="width:100%"></span></span
+><span class="sr-pct">5</span></div>
+        
+            <div class="sr-bar-row"><span dat
+a-cn="剪辑进度" data-en="Edit">剪辑进�
+��</span><span class="sr-bar"><span style="wi
+dth:80%"></span></span><span class="sr-pct">4
+</span></div>
+                  </div>
+      
+          </div>
+                <div class="
+streamer-card">
+                  <div class=
+"streamer-info"><h4>东哥</h4></div>
+       
+               <div class="streamer-progress"
+>
+                    <div class="sr-bar-row"
+><span data-cn="拍摄进度" data-en="Shoot"
+>拍摄进度</span><span class="sr-bar"><spa
+n style="width:100%"></span></span><span clas
+s="sr-pct">1</span></div>
+                   
+ <div class="sr-bar-row"><span data-cn="剪�
+�进度" data-en="Edit">剪辑进度</span><s
+pan class="sr-bar"><span style="width:100%"><
+/span></span><span class="sr-pct">1</span></d
+iv>
+                  </div>
+                
+</div>
+              </div>
+            </div
+>
+          </div>
+
+          <!-- Sub-page: 
+人设IP账号 -->
+          <div class="ws-s
+ubpage" id="ws-sub-ip">
+            <button c
+lass="ws-back-btn" data-cn="← 返回联动"
+ data-en="← Back to Collaborations">← 返
+回联动</button>
+            <div class="su
+bpage-header reveal">
+              <div clas
+s="subpage-brand">
+                <div class
+="collab-logo collab-logo-ip collab-logo-lg">
+
+                  <span class="collab-logo-t
+ext">T</span>
+                </div>
+        
+        <div>
+                  <h2 data-cn="
+人设IP账号" data-en="Personal IP">人设I
+P账号</h2>
+                  <span class="c
+ollab-tag" data-cn="主播 Tina · 暂定名"
+ data-en="Streamer Tina · Tentative">主播 
+Tina · 暂定名</span>
+                </di
+v>
+              </div>
+              <div cl
+ass="subpage-stats">
+                <div cla
+ss="subpage-stat">
+                  <span cl
+ass="ss-num">20</span>
+                  <spa
+n class="ss-label" data-cn="月度目标" dat
+a-en="Monthly Goal">月度目标</span>
+     
+           </div>
+                <div class=
+"subpage-stat">
+                  <span class
+="ss-num">5</span>
+                  <span cl
+ass="ss-label" data-cn="已拍摄" data-en="S
+hot">已拍摄</span>
+                </div>
+
+                <div class="subpage-stat">
+  
+                <span class="ss-num">2</span>
+
+                  <span class="ss-label" dat
+a-cn="已剪辑" data-en="Edited">已剪辑</
+span>
+                </div>
+              </
+div>
+            </div>
+            <div clas
+s="subpage-section reveal">
+              <h3
+ class="subpage-sec-title" data-cn="合作概
+述" data-en="Overview">合作概述</h3>
+   
+           <p class="subpage-sec-text" data-c
+n="打造专属人设IP账号，以主播 Tin
+a（暂定名）为核心人物，持续输�
+�个人风格短视频内容。通过日常�
+�摄、主题策划与品牌植入，建立�
+�丝连接与稳定人设输出，为品牌�
+�阵建立人格化入口。" data-en="Buildi
+ng a dedicated personal IP account centered o
+n streamer Tina (tentative name), continuousl
+y producing personality-driven short videos. 
+Through daily shooting, themed planning and b
+rand integration, establishing fan connection
+s and stable persona output for the brand mat
+rix.">打造专属人设IP账号，以主播 
+Tina（暂定名）为核心人物，持续�
+�出个人风格短视频内容。通过日�
+�拍摄、主题策划与品牌植入，建�
+�粉丝连接与稳定人设输出，为品�
+�矩阵建立人格化入口。</p>
+         
+   </div>
+            <div class="subpage-sec
+tion reveal">
+              <h3 class="subpag
+e-sec-title" data-cn="进行中项目" data-e
+n="Active Projects">进行中项目</h3>
+    
+          <div class="subpage-projects">
+    
+            <div class="subpage-project">
+   
+               <div class="sp-proj-head">
+   
+                 <h4 data-cn="Tina 日常人�
+��短视频" data-en="Tina Daily Persona Shor
+ts">Tina 日常人设短视频</h4>
+         
+           <span class="sp-proj-status sp-pro
+j-wip" data-cn="拍摄中" data-en="Shooting"
+>拍摄中</span>
+                  </div>
+  
+                <p data-cn="围绕 Tina 个�
+�风格与日常场景，拍摄与剪辑人�
+�短视频内容。" data-en="Shooting and ed
+iting persona-driven short videos around Tina
+'s personal style and daily scenarios.">围�
+� Tina 个人风格与日常场景，拍摄�
+�剪辑人设短视频内容。</p>
+         
+         <div class="sp-proj-meta">
+         
+           <span data-cn="月度目标：20 �
+��" data-en="Monthly Goal: 20 clips">月度�
+�标：20 条</span>
+                    <spa
+n data-cn="平台：抖音" data-en="Platform
+: Douyin">平台：抖音</span>
+            
+      </div>
+                  <div class="sp
+-proj-progress">
+                    <span cl
+ass="sp-prog-bar"><span style="width:10%"></s
+pan></span>
+                    <span class="
+sp-prog-text">10%</span>
+                  </
+div>
+                </div>
+              </d
+iv>
+            </div>
+            <div class
+="subpage-section reveal">
+              <h3 
+class="subpage-sec-title" data-cn="交付清�
+��" data-en="Deliverables">交付清单</h3>
+
+              <div class="deliverable-list">
+
+                <div class="deliverable-item 
+done">
+                  <span class="del-che
+ck">✓</span>
+                  <span data-c
+n="Tina 人设定位方案 ×1" data-en="Tina
+ persona plan ×1">Tina 人设定位方案 ×
+1</span>
+                </div>
+             
+   <div class="deliverable-item wip">
+       
+           <span class="del-check del-check-w
+ip">○</span>
+                  <span data-c
+n="日常短视频 ×20（月度）" data-en=
+"Daily shorts ×20 (monthly)">日常短视频
+ ×20（月度）</span>
+                </di
+v>
+                <div class="deliverable-it
+em todo">
+                  <span class="del-
+check del-check-todo">□</span>
+            
+      <span data-cn="品牌植入内容 ×5" 
+data-en="Brand-integrated content ×5">品牌
+植入内容 ×5</span>
+                </div
+>
+                <div class="deliverable-ite
+m todo">
+                  <span class="del-c
+heck del-check-todo">□</span>
+             
+     <span data-cn="粉丝互动直播 ×2" d
+ata-en="Fan interactive livestream ×2">粉�
+�互动直播 ×2</span>
+                </di
+v>
+              </div>
+            </div>
+  
+          <!-- 主播拍摄剪辑日报 -->
+ 
+           <div class="report-section reveal"
+ id="report-ip">
+              <div class="re
+port-head">
+                <div>
+           
+       <h3 class="subpage-sec-title" data-cn=
+"主播拍摄剪辑日报" data-en="Streamer 
+Shoot & Edit Daily Report">主播拍摄剪辑
+日报</h3>
+                  <p class="repor
+t-sub" data-cn="人设IP账号 · 月度目�
+�：20 条" data-en="Personal IP · Monthly G
+oal: 20 clips">人设IP账号 · 月度目标
+：20 条</p>
+                </div>
+        
+        <button class="screenshot-btn" data-r
+eport="report-ip" data-cn="一键截图" data
+-en="Screenshot">一键截图</button>
+      
+        </div>
+                  <div class="
+brand-progress-summary">
+                    
+<div class="bps-row">
+                      <
+span class="bps-label" data-cn="拍摄" data-
+en="Shot">拍摄</span>
+                     
+ <div class="bps-bar"><span style="width:25%"
+></span></div>
+                      <span cl
+ass="bps-num">5</span>
+                    </
+div>
+                    <div class="bps-row"
+>
+                      <span class="bps-labe
+l" data-cn="剪辑" data-en="Edited">剪辑</
+span>
+                      <div class="bps-b
+ar bps-green"><span style="width:10%"></span>
+</div>
+                      <span class="bps
+-num">2</span>
+                    </div>
+   
+               </div>
+              <div clas
+s="streamer-grid streamer-grid-1">
+          
+      <div class="streamer-card">
+           
+       <div class="streamer-info"><h4>Tina</h
+4></div>
+                      <div class="st
+reamer-progress">
+                    <div cl
+ass="sr-bar-row"><span data-cn="拍摄进度"
+ data-en="Shoot">拍摄进度</span><span cla
+ss="sr-bar"><span style="width:25%"></span></
+span><span class="sr-pct">5</span></div>
+    
+                <div class="sr-bar-row"><span
+ data-cn="剪辑进度" data-en="Edit">剪辑
+进度</span><span class="sr-bar"><span style
+="width:10%"></span></span><span class="sr-pc
+t">2</span></div>
+                  </div>
+  
+              </div>
+              </div>
+   
+         </div>
+          </div>
+        </di
+v>
       </div>
     </section>
 
-    <!-- ========== WORKSPACE VIEW ========== -->
-    <section class="view" id="view-workspace" data-view="workspace">
-      <!-- Password Lock Overlay -->
-      <div class="ws-lock-overlay" id="wsLockOverlay">
-        <div class="ws-lock-card">
+    <!-- ====
+====== WORKSPACE VIEW ========== -->
+    <sec
+tion class="view" id="view-workspace" data-vi
+ew="workspace">
+      <!-- Password Lock Over
+lay -->
+      <div class="ws-lock-overlay" id
+="wsLockOverlay">
+        <div class="ws-lock
+-card">
           <div class="ws-lock-icon">
-            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+
+            <svg viewBox="0 0 24 24" width="3
+6" height="36" fill="none" stroke="currentCol
+or" stroke-width="1.8" stroke-linecap="round"
+ stroke-linejoin="round">
+              <rect
+ x="3" y="11" width="18" height="11" rx="2"/>
+
+              <path d="M7 11V7a5 5 0 0 1 10 
+0v4"/>
             </svg>
           </div>
-          <h3 class="ws-lock-title" data-cn="个人工作台" data-en="Workspace">个人工作台</h3>
-          <p class="ws-lock-desc" data-cn="请输入密码以访问" data-en="Enter password to continue">请输入密码以访问</p>
-          <div class="ws-lock-input-wrap">
-            <input type="text" id="wsLockTextInput" class="ws-lock-text-input" placeholder="密码 / Password" autocomplete="off" spellcheck="false" />
+  
+        <h3 class="ws-lock-title" data-cn="�
+�人工作台" data-en="Workspace">个人工�
+��台</h3>
+          <p class="ws-lock-desc" 
+data-cn="请输入密码以访问" data-en="E
+nter password to continue">请输入密码以
+访问</p>
+          <div class="ws-lock-inpu
+t-wrap">
+            <input type="text" id="w
+sLockTextInput" class="ws-lock-text-input" pl
+aceholder="密码 / Password" autocomplete="o
+ff" spellcheck="false" />
           </div>
-          <div class="ws-lock-error" id="wsLockError"></div>
-          <div class="ws-lock-actions">
-            <button class="ws-lock-submit" type="button">
-              <span data-cn="确认" data-en="Confirm">确认</span>
+  
+        <div class="ws-lock-error" id="wsLock
+Error"></div>
+          <div class="ws-lock-a
+ctions">
+            <button class="ws-lock-s
+ubmit" type="button">
+              <span dat
+a-cn="确认" data-en="Confirm">确认</span>
+
             </button>
           </div>
-        </div>
+     
+   </div>
       </div>
-      <!-- Workspace Header -->
+      <!-- Workspace H
+eader -->
       <div class="workspace-hero">
+
         <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="个人工作台" data-en="Workspace">个人工作台</span>
-            <h2 class="section-title section-title-lg" data-cn="工作正在进行时" data-en="Work In Progress">工作正在进行时</h2>
-            <p class="section-desc reveal" data-cn="管理创作计划，追踪项目进度，让每一帧都按计划生长。" data-en="Manage creative schedules, track project progress, let every frame grow on plan.">管理创作计划，追踪项目进度，让每一帧都按计划生长。</p>
-          </div>
-          <!-- iOS Segmented Control -->
-          <div class="segmented-control seg-4 reveal" id="wsTabs">
-            <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
-            <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
-            <button class="seg-btn" data-ws-tab="storyboard" data-cn="计划表" data-en="Plan">计划表</button>
-            <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
-            <span class="seg-indicator seg-4-indicator" id="segIndicator"></span>
-          </div>
+          <di
+v class="section-head reveal">
+            <s
+pan class="section-eyebrow" data-cn="个人�
+�作台" data-en="Workspace">个人工作台<
+/span>
+            <h2 class="section-title s
+ection-title-lg" data-cn="工作正在进行�
+��" data-en="Work In Progress">工作正在�
+�行时</h2>
+            <p class="section-de
+sc reveal" data-cn="管理创作计划，追�
+��项目进度，让每一帧都按计划生�
+��。" data-en="Manage creative schedules, tr
+ack project progress, let every frame grow on
+ plan.">管理创作计划，追踪项目进�
+��，让每一帧都按计划生长。</p>
+  
         </div>
+          <!-- iOS Segmented C
+ontrol -->
+          <div class="segmented-co
+ntrol seg-4 reveal" id="wsTabs">
+            
+<button class="seg-btn active" data-ws-tab="p
+lan" data-cn="计划表" data-en="Schedule">�
+��划表</button>
+            <button class="
+seg-btn" data-ws-tab="unified" data-cn="日�
+�" data-en="Report">日报</button>
+         
+   <button class="seg-btn" data-ws-tab="story
+board" data-cn="摄影表" data-en="Shot List">摄影表</button>
+            <button class="se
+g-btn" data-ws-tab="console" data-cn="指令"
+ data-en="Console">指令</button>
+          
+  <span class="seg-indicator seg-4-indicator"
+ id="segIndicator"></span>
+          </div>
+ 
+       </div>
       </div>
 
-      <!-- ====== Panel 1: Plan Board ====== -->
-      <div class="ws-panel ws-panel-active" id="ws-panel-plan">
+      <!-- ======
+ Panel 1: Plan Board ====== -->
+      <div cl
+ass="ws-panel ws-panel-active" id="ws-panel-p
+lan">
         <div class="container">
-          <!-- Panel Edit Toolbar -->
-          <div class="ws-panel-toolbar reveal">
-            <div class="ws-panel-toolbar-left">
-              <span class="ws-panel-dot"></span>
-              <span class="ws-panel-toolbar-title" data-cn="计划表" data-en="Schedule">计划表</span>
+       
+   <!-- Panel Edit Toolbar -->
+          <div
+ class="ws-panel-toolbar reveal">
+           
+ <div class="ws-panel-toolbar-left">
+        
+      <span class="ws-panel-dot"></span>
+    
+          <span class="ws-panel-toolbar-title
+" data-cn="计划表" data-en="Schedule">计�
+��表</span>
             </div>
-            <div class="ws-panel-toolbar-right">
-              <button class="edit-toggle-btn" data-edit-target="ws-panel-plan" data-cn="编辑" data-en="Edit">编辑</button>
-            </div>
+            <
+div class="ws-panel-toolbar-right">
+         
+     <button class="edit-toggle-btn" data-edi
+t-target="ws-panel-plan" data-cn="编辑" dat
+a-en="Edit">编辑</button>
+            </div
+>
           </div>
-          <!-- Progress Overview -->
-          <div class="plan-overview reveal">
-            <div class="plan-progress-wrap">
-              <div class="plan-progress-ring">
-                <svg viewBox="0 0 120 120" width="120" height="120">
-                  <circle class="ring-track" cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
-                  <circle class="ring-fill" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 60 60)"/>
+          <!-- Progress Ov
+erview -->
+          <div class="plan-overvie
+w reveal">
+            <div class="plan-progr
+ess-wrap">
+              <div class="plan-pro
+gress-ring">
+                <svg viewBox="0 
+0 120 120" width="120" height="120">
+        
+          <circle class="ring-track" cx="60" 
+cy="60" r="52" fill="none" stroke="var(--surf
+ace-2)" stroke-width="8"/>
+                  
+<circle class="ring-fill" cx="60" cy="60" r="
+52" fill="none" stroke="var(--accent)" stroke
+-width="8" stroke-linecap="round" stroke-dash
+array="327" stroke-dashoffset="327" transform
+="rotate(-90 60 60)"/>
                 </svg>
+
                 <div class="ring-text">
-                  <span class="ring-pct">0%</span>
-                  <span class="ring-label" data-cn="本周完成率" data-en="This Week">本周完成率</span>
-                </div>
+    
+              <span class="ring-pct">0%</span
+>
+                  <span class="ring-label" 
+data-cn="本周完成率" data-en="This Week"
+>本周完成率</span>
+                </div
+>
               </div>
-              <div class="plan-stats">
-                <div class="plan-stat">
-                  <span class="ps-num">0</span>
-                  <span class="ps-label" data-cn="本周任务" data-en="Weekly Tasks">本周任务</span>
+              <div cla
+ss="plan-stats">
+                <div class="
+plan-stat">
+                  <span class="ps
+-num">0</span>
+                  <span class=
+"ps-label" data-cn="本周任务" data-en="We
+ekly Tasks">本周任务</span>
+             
+   </div>
+                <div class="plan-st
+at">
+                  <span class="ps-num do
+ne">0</span>
+                  <span class="p
+s-label" data-cn="已完成" data-en="Complet
+ed">已完成</span>
                 </div>
-                <div class="plan-stat">
-                  <span class="ps-num done">0</span>
-                  <span class="ps-label" data-cn="已完成" data-en="Completed">已完成</span>
+ 
+               <div class="plan-stat">
+      
+            <span class="ps-num wip">0</span>
+
+                  <span class="ps-label" dat
+a-cn="进行中" data-en="In Progress">进行
+中</span>
                 </div>
-                <div class="plan-stat">
-                  <span class="ps-num wip">0</span>
-                  <span class="ps-label" data-cn="进行中" data-en="In Progress">进行中</span>
-                </div>
-                <div class="plan-stat">
-                  <span class="ps-num todo">0</span>
-                  <span class="ps-label" data-cn="待办" data-en="To Do">待办</span>
-                </div>
+           
+     <div class="plan-stat">
+                
+  <span class="ps-num todo">0</span>
+        
+          <span class="ps-label" data-cn="待
+办" data-en="To Do">待办</span>
+          
+      </div>
               </div>
-            </div>
+           
+ </div>
           </div>
 
-          <!-- Kanban Board -->
-          <div class="kanban-board reveal">
-            <!-- Column: To Do -->
-            <div class="kanban-col" data-col="todo">
-              <div class="kanban-col-head">
-                <span class="col-dot col-dot-todo"></span>
-                <h3 data-cn="待办" data-en="To Do">待办</h3>
-                <span class="col-count">0</span>
-                <button class="kanban-add-btn" data-col-target="todo" title="添加任务">+</button>
+          <!-- Kanb
+an Board -->
+          <div class="kanban-boa
+rd reveal">
+            <!-- Column: To Do --
+>
+            <div class="kanban-col" data-co
+l="todo">
+              <div class="kanban-co
+l-head">
+                <span class="col-dot
+ col-dot-todo"></span>
+                <h3 da
+ta-cn="待办" data-en="To Do">待办</h3>
+  
+              <span class="col-count">0</span
+>
+                <button class="kanban-add-b
+tn" data-col-target="todo" title="添加任�
+�">+</button>
               </div>
-              <div class="kanban-cards" data-col-cards="todo">
-                <div class="kanban-empty" data-cn="暂无待办任务" data-en="No tasks">暂无待办任务</div>
+          
+    <div class="kanban-cards" data-col-cards=
+"todo">
+                <div class="kanban-em
+pty" data-cn="暂无待办任务" data-en="No
+ tasks">暂无待办任务</div>
+            
+  </div>
+            </div>
+            <!-- 
+Column: In Progress -->
+            <div clas
+s="kanban-col" data-col="wip">
+              
+<div class="kanban-col-head">
+               
+ <span class="col-dot col-dot-wip"></span>
+  
+              <h3 data-cn="进行中" data-en
+="In Progress">进行中</h3>
+               
+ <span class="col-count">0</span>
+           
+     <button class="kanban-add-btn" data-col-
+target="wip" title="添加任务">+</button>
+
+              </div>
+              <div class
+="kanban-cards" data-col-cards="wip">
+       
+         <div class="kanban-empty" data-cn="�
+��无进行中任务" data-en="No tasks">暂�
+��进行中任务</div>
+              </div>
+
+            </div>
+            <!-- Column: D
+one -->
+            <div class="kanban-col" d
+ata-col="done">
+              <div class="kan
+ban-col-head">
+                <span class="c
+ol-dot col-dot-done"></span>
+                
+<h3 data-cn="已完成" data-en="Done">已完
+成</h3>
+                <span class="col-cou
+nt">0</span>
+                <button class="k
+anban-add-btn" data-col-target="done" title="
+添加任务">+</button>
+              </div>
+
+              <div class="kanban-cards" data
+-col-cards="done">
+                <div class
+="kanban-empty" data-cn="暂无已完成任�
+�" data-en="No tasks">暂无已完成任务</
+div>
               </div>
             </div>
-            <!-- Column: In Progress -->
-            <div class="kanban-col" data-col="wip">
-              <div class="kanban-col-head">
-                <span class="col-dot col-dot-wip"></span>
-                <h3 data-cn="进行中" data-en="In Progress">进行中</h3>
-                <span class="col-count">0</span>
-                <button class="kanban-add-btn" data-col-target="wip" title="添加任务">+</button>
-              </div>
-              <div class="kanban-cards" data-col-cards="wip">
-                <div class="kanban-empty" data-cn="暂无进行中任务" data-en="No tasks">暂无进行中任务</div>
-              </div>
-            </div>
-            <!-- Column: Done -->
-            <div class="kanban-col" data-col="done">
-              <div class="kanban-col-head">
-                <span class="col-dot col-dot-done"></span>
-                <h3 data-cn="已完成" data-en="Done">已完成</h3>
-                <span class="col-count">0</span>
-                <button class="kanban-add-btn" data-col-target="done" title="添加任务">+</button>
-              </div>
-              <div class="kanban-cards" data-col-cards="done">
-                <div class="kanban-empty" data-cn="暂无已完成任务" data-en="No tasks">暂无已完成任务</div>
-              </div>
-            </div>
+
           </div>
 
         </div>
       </div>
 
-      <!-- ====== Panel 2: Unified Daily Report ====== -->
-          <div class="ws-panel" id="ws-panel-unified">
-            <div class="container">
-              <div class="unified-report-wrap" id="unified-report-wrap">
-                <div class="unified-toolbar reveal">
-                  <div class="unified-toolbar-left">
-                    <span class="unified-dot"></span>
-                    <span class="unified-toolbar-title" data-cn="统一日报" data-en="Unified Report">统一日报</span>
-                    <span class="unified-toolbar-date" id="unifiedToolbarDate"></span>
+
+      <!-- ====== Panel 2: Unified Daily Re
+port ====== -->
+          <div class="ws-pane
+l" id="ws-panel-unified">
+            <div cl
+ass="container">
+              <div class="un
+ified-report-wrap" id="unified-report-wrap">
+
+                <div class="unified-toolbar r
+eveal">
+                  <div class="unified
+-toolbar-left">
+                    <span cla
+ss="unified-dot"></span>
+                    
+<span class="unified-toolbar-title" data-cn="
+统一日报" data-en="Unified Report">统一
+日报</span>
+                    <span class
+="unified-toolbar-date" id="unifiedToolbarDat
+e"></span>
                   </div>
-                  <div class="unified-toolbar-right">
-                    <button class="edit-toggle-btn" id="editToggleBtn" data-cn="编辑" data-en="Edit">编辑</button>
-                    <button class="screenshot-btn screenshot-all-btn" data-report="unified-report-wrap" data-cn="截图" data-en="Screenshot">截图</button>
+         
+         <div class="unified-toolbar-right">
+
+                    <button class="edit-toggl
+e-btn" id="editToggleBtn" data-cn="编辑" da
+ta-en="Edit">编辑</button>
+                
+    <button class="screenshot-btn screenshot-
+all-btn" data-report="unified-report-wrap" da
+ta-cn="截图" data-en="Screenshot">截图</b
+utton>
                   </div>
+             
+   </div>
+
+                <!-- Grand Total S
+ummary -->
+                <div class="unifie
+d-summary reveal">
+                  <div cla
+ss="total-stats-row">
+                    <di
+v class="ts-item">
+                      <div
+ class="ts-num">121</div>
+                   
+   <div class="ts-label" data-cn="拍摄总�
+�数" data-en="Total Shot">拍摄总条数</d
+iv>
+                      <div class="ts-bar"
+><span style="width:76%"></span></div>
+      
+              </div>
+                    <div
+ class="ts-item">
+                      <div 
+class="ts-num">62</div>
+                     
+ <div class="ts-label" data-cn="剪辑总条�
+��" data-en="Total Edited">剪辑总条数</d
+iv>
+                      <div class="ts-bar 
+ts-green"><span style="width:39%"></span></di
+v>
+                    </div>
+               
+     <div class="ts-item">
+                  
+    <div class="ts-num">39%</div>
+           
+           <div class="ts-label" data-cn="整
+体完成率" data-en="Completion Rate">整�
+�完成率</div>
+                      <div c
+lass="ts-bar ts-gray"><span style="width:39%"
+></span></div>
+                    </div>
+   
+               </div>
                 </div>
 
-                <!-- Grand Total Summary -->
-                <div class="unified-summary reveal">
-                  <div class="total-stats-row">
-                    <div class="ts-item">
-                      <div class="ts-num">121</div>
-                      <div class="ts-label" data-cn="拍摄总条数" data-en="Total Shot">拍摄总条数</div>
-                      <div class="ts-bar"><span style="width:76%"></span></div>
-                    </div>
-                    <div class="ts-item">
-                      <div class="ts-num">62</div>
-                      <div class="ts-label" data-cn="剪辑总条数" data-en="Total Edited">剪辑总条数</div>
-                      <div class="ts-bar ts-green"><span style="width:39%"></span></div>
-                    </div>
-                    <div class="ts-item">
-                      <div class="ts-num">39%</div>
-                      <div class="ts-label" data-cn="整体完成率" data-en="Completion Rate">整体完成率</div>
-                      <div class="ts-bar ts-gray"><span style="width:39%"></span></div>
-                    </div>
-                  </div>
-                </div>
 
                 <!-- Brand Sections -->
-                <div class="unified-brand-section">
-                  <div class="unified-brand-head">
-                    <h3 data-cn="零跑汽车" data-en="Leapmotor">零跑汽车</h3>
-                    <span class="unified-brand-sub" data-cn="目标 40 条/人 · 空镜 10 条" data-en="Goal: 40/person · B-roll: 10">目标 40 条/人 · 空镜 10 条</span>
+    
+            <div class="unified-brand-section
+">
+                  <div class="unified-bran
+d-head">
+                    <h3 data-cn="零
+跑汽车" data-en="Leapmotor">零跑汽车</
+h3>
+                    <span class="unified-
+brand-sub" data-cn="目标 40 条/人 · 空�
+�� 10 条" data-en="Goal: 40/person · B-roll
+: 10">目标 40 条/人 · 空镜 10 条</spa
+n>
                   </div>
-                  <div class="brand-progress-summary">
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="拍摄" data-en="Shot">拍摄</span>
-                      <div class="bps-bar"><span style="width:68%"></span></div>
-                      <span class="bps-num">110</span>
-                    </div>
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="剪辑" data-en="Edited">剪辑</span>
-                      <div class="bps-bar bps-green"><span style="width:34%"></span></div>
-                      <span class="bps-num">55</span>
-                    </div>
+                 
+ <div class="brand-progress-summary">
+       
+             <div class="bps-row">
+          
+            <span class="bps-label" data-cn="
+拍摄" data-en="Shot">拍摄</span>
+        
+              <div class="bps-bar"><span styl
+e="width:68%"></span></div>
+                 
+     <span class="bps-num">110</span>
+       
+             </div>
+                    <div 
+class="bps-row">
+                      <span 
+class="bps-label" data-cn="剪辑" data-en="E
+dited">剪辑</span>
+                      <d
+iv class="bps-bar bps-green"><span style="wid
+th:34%"></span></div>
+                      <
+span class="bps-num">55</span>
+              
+      </div>
                   </div>
-                  <div class="streamer-grid">
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>可欣</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">60</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:78%"></span></span><span class="sr-pct">31</span></div>
-                      </div>
+       
+           <div class="streamer-grid">
+      
+              <div class="streamer-card">
+   
+                   <div class="streamer-info"
+><h4>可欣</h4></div>
+                      
+<div class="streamer-progress">
+             
+           <div class="sr-bar-row"><span data
+-cn="拍摄" data-en="Shoot">拍摄</span><sp
+an class="sr-bar"><span style="width:100%"></
+span></span><span class="sr-pct">60</span></d
+iv>
+                        <div class="sr-ba
+r-row"><span data-cn="剪辑" data-en="Edit">
+剪辑</span><span class="sr-bar"><span style
+="width:78%"></span></span><span class="sr-pc
+t">31</span></div>
+                      </di
+v>
                     </div>
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>小许</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:50%"></span></span><span class="sr-pct">20</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:15%"></span></span><span class="sr-pct">6</span></div>
+               
+     <div class="streamer-card">
+            
+          <div class="streamer-info"><h4>小�
+��</h4></div>
+                      <div clas
+s="streamer-progress">
+                      
+  <div class="sr-bar-row"><span data-cn="拍�
+��" data-en="Shoot">拍摄</span><span class=
+"sr-bar"><span style="width:50%"></span></spa
+n><span class="sr-pct">20</span></div>
+      
+                  <div class="sr-bar-row"><sp
+an data-cn="剪辑" data-en="Edit">剪辑</sp
+an><span class="sr-bar"><span style="width:15
+%"></span></span><span class="sr-pct">6</span
+></div>
                       </div>
+        
+            </div>
+                    <div c
+lass="streamer-card">
+                      <
+div class="streamer-info"><h4>珊珊</h4></di
+v>
+                      <div class="streamer
+-progress">
+                        <div clas
+s="sr-bar-row"><span data-cn="拍摄" data-en
+="Shoot">拍摄</span><span class="sr-bar"><s
+pan style="width:38%"></span></span><span cla
+ss="sr-pct">15</span></div>
+                 
+       <div class="sr-bar-row"><span data-cn=
+"剪辑" data-en="Edit">剪辑</span><span cl
+ass="sr-bar"><span style="width:23%"></span><
+/span><span class="sr-pct">9</span></div>
+   
+                   </div>
+                   
+ </div>
+                    <div class="strea
+mer-card">
+                      <div class="
+streamer-info"><h4>CC</h4></div>
+            
+          <div class="streamer-progress">
+   
+                     <div class="sr-bar-row">
+<span data-cn="拍摄" data-en="Shoot">拍摄
+</span><span class="sr-bar"><span style="widt
+h:38%"></span></span><span class="sr-pct">15<
+/span></div>
+                        <div cla
+ss="sr-bar-row"><span data-cn="剪辑" data-e
+n="Edit">剪辑</span><span class="sr-bar"><s
+pan style="width:23%"></span></span><span cla
+ss="sr-pct">9</span></div>
+                  
+    </div>
                     </div>
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>珊珊</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">15</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">9</span></div>
-                      </div>
-                    </div>
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>CC</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:38%"></span></span><span class="sr-pct">15</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:23%"></span></span><span class="sr-pct">9</span></div>
-                      </div>
-                    </div>
-                  </div>
+       
+           </div>
                 </div>
 
-                <!-- 中鑫之宝 -->
-                <div class="unified-brand-section">
-                  <div class="unified-brand-head">
-                    <h3 data-cn="中鑫之宝" data-en="Zhongxin Zhibao">中鑫之宝</h3>
-                    <span class="unified-brand-sub" data-cn="无月度拍摄要求" data-en="No monthly target">无月度拍摄要求</span>
+   
+             <!-- 中鑫之宝 -->
+          
+      <div class="unified-brand-section">
+   
+               <div class="unified-brand-head
+">
+                    <h3 data-cn="中鑫之
+宝" data-en="Zhongxin Zhibao">中鑫之宝</
+h3>
+                    <span class="unified-
+brand-sub" data-cn="无月度拍摄要求" da
+ta-en="No monthly target">无月度拍摄要�
+��</span>
                   </div>
-                  <div class="brand-progress-summary">
+          
+        <div class="brand-progress-summary">
+
                     <div class="bps-row">
-                      <span class="bps-label" data-cn="拍摄" data-en="Shot">拍摄</span>
-                      <div class="bps-bar"><span style="width:100%"></span></div>
-                      <span class="bps-num">6</span>
-                    </div>
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="剪辑" data-en="Edited">剪辑</span>
-                      <div class="bps-bar bps-green"><span style="width:83%"></span></div>
-                      <span class="bps-num">5</span>
-                    </div>
+   
+                   <span class="bps-label" da
+ta-cn="拍摄" data-en="Shot">拍摄</span>
+ 
+                     <div class="bps-bar"><sp
+an style="width:100%"></span></div>
+         
+             <span class="bps-num">6</span>
+ 
+                   </div>
+                   
+ <div class="bps-row">
+                      
+<span class="bps-label" data-cn="剪辑" data
+-en="Edited">剪辑</span>
+                  
+    <div class="bps-bar bps-green"><span styl
+e="width:83%"></span></div>
+                 
+     <span class="bps-num">5</span>
+         
+           </div>
                   </div>
-                  <div class="streamer-grid streamer-grid-2">
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>小凡</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">5</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:80%"></span></span><span class="sr-pct">4</span></div>
-                      </div>
+  
+                <div class="streamer-grid str
+eamer-grid-2">
+                    <div class
+="streamer-card">
+                      <div 
+class="streamer-info"><h4>小凡</h4></div>
+ 
+                     <div class="streamer-pro
+gress">
+                        <div class="s
+r-bar-row"><span data-cn="拍摄" data-en="Sh
+oot">拍摄</span><span class="sr-bar"><span 
+style="width:100%"></span></span><span class=
+"sr-pct">5</span></div>
+                     
+   <div class="sr-bar-row"><span data-cn="剪
+辑" data-en="Edit">剪辑</span><span class=
+"sr-bar"><span style="width:80%"></span></spa
+n><span class="sr-pct">4</span></div>
+       
+               </div>
+                    </d
+iv>
+                    <div class="streamer-
+card">
+                      <div class="stre
+amer-info"><h4>东哥</h4></div>
+            
+          <div class="streamer-progress">
+   
+                     <div class="sr-bar-row">
+<span data-cn="拍摄" data-en="Shoot">拍摄
+</span><span class="sr-bar"><span style="widt
+h:100%"></span></span><span class="sr-pct">1<
+/span></div>
+                        <div cla
+ss="sr-bar-row"><span data-cn="剪辑" data-e
+n="Edit">剪辑</span><span class="sr-bar"><s
+pan style="width:100%"></span></span><span cl
+ass="sr-pct">1</span></div>
+                 
+     </div>
                     </div>
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>东哥</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">1</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:100%"></span></span><span class="sr-pct">1</span></div>
-                      </div>
-                    </div>
-                  </div>
+      
+            </div>
                 </div>
 
-                <!-- 人设IP -->
-                <div class="unified-brand-section">
-                  <div class="unified-brand-head">
-                    <h3 data-cn="人设IP账号" data-en="Personal IP">人设IP账号</h3>
-                    <span class="unified-brand-sub" data-cn="目标 20 条/月" data-en="Goal: 20/month">目标 20 条/月</span>
-                  </div>
-                  <div class="brand-progress-summary">
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="拍摄" data-en="Shot">拍摄</span>
-                      <div class="bps-bar"><span style="width:25%"></span></div>
-                      <span class="bps-num">5</span>
-                    </div>
-                    <div class="bps-row">
-                      <span class="bps-label" data-cn="剪辑" data-en="Edited">剪辑</span>
-                      <div class="bps-bar bps-green"><span style="width:10%"></span></div>
-                      <span class="bps-num">2</span>
-                    </div>
-                  </div>
-                  <div class="streamer-grid streamer-grid-1">
-                    <div class="streamer-card">
-                      <div class="streamer-info"><h4>Tina</h4></div>
-                      <div class="streamer-progress">
-                        <div class="sr-bar-row"><span data-cn="拍摄" data-en="Shoot">拍摄</span><span class="sr-bar"><span style="width:25%"></span></span><span class="sr-pct">5</span></div>
-                        <div class="sr-bar-row"><span data-cn="剪辑" data-en="Edit">剪辑</span><span class="sr-bar"><span style="width:10%"></span></span><span class="sr-pct">2</span></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+  
+              <!-- 人设IP -->
+             
+   <div class="unified-brand-section">
+      
+            <div class="unified-brand-head">
+
+                    <h3 data-cn="人设IP账�
+��" data-en="Personal IP">人设IP账号</h3>
+
+                    <span class="unified-bra
+nd-sub" data-cn="目标 20 条/月" data-en="
+Goal: 20/month">目标 20 条/月</span>
+    
               </div>
+                  <div c
+lass="brand-progress-summary">
+              
+      <div class="bps-row">
+                 
+     <span class="bps-label" data-cn="拍摄"
+ data-en="Shot">拍摄</span>
+               
+       <div class="bps-bar"><span style="widt
+h:25%"></span></div>
+                      <s
+pan class="bps-num">5</span>
+                
+    </div>
+                    <div class="bp
+s-row">
+                      <span class="bp
+s-label" data-cn="剪辑" data-en="Edited">�
+�辑</span>
+                      <div class=
+"bps-bar bps-green"><span style="width:10%"><
+/span></div>
+                      <span clas
+s="bps-num">2</span>
+                    </di
+v>
+                  </div>
+                 
+ <div class="streamer-grid streamer-grid-1">
+
+                    <div class="streamer-card
+">
+                      <div class="streamer
+-info"><h4>Tina</h4></div>
+                  
+    <div class="streamer-progress">
+         
+               <div class="sr-bar-row"><span 
+data-cn="拍摄" data-en="Shoot">拍摄</span
+><span class="sr-bar"><span style="width:25%"
+></span></span><span class="sr-pct">5</span><
+/div>
+                        <div class="sr-
+bar-row"><span data-cn="剪辑" data-en="Edit
+">剪辑</span><span class="sr-bar"><span sty
+le="width:10%"></span></span><span class="sr-
+pct">2</span></div>
+                      </d
+iv>
+                    </div>
+              
+    </div>
+                </div>
+           
+   </div>
             </div>
       </div>
 
-      <!-- ====== Panel 3: Storyboard Table ====== -->
-      <div class="ws-panel" id="ws-panel-storyboard">
-        <div class="container">
+  
+    <!-- ====== Panel 3: Storyboard Table ===
+=== -->
+      <div class="ws-panel" id="ws-pa
+nel-storyboard">
+        <div class="containe
+r">
 
-          <!-- Project List View (default) -->
-          <div class="sb-wrap reveal" id="sbProjectListView">
-            <div class="sb-toolbar">
-              <div class="sb-toolbar-left">
-                <span class="sb-dot"></span>
-                <span class="sb-toolbar-title" data-cn="计划项目" data-en="Plan Projects">计划项目</span>
+          <!-- Project List View (defaul
+t) -->
+          <div class="sb-wrap reveal" 
+id="sbProjectListView">
+            <div clas
+s="sb-toolbar">
+              <div class="sb-
+toolbar-left">
+                <span class="s
+b-dot"></span>
+                <span class="s
+b-toolbar-title" data-cn="计划项目" data-
+en="Plan Projects">摄影项目</span>
+      
+        </div>
+              <div class="sb-t
+oolbar-right">
+                <button class=
+"sb-btn sb-btn-add" id="sbAddProject" data-cn
+="+ 添加项目" data-en="+ New Project">+ �
+��加项目</button>
               </div>
-              <div class="sb-toolbar-right">
-                <button class="sb-btn sb-btn-add" id="sbAddProject" data-cn="+ 添加项目" data-en="+ New Project">+ 添加项目</button>
-              </div>
-            </div>
-            <div class="sb-project-grid" id="sbProjectGrid">
-              <!-- Project cards injected by JS -->
-            </div>
-            <div class="sb-empty" id="sbProjectEmpty" data-cn="暂无项目，点击「添加项目」开始" data-en="No projects yet. Click '+ New Project' to begin.">暂无项目，点击「添加项目」开始</div>
+   
+         </div>
+            <div class="sb-pr
+oject-grid" id="sbProjectGrid">
+             
+ <!-- Project cards injected by JS -->
+      
+      </div>
+            <div class="sb-empty
+" id="sbProjectEmpty" data-cn="暂无项目�
+�点击「添加项目」开始" data-en="No 
+projects yet. Click '+ New Project' to begin.
+">暂无项目，点击「添加项目」开�
+��</div>
           </div>
 
-          <!-- Editor View (hidden by default) -->
-          <div class="sb-wrap reveal" id="sbEditorView" style="display:none">
-            <!-- Toolbar -->
+          <!-- Edi
+tor View (hidden by default) -->
+          <d
+iv class="sb-wrap reveal" id="sbEditorView" s
+tyle="display:none">
+            <!-- Toolbar
+ -->
             <div class="sb-toolbar">
-              <div class="sb-toolbar-left">
-                <button class="sb-btn sb-btn-back" id="sbBackToList" data-cn="← 返回列表" data-en="← Back">← 返回列表</button>
-                <span class="sb-project-name" id="sbProjectName" data-cn="未命名项目" data-en="Untitled Project">未命名项目</span>
+   
+           <div class="sb-toolbar-left">
+    
+            <button class="sb-btn sb-btn-back
+" id="sbBackToList" data-cn="← 返回列表
+" data-en="← Back">← 返回列表</button
+>
+                <span class="sb-project-nam
+e" id="sbProjectName" data-cn="未命名项�
+�" data-en="Untitled Project">未命名项目
+</span>
               </div>
-              <div class="sb-toolbar-right">
-                <button class="sb-btn sb-btn-batch" id="sbBatchShots" data-cn="一键输入任务" data-en="Batch Add Tasks">一键输入任务</button>
-                <button class="sb-btn sb-btn-add" id="sbAddRow" data-cn="+ 添加" data-en="+ Add">+ 添加</button>
-                <button class="sb-btn sb-btn-save" id="sbSave" data-cn="提交保存" data-en="Submit">提交保存</button>
+              <d
+iv class="sb-toolbar-right">
+                
+<button class="sb-btn sb-btn-batch" id="sbBat
+chShots" data-cn="一键输入任务" data-en
+="Batch Add Tasks">一键输入任务</button
+>
+                <button class="sb-btn sb-bt
+n-add" id="sbAddRow" data-cn="+ 添加" data-
+en="+ Add">+ 添加</button>
+                
+<button class="sb-btn sb-btn-save" id="sbSave
+" data-cn="提交保存" data-en="Submit">提
+交保存</button>
               </div>
+     
+       </div>
+
+            <!-- Project Title
+ Input (editable) -->
+            <div class=
+"sb-project-bar">
+              <label class=
+"sb-label" data-cn="项目名称" data-en="Pr
+oject Name">项目名称</label>
+            
+  <input type="text" class="sb-project-input"
+ id="sbProjectInput" data-cn-placeholder="输
+入项目名称..." data-en-placeholder="Ente
+r project name..." placeholder="输入项目�
+��称...">
+              <label class="sb-lab
+el" data-cn="拍摄日期" data-en="Shoot Dat
+e">拍摄日期</label>
+              <input 
+type="date" class="sb-date-input" id="sbDateI
+nput">
             </div>
 
-            <!-- Project Title Input (editable) -->
-            <div class="sb-project-bar">
-              <label class="sb-label" data-cn="项目名称" data-en="Project Name">项目名称</label>
-              <input type="text" class="sb-project-input" id="sbProjectInput" data-cn-placeholder="输入项目名称..." data-en-placeholder="Enter project name..." placeholder="输入项目名称...">
-              <label class="sb-label" data-cn="拍摄日期" data-en="Shoot Date">拍摄日期</label>
-              <input type="date" class="sb-date-input" id="sbDateInput">
-            </div>
-
-            <!-- Two-section layout: Shot Tasks + Visual Content -->
+            <!-- T
+wo-section layout: Shot Tasks + Visual Conten
+t -->
             <div class="sb-sections">
-              <!-- Section 1: Shot Tasks -->
-              <div class="sb-section sb-section-tasks">
-                <div class="sb-section-header">
-                  <span class="sb-section-dot"></span>
-                  <span class="sb-section-title" data-cn="拍摄任务" data-en="Shot Tasks">拍摄任务</span>
-                  <span class="sb-section-count" id="sbTaskCount">0</span>
-                </div>
-                <div class="sb-task-list" id="sbTaskList">
-                  <!-- Task cards injected by JS -->
-                </div>
+ 
+             <!-- Section 1: Shot Tasks -->
+ 
+             <div class="sb-section sb-sectio
+n-tasks">
+                <div class="sb-sect
+ion-header">
+                  <span class="s
+b-section-dot"></span>
+                  <spa
+n class="sb-section-title" data-cn="拍摄任
+务" data-en="Shot Tasks">拍摄任务</span>
+
+                  <span class="sb-section-co
+unt" id="sbTaskCount">0</span>
+              
+  </div>
+                <div class="sb-task-
+list" id="sbTaskList">
+                  <!--
+ Task cards injected by JS -->
+              
+  </div>
               </div>
 
-              <!-- Section 2: Visual Content -->
-              <div class="sb-section sb-section-visual">
-                <div class="sb-section-header">
-                  <span class="sb-section-dot sb-section-dot-visual"></span>
-                  <span class="sb-section-title" data-cn="画面内容" data-en="Visual Content">画面内容</span>
+              
+<!-- Section 2: Visual Content -->
+          
+    <div class="sb-section sb-section-visual"
+>
+                <div class="sb-section-head
+er">
+                  <span class="sb-sectio
+n-dot sb-section-dot-visual"></span>
+        
+          <span class="sb-section-title" data
+-cn="画面内容" data-en="Visual Content">�
+��面内容</span>
                 </div>
-                <div class="sb-visual-list" id="sbVisualList">
-                  <!-- Visual textareas injected by JS -->
-                </div>
+   
+             <div class="sb-visual-list" id="
+sbVisualList">
+                  <!-- Visual 
+textareas injected by JS -->
+                
+</div>
               </div>
-            </div>
+            </div
+>
 
             <!-- Batch input dialog -->
-            <div class="sb-batch-dialog" id="sbBatchDialog" style="display:none">
-              <div class="sb-batch-dialog-inner">
-                <div class="sb-batch-dialog-header">
-                  <span class="sb-batch-dialog-title" data-cn="一键输入拍摄任务" data-en="Batch Add Tasks">一键输入拍摄任务</span>
-                  <button class="sb-batch-dialog-close" id="sbBatchClose">×</button>
+  
+          <div class="sb-batch-dialog" id="sb
+BatchDialog" style="display:none">
+          
+    <div class="sb-batch-dialog-inner">
+     
+           <div class="sb-batch-dialog-header
+">
+                  <span class="sb-batch-di
+alog-title" data-cn="一键输入拍摄任务
+" data-en="Batch Add Tasks">一键输入拍�
+�任务</span>
+                  <button clas
+s="sb-batch-dialog-close" id="sbBatchClose">�
+�</button>
                 </div>
-                <textarea class="sb-batch-textarea" id="sbBatchText" data-cn-placeholder="每个任务用中文句号隔开。&#10;例：主角走进咖啡馆。特写桌上的咖啡杯。全景展现街道远景。" data-en-placeholder="Separate each task with a period.&#10;e.g.: Hero enters cafe. Close-up of coffee cup. Wide street view." rows="6" placeholder="每个任务用中文句号隔开。&#10;例：主角走进咖啡馆。特写桌上的咖啡杯。全景展现街道远景。"></textarea>
-                <div class="sb-batch-dialog-footer">
-                  <span class="sb-batch-hint" data-cn="每个句号创建一行任务" data-en="Each period creates one task row">每个句号创建一行任务</span>
-                  <button class="sb-btn sb-btn-save" id="sbBatchConfirm" data-cn="确认添加" data-en="Add All">确认添加</button>
-                </div>
+           
+     <textarea class="sb-batch-textarea" id="
+sbBatchText" data-cn-placeholder="每个任�
+�用中文句号隔开。&#10;例：主角走
+进咖啡馆。特写桌上的咖啡杯。全
+景展现街道远景。" data-en-placeholder
+="Separate each task with a period.&#10;e.g.:
+ Hero enters cafe. Close-up of coffee cup. Wi
+de street view." rows="6" placeholder="每个
+任务用中文句号隔开。&#10;例：主�
+��走进咖啡馆。特写桌上的咖啡杯�
+��全景展现街道远景。"></textarea>
+  
+              <div class="sb-batch-dialog-foo
+ter">
+                  <span class="sb-batch
+-hint" data-cn="每个句号创建一行任�
+�" data-en="Each period creates one task row"
+>每个句号创建一行任务</span>
+      
+            <button class="sb-btn sb-btn-save
+" id="sbBatchConfirm" data-cn="确认添加" 
+data-en="Add All">确认添加</button>
+     
+           </div>
               </div>
-            </div>
+      
+      </div>
 
-            <!-- Empty state -->
-            <div class="sb-empty" id="sbEmpty" data-cn="暂无任务，点击「添加」开始" data-en="No tasks yet. Click 'Add' to begin.">暂无任务，点击「添加」开始</div>
+            <!-- Empty state --
+>
+            <div class="sb-empty" id="sbEmp
+ty" data-cn="暂无任务，点击「添加�
+�开始" data-en="No tasks yet. Click 'Add' t
+o begin.">暂无任务，点击「添加」�
+�始</div>
 
             <!-- Status bar -->
-            <div class="sb-status-bar" id="sbStatusBar">
-              <span class="sb-status-info" id="sbStatusInfo" data-cn="共 0 个任务" data-en="0 tasks total">共 0 个任务</span>
-              <span class="sb-status-sync" id="sbStatusSync"></span>
+ 
+           <div class="sb-status-bar" id="sbS
+tatusBar">
+              <span class="sb-stat
+us-info" id="sbStatusInfo" data-cn="共 0 个
+任务" data-en="0 tasks total">共 0 个任�
+��</span>
+              <span class="sb-statu
+s-sync" id="sbStatusSync"></span>
+           
+ </div>
+          </div>
+
+          <!-- Deta
+il Subpage (for viewing a saved project, long
+-press to enter) -->
+          <div class="sb
+-wrap sb-detail-page" id="sbDetailView" style
+="display:none">
+            <div class="sb-t
+oolbar">
+              <div class="sb-toolbar
+-left">
+                <button class="sb-btn
+ sb-btn-back" id="sbDetailBack" data-cn="← 
+返回列表" data-en="← Back">← 返回�
+�表</button>
+                <span class="sb
+-dot"></span>
+                <span class="sb
+-toolbar-title" id="sbDetailTitle">--</span>
+
+              </div>
+              <div class
+="sb-toolbar-right">
+                <button 
+class="sb-btn sb-btn-add" id="sbDetailEdit" d
+ata-cn="编辑" data-en="Edit">编辑</button
+>
+              </div>
+            </div>
+   
+         <div class="sb-detail-info" id="sbDe
+tailInfo"></div>
+            <div class="sb-s
+ections">
+              <div class="sb-sectio
+n sb-section-tasks">
+                <div cla
+ss="sb-section-header">
+                  <sp
+an class="sb-section-dot"></span>
+           
+       <span class="sb-section-title" data-cn
+="拍摄任务" data-en="Shot Tasks">拍摄�
+�务</span>
+                </div>
+          
+      <div class="sb-task-list" id="sbDetailT
+askList"></div>
+              </div>
+        
+      <div class="sb-section sb-section-visua
+l">
+                <div class="sb-section-he
+ader">
+                  <span class="sb-sect
+ion-dot sb-section-dot-visual"></span>
+      
+            <span class="sb-section-title" da
+ta-cn="画面内容" data-en="Visual Content"
+>画面内容</span>
+                </div>
+ 
+               <div class="sb-visual-list" id
+="sbDetailVisualList"></div>
+              </
+div>
             </div>
           </div>
 
-          <!-- Detail Subpage (for viewing a saved project, long-press to enter) -->
-          <div class="sb-wrap sb-detail-page" id="sbDetailView" style="display:none">
-            <div class="sb-toolbar">
-              <div class="sb-toolbar-left">
-                <button class="sb-btn sb-btn-back" id="sbDetailBack" data-cn="← 返回列表" data-en="← Back">← 返回列表</button>
-                <span class="sb-dot"></span>
-                <span class="sb-toolbar-title" id="sbDetailTitle">--</span>
-              </div>
-              <div class="sb-toolbar-right">
-                <button class="sb-btn sb-btn-add" id="sbDetailEdit" data-cn="编辑" data-en="Edit">编辑</button>
-              </div>
-            </div>
-            <div class="sb-detail-info" id="sbDetailInfo"></div>
-            <div class="sb-sections">
-              <div class="sb-section sb-section-tasks">
-                <div class="sb-section-header">
-                  <span class="sb-section-dot"></span>
-                  <span class="sb-section-title" data-cn="拍摄任务" data-en="Shot Tasks">拍摄任务</span>
-                </div>
-                <div class="sb-task-list" id="sbDetailTaskList"></div>
-              </div>
-              <div class="sb-section sb-section-visual">
-                <div class="sb-section-header">
-                  <span class="sb-section-dot sb-section-dot-visual"></span>
-                  <span class="sb-section-title" data-cn="画面内容" data-en="Visual Content">画面内容</span>
-                </div>
-                <div class="sb-visual-list" id="sbDetailVisualList"></div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+   
+     </div>
       </div>
 
-      <!-- ====== Panel 4: Console / Instruction Template ====== -->
-      <div class="ws-panel" id="ws-panel-console">
+      <!-- ====== P
+anel 4: Console / Instruction Template ======
+ -->
+      <div class="ws-panel" id="ws-panel
+-console">
         <div class="container">
-          <div class="console-wrap reveal">
-            <!-- Project Info Card -->
-            <div class="console-card">
-              <div class="console-card-head">
-                <h3 data-cn="项目核心信息" data-en="Project Info">项目核心信息</h3>
-                <span class="console-badge" data-cn="云端同步" data-en="Cloud Sync">云端同步</span>
+  
+        <div class="console-wrap reveal">
+   
+         <!-- Project Info Card -->
+         
+   <div class="console-card">
+              <
+div class="console-card-head">
+              
+  <h3 data-cn="项目核心信息" data-en="P
+roject Info">项目核心信息</h3>
+        
+        <span class="console-badge" data-cn="
+云端同步" data-en="Cloud Sync">云端同�
+��</span>
               </div>
-              <div class="console-info-grid">
-                <div class="console-info-row">
-                  <span class="ci-label">GitHub 仓库</span>
-                  <span class="ci-value" id="consoleRepo">V-ing7/v-ing-site</span>
+              
+<div class="console-info-grid">
+             
+   <div class="console-info-row">
+           
+       <span class="ci-label">GitHub 仓库</
+span>
+                  <span class="ci-value
+" id="consoleRepo">V-ing7/v-ing-site</span>
+ 
+               </div>
+                <div cl
+ass="console-info-row">
+                  <sp
+an class="ci-label" data-cn="数据文件" da
+ta-en="Data File">数据文件</span>
+       
+           <span class="ci-value">data.json</
+span>
                 </div>
-                <div class="console-info-row">
-                  <span class="ci-label" data-cn="数据文件" data-en="Data File">数据文件</span>
-                  <span class="ci-value">data.json</span>
+                
+<div class="console-info-row">
+              
+    <span class="ci-label" data-cn="网站地
+址" data-en="Site URL">网站地址</span>
+ 
+                 <span class="ci-value"><a hr
+ef="https://v-ing-site.pages.dev" target="_bl
+ank">v-ing-site.pages.dev</a></span>
+        
+        </div>
+                <div class="co
+nsole-info-row">
+                  <span clas
+s="ci-label" data-cn="部署平台" data-en="
+Platform">部署平台</span>
+               
+   <span class="ci-value">Cloudflare Pages</s
+pan>
                 </div>
-                <div class="console-info-row">
-                  <span class="ci-label" data-cn="网站地址" data-en="Site URL">网站地址</span>
-                  <span class="ci-value"><a href="https://v-ing-site.pages.dev" target="_blank">v-ing-site.pages.dev</a></span>
-                </div>
-                <div class="console-info-row">
-                  <span class="ci-label" data-cn="部署平台" data-en="Platform">部署平台</span>
-                  <span class="ci-value">Cloudflare Pages</span>
-                </div>
-                <div class="console-info-row">
-                  <span class="ci-label" data-cn="最后同步" data-en="Last Sync">最后同步</span>
-                  <span class="ci-value" id="consoleLastSync">--</span>
-                </div>
+                <
+div class="console-info-row">
+               
+   <span class="ci-label" data-cn="最后同�
+��" data-en="Last Sync">最后同步</span>
+ 
+                 <span class="ci-value" id="c
+onsoleLastSync">--</span>
+                </d
+iv>
               </div>
             </div>
 
-            <!-- Instruction Template Card -->
+
+            <!-- Instruction Template Card --
+>
             <div class="console-card">
-              <div class="console-card-head">
-                <h3 data-cn="跨 AI 会话指令模版" data-en="AI Session Template">跨 AI 会话指令模版</h3>
-                <button class="console-copy-btn" id="consoleCopyBtn" data-cn="复制模版" data-en="Copy Template">复制模版</button>
-              </div>
-              <div class="console-template-box" id="consoleTemplateBox">读取中...</div>
+    
+          <div class="console-card-head">
+   
+             <h3 data-cn="跨 AI 会话指令
+模版" data-en="AI Session Template">跨 AI 
+会话指令模版</h3>
+                <butt
+on class="console-copy-btn" id="consoleCopyBt
+n" data-cn="复制模版" data-en="Copy Templ
+ate">复制模版</button>
+              </di
+v>
+              <div class="console-template
+-box" id="consoleTemplateBox">读取中...</d
+iv>
             </div>
 
-            <!-- Operation Log Card -->
-            <div class="console-card">
-              <div class="console-card-head">
-                <h3 data-cn="操作记录日志" data-en="Operation Log">操作记录日志</h3>
-                <span class="console-badge console-badge-count" id="consoleLogCount">0 条</span>
-              </div>
-              <div class="console-log-list" id="consoleLogList">
-                <div class="console-log-empty" data-cn="加载中..." data-en="Loading...">加载中...</div>
+            <!-- Oper
+ation Log Card -->
+            <div class="co
+nsole-card">
+              <div class="consol
+e-card-head">
+                <h3 data-cn="�
+�作记录日志" data-en="Operation Log">操
+作记录日志</h3>
+                <span cl
+ass="console-badge console-badge-count" id="c
+onsoleLogCount">0 条</span>
+              </
+div>
+              <div class="console-log-li
+st" id="consoleLogList">
+                <div
+ class="console-log-empty" data-cn="加载中
+..." data-en="Loading...">加载中...</div>
+
               </div>
             </div>
-          </div>
+     
+     </div>
         </div>
       </div>
-    </section>
+    <
+/section>
 
-    <!-- ========== CONTACT VIEW ========== -->
-    <section class="view" id="view-contact" data-view="contact">
-      <div class="contact-wrap">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-eyebrow" data-cn="联系我们" data-en="Contact Us">联系我们</span>
-            <h2 class="section-title section-title-lg" data-cn="让我们开始对话" data-en="Let's Start a Conversation">让我们开始对话</h2>
-            <p class="section-desc reveal" data-cn="无论是品牌合作、内容共创还是简单的问候，我们都很期待听到你的声音。" data-en="Whether it's brand collaboration, content co-creation, or just a hello, we look forward to hearing from you.">无论是品牌合作、内容共创还是简单的问候，我们都很期待听到你的声音。</p>
+    <!-- ========== CONTACT VIEW =
+========= -->
+    <section class="view" id="v
+iew-contact" data-view="contact">
+      <div 
+class="contact-wrap">
+        <div class="con
+tainer">
+          <div class="section-head r
+eveal">
+            <span class="section-eyeb
+row" data-cn="联系我们" data-en="Contact 
+Us">联系我们</span>
+            <h2 class
+="section-title section-title-lg" data-cn="�
+�我们开始对话" data-en="Let's Start a C
+onversation">让我们开始对话</h2>
+     
+       <p class="section-desc reveal" data-cn
+="无论是品牌合作、内容共创还是�
+��单的问候，我们都很期待听到你�
+��声音。" data-en="Whether it's brand coll
+aboration, content co-creation, or just a hel
+lo, we look forward to hearing from you.">无
+论是品牌合作、内容共创还是简单
+的问候，我们都很期待听到你的声
+音。</p>
           </div>
-          <div class="contact-grid">
-            <form class="contact-form reveal" id="contactForm">
-              <div class="form-group">
-                <label for="cName" data-cn="你的名字" data-en="Your Name">你的名字</label>
-                <input type="text" id="cName" name="name" data-cn-placeholder="请输入你的名字" data-en-placeholder="Enter your name" placeholder="请输入你的名字" required>
+          <div cl
+ass="contact-grid">
+            <form class="
+contact-form reveal" id="contactForm">
+      
+        <div class="form-group">
+            
+    <label for="cName" data-cn="你的名字"
+ data-en="Your Name">你的名字</label>
+   
+             <input type="text" id="cName" na
+me="name" data-cn-placeholder="请输入你�
+�名字" data-en-placeholder="Enter your name
+" placeholder="请输入你的名字" require
+d>
               </div>
+              <div cl
+ass="form-group">
+                <label for=
+"cEmail" data-cn="邮箱地址" data-en="Emai
+l Address">邮箱地址</label>
+             
+   <input type="email" id="cEmail" name="emai
+l" data-cn-placeholder="your@email.com" data-
+en-placeholder="your@email.com" placeholder="
+your@email.com" required>
+              </div
+>
               <div class="form-group">
-                <label for="cEmail" data-cn="邮箱地址" data-en="Email Address">邮箱地址</label>
-                <input type="email" id="cEmail" name="email" data-cn-placeholder="your@email.com" data-en-placeholder="your@email.com" placeholder="your@email.com" required>
+    
+            <label for="cType" data-cn="合�
+�类型" data-en="Collaboration Type">合作�
+��型</label>
+                <select id="cTy
+pe" name="type">
+                  <option da
+ta-cn="品牌广告" data-en="Brand Advertisi
+ng">品牌广告</option>
+                  <
+option data-cn="内容共创" data-en="Conten
+t Co-creation">内容共创</option>
+        
+          <option data-cn="影视制作" data
+-en="Film Production">影视制作</option>
+ 
+                 <option data-cn="其他合�
+�" data-en="Other">其他合作</option>
+    
+            </select>
               </div>
-              <div class="form-group">
-                <label for="cType" data-cn="合作类型" data-en="Collaboration Type">合作类型</label>
-                <select id="cType" name="type">
-                  <option data-cn="品牌广告" data-en="Brand Advertising">品牌广告</option>
-                  <option data-cn="内容共创" data-en="Content Co-creation">内容共创</option>
-                  <option data-cn="影视制作" data-en="Film Production">影视制作</option>
-                  <option data-cn="其他合作" data-en="Other">其他合作</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="cMsg" data-cn="留言内容" data-en="Message">留言内容</label>
-                <textarea id="cMsg" name="message" rows="4" data-cn-placeholder="告诉我们你的想法..." data-en-placeholder="Tell us your thoughts..." placeholder="告诉我们你的想法..." required></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary btn-full" data-cn="发送消息" data-en="Send Message">发送消息</button>
-              <p class="form-success" id="formSuccess" data-cn="✓ 消息已发送，我们将尽快回复你" data-en="✓ Message sent, we'll get back to you soon" style="display:none;"></p>
-            </form>
-            <div class="contact-info reveal">
+  
+            <div class="form-group">
+        
+        <label for="cMsg" data-cn="留言内�
+��" data-en="Message">留言内容</label>
+  
+              <textarea id="cMsg" name="messa
+ge" rows="4" data-cn-placeholder="告诉我�
+�你的想法..." data-en-placeholder="Tell u
+s your thoughts..." placeholder="告诉我们
+你的想法..." required></textarea>
+       
+       </div>
+              <button type="sub
+mit" class="btn btn-primary btn-full" data-cn
+="发送消息" data-en="Send Message">发送
+消息</button>
+              <p class="form-
+success" id="formSuccess" data-cn="✓ 消息
+已发送，我们将尽快回复你" data-en
+="✓ Message sent, we'll get back to you soo
+n" style="display:none;"></p>
+            </f
+orm>
+            <div class="contact-info rev
+eal">
               <div class="info-card">
+ 
+               <div class="info-icon">
+      
+            <svg viewBox="0 0 24 24" width="2
+4" height="24" fill="none" stroke="currentCol
+or" stroke-width="1.5"><path d="M4 4h16c1.1 0
+ 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2
+V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12
+,13 2,6"/></svg>
+                </div>
+     
+           <div class="info-text">
+          
+        <span class="info-label" data-cn="邮
+箱" data-en="Email">邮箱</span>
+          
+        <span class="info-value">hello@v-ing.
+studio</span>
+                </div>
+        
+      </div>
+              <div class="info-c
+ard">
                 <div class="info-icon">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+
+                  <svg viewBox="0 0 24 24" w
+idth="24" height="24" fill="none" stroke="cur
+rentColor" stroke-width="1.5"><path d="M21 11
+.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4
+.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8
+.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8
+.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/
+></svg>
                 </div>
-                <div class="info-text">
-                  <span class="info-label" data-cn="邮箱" data-en="Email">邮箱</span>
-                  <span class="info-value">hello@v-ing.studio</span>
+              
+  <div class="info-text">
+                  <
+span class="info-label" data-cn="商务微信
+" data-en="WeChat">商务微信</span>
+      
+            <span class="info-value">V-ing_St
+udio</span>
                 </div>
-              </div>
-              <div class="info-card">
+          
+    </div>
+              <div class="info-car
+d">
                 <div class="info-icon">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                </div>
-                <div class="info-text">
-                  <span class="info-label" data-cn="商务微信" data-en="WeChat">商务微信</span>
-                  <span class="info-value">V-ing_Studio</span>
-                </div>
+ 
+                 <svg viewBox="0 0 24 24" wid
+th="24" height="24" fill="none" stroke="curre
+ntColor" stroke-width="1.5"><path d="M21 10c0
+ 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><cir
+cle cx="12" cy="10" r="3"/></svg>
+           
+     </div>
+                <div class="info-
+text">
+                  <span class="info-la
+bel" data-cn="坐标" data-en="Location">坐�
+��</span>
+                  <span class="info
+-value" data-cn="中国 · 上海" data-en="S
+hanghai, China">中国 · 上海</span>
+     
+           </div>
               </div>
-              <div class="info-card">
-                <div class="info-icon">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                </div>
-                <div class="info-text">
-                  <span class="info-label" data-cn="坐标" data-en="Location">坐标</span>
-                  <span class="info-value" data-cn="中国 · 上海" data-en="Shanghai, China">中国 · 上海</span>
-                </div>
-              </div>
-              <div class="contact-social">
-                <a href="https://space.bilibili.com" target="_blank" rel="noopener" class="social-pill">
-                  <img src="assets/bilibili-icon.svg" alt="哔哩哔哩" class="bili-icon-svg" />
-                  <img src="assets/bilibili-text.svg" alt="哔哩哔哩" class="bili-text-svg" />
+      
+        <div class="contact-social">
+        
+        <a href="https://space.bilibili.com" 
+target="_blank" rel="noopener" class="social-
+pill">
+                  <img src="assets/bil
+ibili-icon.svg" alt="哔哩哔哩" class="bil
+i-icon-svg" />
+                  <img src="as
+sets/bilibili-text.svg" alt="哔哩哔哩" cl
+ass="bili-text-svg" />
                 </a>
-                <a href="https://www.douyin.com" target="_blank" rel="noopener" class="social-pill">
-                  <img src="assets/douyin-logo.svg" alt="抖音" class="dy-logo-light" height="18" />
-                  <img src="assets/douyin-logo-dark.svg" alt="抖音" class="dy-logo-dark" height="18" />
-                </a>
+ 
+               <a href="https://www.douyin.co
+m" target="_blank" rel="noopener" class="soci
+al-pill">
+                  <img src="assets/
+douyin-logo.svg" alt="抖音" class="dy-logo-
+light" height="18" />
+                  <img 
+src="assets/douyin-logo-dark.svg" alt="抖音
+" class="dy-logo-dark" height="18" />
+       
+         </a>
               </div>
-            </div>
+          
+  </div>
           </div>
         </div>
-      </div>
+    
+  </div>
     </section>
   </main>
 
-  <!-- ========== Footer ========== -->
-  <footer class="footer">
-    <div class="container footer-inner">
+  <!-- ===
+======= Footer ========== -->
+  <footer class
+="footer">
+    <div class="container footer-i
+nner">
       <div class="footer-brand">
-        <span class="footer-logo">微影<span class="logo-dot">.</span>ing</span>
-        <p data-cn="用镜头记录光影，用创意定义故事" data-en="Capturing light and shadow, defining stories through creativity">用镜头记录光影，用创意定义故事</p>
-      </div>
+     
+   <span class="footer-logo">微影<span clas
+s="logo-dot">.</span>ing</span>
+        <p da
+ta-cn="用镜头记录光影，用创意定�
+�故事" data-en="Capturing light and shadow,
+ defining stories through creativity">用镜�
+��记录光影，用创意定义故事</p>
+  
+    </div>
       <div class="footer-links">
-        <div class="footer-col">
-          <h4 data-cn="导航" data-en="Navigate">导航</h4>
-          <a href="#home" data-nav="home" data-cn="首页" data-en="Home">首页</a>
-          <a href="#about" data-nav="about" data-cn="关于" data-en="About">关于</a>
-          <a href="#works" data-nav="works" data-cn="作品" data-en="Works">作品</a>
-          <a href="#collab" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
-          <a href="#workspace" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
-          <a href="#contact" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
+ 
+       <div class="footer-col">
+          <h4
+ data-cn="导航" data-en="Navigate">导航</
+h4>
+          <a href="#home" data-nav="home"
+ data-cn="首页" data-en="Home">首页</a>
+ 
+         <a href="#about" data-nav="about" da
+ta-cn="关于" data-en="About">关于</a>
+   
+       <a href="#works" data-nav="works" data
+-cn="作品" data-en="Works">作品</a>
+     
+     <a href="#collab" data-nav="collab" data
+-cn="联动" data-en="Collabs">联动</a>
+   
+       <a href="#workspace" data-nav="workspa
+ce" data-cn="工作台" data-en="Workspace">�
+��作台</a>
+          <a href="#contact" dat
+a-nav="contact" data-cn="联系" data-en="Con
+tact">联系</a>
         </div>
+        <div 
+class="footer-col">
+          <h4 data-cn="�
+�台" data-en="Platforms">平台</h4>
+       
+   <a href="https://space.bilibili.com" targe
+t="_blank" rel="noopener">哔哩哔哩</a>
+  
+        <a href="https://www.douyin.com" targ
+et="_blank" rel="noopener">抖音</a>
+       
+ </div>
         <div class="footer-col">
-          <h4 data-cn="平台" data-en="Platforms">平台</h4>
-          <a href="https://space.bilibili.com" target="_blank" rel="noopener">哔哩哔哩</a>
-          <a href="https://www.douyin.com" target="_blank" rel="noopener">抖音</a>
-        </div>
-        <div class="footer-col">
-          <h4 data-cn="联系" data-en="Contact">联系</h4>
-          <a href="mailto:hello@v-ing.studio">hello@v-ing.studio</a>
-          <span data-cn="上海 · 中国" data-en="Shanghai · China">上海 · 中国</span>
-        </div>
+    
+      <h4 data-cn="联系" data-en="Contact">
+联系</h4>
+          <a href="mailto:hello@v
+-ing.studio">hello@v-ing.studio</a>
+         
+ <span data-cn="上海 · 中国" data-en="Sh
+anghai · China">上海 · 中国</span>
+    
+    </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <div class="container">
-        <span>© 2026 微影 V-ing Studio. All rights reserved.</span>
-        <span data-cn="我们·正在进行时" data-en="We · In Present Continuous">我们·正在进行时</span>
+    <div c
+lass="footer-bottom">
+      <div class="conta
+iner">
+        <span>© 2026 微影 V-ing Stu
+dio. All rights reserved.</span>
+        <spa
+n data-cn="我们·正在进行时" data-en="
+We · In Present Continuous">我们·正在�
+�行时</span>
       </div>
     </div>
-  </footer>
+  </fo
+oter>
 
-  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20260921h" defer></script>
+  <script src="https://cdn.jsdelivr.ne
+t/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-
+styling.js" defer></script>
+  <script src="js
+/app.js?v=20260921h" defer></script>
 </body>
+
 </html>
+
+
