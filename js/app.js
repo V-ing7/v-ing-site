@@ -3711,6 +3711,8 @@
           rows: (p.rows || []).map(function(r){
             return {shotTask:r.shotTask||'',visual:r.visual||'',script:r.script||'',done:r.done||false};
           }),
+          visualDesc: p.visualDesc || '',
+          voiceover: p.voiceover || '',
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
       });
@@ -4011,6 +4013,34 @@
     if(detailView) detailView.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
+    // Render voiceover script in detail view
+    var voDetail = document.getElementById('sbDetailVoiceover');
+    if(voDetail){
+      if(proj.voiceover && proj.voiceover.trim()){
+        voDetail.textContent = proj.voiceover;
+        voDetail.style.display = '';
+      } else {
+        voDetail.textContent = '';
+        voDetail.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无口播稿','No voiceover script') + '</div>';
+      }
+    }
+
+    // Render visual description (single field) in detail view
+    // Hide per-row visual list and show single description
+    var detVisList = document.getElementById('sbDetailVisualList');
+    if(detVisList){
+      detVisList.style.display = 'none';
+    }
+    var detVisDesc = document.getElementById('sbDetailVisualDesc');
+    if(detVisDesc){
+      if(proj.visualDesc && proj.visualDesc.trim()){
+        detVisDesc.textContent = proj.visualDesc;
+        detVisDesc.style.display = '';
+      } else {
+        detVisDesc.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-quaternary)">' + t('暂无画面描述','No visual description') + '</div>';
+      }
+    }
+
   function backToProjectList(){
     if(detailView){ detailView.style.display = 'none'; detailView.classList.remove('visible'); }
     if(editorView){ editorView.style.display = 'none'; editorView.classList.remove('visible'); }
@@ -4040,6 +4070,38 @@
     // Clear and load rows
     if(proj && proj.rows && proj.rows.length > 0){
       renderAllRows(proj.rows);
+
+    // Load visual description (single field)
+    var visDescTa = document.getElementById('sbVisualDescInput');
+    if(visDescTa){
+      visDescTa.value = proj ? (proj.visualDesc || '') : '';
+      visDescTa.addEventListener('input', function(){
+        markUnsaved();
+      });
+    }
+
+    // Load voiceover script
+    var voTa = document.getElementById('sbVoiceoverInput');
+    if(voTa){
+      voTa.value = proj ? (proj.voiceover || '') : '';
+      voTa.addEventListener('input', function(){
+        markUnsaved();
+        autoResizeTextarea(voTa);
+      });
+      // Auto-resize on load
+      setTimeout(function(){ autoResizeTextarea(voTa); }, 50);
+    }
+
+    // Hide per-row visual list (use single visualDesc field instead)
+    var visList = document.getElementById('sbVisualList');
+    if(visList){
+      visList.style.display = 'none';
+    }
+    // Show single visual desc textarea if it exists
+    var visDescSection = document.getElementById('sbVisualDescSection');
+    if(visDescSection){
+      visDescSection.style.display = '';
+    }
     } else {
       renderAllRows([createEmptyRow()]);
     }
@@ -4060,10 +4122,26 @@
         visualList.querySelectorAll('textarea.sb-cell').forEach(function(ta){
           autoResizeTextarea(ta);
         });
+      // Resize voiceover and visual desc textareas
+      var voTa = document.getElementById('sbVoiceoverInput');
+      if(voTa) autoResizeTextarea(voTa);
+      var visDescTa = document.getElementById('sbVisualDescInput');
+      if(visDescTa) autoResizeTextarea(visDescTa);
       }
     });
 
     if(editorView) editorView.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  
+  function getVisualDesc(){
+    var ta = document.getElementById('sbVisualDescInput');
+    return ta ? ta.value.trim() : '';
+  }
+
+  function getVoiceover(){
+    var ta = document.getElementById('sbVoiceoverInput');
+    return ta ? ta.value.trim() : '';
   }
 
   function getCurrentProjectData(){
@@ -4079,6 +4157,8 @@
       projectName: sbProjectInput ? sbProjectInput.value.trim() : '',
       shootDate: sbDateInput ? sbDateInput.value : '',
       rows: rows,
+      visualDesc: getVisualDesc(),
+      voiceover: getVoiceover(),
       lastUpdated: new Date().toISOString(),
       _local: !currentProjectId,  // true if this is a new unsaved project
       _saved: false
@@ -4380,7 +4460,9 @@
         rows: Array.isArray(data.rows) ? data.rows.map(function(r){
           return {shotTask:r.shotTask||'',visual:r.visual||'',script:r.script||'',done:r.done||false};
         }) : [],
-        lastUpdated: data.lastUpdated || new Date().toISOString()
+        visualDesc: data.visualDesc || '',
+        voiceover: data.voiceover || '',
+          lastUpdated: data.lastUpdated || new Date().toISOString()
       });
     }
 
@@ -4394,6 +4476,8 @@
           rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
             return {shotTask:r.shotTask||'',visual:r.visual||'',script:r.script||'',done:r.done||false};
           }) : [],
+          visualDesc: proj.visualDesc || '',
+          voiceover: proj.voiceover || '',
           lastUpdated: proj.lastUpdated || new Date().toISOString()
         });
       });
@@ -4482,7 +4566,86 @@
   };
 
   /* ---------- Init ---------- */
+  
+  /* ---------- Enhancements: Collapsible + VisualDesc + Voiceover ---------- */
+  function setupStoryboardEnhancements(){
+    // Add single visual description textarea to editor (replacing per-row visual list)
+    var visualSection = document.querySelector('.sb-section-visual');
+    if(visualSection){
+      // Check if visual desc section already exists
+      if(!document.getElementById('sbVisualDescSection')){
+        var descSection = document.createElement('div');
+        descSection.id = 'sbVisualDescSection';
+        descSection.className = 'sb-visual-desc-section';
+        descSection.innerHTML = 
+          '<textarea class="sb-cell sb-visual-desc-textarea" id="sbVisualDescInput" ' +
+          'data-cn-placeholder="描述画面内容..." data-en-placeholder="Describe visual content..." ' +
+          'placeholder="描述画面内容..." rows="3"></textarea>';
+        
+        // Insert before the per-row visual list
+        var visList = document.getElementById('sbVisualList');
+        if(visList && visList.parentNode){
+          visList.parentNode.insertBefore(descSection, visList);
+        }
+      }
+    }
+
+    // Add single visual description to detail view
+    var detailVisualSection = document.querySelector('#sbDetailView .sb-section-visual');
+    if(detailVisualSection){
+      if(!document.getElementById('sbDetailVisualDescSection')){
+        var detDescDiv = document.createElement('div');
+        detDescDiv.id = 'sbDetailVisualDescSection';
+        detDescDiv.className = 'sb-detail-visual-desc';
+        detDescDiv.innerHTML = 
+          '<div class="sb-visual-text" id="sbDetailVisualDesc" ' +
+          'style="white-space:pre-wrap;word-break:break-word;padding:14px;color:var(--text-secondary);font-size:.88rem;line-height:1.7;"></div>';
+        
+        var detVisList = document.getElementById('sbDetailVisualList');
+        if(detVisList && detVisList.parentNode){
+          detVisList.parentNode.insertBefore(detDescDiv, detVisList);
+        }
+      }
+    }
+
+    // Setup collapsible toggle for all section headers
+    var toggleHeaders = document.querySelectorAll('.sb-section-header-toggle');
+    toggleHeaders.forEach(function(header){
+      header.addEventListener('click', function(){
+        var section = header.closest('.sb-section');
+        if(section){
+          section.classList.toggle('collapsed');
+        }
+      });
+    });
+
+    // Also make all sb-section-headers collapsible (not just toggle ones)
+    var allHeaders = document.querySelectorAll('.sb-section-header');
+    allHeaders.forEach(function(header){
+      if(!header.classList.contains('sb-section-header-toggle')){
+        header.classList.add('sb-section-header-toggle');
+        // Add toggle icon if not present
+        if(!header.querySelector('.sb-section-toggle-icon')){
+          var icon = document.createElement('span');
+          icon.className = 'sb-section-toggle-icon';
+          icon.textContent = '▼';
+          header.appendChild(icon);
+        }
+        header.addEventListener('click', function(){
+          var section = header.closest('.sb-section');
+          if(section){
+            section.classList.toggle('collapsed');
+          }
+        });
+      }
+    });
+  }
+
   function init(){
+
+  // Setup collapsible sections and visualDesc/voiceover fields
+  setupStoryboardEnhancements();
+  
     if(!tableBody && !projectGrid) return;
 
     // Load projects from __vingData
@@ -4496,7 +4659,9 @@
             rows: Array.isArray(p.rows) ? p.rows.map(function(r){
               return {shotTask:r.shotTask||'',visual:r.visual||'',script:r.script||'',done:r.done||false};
             }) : [],
-            lastUpdated: p.lastUpdated || '',
+            visualDesc: p.visualDesc || '',
+            voiceover: p.voiceover || '',
+          lastUpdated: p.lastUpdated || '',
             _local: false,
             _saved: true
           };
