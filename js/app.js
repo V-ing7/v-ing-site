@@ -3,6 +3,11 @@
    ================================================================ */
 (function(){
   'use strict';
+  // Show loader immediately (CSS defaults to hidden to prevent black screen on JS error)
+  (function(){
+    var ld=document.getElementById('loader');
+    if(ld) ld.classList.add('loading');
+  })();
 
 
   /* ================================================================
