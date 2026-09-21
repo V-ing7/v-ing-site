@@ -36,19 +36,19 @@
       "edit": 7
     }
   },
-  "lastUpdated": "2026-09-21T04:57:43.146Z",
+  "lastUpdated": "2026-09-21T04:57:56.778Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
-    "todo": [
+    "todo": [],
+    "wip": [],
+    "done": [
       {
         "title": "打扫卫生",
         "desc": "",
         "deadline": ""
       }
-    ],
-    "wip": [],
-    "done": []
+    ]
   },
   "storyboard": {
     "projectName": "莆田",
