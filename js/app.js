@@ -107,7 +107,7 @@
      ================================================================ */
   function setSyncStatus(status, msg){
     ghSyncStatus = status;
-    window.__ghSyncStatus = status; // Expose for other modules
+    // __ghSyncStatus is exposed via Object.defineProperty getter (line ~3386)
     var el = document.getElementById('syncStatusBadge');
     if(!el) return;
     var labels = {
