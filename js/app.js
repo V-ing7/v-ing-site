@@ -288,14 +288,23 @@
       var isStale = baselineTime && dataTime && dataTime <= baselineTime;
       if(isStale){
         _log(sourceName + ': same or older data (ts: ' + dataTime + '), skipped', 'debug');
-        // Still count as completed but don't apply
-        // For first resolve, we still need SOME data, so check if we have nothing yet
-        if(!bestData && !resolvedFirst && !baselineTime){
-          // Initial load with no baseline - accept this first valid data
-          _log(sourceName + ': accepted as initial data');
-        } else {
-          return;
+        // Data is valid but not newer — still resolve the promise as "up to date"
+        if(!resolvedFirst){
+          resolvedFirst = true;
+          firstResolveData = result.data;
+          if(!bestData){
+            bestData = result.data;
+            bestTime = dataTime;
+            bestSource = sourceName;
+          }
+          ghLastSuccessfulLoad = Date.now();
+          _refreshConsecutiveFailures = 0;
+          _refreshCurrentInterval = _refreshBaseInterval;
+          if(!isBackground){
+            setSyncStatus('success');
+          }
         }
+        return;
       }
 
       var isNewer = !bestData || (dataTime && dataTime > bestTime);
@@ -322,7 +331,6 @@
           if(isBackground && inEditMode){
             _hasNewDataPending = true;
             _log('↻ New data from ' + sourceName + ' available (edit mode - pending)');
-            // Update sync badge to indicate pending updates
             setSyncStatus('pending');
           } else {
             _log('✓ ' + sourceName + (dataTime ? ' (ts: ' + dataTime + ')' : ''));
@@ -337,8 +345,6 @@
           firstResolveData = result.data;
           if(!isBackground){
             setSyncStatus('success');
-          } else if(!isActuallyNew){
-            // Background refresh with no new data - keep current status
           }
           ghLastSuccessfulLoad = Date.now();
           _refreshConsecutiveFailures = 0;
