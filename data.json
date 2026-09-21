@@ -36,18 +36,18 @@
       "edit": 6
     }
   },
-  "lastUpdated": "2026-09-21T03:44:45.222Z",
+  "lastUpdated": "2026-09-21T03:45:05.222Z",
   "theme": "light",
   "lang": "zh",
   "kanbanTasks": {
-    "todo": [
+    "todo": [],
+    "wip": [
       {
         "title": "打扫卫生",
         "desc": "",
         "deadline": ""
       }
     ],
-    "wip": [],
     "done": []
   },
   "storyboard": {
