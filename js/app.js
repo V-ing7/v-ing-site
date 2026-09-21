@@ -4569,6 +4569,8 @@
   
   /* ---------- Enhancements: Collapsible + VisualDesc + Voiceover ---------- */
   function setupStoryboardEnhancements(){
+    try {
+
     // Add single visual description textarea to editor (replacing per-row visual list)
     var visualSection = document.querySelector('.sb-section-visual');
     if(visualSection){
@@ -4639,8 +4641,10 @@
         });
       }
     });
-  }
-
+    } catch(e) {
+      console.warn('[Storyboard Enhancements] setup error:', e);
+    }
+  
   function init(){
 
   // Setup collapsible sections and visualDesc/voiceover fields
