@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-th
 eme="dark" data-lang="zh">
 <head>
@@ -28,24 +28,16 @@ esheet">
   <script src="js/lib/html2canvas.mi
 n.js" defer></script>
   <script>
-    // Clearold service workers and caches from previous
-
- versions
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrat
-ions().then(function(regs){
-        regs.forE
-ach(function(r){ r.unregister(); });
-      })
-;
+    // Clear old service workers and caches from previous versions
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
+      });
     }
-    if('caches' in window){
-      cac
-hes.keys().then(function(keys){
-        keys.
-forEach(function(k){ caches.delete(k); });
-  
-    });
+    if ('caches' in window) {
+      caches.keys().then(function(keys) {
+        keys.forEach(function(k) { caches.delete(k); });
+      });
     }
   </script>
   <style>
