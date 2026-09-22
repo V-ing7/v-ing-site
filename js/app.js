@@ -3049,96 +3049,53 @@
   var consoleLastSync = document.getElementById('consoleLastSync');
   var consoleCopyBtn = document.getElementById('consoleCopyBtn');
 
-  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.0】\
-'
-    + '我的网站数据存在 GitHub 仓库，请帮我拉取最新数据并继续工作。\
-\
-'
-    + '【项目信息】\
-'
-    + '仓库地址：V-ing7/v-ing-site\
-'
-    + '分支：main\
-'
-    + '数据文件：data.json（含主播数据、主题、语言、操作日志）\
-'
-    + '网站地址：https://v-ing-site.pages.dev\
-'
-    + 'GitHub Pages：https://V-ing7.github.io/v-ing-site/\
-\
-'
-    + '【API 接口】\
-'
-    + 'Pages Function API 地址：https://v-ing-site.pages.dev/api/\
-'
-    + '读取数据：GET https://v-ing-site.pages.dev/api/v-ing-data （无需密码）\
-'
-    + '修改数据：PUT https://v-ing-site.pages.dev/api/v-ing-data （需密码）\
-'
-    + '触发部署：POST https://v-ing-site.pages.dev/api/deploy （需密码）\
-'
-    + '健康检查：GET https://v-ing-site.pages.dev/api/health\
-\
-'
-    + '【安全机制】\
-'
-    + '读取数据无需密码，任何人可查看\
-'
-    + '修改数据需要密码，请向我询问密码后再操作\
-'
-    + '密码提示：个人英文名\
-\
-'
-    + '【自动部署机制 v4.0】\
-'
-    + '1. 推送代码到 GitHub main 分支后，GitHub Actions 自动同时部署到两个平台：\
-'
-    + '   - GitHub Pages（https://V-ing7.github.io/v-ing-site/）\
-'
-    + '   - Cloudflare Pages（https://v-ing-site.pages.dev）\
-'
-    + '2. 浏览器编辑保存时通过 Pages Function API 写入 GitHub 仓库 data.json\
-'
-    + '3. 页面加载时并行请求多个数据源，选择最新数据\
-'
-    + '4. 每 30 秒自动刷新检查远端是否有新数据（仅当远端时间戳 > 本地时）\
-'
-    + '5. 保存后 90 秒内跳过自动刷新，防止旧 CDN 缓存覆盖新数据\
-'
-    + '6. 点击导航栏同步徽章可手动强制同步\
-\
-'
-    + '【操作步骤】\
-'
-    + '1. 用 Pages Function API 读取 data.json（GET https://v-ing-site.pages.dev/api/v-ing-data）\
-'
-    + '2. 返回 JSON 格式 { sha, data }，直接使用 data 字段\
-'
-    + '3. 了解当前数据状态后按我的要求修改\
-'
-    + '4. 修改后用 Pages Function API PUT 回 data.json：\
-'
-    + '   PUT https://v-ing-site.pages.dev/api/v-ing-data\
-'
-    + '   Headers: { X-Password: <密码>, Content-Type: application/json }\
-'
-    + '   Body: { data: <修改后的完整JSON>, sha: <步骤1获取的sha> }\
-'
-    + '5. 如遇 409 冲突，重新 GET 获取新 sha 后重试\
-\
-'
-    + '【注意事项】\
-'
-    + '- 修改数据前必须向我询问密码，我不会在指令模版中提供密码\
-'
-    + '- 密码提示：个人英文名\
-'
-    + '- 如果遇到 409 冲突，重新 GET 获取 sha 后重试\
-'
-    + '- data.json 中的中文字符必须用 UTF-8 编码，不能乱码\
-'
-    + '- operationLog 记录每次重要操作，格式：{date, time, action, status}\
-'
+  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.3】\'
+    + '我的网站数据存储在 Cloudflare D1 数据库中，请帮我拉取最新数据并继续工作。\'
+    + '\'
+    + '【项目信息】\'
+    + '仓库地址：V-ing7/v-ing-site（仅存网站代码）\'
+    + '分支：main\'
+    + '数据存储：Cloudflare D1 数据库（SQLite）\'
+    + '网站地址：https://v-ing-site.pages.dev\'
+    + 'GitHub Pages：https://V-ing7.github.io/v-ing-site/\'
+    + '\'
+    + '【API 接口】\'
+    + 'Pages Function API 地址：https://v-ing-site.pages.dev/api/\'
+    + '读取数据：GET https://v-ing-site.pages.dev/api/v-ing-data （无需密码）\'
+    + '修改数据：PUT https://v-ing-site.pages.dev/api/v-ing-data （需密码）\'
+    + '触发部署：POST https://v-ing-site.pages.dev/api/v-ing-deploy （需密码）\'
+    + '健康检查：GET https://v-ing-site.pages.dev/api/v-ing-health\'
+    + '\'
+    + '【安全机制】\'
+    + '读取数据无需密码，任何人可查看\'
+    + '修改数据需要密码，请向我询问密码后再操作\'
+    + '密码提示：个人英文名\'
+    + '\'
+    + '【自动部署机制 v4.3】\'
+    + '1. 推送代码到 GitHub main 分支后，GitHub Actions 自动同时部署到两个平台：\'
+    + '   - GitHub Pages（https://V-ing7.github.io/v-ing-site/）\'
+    + '   - Cloudflare Pages（https://v-ing-site.pages.dev）\'
+    + '2. 浏览器编辑保存时通过 Pages Function API 写入 Cloudflare D1 数据库\'
+    + '3. 页面加载时从 D1 数据库读取数据，返回 { data, source: "d1" }\'
+    + '4. 每 30 秒自动刷新检查远端是否有新数据（仅当远端时间戳 > 本地时）\'
+    + '5. 保存后 90 秒内跳过自动刷新，防止旧 CDN 缓存覆盖新数据\'
+    + '6. 点击导航栏同步徽章可手动强制同步\'
+    + '\'
+    + '【操作步骤】\'
+    + '1. 用 Pages Function API 读取数据（GET https://v-ing-site.pages.dev/api/v-ing-data）\'
+    + '2. 返回 JSON 格式 { data, source }，直接使用 data 字段\'
+    + '3. 了解当前数据状态后按我的要求修改\'
+    + '4. 修改后用 Pages Function API PUT 回写：\'
+    + '   PUT https://v-ing-site.pages.dev/api/v-ing-data\'
+    + '   Headers: { X-Password: <密码>, Content-Type: application/json }\'
+    + '   Body: { data: <修改后的完整JSON> }\'
+    + '5. PUT 成功后数据立即生效，无需 SHA\'
+    + '\'
+    + '【注意事项】\'
+    + '- 修改数据前必须向我询问密码，我不会在指令模版中提供密码\'
+    + '- 密码提示：个人英文名\'
+    + '- data.json 中的中文字符必须用 UTF-8 编码，不能乱码\'
+    + '- operationLog 记录每次重要操作，格式：{date, time, action, status}\'
     + '- instructionTemplate 区域包含项目元信息，保持最新';
 
   // Render console panel from GitHub data
