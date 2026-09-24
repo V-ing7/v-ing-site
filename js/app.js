@@ -3522,6 +3522,8 @@
   var sbDetailInfo = document.getElementById('sbDetailInfo');
   var sbDetailTaskList = document.getElementById('sbDetailTaskList');
   var sbDetailVisualList = document.getElementById('sbDetailVisualList');
+  var sbVoiceoverInput = document.getElementById('sbVoiceoverInput');
+  var sbDetailVoiceover = document.getElementById('sbDetailVoiceover');
 
   function t(cn,en){
     return currentLang === 'en' ? en : cn;
@@ -3533,6 +3535,27 @@
 
   function createEmptyRow(){
     return {shotTask:'',visual:'',done:false};
+  }
+
+  // Collapsible section headers (toggle .collapsed on parent .sb-section)
+  function setupCollapsible(scope){
+    if(!scope) scope = document;
+    var headers = scope.querySelectorAll('.sb-section-header');
+    headers.forEach(function(h){
+      if(h._toggled) return;
+      h._toggled = true;
+      h.classList.add('sb-section-header-toggle');
+      if(!h.querySelector('.sb-section-toggle-icon')){
+        var ic = document.createElement('span');
+        ic.className = 'sb-section-toggle-icon';
+        ic.textContent = '▼';
+        h.appendChild(ic);
+      }
+      h.addEventListener('click', function(){
+        var s = h.closest('.sb-section');
+        if(s) s.classList.toggle('collapsed');
+      });
+    });
   }
 
   function getShotSizeLabel(val){
@@ -4000,6 +4023,17 @@
       }
     }
 
+    // Render voiceover (per-project)
+    if(sbDetailVoiceover){
+      if(proj.voiceover && proj.voiceover.trim()){
+        sbDetailVoiceover.textContent = proj.voiceover;
+        sbDetailVoiceover.style.color = '';
+      } else {
+        sbDetailVoiceover.textContent = t('暂无口播稿','No voiceover');
+        sbDetailVoiceover.style.color = 'var(--text-quaternary)';
+      }
+    }
+
     // Store current project id for edit button
     detailView.setAttribute('data-pid', pid);
 
@@ -4032,6 +4066,7 @@
     if(sbProjectInput) sbProjectInput.value = proj ? (proj.projectName || '') : '';
     if(sbDateInput) sbDateInput.value = proj ? (proj.shootDate || '') : '';
     if(sbProjectName) sbProjectName.textContent = proj ? (proj.projectName || t('未命名项目','Untitled Project')) : t('新项目','New Project');
+    if(sbVoiceoverInput) sbVoiceoverInput.value = (proj && proj.voiceover) ? proj.voiceover : '';
 
     // Clear and load rows
     if(proj && proj.rows && proj.rows.length > 0){
@@ -4057,6 +4092,7 @@
           autoResizeTextarea(ta);
         });
       }
+      if(sbVoiceoverInput) autoResizeTextarea(sbVoiceoverInput);
     });
 
     if(editorView) editorView.scrollIntoView({behavior:'smooth',block:'start'});
@@ -4075,6 +4111,7 @@
       projectName: sbProjectInput ? sbProjectInput.value.trim() : '',
       shootDate: sbDateInput ? sbDateInput.value : '',
       rows: rows,
+      voiceover: sbVoiceoverInput ? sbVoiceoverInput.value : '',
       lastUpdated: new Date().toISOString(),
       _local: !currentProjectId,  // true if this is a new unsaved project
       _saved: false
@@ -4300,9 +4337,11 @@
           rows: (p.rows || []).map(function(r){
             return {
               shotTask: r.shotTask || '',
-              visual: r.visual || ''
+              visual: r.visual || '',
+              done: r.done || false
             };
           }),
+          voiceover: p.voiceover || '',
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
       });
@@ -4376,6 +4415,7 @@
         rows: Array.isArray(data.rows) ? data.rows.map(function(r){
           return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
         }) : [],
+        voiceover: data.voiceover || '',
         lastUpdated: data.lastUpdated || new Date().toISOString()
       });
     }
@@ -4390,6 +4430,7 @@
           rows: Array.isArray(proj.rows) ? proj.rows.map(function(r){
             return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }) : [],
+          voiceover: proj.voiceover || '',
           lastUpdated: proj.lastUpdated || new Date().toISOString()
         });
       });
@@ -4409,9 +4450,9 @@
     function sig(p){
       // Include row content for stronger dedup
       var rowSig = (p.rows || []).map(function(r){
-        return [r.shotTask||'',r.size||'',r.movement||'',r.visual||'',r.audio||'',r.duration||'',r.note||''].join(',');
+        return [r.shotTask||'',r.visual||'',r.done||false].join(',');
       }).join('||');
-      return (p.projectName || '') + '|' + (p.shootDate || '') + '|' + (p.rows || []).length + '|' + rowSig;
+      return (p.projectName || '') + '|' + (p.shootDate || '') + '|' + (p.rows || []).length + '|' + (p.voiceover || '') + '|' + rowSig;
     }
 
     // Deduplicate by ID first (keep last occurrence)
@@ -4464,6 +4505,7 @@
           rows: (p.rows || []).map(function(r){
             return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }),
+          voiceover: p.voiceover || '',
           lastUpdated: p.lastUpdated || new Date().toISOString()
         };
       });
@@ -4492,6 +4534,7 @@
             rows: Array.isArray(p.rows) ? p.rows.map(function(r){
               return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
             }) : [],
+            voiceover: p.voiceover || '',
             lastUpdated: p.lastUpdated || '',
             _local: false,
             _saved: true
@@ -4504,9 +4547,9 @@
           if(initSeenIds[p.id]) return false;
           initSeenIds[p.id] = true;
           var rowSig = (p.rows||[]).map(function(r){
-            return [r.size||'',r.movement||'',r.visual||'',r.audio||'',r.duration||'',r.note||''].join(',');
+            return [r.shotTask||'',r.visual||'',r.done||false].join(',');
           }).join('||');
-          var s = (p.projectName||'')+'|'+(p.shootDate||'')+'|'+(p.rows||[]).length+'|'+rowSig;
+          var s = (p.projectName||'')+'|'+(p.shootDate||'')+'|'+(p.rows||[]).length+'|'+(p.voiceover||'')+'|'+rowSig;
           if(initSeenSigs[s]) return false;
           initSeenSigs[s] = true;
           return true;
@@ -4521,6 +4564,7 @@
           rows: Array.isArray(sb.rows) ? sb.rows.map(function(r){
             return {shotTask:r.shotTask||'',visual:r.visual||'',done:r.done||false};
           }) : [],
+          voiceover: sb.voiceover || '',
           lastUpdated: sb.lastUpdated || '',
           _local: false,
           _saved: true
@@ -4529,6 +4573,7 @@
     }
 
     renderProjectList();
+    setupCollapsible();
 
     // Bind buttons
     if(sbAddProject) sbAddProject.addEventListener('click', function(){ openEditor(null); });
@@ -4540,6 +4585,15 @@
       var pid = detailView.getAttribute('data-pid');
       if(pid) openEditor(pid);
     });
+
+    // Voiceover input (per-project) — mark unsaved on edit
+    if(sbVoiceoverInput && !sbVoiceoverInput._bound){
+      sbVoiceoverInput._bound = true;
+      sbVoiceoverInput.addEventListener('input', function(){
+        autoResizeTextarea(sbVoiceoverInput);
+        markUnsaved();
+      });
+    }
 
     // Batch input shooting shots
     if(sbBatchShots) sbBatchShots.addEventListener('click', function(){
@@ -4618,30 +4672,8 @@
     currentLang = localStorage.getItem('v-ing-lang') || 'zh';
     renderProjectList();
     if(editorView && editorView.style.display !== 'none'){
-      // Re-render editor rows with new language
-      var rows = [];
-      if(tableBody){
-        var trs = tableBody.querySelectorAll('tr');
-        trs.forEach(function(tr){
-          var shotTaskCell = tr.querySelector('[data-field="shotTask"]');
-          var sizeSel = tr.querySelector('[data-field="size"]');
-          var moveSel = tr.querySelector('[data-field="movement"]');
-          var visualCell = tr.querySelector('[data-field="visual"]');
-          var audioCell = tr.querySelector('[data-field="audio"]');
-          var durInput = tr.querySelector('[data-field="duration"]');
-          var noteCell = tr.querySelector('[data-field="note"]');
-          rows.push({
-            shotTask: shotTaskCell ? shotTaskCell.value : '',
-            size: sizeSel ? sizeSel.value : '',
-            movement: moveSel ? moveSel.value : '',
-            visual: visualCell ? visualCell.value : '',
-            audio: audioCell ? audioCell.value : '',
-            duration: durInput ? durInput.value : '',
-            note: noteCell ? noteCell.value : ''
-          });
-        });
-      }
-      renderRows(rows);
+      // Re-render editor rows from in-memory state (preserves shotTask/visual/done)
+      renderAllRows(editRows);
     }
   });
 
