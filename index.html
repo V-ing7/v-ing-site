@@ -76,18 +76,16 @@
     .cqt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
     .cqt-btn{display:flex;flex-direction:column;align-items:center;gap:10px;
       padding:20px 12px;border-radius:16px;text-decoration:none;
-      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.04);
       transition:all .25s ease;cursor:pointer}
     .cqt-btn:hover{transform:translateY(-2px);
-      background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12)}
+      background:rgba(255,255,255,.07)}
     .cqt-btn:active{transform:scale(.97)}
     .cqt-icon{width:44px;height:44px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;font-size:22px}
+      display:flex;align-items:center;justify-content:center;font-size:22px;
+      border:1.5px solid rgba(255,255,255,.25);color:#fff;transition:border-color .2s}
+    .cqt-btn:hover .cqt-icon{border-color:rgba(255,255,255,.5)}
     .cqt-icon svg{width:24px;height:24px}
-    .cqt-dy .cqt-icon{background:linear-gradient(135deg,#ff0050,#00f2ea);color:#fff}
-    .cqt-sph .cqt-icon{background:linear-gradient(135deg,#07c160,#57ffb4);color:#fff}
-    .cqt-xhs .cqt-icon{background:#ff2442;color:#fff}
-    .cqt-bili .cqt-icon{background:linear-gradient(135deg,#00AEEC,#FB7299);color:#fff}
     .cqt-logo-img{height:62%;width:auto;object-fit:contain;display:block;
       filter:brightness(0) invert(1)}
     .cqt-info{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -106,9 +104,12 @@
       background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
     [data-theme="light"] .cqt-desc{color:rgba(60,60,67,.4)}
     [data-theme="light"] .cqt-btn{
-      background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+      background:rgba(0,0,0,.02)}
     [data-theme="light"] .cqt-btn:hover{
-      background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
+      background:rgba(0,0,0,.04)}
+    [data-theme="light"] .cqt-icon{border-color:rgba(0,0,0,.2);color:rgba(60,60,67,.85)}
+    [data-theme="light"] .cqt-btn:hover .cqt-icon{border-color:rgba(0,0,0,.4)}
+    [data-theme="light"] .cqt-logo-img{filter:brightness(0)}
     [data-theme="light"] .cqt-name{color:rgba(60,60,67,.85)}
     [data-theme="light"] .cqt-arrow{color:rgba(60,60,67,.3)}
     /* Sync status badge styles */
