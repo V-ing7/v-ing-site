@@ -1538,6 +1538,37 @@
                 <div class="console-log-empty" data-cn="加载中..." data-en="Loading...">加载中...</div>
               </div>
             </div>
+
+            <!-- Yin-Yang Coin Toss Card -->
+            <div class="console-card" id="yyCard">
+              <div class="console-card-head">
+                <h3 data-cn="太极抛币器" data-en="Taiji Coin Toss">太极抛币器</h3>
+                <span class="console-badge" data-cn="50/50" data-en="50/50">50/50</span>
+              </div>
+              <div class="yy-toss-wrap">
+                <div class="yy-toss-stage" id="yyStage" role="button" tabindex="0" aria-label="点击抛掷太极币">
+                  <svg class="yy-toss-svg" id="yySvg" viewBox="0 0 200 200" role="img" aria-hidden="true">
+                    <circle cx="100" cy="100" r="96" fill="none" stroke="var(--yy-ring)" stroke-width="0.75"/>
+                    <circle cx="100" cy="100" r="88" fill="#1c1c1e"/>
+                    <path d="M 100,12 A 88,88 0 0,0 100,188 Z" fill="#ffffff"/>
+                    <path d="M 100,12 A 44,44 0 0,1 100,100 Z" fill="#ffffff"/>
+                    <path d="M 100,100 A 44,44 0 0,0 100,188 Z" fill="#1c1c1e"/>
+                    <circle cx="100" cy="56" r="11" fill="#1c1c1e"/>
+                    <circle cx="100" cy="144" r="11" fill="#ffffff"/>
+                  </svg>
+                </div>
+                <p class="yy-toss-result yy-toss-muted" id="yyResult" data-cn="点击太极图抛掷" data-en="Tap the taiji to toss">点击太极图抛掷</p>
+                <p class="yy-toss-stats">
+                  <span data-cn="正" data-en="Heads">正</span> <b id="yyHeads">0</b>
+                  <span class="yy-toss-sep">·</span>
+                  <span data-cn="反" data-en="Tails">反</span> <b id="yyTails">0</b>
+                  <span class="yy-toss-sep">·</span>
+                  <span data-cn="共" data-en="Total">共</span> <b id="yyTotal">0</b>
+                </p>
+                <p class="yy-toss-hint" data-cn="白上为正，黑上为反" data-en="White up = heads, black up = tails">白上为正，黑上为反</p>
+                <button class="yy-toss-reset" id="yyReset" type="button" disabled data-cn="重置统计" data-en="Reset">重置统计</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1661,7 +1692,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20260924a" defer></script>
+  <script src="js/app.js?v=20260925a" defer></script>
 
 </body>
 </html>

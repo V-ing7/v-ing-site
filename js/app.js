@@ -4677,4 +4677,78 @@
     }
   });
 
+  // ---------- Yin-Yang Coin Toss ----------
+  function initYinYangToss(){
+    var stage = document.getElementById('yyStage');
+    var svg = document.getElementById('yySvg');
+    var resultEl = document.getElementById('yyResult');
+    var headsEl = document.getElementById('yyHeads');
+    var tailsEl = document.getElementById('yyTails');
+    var totalEl = document.getElementById('yyTotal');
+    var resetBtn = document.getElementById('yyReset');
+    if(!stage || !svg) return;
+
+    var angle = 0, heads = 0, tails = 0, tossing = false;
+    var lang = (localStorage.getItem('v-ing-lang') || 'zh');
+    function t(zh, en){ return lang === 'zh' ? zh : en; }
+
+    function toss(){
+      if(tossing) return;
+      tossing = true;
+      stage.setAttribute('disabled', '');
+      resetBtn.setAttribute('disabled', '');
+      resultEl.className = 'yy-toss-result yy-toss-muted';
+      resultEl.textContent = t('抛掷中…', 'Tossing…');
+      var result = Math.random() < 0.5 ? 0 : 1; // 0=正(白上) 1=反(黑上)
+      var spins = 4 + Math.floor(Math.random() * 3); // 4-6 圈
+      var cur = angle % 360;
+      var target = angle - cur + spins * 360 + (result ? 180 : 0);
+      if(target <= angle) target += 360;
+      angle = target;
+      svg.classList.add('toss');
+      requestAnimationFrame(function(){
+        svg.style.transform = 'rotate(' + angle + 'deg)';
+      });
+      setTimeout(function(){
+        tossing = false;
+        stage.removeAttribute('disabled');
+        resetBtn.removeAttribute('disabled');
+        if(result === 0){
+          heads++;
+          resultEl.className = 'yy-toss-result';
+          resultEl.innerHTML = '<span class="yy-big">' + t('正', 'Heads') + '</span> · ' + t('阳上', 'Yang up');
+        } else {
+          tails++;
+          resultEl.className = 'yy-toss-result';
+          resultEl.innerHTML = '<span class="yy-big">' + t('反', 'Tails') + '</span> · ' + t('阴上', 'Yin up');
+        }
+        if(headsEl) headsEl.textContent = heads;
+        if(tailsEl) tailsEl.textContent = tails;
+        if(totalEl) totalEl.textContent = heads + tails;
+      }, 1180);
+    }
+
+    stage.addEventListener('click', toss);
+    stage.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toss(); }
+    });
+    if(resetBtn){
+      resetBtn.addEventListener('click', function(){
+        if(tossing) return;
+        heads = 0; tails = 0;
+        if(headsEl) headsEl.textContent = '0';
+        if(tailsEl) tailsEl.textContent = '0';
+        if(totalEl) totalEl.textContent = '0';
+        resultEl.className = 'yy-toss-result yy-toss-muted';
+        resultEl.textContent = t('点击太极图抛掷', 'Tap the taiji to toss');
+      });
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initYinYangToss);
+  } else {
+    initYinYangToss();
+  }
+
 })();

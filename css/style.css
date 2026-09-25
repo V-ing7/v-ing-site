@@ -3466,6 +3466,25 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:.85rem;
 }
 
+/* Yin-Yang Coin Toss */
+:root{--yy-ring:rgba(0,0,0,.06)}
+:root[data-theme="dark"],.dark{--yy-ring:rgba(255,255,255,.10)}
+.yy-toss-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0 4px}
+.yy-toss-stage{width:160px;height:160px;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.yy-toss-stage[disabled]{cursor:default}
+.yy-toss-svg{width:160px;height:160px;display:block;transform-origin:80px 80px;transform:rotate(0deg)}
+.yy-toss-svg.toss{transition:transform 1.15s cubic-bezier(.15,.85,.25,1)}
+.yy-toss-result{font-size:1rem;font-weight:600;margin:0;text-align:center;min-height:22px}
+.yy-toss-result .yy-big{font-size:1.05rem}
+.yy-toss-muted{color:var(--text-tertiary);font-weight:500}
+.yy-toss-stats{font-size:.82rem;color:var(--text-secondary);font-weight:500;margin:0;letter-spacing:.02em}
+.yy-toss-stats b{color:var(--text-primary);font-weight:600;font-variant-numeric:tabular-nums}
+.yy-toss-sep{color:var(--separator)}
+.yy-toss-hint{font-size:.75rem;color:var(--text-tertiary);margin:0}
+.yy-toss-reset{background:none;border:none;color:var(--accent);font-size:.75rem;font-weight:500;font-family:inherit;cursor:pointer;padding:6px 10px;border-radius:8px;transition:background .2s}
+.yy-toss-reset:hover{background:var(--accent-glow)}
+.yy-toss-reset[disabled]{opacity:.4;cursor:default}
+
 
 
 /* ---------- Stagger Delays ---------- */
