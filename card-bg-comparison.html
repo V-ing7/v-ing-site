@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微影 V-ing · 背景色对比</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --label:#C9A96E;
+    --label-2:#b89a5e;
+    --label-3:#8a7448;
+    --hairline:rgba(201,169,110,.14);
+    --hairline-strong:rgba(201,169,110,.24);
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;
+    background:#fff;
+    color:var(--label);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:48px 24px 80px;gap:32px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:12px;letter-spacing:4px;color:#333;
+    text-transform:uppercase;font-weight:500;
+  }
+  .page-title .dot{width:4px;height:4px;border-radius:50%;background:#999}
+
+  .grid{
+    display:flex;flex-wrap:wrap;gap:40px 32px;
+    justify-content:center;align-items:flex-start;
+  }
+  .variant{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .variant .hex{
+    font-family:'JetBrains Mono','Courier New',monospace;
+    font-size:13px;font-weight:600;letter-spacing:1px;
+    color:#333;
+    padding:5px 14px;border-radius:6px;
+    background:rgba(0,0,0,.04);
+    border:1px solid rgba(0,0,0,.1);
+  }
+
+  .card-wrap{
+    filter:drop-shadow(0 20px 40px rgba(0,0,0,.18)) drop-shadow(0 4px 10px rgba(0,0,0,.1));
+  }
+  .ticket{
+    display:flex;width:100mm;height:50mm;
+    border-radius:4mm;overflow:hidden;position:relative;
+  }
+  .ticket::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+    border-radius:4mm;
+  }
+  .main{
+    width:70mm;height:50mm;position:relative;
+    display:flex;flex-direction:column;padding:4.5mm 5.5mm 4mm;
+  }
+  .head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:3.5mm;border-bottom:0.2mm solid var(--hairline);
+  }
+  .brand{display:flex;align-items:center;gap:1.8mm}
+  .brand .logo{
+    width:5.5mm;height:5.5mm;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;color:var(--label);
+  }
+  .brand .logo svg{
+    width:5.5mm;height:5.5mm;display:block;opacity:.95;
+    transform:scale(.96);transform-origin:center;
+    filter:drop-shadow(0 0 0.5mm rgba(201,169,110,.3));
+  }
+  .brand .wordmark{display:flex;flex-direction:column;justify-content:center;gap:0.4mm;padding-right:2mm}
+  .brand .wordmark .main-cn{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
+    font-size:11px;font-weight:700;color:var(--label);
+    letter-spacing:-0.01em;line-height:1;
+  }
+  .brand .wordmark .main-cn .dot{color:var(--label-3)}
+  .brand .wordmark .sub-en{
+    font-family:'Inter',sans-serif;font-size:6.5px;font-weight:500;
+    color:var(--label-2);letter-spacing:2px;line-height:1;text-transform:uppercase;
+  }
+  .no{
+    font-size:7px;font-weight:600;color:var(--label-2);letter-spacing:1.2px;
+    font-variant-numeric:tabular-nums;padding:1.1mm 2.2mm;
+    background:rgba(201,169,110,.06);border:0.2mm solid var(--hairline);border-radius:2.2mm;
+  }
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:1.5mm 0 1mm}
+  .name{
+    font-family:'Noto Sans SC',sans-serif;font-weight:700;font-size:11px;
+    background:linear-gradient(180deg,#e0c890 0%,#C9A96E 40%,#a08550 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:2px;line-height:1;
+  }
+  .name-en{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
+    font-size:11px;font-weight:700;color:var(--label-2);letter-spacing:-0.01em;margin-top:1mm;
+  }
+  .role{margin-top:2mm;font-size:9px;font-weight:400;color:var(--label-2);letter-spacing:3px}
+  .foot{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-top:3mm;border-top:0.2mm solid var(--hairline);
+  }
+  .foot .wx{display:flex;align-items:center;gap:1.6mm}
+  .foot .wx .ico{
+    width:4mm;height:4mm;border-radius:1.1mm;
+    background:linear-gradient(180deg,#e0c890,#C9A96E);color:#2b2b30;
+    font-size:3.4px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif;
+  }
+  .foot .wx .v{font-weight:600;color:var(--label);letter-spacing:0.6px;font-size:8.5px;font-variant-numeric:tabular-nums}
+
+  .perf{width:0;position:relative;z-index:3}
+  .perf::before{
+    content:'';position:absolute;top:3mm;bottom:3mm;left:0;
+    width:0;border-left:0.3mm dashed var(--hairline-strong);
+  }
+  .notch{
+    position:absolute;width:2.5mm;height:2.5mm;
+    background:#fff;border-radius:50%;left:50%;transform:translateX(-50%);z-index:4;
+  }
+  .notch.top{top:-1.25mm}
+  .notch.bottom{bottom:-1.25mm}
+
+  .sub{
+    width:30mm;height:50mm;position:relative;
+    display:flex;flex-direction:column;padding:4.5mm 0 4mm;
+  }
+  .s-head{
+    text-align:center;font-size:7px;font-weight:700;letter-spacing:4px;
+    background:linear-gradient(180deg,#e0c890,#C9A96E);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    text-transform:uppercase;padding-bottom:3mm;position:relative;
+  }
+  .s-head::after{
+    content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    width:4mm;height:0.3mm;background:linear-gradient(90deg,transparent,#C9A96E,transparent);
+  }
+  .s-head .cn{display:block;font-size:5px;font-weight:400;color:var(--label-3);letter-spacing:2.5px;margin-top:0.6mm}
+  .s-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5mm;padding:0 3mm}
+  .qr{
+    width:11mm;height:11mm;border-radius:1.5mm;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qr img{width:100%;height:100%;display:block}
+  .qr.dark img{filter:invert(1)}
+  .s-foot{
+    margin:0 3.5mm;padding-top:3mm;border-top:0.2mm solid var(--hairline);
+    text-align:center;font-size:8px;font-weight:600;color:var(--label);
+    letter-spacing:2px;font-variant-numeric:tabular-nums;
+  }
+
+  .logo-svg{display:none}
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <span>V-ING</span><span class="dot"></span><span>Background Color Comparison</span>
+</div>
+
+<!-- 隐藏的 logo SVG 供复用 -->
+<svg class="logo-svg" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg" id="logoSvg">
+  <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+</svg>
+
+<div class="grid" id="grid"></div>
+
+<script>
+var colors = ['#1a1a1a','#080808'];
+var logoHtml = document.getElementById('logoSvg').outerHTML.replace('logo-svg','').replace('id="logoSvg"','');
+
+function buildTicket(bg){
+  var dark = bg !== '#505050'; // 深色背景二维码反色
+  return ''+
+  '<div class="variant">'+
+    '<div class="hex">'+bg+'</div>'+
+    '<div class="card-wrap">'+
+      '<div class="ticket" style="background:'+bg+'">'+
+        '<div class="main" style="background:'+bg+'">'+
+          '<div class="head">'+
+            '<div class="brand">'+
+              '<div class="logo">'+logoHtml+'</div>'+
+              '<div class="wordmark">'+
+                '<span class="main-cn">微影<span class="dot">.</span>ing</span>'+
+                '<span class="sub-en">V-ING STUDIO</span>'+
+              '</div>'+
+            '</div>'+
+            '<div class="no">No.001</div>'+
+          '</div>'+
+          '<div class="body">'+
+            '<div class="name">林威</div>'+
+            '<div class="name-en">Vikyi L.</div>'+
+            '<div class="role">摄影剪辑</div>'+
+          '</div>'+
+          '<div class="foot">'+
+            '<div class="wx">'+
+              '<div class="ico">微</div>'+
+              '<span class="v">Vking071</span>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="perf"><div class="notch top"></div><div class="notch bottom"></div></div>'+
+        '<div class="sub" style="background:'+bg+'">'+
+          '<div class="s-head">STUB<span class="cn">存根</span></div>'+
+          '<div class="s-body">'+
+            '<div class="qr'+(dark?' dark':'')+'"><img src="assets/card-qr.svg" alt="名片二维码" /></div>'+
+          '</div>'+
+          '<div class="s-foot">001</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+var grid = document.getElementById('grid');
+grid.innerHTML = colors.map(buildTicket).join('');
+</script>
+
+</body>
+</html>

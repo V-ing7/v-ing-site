@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微影 V-ing · 金色方案对比</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    /* 公共：高级黑底 */
+    --bg:#000;
+    --surface:#0a0a0c;
+    --surface-2:#141418;
+    --notch:#000;
+  }
+  /* 方案1: 暖金 */
+  .v1{--gold:#D4AF37;--gold-2:#8a7020;--gold-3:#5a4a14;--hairline:rgba(212,175,55,.18);--hairline-s:rgba(212,175,55,.28)}
+  /* 方案2: 香槟金 */
+  .v2{--gold:#C9A96E;--gold-2:#7a6538;--gold-3:#524425;--hairline:rgba(201,169,110,.18);--hairline-s:rgba(201,169,110,.28)}
+  /* 方案3: 古铜金 */
+  .v3{--gold:#B8860B;--gold-2:#7a5a08;--gold-3:#503c05;--hairline:rgba(184,134,11,.18);--hairline-s:rgba(184,134,11,.28)}
+
+  html,body{height:100%}
+  body{
+    font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;
+    background:radial-gradient(1400px 700px at 50% 0%,#1c1c1e 0%,#000 60%);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:48px 20px 64px;gap:40px;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(600px 300px at 15% 15%,rgba(255,255,255,.03),transparent 60%),
+      radial-gradient(500px 300px at 85% 85%,rgba(255,255,255,.02),transparent 60%);
+  }
+  .page-title{
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:10px;
+    font-size:11px;letter-spacing:4px;color:#86868b;
+    text-transform:uppercase;font-weight:500;
+  }
+  .page-title .dot{width:4px;height:4px;border-radius:50%;background:#86868b}
+
+  .grid{
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;gap:56px;align-items:center;
+  }
+  .variant{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .variant-label{
+    font-family:'JetBrains Mono','Courier New',monospace;
+    font-size:11px;color:#86868b;letter-spacing:2px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .variant-label .swatch{
+    width:14px;height:14px;border-radius:3px;border:1px solid rgba(255,255,255,.1);
+  }
+
+  /* === 卡片 === */
+  .card-wrap{
+    filter:drop-shadow(0 30px 60px rgba(0,0,0,.7)) drop-shadow(0 8px 16px rgba(0,0,0,.5));
+  }
+  .ticket{
+    display:flex;width:100mm;height:50mm;
+    background:var(--surface);border-radius:4mm;overflow:hidden;position:relative;
+  }
+
+  /* 主券 */
+  .main{
+    width:70mm;height:50mm;background:var(--surface);position:relative;
+    display:flex;flex-direction:column;padding:4.5mm 5.5mm 4mm;
+  }
+  .head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:3.5mm;border-bottom:0.2mm solid var(--hairline);
+  }
+  .brand{display:flex;align-items:center;gap:1.8mm}
+  .brand .logo{width:5.5mm;height:5.5mm;flex-shrink:0;color:var(--gold);display:flex;align-items:center;justify-content:center}
+  .brand .logo svg{width:5.5mm;height:5.5mm;opacity:.9;transform:scale(.95)}
+  .brand .wordmark{display:flex;flex-direction:column;justify-content:center;gap:0.4mm}
+  .brand .wordmark .main-cn{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
+    font-size:11px;font-weight:700;color:var(--gold);letter-spacing:-0.01em;line-height:1;
+  }
+  .brand .wordmark .main-cn .dot{color:var(--gold-3)}
+  .brand .wordmark .sub-en{
+    font-family:'Inter',sans-serif;font-size:6px;font-weight:500;
+    color:var(--gold-2);letter-spacing:2px;line-height:1;text-transform:uppercase;
+  }
+  .no{
+    font-size:7px;font-weight:600;color:var(--gold-2);letter-spacing:1.2px;
+    font-variant-numeric:tabular-nums;padding:1.1mm 2.2mm;
+    background:rgba(255,255,255,.04);border-radius:2.2mm;border:0.2mm solid var(--hairline);
+  }
+
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:1.5mm 0 1mm}
+  .name{
+    font-family:'Noto Sans SC',sans-serif;font-weight:700;font-size:11px;
+    color:var(--gold);letter-spacing:2px;line-height:1;
+  }
+  .name-en{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
+    font-size:11px;font-weight:700;color:var(--gold-2);letter-spacing:-0.01em;margin-top:1mm;
+  }
+  .role{margin-top:2mm;font-size:9px;font-weight:400;color:var(--gold-3);letter-spacing:3px}
+
+  .foot{
+    display:flex;align-items:center;padding-top:3mm;border-top:0.2mm solid var(--hairline);
+  }
+  .foot .wx{display:flex;align-items:center;gap:1.6mm}
+  .foot .wx .ico{
+    width:4mm;height:4mm;border-radius:1.1mm;background:var(--gold);
+    color:#0a0a0c;font-size:3.4px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif;
+  }
+  .foot .wx .v{
+    font-weight:600;color:var(--gold);letter-spacing:0.6px;font-size:8.5px;
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* 穿孔线 */
+  .perf{width:0;position:relative;z-index:3}
+  .perf::before{
+    content:'';position:absolute;top:3mm;bottom:3mm;left:0;
+    width:0;border-left:0.3mm dashed var(--hairline-s);
+  }
+  .notch{
+    position:absolute;width:2.5mm;height:2.5mm;background:var(--notch);
+    border-radius:50%;left:50%;transform:translateX(-50%);z-index:4;
+  }
+  .notch.top{top:-1.25mm}
+  .notch.bottom{bottom:-1.25mm}
+
+  /* 副券 */
+  .sub{
+    width:30mm;height:50mm;background:var(--surface-2);position:relative;
+    display:flex;flex-direction:column;padding:4.5mm 0 4mm;
+  }
+  .s-head{
+    text-align:center;font-size:7px;font-weight:700;letter-spacing:4px;
+    color:var(--gold);text-transform:uppercase;padding-bottom:3mm;position:relative;
+  }
+  .s-head::after{
+    content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    width:4mm;height:0.3mm;background:var(--gold);
+  }
+  .s-head .cn{display:block;font-size:5px;font-weight:400;color:var(--gold-3);letter-spacing:2.5px;margin-top:0.6mm}
+  .s-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 3mm}
+  .qr{
+    width:15mm;height:15mm;background:rgba(255,255,255,.05);border-radius:2.8mm;padding:1.5mm;
+    border:0.2mm solid var(--hairline);
+  }
+  .qr svg{width:100%;height:100%;display:block}
+  .s-foot{
+    margin:0 3.5mm;padding-top:3mm;border-top:0.2mm solid var(--hairline);text-align:center;
+    font-size:8px;font-weight:600;color:var(--gold);letter-spacing:2px;font-variant-numeric:tabular-nums;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <span>GOLD TONE</span>
+  <span class="dot"></span>
+  <span>3 VARIANTS</span>
+</div>
+
+<div class="grid">
+
+  <!-- 方案1: 暖金 -->
+  <div class="variant v1">
+    <div class="variant-label"><span class="swatch" style="background:#D4AF37"></span>OPTION 1 · 暖金 #D4AF37</div>
+    <div class="card-wrap">
+      <div class="ticket">
+        <div class="main">
+          <div class="head">
+            <div class="brand">
+              <div class="logo"><svg viewBox="0 0 354.9 295.83"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+              <div class="wordmark"><span class="main-cn">微影<span class="dot">.</span>ing</span><span class="sub-en">V-ING STUDIO</span></div>
+            </div>
+            <div class="no">No.001</div>
+          </div>
+          <div class="body">
+            <div class="name">林威</div>
+            <div class="name-en">Vikyi L.</div>
+            <div class="role">摄影剪辑</div>
+          </div>
+          <div class="foot"><div class="wx"><div class="ico">微</div><span class="v">Vking071</span></div></div>
+        </div>
+        <div class="perf"><div class="notch top"></div><div class="notch bottom"></div></div>
+        <div class="sub">
+          <div class="s-head">STUB<span class="cn">存根</span></div>
+          <div class="s-body"><div class="qr"><svg viewBox="0 0 21 21" shape-rendering="crispEdges">
+            <rect x="0" y="0" width="7" height="7" fill="#D4AF37"/><rect x="1" y="1" width="5" height="5" fill="#0a0a0c"/><rect x="2" y="2" width="3" height="3" fill="#D4AF37"/>
+            <rect x="14" y="0" width="7" height="7" fill="#D4AF37"/><rect x="15" y="1" width="5" height="5" fill="#0a0a0c"/><rect x="16" y="2" width="3" height="3" fill="#D4AF37"/>
+            <rect x="0" y="14" width="7" height="7" fill="#D4AF37"/><rect x="1" y="15" width="5" height="5" fill="#0a0a0c"/><rect x="2" y="16" width="3" height="3" fill="#D4AF37"/>
+            <rect x="8" y="0" width="1" height="1" fill="#D4AF37"/><rect x="10" y="0" width="1" height="1" fill="#D4AF37"/><rect x="12" y="0" width="1" height="1" fill="#D4AF37"/>
+            <rect x="9" y="1" width="1" height="1" fill="#D4AF37"/><rect x="11" y="1" width="1" height="1" fill="#D4AF37"/><rect x="13" y="1" width="1" height="1" fill="#D4AF37"/>
+            <rect x="8" y="2" width="1" height="1" fill="#D4AF37"/><rect x="10" y="2" width="2" height="1" fill="#D4AF37"/><rect x="13" y="2" width="1" height="1" fill="#D4AF37"/>
+            <rect x="9" y="3" width="1" height="1" fill="#D4AF37"/><rect x="12" y="3" width="1" height="1" fill="#D4AF37"/>
+            <rect x="8" y="4" width="2" height="1" fill="#D4AF37"/><rect x="11" y="4" width="1" height="1" fill="#D4AF37"/><rect x="13" y="4" width="1" height="1" fill="#D4AF37"/>
+            <rect x="9" y="5" width="1" height="1" fill="#D4AF37"/><rect x="11" y="5" width="2" height="1" fill="#D4AF37"/>
+            <rect x="8" y="6" width="1" height="1" fill="#D4AF37"/><rect x="10" y="6" width="1" height="1" fill="#D4AF37"/><rect x="12" y="6" width="2" height="1" fill="#D4AF37"/>
+            <rect x="0" y="8" width="1" height="1" fill="#D4AF37"/><rect x="2" y="8" width="1" height="1" fill="#D4AF37"/><rect x="4" y="8" width="2" height="1" fill="#D4AF37"/><rect x="7" y="8" width="1" height="1" fill="#D4AF37"/><rect x="9" y="8" width="1" height="1" fill="#D4AF37"/><rect x="11" y="8" width="2" height="1" fill="#D4AF37"/><rect x="14" y="8" width="1" height="1" fill="#D4AF37"/><rect x="16" y="8" width="1" height="1" fill="#D4AF37"/><rect x="18" y="8" width="2" height="1" fill="#D4AF37"/>
+            <rect x="1" y="9" width="1" height="1" fill="#D4AF37"/><rect x="3" y="9" width="1" height="1" fill="#D4AF37"/><rect x="5" y="9" width="1" height="1" fill="#D4AF37"/><rect x="8" y="9" width="2" height="1" fill="#D4AF37"/><rect x="11" y="9" width="1" height="1" fill="#D4AF37"/><rect x="13" y="9" width="1" height="1" fill="#D4AF37"/><rect x="15" y="9" width="1" height="1" fill="#D4AF37"/><rect x="17" y="9" width="2" height="1" fill="#D4AF37"/><rect x="20" y="9" width="1" height="1" fill="#D4AF37"/>
+            <rect x="0" y="10" width="2" height="1" fill="#D4AF37"/><rect x="3" y="10" width="1" height="1" fill="#D4AF37"/><rect x="6" y="10" width="1" height="1" fill="#D4AF37"/><rect x="8" y="10" width="1" height="1" fill="#D4AF37"/><rect x="10" y="10" width="1" height="1" fill="#D4AF37"/><rect x="12" y="10" width="2" height="1" fill="#D4AF37"/><rect x="15" y="10" width="1" height="1" fill="#D4AF37"/><rect x="17" y="10" width="1" height="1" fill="#D4AF37"/><rect x="19" y="10" width="1" height="1" fill="#D4AF37"/>
+            <rect x="2" y="11" width="1" height="1" fill="#D4AF37"/><rect x="4" y="11" width="2" height="1" fill="#D4AF37"/><rect x="7" y="11" width="1" height="1" fill="#D4AF37"/><rect x="9" y="11" width="1" height="1" fill="#D4AF37"/><rect x="11" y="11" width="1" height="1" fill="#D4AF37"/><rect x="13" y="11" width="2" height="1" fill="#D4AF37"/><rect x="16" y="11" width="1" height="1" fill="#D4AF37"/><rect x="18" y="11" width="2" height="1" fill="#D4AF37"/>
+            <rect x="1" y="12" width="1" height="1" fill="#D4AF37"/><rect x="3" y="12" width="1" height="1" fill="#D4AF37"/><rect x="5" y="12" width="1" height="1" fill="#D4AF37"/><rect x="8" y="12" width="2" height="1" fill="#D4AF37"/><rect x="10" y="12" width="1" height="1" fill="#D4AF37"/><rect x="12" y="12" width="1" height="1" fill="#D4AF37"/><rect x="14" y="12" width="1" height="1" fill="#D4AF37"/><rect x="17" y="12" width="2" height="1" fill="#D4AF37"/><rect x="20" y="12" width="1" height="1" fill="#D4AF37"/>
+            <rect x="8" y="13" width="1" height="1" fill="#D4AF37"/><rect x="10" y="13" width="2" height="1" fill="#D4AF37"/><rect x="13" y="13" width="1" height="1" fill="#D4AF37"/><rect x="15" y="13" width="1" height="1" fill="#D4AF37"/><rect x="17" y="13" width="1" height="1" fill="#D4AF37"/><rect x="19" y="13" width="2" height="1" fill="#D4AF37"/>
+            <rect x="8" y="14" width="1" height="1" fill="#D4AF37"/><rect x="11" y="14" width="1" height="1" fill="#D4AF37"/><rect x="13" y="14" width="2" height="1" fill="#D4AF37"/><rect x="16" y="14" width="1" height="1" fill="#D4AF37"/><rect x="18" y="14" width="1" height="1" fill="#D4AF37"/><rect x="20" y="14" width="1" height="1" fill="#D4AF37"/>
+            <rect x="9" y="15" width="2" height="1" fill="#D4AF37"/><rect x="12" y="15" width="1" height="1" fill="#D4AF37"/><rect x="14" y="15" width="1" height="1" fill="#D4AF37"/><rect x="17" y="15" width="2" height="1" fill="#D4AF37"/>
+            <rect x="8" y="16" width="1" height="1" fill="#D4AF37"/><rect x="10" y="16" width="1" height="1" fill="#D4AF37"/><rect x="12" y="16" width="2" height="1" fill="#D4AF37"/><rect x="15" y="16" width="1" height="1" fill="#D4AF37"/><rect x="18" y="16" width="1" height="1" fill="#D4AF37"/><rect x="20" y="16" width="1" height="1" fill="#D4AF37"/>
+            <rect x="9" y="17" width="1" height="1" fill="#D4AF37"/><rect x="11" y="17" width="2" height="1" fill="#D4AF37"/><rect x="14" y="17" width="1" height="1" fill="#D4AF37"/><rect x="16" y="17" width="2" height="1" fill="#D4AF37"/><rect x="19" y="17" width="1" height="1" fill="#D4AF37"/>
+            <rect x="8" y="18" width="2" height="1" fill="#D4AF37"/><rect x="11" y="18" width="1" height="1" fill="#D4AF37"/><rect x="13" y="18" width="1" height="1" fill="#D4AF37"/><rect x="15" y="18" width="1" height="1" fill="#D4AF37"/><rect x="17" y="18" width="1" height="1" fill="#D4AF37"/><rect x="20" y="18" width="1" height="1" fill="#D4AF37"/>
+            <rect x="9" y="19" width="1" height="1" fill="#D4AF37"/><rect x="12" y="19" width="2" height="1" fill="#D4AF37"/><rect x="15" y="19" width="1" height="1" fill="#D4AF37"/><rect x="17" y="19" width="2" height="1" fill="#D4AF37"/>
+            <rect x="8" y="20" width="1" height="1" fill="#D4AF37"/><rect x="10" y="20" width="2" height="1" fill="#D4AF37"/><rect x="13" y="20" width="1" height="1" fill="#D4AF37"/><rect x="16" y="20" width="1" height="1" fill="#D4AF37"/><rect x="18" y="20" width="2" height="1" fill="#D4AF37"/>
+          </svg></div></div>
+          <div class="s-foot">001</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 方案2: 香槟金 -->
+  <div class="variant v2">
+    <div class="variant-label"><span class="swatch" style="background:#C9A96E"></span>OPTION 2 · 香槟金 #C9A96E</div>
+    <div class="card-wrap">
+      <div class="ticket">
+        <div class="main">
+          <div class="head">
+            <div class="brand">
+              <div class="logo"><svg viewBox="0 0 354.9 295.83"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+              <div class="wordmark"><span class="main-cn">微影<span class="dot">.</span>ing</span><span class="sub-en">V-ING STUDIO</span></div>
+            </div>
+            <div class="no">No.001</div>
+          </div>
+          <div class="body">
+            <div class="name">林威</div>
+            <div class="name-en">Vikyi L.</div>
+            <div class="role">摄影剪辑</div>
+          </div>
+          <div class="foot"><div class="wx"><div class="ico">微</div><span class="v">Vking071</span></div></div>
+        </div>
+        <div class="perf"><div class="notch top"></div><div class="notch bottom"></div></div>
+        <div class="sub">
+          <div class="s-head">STUB<span class="cn">存根</span></div>
+          <div class="s-body"><div class="qr"><svg viewBox="0 0 21 21" shape-rendering="crispEdges">
+            <rect x="0" y="0" width="7" height="7" fill="#C9A96E"/><rect x="1" y="1" width="5" height="5" fill="#0a0a0c"/><rect x="2" y="2" width="3" height="3" fill="#C9A96E"/>
+            <rect x="14" y="0" width="7" height="7" fill="#C9A96E"/><rect x="15" y="1" width="5" height="5" fill="#0a0a0c"/><rect x="16" y="2" width="3" height="3" fill="#C9A96E"/>
+            <rect x="0" y="14" width="7" height="7" fill="#C9A96E"/><rect x="1" y="15" width="5" height="5" fill="#0a0a0c"/><rect x="2" y="16" width="3" height="3" fill="#C9A96E"/>
+            <rect x="8" y="0" width="1" height="1" fill="#C9A96E"/><rect x="10" y="0" width="1" height="1" fill="#C9A96E"/><rect x="12" y="0" width="1" height="1" fill="#C9A96E"/>
+            <rect x="9" y="1" width="1" height="1" fill="#C9A96E"/><rect x="11" y="1" width="1" height="1" fill="#C9A96E"/><rect x="13" y="1" width="1" height="1" fill="#C9A96E"/>
+            <rect x="8" y="2" width="1" height="1" fill="#C9A96E"/><rect x="10" y="2" width="2" height="1" fill="#C9A96E"/><rect x="13" y="2" width="1" height="1" fill="#C9A96E"/>
+            <rect x="9" y="3" width="1" height="1" fill="#C9A96E"/><rect x="12" y="3" width="1" height="1" fill="#C9A96E"/>
+            <rect x="8" y="4" width="2" height="1" fill="#C9A96E"/><rect x="11" y="4" width="1" height="1" fill="#C9A96E"/><rect x="13" y="4" width="1" height="1" fill="#C9A96E"/>
+            <rect x="9" y="5" width="1" height="1" fill="#C9A96E"/><rect x="11" y="5" width="2" height="1" fill="#C9A96E"/>
+            <rect x="8" y="6" width="1" height="1" fill="#C9A96E"/><rect x="10" y="6" width="1" height="1" fill="#C9A96E"/><rect x="12" y="6" width="2" height="1" fill="#C9A96E"/>
+            <rect x="0" y="8" width="1" height="1" fill="#C9A96E"/><rect x="2" y="8" width="1" height="1" fill="#C9A96E"/><rect x="4" y="8" width="2" height="1" fill="#C9A96E"/><rect x="7" y="8" width="1" height="1" fill="#C9A96E"/><rect x="9" y="8" width="1" height="1" fill="#C9A96E"/><rect x="11" y="8" width="2" height="1" fill="#C9A96E"/><rect x="14" y="8" width="1" height="1" fill="#C9A96E"/><rect x="16" y="8" width="1" height="1" fill="#C9A96E"/><rect x="18" y="8" width="2" height="1" fill="#C9A96E"/>
+            <rect x="1" y="9" width="1" height="1" fill="#C9A96E"/><rect x="3" y="9" width="1" height="1" fill="#C9A96E"/><rect x="5" y="9" width="1" height="1" fill="#C9A96E"/><rect x="8" y="9" width="2" height="1" fill="#C9A96E"/><rect x="11" y="9" width="1" height="1" fill="#C9A96E"/><rect x="13" y="9" width="1" height="1" fill="#C9A96E"/><rect x="15" y="9" width="1" height="1" fill="#C9A96E"/><rect x="17" y="9" width="2" height="1" fill="#C9A96E"/><rect x="20" y="9" width="1" height="1" fill="#C9A96E"/>
+            <rect x="0" y="10" width="2" height="1" fill="#C9A96E"/><rect x="3" y="10" width="1" height="1" fill="#C9A96E"/><rect x="6" y="10" width="1" height="1" fill="#C9A96E"/><rect x="8" y="10" width="1" height="1" fill="#C9A96E"/><rect x="10" y="10" width="1" height="1" fill="#C9A96E"/><rect x="12" y="10" width="2" height="1" fill="#C9A96E"/><rect x="15" y="10" width="1" height="1" fill="#C9A96E"/><rect x="17" y="10" width="1" height="1" fill="#C9A96E"/><rect x="19" y="10" width="1" height="1" fill="#C9A96E"/>
+            <rect x="2" y="11" width="1" height="1" fill="#C9A96E"/><rect x="4" y="11" width="2" height="1" fill="#C9A96E"/><rect x="7" y="11" width="1" height="1" fill="#C9A96E"/><rect x="9" y="11" width="1" height="1" fill="#C9A96E"/><rect x="11" y="11" width="1" height="1" fill="#C9A96E"/><rect x="13" y="11" width="2" height="1" fill="#C9A96E"/><rect x="16" y="11" width="1" height="1" fill="#C9A96E"/><rect x="18" y="11" width="2" height="1" fill="#C9A96E"/>
+            <rect x="1" y="12" width="1" height="1" fill="#C9A96E"/><rect x="3" y="12" width="1" height="1" fill="#C9A96E"/><rect x="5" y="12" width="1" height="1" fill="#C9A96E"/><rect x="8" y="12" width="2" height="1" fill="#C9A96E"/><rect x="10" y="12" width="1" height="1" fill="#C9A96E"/><rect x="12" y="12" width="1" height="1" fill="#C9A96E"/><rect x="14" y="12" width="1" height="1" fill="#C9A96E"/><rect x="17" y="12" width="2" height="1" fill="#C9A96E"/><rect x="20" y="12" width="1" height="1" fill="#C9A96E"/>
+            <rect x="8" y="13" width="1" height="1" fill="#C9A96E"/><rect x="10" y="13" width="2" height="1" fill="#C9A96E"/><rect x="13" y="13" width="1" height="1" fill="#C9A96E"/><rect x="15" y="13" width="1" height="1" fill="#C9A96E"/><rect x="17" y="13" width="1" height="1" fill="#C9A96E"/><rect x="19" y="13" width="2" height="1" fill="#C9A96E"/>
+            <rect x="8" y="14" width="1" height="1" fill="#C9A96E"/><rect x="11" y="14" width="1" height="1" fill="#C9A96E"/><rect x="13" y="14" width="2" height="1" fill="#C9A96E"/><rect x="16" y="14" width="1" height="1" fill="#C9A96E"/><rect x="18" y="14" width="1" height="1" fill="#C9A96E"/><rect x="20" y="14" width="1" height="1" fill="#C9A96E"/>
+            <rect x="9" y="15" width="2" height="1" fill="#C9A96E"/><rect x="12" y="15" width="1" height="1" fill="#C9A96E"/><rect x="14" y="15" width="1" height="1" fill="#C9A96E"/><rect x="17" y="15" width="2" height="1" fill="#C9A96E"/>
+            <rect x="8" y="16" width="1" height="1" fill="#C9A96E"/><rect x="10" y="16" width="1" height="1" fill="#C9A96E"/><rect x="12" y="16" width="2" height="1" fill="#C9A96E"/><rect x="15" y="16" width="1" height="1" fill="#C9A96E"/><rect x="18" y="16" width="1" height="1" fill="#C9A96E"/><rect x="20" y="16" width="1" height="1" fill="#C9A96E"/>
+            <rect x="9" y="17" width="1" height="1" fill="#C9A96E"/><rect x="11" y="17" width="2" height="1" fill="#C9A96E"/><rect x="14" y="17" width="1" height="1" fill="#C9A96E"/><rect x="16" y="17" width="2" height="1" fill="#C9A96E"/><rect x="19" y="17" width="1" height="1" fill="#C9A96E"/>
+            <rect x="8" y="18" width="2" height="1" fill="#C9A96E"/><rect x="11" y="18" width="1" height="1" fill="#C9A96E"/><rect x="13" y="18" width="1" height="1" fill="#C9A96E"/><rect x="15" y="18" width="1" height="1" fill="#C9A96E"/><rect x="17" y="18" width="1" height="1" fill="#C9A96E"/><rect x="20" y="18" width="1" height="1" fill="#C9A96E"/>
+            <rect x="9" y="19" width="1" height="1" fill="#C9A96E"/><rect x="12" y="19" width="2" height="1" fill="#C9A96E"/><rect x="15" y="19" width="1" height="1" fill="#C9A96E"/><rect x="17" y="19" width="2" height="1" fill="#C9A96E"/>
+            <rect x="8" y="20" width="1" height="1" fill="#C9A96E"/><rect x="10" y="20" width="2" height="1" fill="#C9A96E"/><rect x="13" y="20" width="1" height="1" fill="#C9A96E"/><rect x="16" y="20" width="1" height="1" fill="#C9A96E"/><rect x="18" y="20" width="2" height="1" fill="#C9A96E"/>
+          </svg></div></div>
+          <div class="s-foot">001</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 方案3: 古铜金 -->
+  <div class="variant v3">
+    <div class="variant-label"><span class="swatch" style="background:#B8860B"></span>OPTION 3 · 古铜金 #B8860B</div>
+    <div class="card-wrap">
+      <div class="ticket">
+        <div class="main">
+          <div class="head">
+            <div class="brand">
+              <div class="logo"><svg viewBox="0 0 354.9 295.83"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+              <div class="wordmark"><span class="main-cn">微影<span class="dot">.</span>ing</span><span class="sub-en">V-ING STUDIO</span></div>
+            </div>
+            <div class="no">No.001</div>
+          </div>
+          <div class="body">
+            <div class="name">林威</div>
+            <div class="name-en">Vikyi L.</div>
+            <div class="role">摄影剪辑</div>
+          </div>
+          <div class="foot"><div class="wx"><div class="ico">微</div><span class="v">Vking071</span></div></div>
+        </div>
+        <div class="perf"><div class="notch top"></div><div class="notch bottom"></div></div>
+        <div class="sub">
+          <div class="s-head">STUB<span class="cn">存根</span></div>
+          <div class="s-body"><div class="qr"><svg viewBox="0 0 21 21" shape-rendering="crispEdges">
+            <rect x="0" y="0" width="7" height="7" fill="#B8860B"/><rect x="1" y="1" width="5" height="5" fill="#0a0a0c"/><rect x="2" y="2" width="3" height="3" fill="#B8860B"/>
+            <rect x="14" y="0" width="7" height="7" fill="#B8860B"/><rect x="15" y="1" width="5" height="5" fill="#0a0a0c"/><rect x="16" y="2" width="3" height="3" fill="#B8860B"/>
+            <rect x="0" y="14" width="7" height="7" fill="#B8860B"/><rect x="1" y="15" width="5" height="5" fill="#0a0a0c"/><rect x="2" y="16" width="3" height="3" fill="#B8860B"/>
+            <rect x="8" y="0" width="1" height="1" fill="#B8860B"/><rect x="10" y="0" width="1" height="1" fill="#B8860B"/><rect x="12" y="0" width="1" height="1" fill="#B8860B"/>
+            <rect x="9" y="1" width="1" height="1" fill="#B8860B"/><rect x="11" y="1" width="1" height="1" fill="#B8860B"/><rect x="13" y="1" width="1" height="1" fill="#B8860B"/>
+            <rect x="8" y="2" width="1" height="1" fill="#B8860B"/><rect x="10" y="2" width="2" height="1" fill="#B8860B"/><rect x="13" y="2" width="1" height="1" fill="#B8860B"/>
+            <rect x="9" y="3" width="1" height="1" fill="#B8860B"/><rect x="12" y="3" width="1" height="1" fill="#B8860B"/>
+            <rect x="8" y="4" width="2" height="1" fill="#B8860B"/><rect x="11" y="4" width="1" height="1" fill="#B8860B"/><rect x="13" y="4" width="1" height="1" fill="#B8860B"/>
+            <rect x="9" y="5" width="1" height="1" fill="#B8860B"/><rect x="11" y="5" width="2" height="1" fill="#B8860B"/>
+            <rect x="8" y="6" width="1" height="1" fill="#B8860B"/><rect x="10" y="6" width="1" height="1" fill="#B8860B"/><rect x="12" y="6" width="2" height="1" fill="#B8860B"/>
+            <rect x="0" y="8" width="1" height="1" fill="#B8860B"/><rect x="2" y="8" width="1" height="1" fill="#B8860B"/><rect x="4" y="8" width="2" height="1" fill="#B8860B"/><rect x="7" y="8" width="1" height="1" fill="#B8860B"/><rect x="9" y="8" width="1" height="1" fill="#B8860B"/><rect x="11" y="8" width="2" height="1" fill="#B8860B"/><rect x="14" y="8" width="1" height="1" fill="#B8860B"/><rect x="16" y="8" width="1" height="1" fill="#B8860B"/><rect x="18" y="8" width="2" height="1" fill="#B8860B"/>
+            <rect x="1" y="9" width="1" height="1" fill="#B8860B"/><rect x="3" y="9" width="1" height="1" fill="#B8860B"/><rect x="5" y="9" width="1" height="1" fill="#B8860B"/><rect x="8" y="9" width="2" height="1" fill="#B8860B"/><rect x="11" y="9" width="1" height="1" fill="#B8860B"/><rect x="13" y="9" width="1" height="1" fill="#B8860B"/><rect x="15" y="9" width="1" height="1" fill="#B8860B"/><rect x="17" y="9" width="2" height="1" fill="#B8860B"/><rect x="20" y="9" width="1" height="1" fill="#B8860B"/>
+            <rect x="0" y="10" width="2" height="1" fill="#B8860B"/><rect x="3" y="10" width="1" height="1" fill="#B8860B"/><rect x="6" y="10" width="1" height="1" fill="#B8860B"/><rect x="8" y="10" width="1" height="1" fill="#B8860B"/><rect x="10" y="10" width="1" height="1" fill="#B8860B"/><rect x="12" y="10" width="2" height="1" fill="#B8860B"/><rect x="15" y="10" width="1" height="1" fill="#B8860B"/><rect x="17" y="10" width="1" height="1" fill="#B8860B"/><rect x="19" y="10" width="1" height="1" fill="#B8860B"/>
+            <rect x="2" y="11" width="1" height="1" fill="#B8860B"/><rect x="4" y="11" width="2" height="1" fill="#B8860B"/><rect x="7" y="11" width="1" height="1" fill="#B8860B"/><rect x="9" y="11" width="1" height="1" fill="#B8860B"/><rect x="11" y="11" width="1" height="1" fill="#B8860B"/><rect x="13" y="11" width="2" height="1" fill="#B8860B"/><rect x="16" y="11" width="1" height="1" fill="#B8860B"/><rect x="18" y="11" width="2" height="1" fill="#B8860B"/>
+            <rect x="1" y="12" width="1" height="1" fill="#B8860B"/><rect x="3" y="12" width="1" height="1" fill="#B8860B"/><rect x="5" y="12" width="1" height="1" fill="#B8860B"/><rect x="8" y="12" width="2" height="1" fill="#B8860B"/><rect x="10" y="12" width="1" height="1" fill="#B8860B"/><rect x="12" y="12" width="1" height="1" fill="#B8860B"/><rect x="14" y="12" width="1" height="1" fill="#B8860B"/><rect x="17" y="12" width="2" height="1" fill="#B8860B"/><rect x="20" y="12" width="1" height="1" fill="#B8860B"/>
+            <rect x="8" y="13" width="1" height="1" fill="#B8860B"/><rect x="10" y="13" width="2" height="1" fill="#B8860B"/><rect x="13" y="13" width="1" height="1" fill="#B8860B"/><rect x="15" y="13" width="1" height="1" fill="#B8860B"/><rect x="17" y="13" width="1" height="1" fill="#B8860B"/><rect x="19" y="13" width="2" height="1" fill="#B8860B"/>
+            <rect x="8" y="14" width="1" height="1" fill="#B8860B"/><rect x="11" y="14" width="1" height="1" fill="#B8860B"/><rect x="13" y="14" width="2" height="1" fill="#B8860B"/><rect x="16" y="14" width="1" height="1" fill="#B8860B"/><rect x="18" y="14" width="1" height="1" fill="#B8860B"/><rect x="20" y="14" width="1" height="1" fill="#B8860B"/>
+            <rect x="9" y="15" width="2" height="1" fill="#B8860B"/><rect x="12" y="15" width="1" height="1" fill="#B8860B"/><rect x="14" y="15" width="1" height="1" fill="#B8860B"/><rect x="17" y="15" width="2" height="1" fill="#B8860B"/>
+            <rect x="8" y="16" width="1" height="1" fill="#B8860B"/><rect x="10" y="16" width="1" height="1" fill="#B8860B"/><rect x="12" y="16" width="2" height="1" fill="#B8860B"/><rect x="15" y="16" width="1" height="1" fill="#B8860B"/><rect x="18" y="16" width="1" height="1" fill="#B8860B"/><rect x="20" y="16" width="1" height="1" fill="#B8860B"/>
+            <rect x="9" y="17" width="1" height="1" fill="#B8860B"/><rect x="11" y="17" width="2" height="1" fill="#B8860B"/><rect x="14" y="17" width="1" height="1" fill="#B8860B"/><rect x="16" y="17" width="2" height="1" fill="#B8860B"/><rect x="19" y="17" width="1" height="1" fill="#B8860B"/>
+            <rect x="8" y="18" width="2" height="1" fill="#B8860B"/><rect x="11" y="18" width="1" height="1" fill="#B8860B"/><rect x="13" y="18" width="1" height="1" fill="#B8860B"/><rect x="15" y="18" width="1" height="1" fill="#B8860B"/><rect x="17" y="18" width="1" height="1" fill="#B8860B"/><rect x="20" y="18" width="1" height="1" fill="#B8860B"/>
+            <rect x="9" y="19" width="1" height="1" fill="#B8860B"/><rect x="12" y="19" width="2" height="1" fill="#B8860B"/><rect x="15" y="19" width="1" height="1" fill="#B8860B"/><rect x="17" y="19" width="2" height="1" fill="#B8860B"/>
+            <rect x="8" y="20" width="1" height="1" fill="#B8860B"/><rect x="10" y="20" width="2" height="1" fill="#B8860B"/><rect x="13" y="20" width="1" height="1" fill="#B8860B"/><rect x="16" y="20" width="1" height="1" fill="#B8860B"/><rect x="18" y="20" width="2" height="1" fill="#B8860B"/>
+          </svg></div></div>
+          <div class="s-foot">001</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

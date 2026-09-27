@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主券右侧填充 · 3 方案</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --surface:#fff;--surface-2:#f5f5f7;--surface-3:#efeff3;
+    --label:#1d1d1f;--label-2:#6e6e73;--label-3:#a1a1a6;
+    --hairline:rgba(0,0,0,.08);--hairline-strong:rgba(0,0,0,.14);
+  }
+  body{
+    font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#1c1c1e 0%,#000 60%);
+    color:#e0e0e0;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:50px 20px 80px;gap:40px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page-title{
+    font-size:11px;letter-spacing:4px;color:#86868b;
+    text-transform:uppercase;font-weight:500;
+    display:flex;align-items:center;gap:10px;
+  }
+  .page-title .dot{width:4px;height:4px;border-radius:50%;background:#86868b}
+
+  .card{
+    width:70mm;height:50mm;
+    background:var(--surface);
+    border-radius:4mm 0 0 4mm;
+    padding:4.5mm 5.5mm 4mm;
+    display:flex;flex-direction:column;
+    filter:drop-shadow(0 20px 40px rgba(0,0,0,.5));
+    position:relative;
+  }
+  .head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:3mm;border-bottom:0.2mm solid var(--hairline);
+  }
+  .brand{display:flex;align-items:center;gap:1.5mm}
+  .brand .logo{width:5.5mm;height:5.5mm;color:var(--label);flex-shrink:0}
+  .brand .logo svg{width:5.5mm;height:5.5mm;opacity:.85;transform:scale(.95);transform-origin:center}
+  .brand .wordmark{display:flex;flex-direction:column;gap:0.4mm}
+  .brand .wordmark .main-cn{font-size:10px;font-weight:700;color:var(--label);letter-spacing:-0.01em;line-height:1}
+  .brand .wordmark .main-cn .dot{color:var(--label-3)}
+  .brand .wordmark .sub-en{font-size:6px;font-weight:500;color:var(--label-2);letter-spacing:2px;text-transform:uppercase;line-height:1}
+  .no{font-size:7px;font-weight:600;color:var(--label-2);letter-spacing:1.2px;padding:1mm 2mm;background:var(--surface-2);border-radius:2mm}
+
+  .body{
+    flex:1;display:flex;align-items:center;justify-content:space-between;
+    gap:3mm;
+  }
+  .name-block{display:flex;flex-direction:column}
+  .name{font-family:'Noto Sans SC';font-weight:700;font-size:36px;color:var(--label);letter-spacing:2px;line-height:1}
+  .name-en{font-size:11px;font-weight:400;color:var(--label-2);letter-spacing:1.5px;margin-top:1.5mm}
+  .role{font-size:8.5px;font-weight:400;color:var(--label-2);letter-spacing:2.5px;margin-top:2mm}
+
+  /* 右侧填充区 */
+  .right-fill{
+    display:flex;flex-direction:column;align-items:flex-end;
+    height:100%;justify-content:center;gap:1.5mm;
+  }
+
+  /* 方案1: 竖排文字 */
+  .opt1 .vert{
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    font-family:'Noto Sans SC';font-size:7px;font-weight:500;
+    color:var(--label-2);letter-spacing:3px;line-height:1;
+  }
+  .opt1 .vert-sub{
+    writing-mode:vertical-rl;
+    font-family:'Inter';font-size:6px;font-weight:400;
+    color:var(--label-3);letter-spacing:2px;text-transform:uppercase;line-height:1;
+  }
+  .opt1 .divider-v{
+    width:0.2mm;height:12mm;background:var(--hairline-strong);
+  }
+
+  /* 方案2: 条形码+编号 */
+  .opt2 .barcode{
+    display:flex;align-items:flex-end;gap:0.6mm;height:14mm;
+  }
+  .opt2 .barcode span{
+    display:block;background:var(--label);width:0.4mm;
+  }
+  .opt2 .barcode span:nth-child(1){height:60%}
+  .opt2 .barcode span:nth-child(2){height:100%}
+  .opt2 .barcode span:nth-child(3){height:40%}
+  .opt2 .barcode span:nth-child(4){height:80%}
+  .opt2 .barcode span:nth-child(5){height:50%}
+  .opt2 .barcode span:nth-child(6){height:90%}
+  .opt2 .barcode span:nth-child(7){height:30%}
+  .opt2 .barcode span:nth-child(8){height:70%}
+  .opt2 .barcode span:nth-child(9){height:45%}
+  .opt2 .barcode span:nth-child(10){height:85%}
+  .opt2 .barcode span:nth-child(11){height:55%}
+  .opt2 .barcode span:nth-child(12){height:75%}
+  .opt2 .barcode span:nth-child(13){height:35%}
+  .opt2 .barcode span:nth-child(14){height:95%}
+  .opt2 .barcode span:nth-child(15){height:65%}
+  .opt2 .num{
+    font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:600;
+    color:var(--label-2);letter-spacing:1px;margin-top:1mm;
+  }
+
+  /* 方案3: 电影票装饰图形 */
+  .opt3 .ticket-graphic{
+    width:14mm;height:14mm;
+    border:0.4mm solid var(--label);
+    border-radius:1mm;
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .opt3 .ticket-graphic::before,.opt3 .ticket-graphic::after{
+    content:'';position:absolute;width:2.5mm;height:2.5mm;
+    background:var(--surface);border:0.4mm solid var(--label);
+    border-radius:50%;left:50%;transform:translateX(-50%);
+  }
+  .opt3 .ticket-graphic::before{top:-1.25mm}
+  .opt3 .ticket-graphic::after{bottom:-1.25mm}
+  .opt3 .ticket-graphic svg{width:7mm;height:7mm;color:var(--label-2)}
+  .opt3 .tag-text{
+    font-family:'Bebas Neue';font-size:10px;color:var(--label);
+    letter-spacing:2px;margin-top:1mm;
+  }
+
+  .foot{
+    display:flex;align-items:center;
+    padding-top:3mm;border-top:0.2mm solid var(--hairline);
+  }
+  .foot .wx{display:flex;align-items:center;gap:1.5mm}
+  .foot .wx .ico{
+    width:3.8mm;height:3.8mm;border-radius:1mm;background:var(--label);
+    color:#fff;font-size:3px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;font-family:'Noto Sans SC';
+  }
+  .foot .wx .v{font-weight:600;color:var(--label);letter-spacing:0.6px;font-size:8px;font-variant-numeric:tabular-nums}
+
+  .opt-label{
+    font-size:10px;letter-spacing:2px;color:#a1a1a6;
+    text-transform:uppercase;font-weight:600;
+    display:flex;align-items:center;gap:8px;
+  }
+  .opt-label .tag{padding:2px 10px;background:#2a2a2e;border-radius:10px;color:#fff;font-size:9px}
+  .opt-desc{font-size:11px;color:#86868b;max-width:200px;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <span>RIGHT SIDE FILL</span>
+  <span class="dot"></span>
+  <span>3 OPTIONS</span>
+</div>
+
+<!-- 方案1: 竖排文字 -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+  <div class="opt-label"><span class="tag">1</span> 竖排文字</div>
+  <div class="card opt1">
+    <div class="head">
+      <div class="brand">
+        <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+        <div class="wordmark"><span class="main-cn">微影<span class="dot">.</span>ing</span><span class="sub-en">V-ING STUDIO</span></div>
+      </div>
+      <div class="no">No.001</div>
+    </div>
+    <div class="body">
+      <div class="name-block">
+        <div class="name">林威</div>
+        <div class="name-en">Vikyi L.</div>
+        <div class="role">摄影剪辑</div>
+      </div>
+      <div class="right-fill">
+        <span class="vert">凭票入场</span>
+        <div class="divider-v"></div>
+        <span class="vert-sub">Admit One</span>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="wx"><div class="ico">微</div><span class="v">Vking071</span></div>
+    </div>
+  </div>
+  <div class="opt-desc">右侧竖排"凭票入场 / ADMIT ONE"，电影票经典文字，中间细分割线</div>
+</div>
+
+<!-- 方案2: 条形码+编号 -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+  <div class="opt-label"><span class="tag">2</span> 条形码 + 编号</div>
+  <div class="card opt2">
+    <div class="head">
+      <div class="brand">
+        <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+        <div class="wordmark"><span class="main-cn">微影<span class="dot">.</span>ing</span><span class="sub-en">V-ING STUDIO</span></div>
+      </div>
+      <div class="no">No.001</div>
+    </div>
+    <div class="body">
+      <div class="name-block">
+        <div class="name">林威</div>
+        <div class="name-en">Vikyi L.</div>
+        <div class="role">摄影剪辑</div>
+      </div>
+      <div class="right-fill">
+        <div class="barcode">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="num">V-0001 · 071</div>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="wx"><div class="ico">微</div><span class="v">Vking071</span></div>
+    </div>
+  </div>
+  <div class="opt-desc">右侧装饰条形码 + 编号 V-0001·071，强化电影票票务感</div>
+</div>
+
+<!-- 方案3: 电影票图形 -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+  <div class="opt-label"><span class="tag">3</span> 电影票图形</div>
+  <div class="card opt3">
+    <div class="head">
+      <div class="brand">
+        <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+        <div class="wordmark"><span class="main-cn">微影<span class="dot">.</span>ing</span><span class="sub-en">V-ING STUDIO</span></div>
+      </div>
+      <div class="no">No.001</div>
+    </div>
+    <div class="body">
+      <div class="name-block">
+        <div class="name">林威</div>
+        <div class="name-en">Vikyi L.</div>
+        <div class="role">摄影剪辑</div>
+      </div>
+      <div class="right-fill">
+        <div class="ticket-graphic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V9Z"/>
+            <circle cx="6" cy="12" r="1" fill="currentColor"/>
+            <circle cx="18" cy="12" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="tag-text">TICKET</div>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="wx"><div class="ico">微</div><span class="v">Vking071</span></div>
+    </div>
+  </div>
+  <div class="opt-desc">右侧电影票轮廓图形（带穿孔圆）+ TICKET 标签，呼应主题</div>
+</div>
+
+</body>
+</html>
