@@ -1103,12 +1103,13 @@
             <p class="section-desc reveal" data-cn="管理创作计划，追踪项目进度，让每一帧都按计划生长。" data-en="Manage creative schedules, track project progress, let every frame grow on plan.">管理创作计划，追踪项目进度，让每一帧都按计划生长。</p>
           </div>
           <!-- iOS Segmented Control -->
-          <div class="segmented-control seg-4 reveal" id="wsTabs">
+          <div class="segmented-control seg-5 reveal" id="wsTabs">
             <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
             <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
             <button class="seg-btn" data-ws-tab="storyboard" data-cn="摄影表" data-en="Storyboard">摄影表</button>
             <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
-            <span class="seg-indicator seg-4-indicator" id="segIndicator"></span>
+            <button class="seg-btn" data-ws-tab="design" data-cn="微意" data-en="VE">微意</button>
+            <span class="seg-indicator seg-5-indicator" id="segIndicator"></span>
           </div>
         </div>
       </div>
@@ -1587,6 +1588,24 @@
           </div>
         </div>
       </div>
+
+      <!-- ====== Panel 5: VE Design Workbench ====== -->
+      <div class="ws-panel" id="ws-panel-design">
+        <div class="container">
+          <div class="ws-panel-toolbar reveal">
+            <div class="ws-panel-toolbar-left">
+              <span class="ws-panel-dot"></span>
+              <span class="ws-panel-toolbar-title" data-cn="微意 / VE 设计工作台" data-en="VE Design Workbench">微意 / VE 设计工作台</span>
+            </div>
+            <div class="ws-panel-toolbar-right">
+              <a class="edit-toggle-btn" href="card-frame-preview.html" target="_blank" data-cn="新窗口打开" data-en="Open in New Tab">新窗口打开</a>
+            </div>
+          </div>
+          <div class="ve-design-wrap reveal">
+            <iframe class="ve-design-frame" id="veFrame" src="card-frame-preview.html" title="VE 设计工作台"></iframe>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ========== CONTACT VIEW ========== -->
@@ -1708,6 +1727,22 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
   <script src="js/app.js?v=20260925d" defer></script>
+  <script>
+    /* iframe 自适应高度：VE 设计工作台 */
+    (function(){
+      var f=document.getElementById('veFrame');
+      if(!f)return;
+      function resize(){
+        try{
+          var h=f.contentWindow.document.body.scrollHeight;
+          if(h>200)f.style.height=h+'px';
+        }catch(e){}
+      }
+      f.addEventListener('load',resize);
+      window.addEventListener('resize',resize);
+      setTimeout(resize,1500);
+    })();
+  </script>
 
 </body>
 </html>

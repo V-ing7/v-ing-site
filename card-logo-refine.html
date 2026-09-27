@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo 微调提案 · 3 款对比</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --label:#1d1d1f;
+    --label-2:#6e6e73;
+    --label-3:#a1a1a6;
+    --hairline:rgba(0,0,0,.08);
+    --surface:#fff;
+    --surface-2:#f5f5f7;
+  }
+  body{
+    font-family:'Inter','Noto Sans SC',sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#1c1c1e 0%,#000 60%);
+    color:#e0e0e0;
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:50px 20px 80px;gap:36px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page-title{
+    font-size:12px;letter-spacing:5px;color:#86868b;
+    text-transform:uppercase;font-weight:500;
+    display:flex;align-items:center;gap:12px;
+  }
+  .page-title::before,.page-title::after{
+    content:'';width:30px;height:1px;background:#444;
+  }
+
+  .prop{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .prop-label{
+    font-size:10px;letter-spacing:3px;color:#a1a1a6;
+    text-transform:uppercase;font-weight:600;
+    display:flex;align-items:center;gap:10px;
+  }
+  .prop-label .tag{
+    padding:2px 10px;background:#2a2a2e;border-radius:10px;
+    color:#fff;font-size:9px;letter-spacing:2px;
+  }
+  .prop-desc{
+    font-size:11px;color:#86868b;letter-spacing:0.5px;
+    max-width:240px;text-align:center;line-height:1.5;
+  }
+
+  /* 预览框：模拟名片头部 */
+  .preview{
+    width:70mm;height:14mm;
+    background:var(--surface);
+    border-radius:3mm;
+    padding:4mm 5.5mm;
+    display:flex;align-items:center;justify-content:space-between;
+    filter:drop-shadow(0 20px 40px rgba(0,0,0,.5));
+    position:relative;overflow:hidden;
+  }
+  .brand{display:flex;align-items:center;gap:1.8mm}
+  .wordmark{
+    font-family:-apple-system,BlinkMacSystemFont,'Inter','Noto Sans SC',sans-serif;
+    font-size:12px;font-weight:700;color:var(--label);
+    letter-spacing:-0.02em;line-height:1;
+  }
+  .wordmark .dot{color:var(--label-3)}
+  .no{
+    font-size:7px;font-weight:600;color:var(--label-2);
+    letter-spacing:1.2px;font-variant-numeric:tabular-nums;
+    padding:1.1mm 2.2mm;background:var(--surface-2);
+    border-radius:2.2mm;
+  }
+
+  /* logo 容器通用 */
+  .logo{
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--label);
+  }
+  .logo svg{display:block}
+
+  /* ============ 提案 1: 标准等比 1:1 ============ */
+  /* 原 viewBox 354.9×295.83 ≈ 1.2:1，强制 1:1 容器，内部居中 */
+  .prop-1 .logo{width:6mm;height:6mm}
+  .prop-1 .logo svg{
+    width:6mm;height:6mm;
+    /* 描边加粗：用 filter 模拟 */
+    filter:drop-shadow(0.3mm 0 0 var(--label)) drop-shadow(-0.3mm 0 0 var(--label)) drop-shadow(0 0.3mm 0 var(--label)) drop-shadow(0 -0.3mm 0 var(--label));
+  }
+
+  /* ============ 提案 2: 1:1 + 线条加粗 ============ */
+  .prop-2 .logo{width:6.5mm;height:6.5mm}
+  .prop-2 .logo svg{
+    width:6.5mm;height:6.5mm;
+    /* 更强的描边 */
+    filter:
+      drop-shadow(0.4mm 0 0 var(--label))
+      drop-shadow(-0.4mm 0 0 var(--label))
+      drop-shadow(0 0.4mm 0 var(--label))
+      drop-shadow(0 -0.4mm 0 var(--label))
+      drop-shadow(0.3mm 0.3mm 0 var(--label))
+      drop-shadow(-0.3mm -0.3mm 0 var(--label))
+      drop-shadow(0.3mm -0.3mm 0 var(--label))
+      drop-shadow(-0.3mm 0.3mm 0 var(--label));
+  }
+
+  /* ============ 提案 3: 1:1 + 线条变细 ============ */
+  .prop-3 .logo{width:5.5mm;height:5.5mm}
+  .prop-3 .logo svg{
+    width:5.5mm;height:5.5mm;
+    /* 线条变细：用 transform scale 拉伸 + opacity 调整 */
+    opacity:.85;
+    transform:scale(.95);
+  }
+
+  /* 放大对比区 */
+  .zoom-row{
+    display:flex;gap:20px;align-items:flex-end;
+    margin-top:8px;
+  }
+  .zoom-box{
+    width:60px;height:60px;
+    background:var(--surface);
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--label);
+    border:1px solid #333;
+  }
+  .zoom-box svg{display:block}
+</style>
+</head>
+<body>
+
+<div class="page-title">LOGO REFINE · 3 PROPOSALS</div>
+
+<!-- ============ 提案 1 ============ -->
+<div class="prop prop-1">
+  <div class="prop-label"><span class="tag">1</span> 标准等比 1:1 · 线条略加粗</div>
+  <div class="preview">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+          <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="wordmark">微影<span class="dot">.</span>ing</div>
+    </div>
+    <div class="no">No.001</div>
+  </div>
+  <div class="zoom-row">
+    <div class="zoom-box">
+      <svg width="40" height="40" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(2px 0 0 #1d1d1f) drop-shadow(-2px 0 0 #1d1d1f) drop-shadow(0 2px 0 #1d1d1f) drop-shadow(0 -2px 0 #1d1d1f)">
+        <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="#1d1d1f"/>
+      </svg>
+    </div>
+  </div>
+  <div class="prop-desc">6mm × 6mm 容器，4 向 0.3mm 描边加粗</div>
+</div>
+
+<!-- ============ 提案 2 ============ -->
+<div class="prop prop-2">
+  <div class="prop-label"><span class="tag">2</span> 1:1 · 线条显著加粗</div>
+  <div class="preview">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+          <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="wordmark">微影<span class="dot">.</span>ing</div>
+    </div>
+    <div class="no">No.001</div>
+  </div>
+  <div class="zoom-row">
+    <div class="zoom-box">
+      <svg width="40" height="40" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(2px 0 0 #1d1d1f) drop-shadow(-2px 0 0 #1d1d1f) drop-shadow(0 2px 0 #1d1d1f) drop-shadow(0 -2px 0 #1d1d1f) drop-shadow(2px 2px 0 #1d1d1f) drop-shadow(-2px -2px 0 #1d1d1f) drop-shadow(2px -2px 0 #1d1d1f) drop-shadow(-2px 2px 0 #1d1d1f)">
+        <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="#1d1d1f"/>
+      </svg>
+    </div>
+  </div>
+  <div class="prop-desc">6.5mm × 6.5mm 容器，8 向描边加粗，线条更厚重</div>
+</div>
+
+<!-- ============ 提案 3 ============ -->
+<div class="prop prop-3">
+  <div class="prop-label"><span class="tag">3</span> 1:1 · 线条变细优雅</div>
+  <div class="preview">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+          <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="wordmark">微影<span class="dot">.</span>ing</div>
+    </div>
+    <div class="no">No.001</div>
+  </div>
+  <div class="zoom-row">
+    <div class="zoom-box">
+      <svg width="40" height="40" viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg" style="opacity:.85;transform:scale(.9);transform-origin:center">
+        <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="#1d1d1f"/>
+      </svg>
+    </div>
+  </div>
+  <div class="prop-desc">5.5mm × 5.5mm 容器，scale 0.95 + opacity 0.85，线条纤细优雅</div>
+</div>
+
+</body>
+</html>

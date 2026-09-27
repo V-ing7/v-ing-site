@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>微影 V-ing · 名片正面 3 款预览</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#000;
+    --surface:#1a1a1a;
+    --label:#e6be8a;
+    --label-2:#C9A96E;
+    --hairline:rgba(201,169,110,.14);
+    --hairline-strong:rgba(201,169,110,.24);
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;
+    background:#000;
+    color:var(--label);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:48px 20px 64px;gap:20px;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(700px 400px at 50% 30%,rgba(72,72,74,.18),transparent 60%),
+      radial-gradient(500px 300px at 15% 80%,rgba(99,99,102,.1),transparent 60%),
+      radial-gradient(500px 300px at 85% 80%,rgba(99,99,102,.1),transparent 60%);
+  }
+  .page-title{
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:10px;
+    font-size:11px;letter-spacing:4px;color:#86868b;
+    text-transform:uppercase;font-weight:500;
+  }
+  .page-title .dot{width:4px;height:4px;border-radius:50%;background:#86868b}
+  .variant-label{
+    position:relative;z-index:1;
+    font-size:10px;letter-spacing:3px;color:var(--label-2);
+    text-transform:uppercase;font-weight:600;
+    margin-bottom:-4px;
+  }
+  .variant-label .cn{color:#86868b;margin-left:8px}
+
+  /* === 通用卡片 === */
+  .card-wrap{
+    position:relative;z-index:1;
+    filter:drop-shadow(0 30px 60px rgba(0,0,0,.6)) drop-shadow(0 0 30px rgba(201,169,110,.06));
+    margin-bottom:36px;
+  }
+  .ticket{
+    display:flex;
+    width:100mm;height:50mm;
+    background:var(--surface);
+    border-radius:4mm;
+    overflow:hidden;
+    position:relative;
+  }
+  .ticket::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+    background:linear-gradient(135deg,rgba(201,169,110,.05) 0%,transparent 30%,transparent 70%,rgba(201,169,110,.03) 100%);
+    border-radius:4mm;
+  }
+
+  /* === 穿孔线 === */
+  .perf{width:0;position:relative;z-index:3}
+  .perf::before{
+    content:'';position:absolute;top:3mm;bottom:3mm;left:0;
+    width:0;border-left:0.3mm dashed var(--hairline-strong);
+  }
+  .notch{
+    position:absolute;left:-1.25mm;width:2.5mm;height:2.5mm;
+    background:var(--bg);border-radius:50%;
+  }
+  .notch.top{top:-1.25mm}
+  .notch.bottom{bottom:-1.25mm}
+
+  /* === 副券（3款通用） === */
+  .sub{
+    width:30mm;height:50mm;
+    background:var(--surface);
+    position:relative;
+    display:flex;flex-direction:column;
+    padding:4.5mm 0 4mm;
+  }
+  .s-head{
+    text-align:center;
+    font-size:7px;font-weight:700;letter-spacing:4px;
+    color:var(--label);
+    text-transform:uppercase;
+    padding-bottom:3mm;
+    position:relative;
+  }
+  .s-head::after{
+    content:'';position:absolute;left:50%;bottom:0;
+    transform:translateX(-50%);
+    width:4mm;height:0.3mm;
+    background:var(--label);
+  }
+  .s-head .cn{
+    display:block;font-size:5px;font-weight:400;
+    color:var(--label-2);letter-spacing:2.5px;margin-top:0.6mm;
+  }
+  .s-body{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2.5mm;padding:0 3mm;
+  }
+  .qr{
+    width:11mm;height:11mm;
+    border-radius:1.5mm;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qr img{width:100%;height:100%;display:block}
+  .s-foot{
+    text-align:center;font-size:6px;font-weight:600;
+    color:var(--label-2);letter-spacing:2px;
+  }
+
+  /* logo svg 通用 */
+  .logo svg{display:block}
+
+  /* ============================
+     变体 A: 居中极简
+     ============================ */
+  .va .main{
+    width:70mm;height:50mm;
+    background:var(--surface);
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;
+    padding:4mm 5mm;
+  }
+  .va .logo{
+    width:6mm;height:6mm;color:var(--label);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:2mm;
+  }
+  .va .logo svg{width:6mm;height:6mm;opacity:.95}
+  .va .brand-cn{
+    font-size:8px;font-weight:700;color:var(--label);
+    letter-spacing:1px;line-height:1;
+  }
+  .va .brand-cn .dot{color:var(--label-2)}
+  .va .brand-en{
+    font-size:5px;font-weight:500;color:var(--label-2);
+    letter-spacing:2.5px;text-transform:uppercase;
+    margin-top:0.6mm;
+  }
+  .va .divider{
+    width:8mm;height:0.2mm;background:var(--hairline-strong);
+    margin:2.5mm 0;
+  }
+  .va .name{
+    font-family:'Noto Sans SC',sans-serif;
+    font-weight:700;font-size:13px;color:var(--label);
+    letter-spacing:3px;line-height:1;
+  }
+  .va .name-en{
+    font-size:7px;font-weight:600;color:var(--label-2);
+    letter-spacing:1px;margin-top:1mm;
+  }
+  .va .role{
+    margin-top:1.5mm;
+    font-size:7px;font-weight:400;color:var(--label-2);
+    letter-spacing:3px;
+  }
+  .va .slogan{
+    margin-top:1.5mm;
+    font-size:5px;font-weight:400;color:var(--label-2);
+    letter-spacing:1.5px;opacity:.8;
+  }
+  .va .foot{
+    position:absolute;bottom:3.5mm;left:0;right:0;
+    display:flex;justify-content:center;align-items:center;gap:1.5mm;
+  }
+  .va .foot .ico{
+    width:3.5mm;height:3.5mm;border-radius:1mm;
+    background:var(--label);color:#1a1a1a;
+    font-size:3px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Noto Sans SC',sans-serif;
+  }
+  .va .foot .v{
+    font-weight:600;color:var(--label);
+    letter-spacing:0.5px;font-size:7px;
+  }
+  .va .no{
+    position:absolute;top:3.5mm;right:4mm;
+    font-size:6px;font-weight:600;color:var(--label-2);
+    letter-spacing:1px;font-variant-numeric:tabular-nums;
+    opacity:.7;
+  }
+
+  /* ============================
+     变体 B: 电影帧
+     ============================ */
+  .vb .main{
+    width:70mm;height:50mm;
+    background:var(--surface);
+    position:relative;
+    display:flex;flex-direction:column;
+    padding:3.5mm 5mm 3.5mm 7mm;
+  }
+  /* 胶片孔装饰 */
+  .vb .filmstrip{
+    position:absolute;left:0;top:0;bottom:0;width:4mm;
+    display:flex;flex-direction:column;justify-content:space-around;
+    align-items:center;padding:3mm 0;
+    background:rgba(0,0,0,.2);
+  }
+  .vb .filmstrip .hole{
+    width:2.2mm;height:1.6mm;border-radius:0.4mm;
+    background:rgba(201,169,110,.12);
+    border:0.15mm solid var(--hairline);
+  }
+  .vb .head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:2.5mm;
+    border-bottom:0.2mm solid var(--hairline);
+  }
+  .vb .brand{display:flex;align-items:flex-end;gap:1.5mm}
+  .vb .logo{
+    width:5mm;height:5mm;color:var(--label);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .vb .logo svg{width:5mm;height:5mm;opacity:.95}
+  .vb .wordmark{display:flex;flex-direction:column;gap:0.3mm}
+  .vb .main-cn{
+    font-size:9px;font-weight:700;color:var(--label);
+    letter-spacing:0.5px;line-height:1;
+  }
+  .vb .main-cn .dot{color:var(--label-2)}
+  .vb .sub-en{
+    font-size:5px;font-weight:500;color:var(--label-2);
+    letter-spacing:2px;text-transform:uppercase;line-height:1;
+  }
+  .vb .no{
+    font-size:6px;font-weight:600;color:var(--label-2);
+    letter-spacing:1px;font-variant-numeric:tabular-nums;
+    padding:0.8mm 1.8mm;background:rgba(201,169,110,.06);
+    border:0.2mm solid var(--hairline);border-radius:1.8mm;
+  }
+  .vb .body{
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+    padding:1mm 0;
+  }
+  .vb .name{
+    font-family:'Noto Sans SC',sans-serif;
+    font-weight:700;font-size:12px;color:var(--label);
+    letter-spacing:2px;line-height:1;
+  }
+  .vb .name-en{
+    font-size:7px;font-weight:600;color:var(--label-2);
+    letter-spacing:0;margin-top:0.8mm;
+  }
+  .vb .role{
+    margin-top:1.5mm;
+    font-size:7px;font-weight:400;color:var(--label-2);
+    letter-spacing:2.5px;
+    display:flex;align-items:center;gap:1.5mm;
+  }
+  .vb .role::before{
+    content:'';width:3mm;height:0.15mm;background:var(--label-2);
+    opacity:.5;
+  }
+  .vb .slogan{
+    margin-top:1.5mm;
+    font-size:5px;font-weight:400;color:var(--label-2);
+    letter-spacing:1px;opacity:.8;
+  }
+  .vb .foot{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-top:2mm;border-top:0.2mm solid var(--hairline);
+  }
+  .vb .foot .wx{display:flex;align-items:center;gap:1.4mm}
+  .vb .foot .ico{
+    width:3.5mm;height:3.5mm;border-radius:1mm;
+    background:var(--label);color:#1a1a1a;
+    font-size:3px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Noto Sans SC',sans-serif;
+  }
+  .vb .foot .v{
+    font-weight:600;color:var(--label);
+    letter-spacing:0.5px;font-size:7px;
+  }
+  .vb .frame-tag{
+    font-size:4px;color:var(--label-2);letter-spacing:1.5px;
+    opacity:.6;font-family:'JetBrains Mono',monospace;
+  }
+
+  /* ============================
+     变体 C: 经典横排
+     ============================ */
+  .vc .main{
+    width:70mm;height:50mm;
+    background:var(--surface);
+    position:relative;
+    display:flex;
+    padding:4.5mm 5mm;
+  }
+  .vc .left{
+    flex:1;display:flex;flex-direction:column;
+    padding-right:3mm;
+  }
+  .vc .right{
+    width:20mm;display:flex;flex-direction:column;
+    align-items:flex-end;justify-content:space-between;
+    border-left:0.2mm solid var(--hairline);
+    padding-left:3mm;
+  }
+  .vc .logo{
+    width:4.5mm;height:4.5mm;color:var(--label);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:1.5mm;
+  }
+  .vc .logo svg{width:4.5mm;height:4.5mm;opacity:.95}
+  .vc .brand-cn{
+    font-size:8px;font-weight:700;color:var(--label);
+    letter-spacing:0.5px;line-height:1;
+  }
+  .vc .brand-cn .dot{color:var(--label-2)}
+  .vc .brand-en{
+    font-size:4.5px;font-weight:500;color:var(--label-2);
+    letter-spacing:2px;text-transform:uppercase;
+    margin-top:0.4mm;
+  }
+  .vc .body{
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+  }
+  .vc .name{
+    font-family:'Noto Sans SC',sans-serif;
+    font-weight:700;font-size:12px;color:var(--label);
+    letter-spacing:2px;line-height:1;
+  }
+  .vc .name-en{
+    font-size:7px;font-weight:600;color:var(--label-2);
+    letter-spacing:0;margin-top:0.8mm;
+  }
+  .vc .role{
+    margin-top:1.5mm;
+    font-size:7px;font-weight:400;color:var(--label-2);
+    letter-spacing:2.5px;
+  }
+  .vc .slogan{
+    margin-top:1mm;
+    font-size:5px;font-weight:400;color:var(--label-2);
+    letter-spacing:1px;opacity:.8;
+  }
+  .vc .foot{
+    display:flex;align-items:center;gap:1.4mm;
+  }
+  .vc .foot .ico{
+    width:3.5mm;height:3.5mm;border-radius:1mm;
+    background:var(--label);color:#1a1a1a;
+    font-size:3px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Noto Sans SC',sans-serif;
+  }
+  .vc .foot .v{
+    font-weight:600;color:var(--label);
+    letter-spacing:0.5px;font-size:7px;
+  }
+  .vc .right-top{display:flex;flex-direction:column;align-items:flex-end;gap:1mm}
+  .vc .no{
+    font-size:6px;font-weight:600;color:var(--label-2);
+    letter-spacing:1px;font-variant-numeric:tabular-nums;
+  }
+  .vc .qr{
+    width:10mm;height:10mm;
+    border-radius:1.5mm;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    margin-top:1mm;
+  }
+  .vc .qr img{width:100%;height:100%;display:block}
+  .vc .right-bottom{
+    font-size:4px;color:var(--label-2);letter-spacing:1.5px;
+    opacity:.5;font-family:'JetBrains Mono',monospace;
+    writing-mode:vertical-rl;text-orientation:mixed;
+  }
+
+  /* 分隔线 */
+  .variant-sep{
+    position:relative;z-index:1;
+    width:120mm;height:0.2mm;
+    background:rgba(255,255,255,.06);
+    margin:4px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <span>V-ING</span>
+  <span class="dot"></span>
+  <span>Card Variants · 3 Designs</span>
+</div>
+
+<!-- ====================== 变体 A: 居中极简 ====================== -->
+<div class="variant-label">A · Centered Minimal <span class="cn">居中极简</span></div>
+<div class="card-wrap va">
+  <div class="ticket">
+    <div class="main">
+      <div class="no">No.001</div>
+      <div class="logo">
+        <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+          <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="brand-cn">微影<span class="dot">.</span>ing</div>
+      <div class="brand-en">V-ING STUDIO</div>
+      <div class="divider"></div>
+      <div class="name">林威</div>
+      <div class="name-en">Vikyi L.</div>
+      <div class="role">摄影剪辑</div>
+      <div class="slogan">我们正在进行时</div>
+      <div class="foot">
+        <div class="ico">微</div>
+        <span class="v">Vking071</span>
+      </div>
+    </div>
+    <div class="perf">
+      <div class="notch top"></div>
+      <div class="notch bottom"></div>
+    </div>
+    <div class="sub">
+      <div class="s-head">STUB<span class="cn">存根</span></div>
+      <div class="s-body">
+        <div class="qr"><img src="assets/card-qr.svg" alt="二维码"/></div>
+      </div>
+      <div class="s-foot">001</div>
+    </div>
+  </div>
+</div>
+
+<div class="variant-sep"></div>
+
+<!-- ====================== 变体 B: 电影帧 ====================== -->
+<div class="variant-label">B · Cinema Frame <span class="cn">电影帧</span></div>
+<div class="card-wrap vb">
+  <div class="ticket">
+    <div class="main">
+      <div class="filmstrip">
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div>
+      </div>
+      <div class="head">
+        <div class="brand">
+          <div class="logo">
+            <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+              <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="wordmark">
+            <span class="main-cn">微影<span class="dot">.</span>ing</span>
+            <span class="sub-en">V-ING STUDIO</span>
+          </div>
+        </div>
+        <div class="no">No.001</div>
+      </div>
+      <div class="body">
+        <div class="name">林威</div>
+        <div class="name-en">Vikyi L.</div>
+        <div class="role">摄影剪辑</div>
+        <div class="slogan">我们正在进行时</div>
+      </div>
+      <div class="foot">
+        <div class="wx">
+          <div class="ico">微</div>
+          <span class="v">Vking071</span>
+        </div>
+        <span class="frame-tag">35mm · 24fps</span>
+      </div>
+    </div>
+    <div class="perf">
+      <div class="notch top"></div>
+      <div class="notch bottom"></div>
+    </div>
+    <div class="sub">
+      <div class="s-head">STUB<span class="cn">存根</span></div>
+      <div class="s-body">
+        <div class="qr"><img src="assets/card-qr.svg" alt="二维码"/></div>
+      </div>
+      <div class="s-foot">001</div>
+    </div>
+  </div>
+</div>
+
+<div class="variant-sep"></div>
+
+<!-- ====================== 变体 C: 经典横排 ====================== -->
+<div class="variant-label">C · Classic Split <span class="cn">经典横排</span></div>
+<div class="card-wrap vc">
+  <div class="ticket">
+    <div class="main">
+      <div class="left">
+        <div class="logo">
+          <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+            <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-cn">微影<span class="dot">.</span>ing</div>
+        <div class="brand-en">V-ING STUDIO</div>
+        <div class="body">
+          <div class="name">林威</div>
+          <div class="name-en">Vikyi L.</div>
+          <div class="role">摄影剪辑</div>
+          <div class="slogan">我们正在进行时</div>
+        </div>
+        <div class="foot">
+          <div class="ico">微</div>
+          <span class="v">Vking071</span>
+        </div>
+      </div>
+      <div class="right">
+        <div class="right-top">
+          <div class="no">No.001</div>
+          <div class="qr"><img src="assets/card-qr.svg" alt="二维码"/></div>
+        </div>
+        <div class="right-bottom">35mm</div>
+      </div>
+    </div>
+    <div class="perf">
+      <div class="notch top"></div>
+      <div class="notch bottom"></div>
+    </div>
+    <div class="sub">
+      <div class="s-head">STUB<span class="cn">存根</span></div>
+      <div class="s-body">
+        <div class="qr"><img src="assets/card-qr.svg" alt="二维码"/></div>
+      </div>
+      <div class="s-foot">001</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if(window.self!==window.top){document.body.classList.add('in-iframe')}
+</script>
+</body>
+</html>
