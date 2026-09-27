@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ve · 微意设计</title>
+<meta name="description" content="Ve · 微意设计工作室 — 独立设计与视觉创作">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --surface:#141414;
+    --surface-2:#1a1a1a;
+    --ink:#e8dcc4;
+    --ink-dim:#9a8f7a;
+    --gold:#c9a96e;
+    --gold-bright:#e6be8a;
+    --line:rgba(201,169,110,.16);
+    --line-strong:rgba(201,169,110,.32);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans SC','Noto Serif SC',-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* 噪点纹理 */
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+    opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 40px}
+
+  /* ===== 顶部导航 ===== */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 40px;
+    background:rgba(10,10,10,.72);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-brand{display:flex;align-items:center;gap:12px}
+  .nav-brand .mark{
+    width:30px;height:30px;color:var(--gold-bright);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .nav-brand .mark svg{width:100%;height:100%}
+  .nav-brand .name{
+    font-family:'Noto Serif SC',serif;
+    font-size:15px;font-weight:500;letter-spacing:2px;color:var(--ink);
+  }
+  .nav-brand .name .en{
+    display:block;font-family:'JetBrains Mono',monospace;
+    font-size:9px;font-weight:400;letter-spacing:3px;color:var(--gold);
+    margin-top:2px;
+  }
+  .nav-links{display:flex;gap:32px}
+  .nav-links a{
+    font-size:12px;letter-spacing:2px;color:var(--ink-dim);
+    text-decoration:none;transition:color .3s;
+    text-transform:uppercase;
+  }
+  .nav-links a:hover{color:var(--gold-bright)}
+
+  /* ===== Hero ===== */
+  .hero{
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding:120px 0 80px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+  }
+  .hero-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:3px;color:var(--gold);
+    margin-bottom:28px;
+  }
+  .hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .hero-title{
+    font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+    font-size:clamp(64px,11vw,140px);
+    line-height:.95;
+    color:var(--ink);
+    letter-spacing:6px;
+    margin-bottom:24px;
+  }
+  .hero-title .accent{
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero-sub{
+    font-family:'Noto Serif SC',serif;
+    font-size:18px;font-weight:300;color:var(--ink-dim);
+    letter-spacing:1px;max-width:380px;
+    margin-bottom:40px;
+  }
+  .hero-meta{
+    display:flex;gap:40px;
+  }
+  .hero-meta .item{display:flex;flex-direction:column;gap:4px}
+  .hero-meta .k{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:2px;color:var(--ink-dim);
+  }
+  .hero-meta .v{font-size:13px;color:var(--gold-bright);letter-spacing:1px}
+
+  /* Hero 卡片展示 */
+  .hero-card{
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;gap:24px;
+  }
+  .ticket{
+    width:100%;max-width:520px;
+    background:var(--surface-2);
+    border-radius:16px;
+    box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 60px rgba(201,169,110,.08);
+    position:relative;overflow:hidden;
+  }
+  .ticket::before{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(135deg,rgba(201,169,110,.06),transparent 35%,transparent 65%,rgba(201,169,110,.04));
+  }
+  .ticket-front{
+    display:flex;height:260px;
+  }
+  .ticket-main{
+    flex:7;display:flex;align-items:center;justify-content:center;
+    padding:24px;
+  }
+  .ticket-main .slogan{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .ticket-main .slogan .t{
+    font-family:'ZCOOL XiaoWei',serif;
+    font-size:30px;color:var(--gold-bright);letter-spacing:5px;line-height:1;
+    text-shadow:0 0 30px rgba(201,169,110,.2);
+  }
+  .ticket-main .slogan .sep{
+    width:80px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--line-strong),transparent);
+  }
+  .ticket-main .slogan .s{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;font-weight:300;letter-spacing:.4em;text-indent:.4em;
+    color:var(--gold);text-transform:uppercase;
+  }
+  .ticket-perf{
+    width:0;position:relative;
+  }
+  .ticket-perf::before{
+    content:'';position:absolute;top:16px;bottom:16px;left:0;width:0;
+    border-left:1px dashed var(--line-strong);
+  }
+  .ticket-notch{
+    position:absolute;width:10px;height:10px;border-radius:50%;
+    background:var(--bg);left:50%;transform:translateX(-50%);
+  }
+  .ticket-notch.top{top:-5px}
+  .ticket-notch.bottom{bottom:-5px}
+  .ticket-sub{
+    flex:3;background:#1a1a1a;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;padding:20px 12px;
+  }
+  .ticket-sub .logo{
+    width:36px;height:36px;color:var(--gold-bright);
+  }
+  .ticket-sub .logo svg{width:100%;height:100%}
+  .ticket-sub .cn{
+    font-size:13px;font-weight:700;color:var(--gold-bright);letter-spacing:1px;
+  }
+  .ticket-sub .cn .dot{color:var(--gold)}
+  .ticket-sub .en{
+    font-family:'JetBrains Mono',monospace;
+    font-size:7px;font-weight:500;color:var(--gold);letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .ticket-caption{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:2px;color:var(--ink-dim);
+    text-transform:uppercase;
+  }
+
+  /* ===== 通用 section ===== */
+  section{padding:100px 0;position:relative}
+  .section-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:60px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:24px;
+  }
+  .section-head .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:3px;color:var(--gold);
+    text-transform:uppercase;margin-bottom:12px;
+  }
+  .section-head h2{
+    font-family:'Noto Serif SC',serif;
+    font-size:36px;font-weight:400;color:var(--ink);
+    letter-spacing:2px;
+  }
+  .section-head .no{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--ink-dim);letter-spacing:2px;
+  }
+
+  /* ===== 作品展示 ===== */
+  .works-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:40px;
+  }
+  .work-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:32px;
+    transition:border-color .4s,transform .4s;
+  }
+  .work-card:hover{border-color:var(--line-strong);transform:translateY(-4px)}
+  .work-card .w-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:2px;color:var(--gold);
+    text-transform:uppercase;margin-bottom:16px;
+  }
+  .work-card h3{
+    font-family:'Noto Serif SC',serif;
+    font-size:22px;font-weight:500;color:var(--ink);
+    margin-bottom:10px;letter-spacing:1px;
+  }
+  .work-card p{
+    font-size:13px;color:var(--ink-dim);line-height:1.7;margin-bottom:20px;
+  }
+  .work-card .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .work-card .tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;padding:4px 10px;border-radius:4px;
+    background:rgba(201,169,110,.08);color:var(--gold);
+    letter-spacing:1px;
+  }
+  .work-card .preview{
+    margin-top:20px;border-radius:8px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .mini-ticket{
+    background:var(--surface-2);
+    display:flex;height:100px;
+  }
+  .mini-ticket .m-main{
+    flex:7;display:flex;align-items:center;justify-content:center;
+  }
+  .mini-ticket .m-main span{
+    font-family:'ZCOOL XiaoWei',serif;font-size:14px;color:var(--gold-bright);letter-spacing:2px;
+  }
+  .mini-ticket .m-perf{width:0;position:relative}
+  .mini-ticket .m-perf::before{
+    content:'';position:absolute;top:8px;bottom:8px;left:0;width:0;
+    border-left:1px dashed var(--line-strong);
+  }
+  .mini-ticket .m-sub{
+    flex:3;background:#1a1a1a;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4px;
+  }
+  .mini-ticket .m-sub .lg{width:18px;height:18px;color:var(--gold-bright)}
+  .mini-ticket .m-sub .lg svg{width:100%;height:100%}
+  .mini-ticket .m-sub .nm{font-size:7px;color:var(--gold-bright);font-weight:700}
+
+  /* ===== 设计细节 ===== */
+  .details-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  .detail{
+    padding:28px;border:1px solid var(--line);border-radius:10px;
+    background:var(--surface);
+  }
+  .detail .ic{
+    width:36px;height:36px;border-radius:8px;
+    background:rgba(201,169,110,.1);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold-bright);margin-bottom:18px;
+  }
+  .detail h4{
+    font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px;letter-spacing:1px;
+  }
+  .detail p{font-size:12px;color:var(--ink-dim);line-height:1.7}
+  .detail .val{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--gold);margin-top:10px;letter-spacing:1px;
+  }
+
+  /* ===== 色板 ===== */
+  .palette{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;
+  }
+  .swatch{
+    border-radius:10px;overflow:hidden;
+    border:1px solid var(--line);position:relative;
+    display:flex;flex-direction:column;
+  }
+  .swatch .color{height:90px;flex-shrink:0}
+  .swatch .info{
+    padding:14px;background:var(--surface);
+  }
+  .swatch .hex{
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);
+  }
+  .swatch .role{font-size:10px;color:var(--ink-dim);margin-top:4px}
+
+  /* ===== Footer ===== */
+  footer{
+    padding:60px 0 40px;
+    border-top:1px solid var(--line);
+    margin-top:60px;
+  }
+  .foot-grid{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:40px;
+    flex-wrap:wrap;
+  }
+  .foot-brand{display:flex;align-items:center;gap:14px}
+  .foot-brand .mark{width:32px;height:32px;color:var(--gold-bright)}
+  .foot-brand .mark svg{width:100%;height:100%}
+  .foot-brand .name{font-family:'Noto Serif SC',serif;font-size:16px;color:var(--ink);letter-spacing:2px}
+  .foot-brand .en{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:3px}
+  .foot-links{display:flex;gap:28px}
+  .foot-links a{font-size:12px;color:var(--ink-dim);text-decoration:none;letter-spacing:1px;transition:color .3s}
+  .foot-links a:hover{color:var(--gold-bright)}
+  .foot-copy{
+    margin-top:40px;padding-top:20px;border-top:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);
+    letter-spacing:1px;text-align:center;
+  }
+
+  @media(max-width:768px){
+    .wrap{padding:0 20px}
+    .nav{padding:16px 20px}
+    .nav-links{display:none}
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .works-grid,.details-grid,.palette{grid-template-columns:1fr}
+    .hero-title{font-size:64px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 导航 ===== -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="mark">
+      <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg>
+    </div>
+    <div class="name">微意<span class="en">VE DESIGN STUDIO</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#works">作品</a>
+    <a href="#details">细节</a>
+    <a href="#palette">色彩</a>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-tag"><span class="dot"></span>独立设计工作室 · EST. 2026</div>
+        <h1 class="hero-title">微<span class="accent">意</span></h1>
+        <p class="hero-sub">以细微之意,造视觉之境。<br>专注于品牌视觉、印刷物与数字界面的独立设计实践。</p>
+        <div class="hero-meta">
+          <div class="item"><span class="k">DISCIPLINE</span><span class="v">Brand · Print · UI</span></div>
+          <div class="item"><span class="k">LOCATION</span><span class="v">Shanghai, CN</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="ticket">
+          <div class="ticket-front">
+            <div class="ticket-main">
+              <div class="slogan">
+                <div class="t">我们正在进行时</div>
+                <div class="sep"></div>
+                <div class="s">WE ARE · ING</div>
+              </div>
+            </div>
+            <div class="ticket-perf">
+              <div class="ticket-notch top"></div>
+              <div class="ticket-notch bottom"></div>
+            </div>
+            <div class="ticket-sub">
+              <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+              <div class="cn">微影<span class="dot">.</span>ing</div>
+              <div class="en">V-ING STUDIO</div>
+            </div>
+          </div>
+        </div>
+        <div class="ticket-caption">— Cinema Ticket Business Card · 2026 —</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 作品 ===== -->
+<section id="works">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="label">Selected Works</div>
+        <h2>作品</h2>
+      </div>
+      <div class="no">01 / 03</div>
+    </div>
+    <div class="works-grid">
+      <div class="work-card">
+        <div class="w-label">Business Card · 名片</div>
+        <h3>电影票名片</h3>
+        <p>为微影.ing 工作室设计的电影票格式名片,以票根为载体,承载品牌身份与个人联络信息。主券为 slogan,副券为品牌标识,可撕式结构呼应「入场」意象。</p>
+        <div class="tags">
+          <span class="tag">Print</span>
+          <span class="tag">Identity</span>
+          <span class="tag">100×50mm</span>
+        </div>
+        <div class="preview">
+          <div class="mini-ticket">
+            <div class="m-main"><span>我们正在进行时</span></div>
+            <div class="m-perf"></div>
+            <div class="m-sub">
+              <div class="lg"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+              <div class="nm">微影.ing</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="work-card">
+        <div class="w-label">Coming Soon</div>
+        <h3>视觉识别系统</h3>
+        <p>品牌视觉识别系统开发中,涵盖标志规范、字体系统、色彩体系与应用物料。以克制的金色与深色基底,构建兼具温度与质感的视觉语言。</p>
+        <div class="tags">
+          <span class="tag">Identity</span>
+          <span class="tag">System</span>
+          <span class="tag">In Progress</span>
+        </div>
+        <div class="preview" style="display:flex;align-items:center;justify-content:center;height:100px;background:var(--surface-2);color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px">
+          COMING SOON
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 设计细节 ===== -->
+<section id="details">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="label">Design Details</div>
+        <h2>细节</h2>
+      </div>
+      <div class="no">02 / 03</div>
+    </div>
+    <div class="details-grid">
+      <div class="detail">
+        <div class="ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        </div>
+        <h4>字体排印</h4>
+        <p>主标题采用 ZCOOL XiaoWei 雕版宋体,呈现东方书写质感;技术信息与编号使用 JetBrains Mono,构建精密的工程感。</p>
+        <div class="val">ZCOOL XiaoWei · JetBrains Mono</div>
+      </div>
+      <div class="detail">
+        <div class="ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+        </div>
+        <h4>色彩系统</h4>
+        <p>以深炭灰 #1a1a1a 为底色,香槟金 #e6be8a 为主文字色,#C9A96E 为辅色,在克制中传递高级质感。</p>
+        <div class="val">#1a1a1a · #e6be8a · #C9A96E</div>
+      </div>
+      <div class="detail">
+        <div class="ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        </div>
+        <h4>印刷工艺</h4>
+        <p>100×50mm 电影票幅,四角 R4 圆角,主副券间以 Ø2.5mm 缺口 + 虚线构成撕线,可撕可存。</p>
+        <div class="val">100×50mm · R4 · Notch Ø2.5</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 色板 ===== -->
+<section id="palette">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="label">Color Palette</div>
+        <h2>色彩</h2>
+      </div>
+      <div class="no">03 / 03</div>
+    </div>
+    <div class="palette">
+      <div class="swatch">
+        <div class="color" style="background:#0a0a0a"></div>
+        <div class="info"><div class="hex">#0A0A0A</div><div class="role">背景底色</div></div>
+      </div>
+      <div class="swatch">
+        <div class="color" style="background:#1a1a1a"></div>
+        <div class="info"><div class="hex">#1A1A1A</div><div class="role">卡片表面</div></div>
+      </div>
+      <div class="swatch">
+        <div class="color" style="background:#e6be8a"></div>
+        <div class="info"><div class="hex">#E6BE8A</div><div class="role">主文字 / 品牌</div></div>
+      </div>
+      <div class="swatch">
+        <div class="color" style="background:#c9a96e"></div>
+        <div class="info"><div class="hex">#C9A96E</div><div class="role">辅助文字</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="mark">
+          <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg>
+        </div>
+        <div>
+          <div class="name">微意</div>
+          <div class="en">VE DESIGN STUDIO</div>
+        </div>
+      </div>
+      <div class="foot-links">
+        <a href="#works">作品</a>
+        <a href="#details">细节</a>
+        <a href="#palette">色彩</a>
+        <a href="mailto:hello@ve.studio">联系</a>
+      </div>
+    </div>
+    <div class="foot-copy">© 2026 Ve Design Studio · 微意设计 · All rights reserved</div>
+  </div>
+</footer>
+
+</body>
+</html>
