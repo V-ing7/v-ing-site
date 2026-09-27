@@ -1473,8 +1473,7 @@
     plan:document.getElementById('ws-panel-plan'),
     unified:document.getElementById('ws-panel-unified'),
     storyboard:document.getElementById('ws-panel-storyboard'),
-    console:document.getElementById('ws-panel-console'),
-    design:document.getElementById('ws-panel-design')
+    console:document.getElementById('ws-panel-console')
   };
   var collabHub=document.getElementById('collabHub');
   var wsSubpages=document.querySelectorAll('.ws-subpage');
@@ -1487,10 +1486,10 @@
       btn.classList.remove('active');
       if(btn.getAttribute('data-ws-tab')===tab)btn.classList.add('active');
     });
-    // Move indicator (5-segment)
+    // Move indicator (4-segment)
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5');
-      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'design':5}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4');
+      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
