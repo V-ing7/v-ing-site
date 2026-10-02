@@ -415,6 +415,16 @@
       }
     }
 
+    // Report history (month archive) - init month selector
+    if(data.reportHistory && unifiedPanel && typeof initMonthSelector === 'function'){
+      if(_hasChanged('reportHistory', data.reportHistory)){
+        initMonthSelector();
+      }
+    } else if(unifiedPanel && typeof initMonthSelector === 'function'){
+      // Still init even if no history yet (shows "本月" only)
+      initMonthSelector();
+    }
+
     // Operation log
     if(data.operationLog && _hasChanged('operationLog', data.operationLog)){
       renderConsolePanel(data);
@@ -2219,6 +2229,11 @@
       var key = pcts[0] ? pcts[0].getAttribute('data-streamer') : null;
       if(!key || !data[key]) return;
       var d = data[key];
+      // Update name
+      var nameEl = card.querySelector('.streamer-info h4');
+      if(nameEl && d.name){
+        nameEl.textContent = d.name;
+      }
       // Update numbers
       if(pcts[0]) pcts[0].textContent = d.shoot;
       if(pcts[1]) pcts[1].textContent = d.edit;
@@ -2277,6 +2292,12 @@
     var d = data[key];
     if(!d) return;
     var target = getStreamerTarget(key, data, brandSection);
+
+    // Update name
+    var nameEl = card.querySelector('.streamer-info h4');
+    if(nameEl && d.name){
+      nameEl.textContent = d.name;
+    }
 
     // Update numbers (sr-pct now shows the actual count)
     var pcts = card.querySelectorAll('.sr-pct');
@@ -2611,6 +2632,161 @@
       }
     });
   });
+
+  /* ---------- Month Archive Feature ---------- */
+  var currentViewMonth = 'current'; // 'current' or month key like '2026-09'
+  var monthSelector = document.getElementById('monthSelector');
+  var archiveBadge = document.getElementById('archiveBadge');
+
+  // Initialize month selector options from reportHistory
+  function initMonthSelector(){
+    if(!monthSelector || !unifiedPanel) return;
+    var data = window.__vingData || {};
+    var history = data.reportHistory || {};
+    var months = Object.keys(history).sort().reverse();
+
+    // Clear existing options except the first "current" one
+    while(monthSelector.options.length > 1){
+      monthSelector.remove(1);
+    }
+
+    // Add history months
+    months.forEach(function(m){
+      var opt = document.createElement('option');
+      opt.value = m;
+      var parts = m.split('-');
+      opt.textContent = parts[0] + (lang === 'zh' ? '年' : '-') + parseInt(parts[1], 10) + (lang === 'zh' ? '月' : '');
+      opt.setAttribute('data-cn', parts[0] + '年' + parseInt(parts[1], 10) + '月');
+      opt.setAttribute('data-en', m);
+      monthSelector.appendChild(opt);
+    });
+
+    // Update current option text
+    var currentOpt = monthSelector.querySelector('option[value="current"]');
+    if(currentOpt){
+      currentOpt.textContent = lang === 'zh' ? '本月' : 'Current Month';
+    }
+
+    monthSelector.value = currentViewMonth;
+    _updateArchiveBadge();
+  }
+
+  function _updateArchiveBadge(){
+    if(!archiveBadge) return;
+    if(currentViewMonth === 'current'){
+      archiveBadge.style.display = 'none';
+    } else {
+      archiveBadge.style.display = '';
+      archiveBadge.textContent = lang === 'zh' ? '历史归档' : 'Archive';
+    }
+  }
+
+  // Switch to a different month view
+  function switchMonth(monthKey){
+    if(!unifiedPanel) return;
+    var data = window.__vingData || {};
+
+    if(monthKey === 'current'){
+      // Switch to current month data
+      streamerData = data.streamers || {};
+      currentViewMonth = 'current';
+      // Enable edit button
+      if(editToggleBtn) editToggleBtn.style.display = '';
+      // Exit edit mode if active
+      if(editModeActive){
+        toggleEditMode();
+      }
+    } else {
+      // Switch to archived month
+      var history = data.reportHistory || {};
+      if(history[monthKey] && history[monthKey].streamers){
+        streamerData = history[monthKey].streamers;
+        currentViewMonth = monthKey;
+        // Disable edit button (read-only for history)
+        if(editToggleBtn) editToggleBtn.style.display = 'none';
+        // Exit edit mode if active
+        if(editModeActive){
+          editModeActive = false;
+          unifiedPanel.classList.remove('edit-mode');
+        }
+      }
+    }
+
+    // Refresh visuals
+    initStreamerData();
+    initSubpageStreamers();
+    refreshAllVisuals(streamerData);
+    _updateArchiveBadge();
+  }
+
+  if(monthSelector && unifiedPanel){
+    monthSelector.addEventListener('change', function(){
+      switchMonth(monthSelector.value);
+    });
+  }
+
+  // Streamer name editing in edit mode
+  if(unifiedPanel){
+    unifiedPanel.addEventListener('click', function(e){
+      if(!editModeActive || currentViewMonth !== 'current') return;
+      var nameEl = e.target.closest('.streamer-info h4');
+      if(!nameEl) return;
+      if(nameEl.tagName === 'INPUT') return;
+
+      var card = nameEl.closest('.streamer-card');
+      if(!card) return;
+      var pctEl = card.querySelector('.sr-pct');
+      var key = pctEl ? pctEl.getAttribute('data-streamer') : null;
+      if(!key || !streamerData[key]) return;
+
+      // Replace h4 with input
+      var currentName = nameEl.textContent.trim();
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentName;
+      input.className = 'streamer-name-input';
+      input.setAttribute('data-streamer', key);
+
+      nameEl.style.display = 'none';
+      nameEl.parentNode.insertBefore(input, nameEl);
+      input.focus();
+      input.select();
+
+      function handleBlur(){
+        var newName = input.value.trim();
+        if(!newName) newName = currentName;
+        // Update data
+        if(streamerData[key]){
+          streamerData[key].name = newName;
+        }
+        // Update all h4 elements with this streamer key
+        document.querySelectorAll('.sr-pct[data-streamer="'+key+'"]').forEach(function(pct){
+          var c = pct.closest('.streamer-card');
+          if(c){
+            var h = c.querySelector('.streamer-info h4');
+            if(h) h.textContent = newName;
+          }
+        });
+        // Restore h4
+        input.remove();
+        nameEl.style.display = '';
+        nameEl.textContent = newName;
+        // Save
+        saveStreamersToGitHub();
+      }
+
+      input.addEventListener('blur', handleBlur);
+      input.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter'){
+          input.blur();
+        }
+        if(ev.key === 'Escape'){
+          input.value = currentName;
+          input.blur();
+        }
+      });
+    });
+  }
 
   /* ---------- Kanban Board: Add / Edit / Delete Cards ---------- */
   (function(){
