@@ -15,7 +15,14 @@
   var GH_FILE = 'data.json';
   var GH_BRANCH = 'main';
   var GH_RAW = 'https://raw.githubusercontent.com/' + GH_REPO + '/' + GH_BRANCH + '/' + GH_FILE;
-  var WORKER_API = ''; // Same-origin: Pages Functions at /api/
+  var WORKER_API = (function(){
+    // 智能判断：在 Cloudflare Pages 上用同源，其他域名（如 GitHub Pages）跨域调用
+    var host = window.location.hostname;
+    if (host === 'v-ing-site.pages.dev' || host === 'localhost' || host === '127.0.0.1') {
+      return ''; // 同源
+    }
+    return 'https://v-ing-site.pages.dev'; // 跨域到 Cloudflare Pages
+  })();
 
   /* ---- Sync State ---- */
   var ghDataSHA = null;           // Current file SHA for GitHub API
