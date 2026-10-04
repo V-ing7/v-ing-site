@@ -5627,50 +5627,50 @@ textarea.sb-cell-desc{
 
 /* ===== 零跑全系车型报价 ===== */
 .car-price-section{position:relative}
-.car-price-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;flex-wrap:wrap}
-.car-price-title{font-size:1.15rem;font-weight:800;margin:0;color:var(--text-primary)}
-.car-price-sub{font-size:.8rem;color:var(--text-tertiary)}
-.car-price-rows{display:flex;flex-direction:column;gap:14px}
+.car-price-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.car-price-title{font-size:1.05rem;font-weight:800;margin:0;color:var(--text-primary)}
+.car-price-sub{font-size:.74rem;color:var(--text-tertiary)}
+.car-price-rows{display:flex;flex-direction:column;gap:10px}
 .car-series-row{
-  display:flex;align-items:stretch;gap:12px;
+  display:flex;align-items:stretch;gap:10px;
 }
 .car-series-label{
-  flex:0 0 56px;display:flex;align-items:center;justify-content:center;
-  font-size:.85rem;font-weight:800;letter-spacing:1px;
-  border-radius:12px;
+  flex:0 0 44px;display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;font-weight:800;letter-spacing:1px;
+  border-radius:10px;
   background:rgba(0,199,190,.1);color:#00A89F;
   writing-mode:vertical-rl;text-orientation:upright;
   min-height:100%;
 }
 .car-series-d-label{background:rgba(255,159,10,.12);color:#FF9F0A}
 .car-series-cards{
-  flex:1;display:grid;gap:12px;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  flex:1;display:grid;gap:10px;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
 }
 @media(max-width:600px){
   .car-series-row{flex-direction:column}
   .car-series-label{
     flex:none;width:auto;writing-mode:horizontal-tb;text-orientation:mixed;
-    padding:6px 12px;justify-content:flex-start;
+    padding:5px 10px;justify-content:flex-start;font-size:.78rem;
   }
 }
 .car-price-card{
   position:relative;
-  padding:18px 16px;
-  border-radius:16px;
+  padding:12px 12px;
+  border-radius:12px;
   background:var(--surface);
   border:1px solid var(--glass-border);
   transition:all .25s ease;
   overflow:hidden;
 }
 .car-price-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,#00C7BE,#00A89F);
   opacity:.6;
 }
 .car-price-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 10px 28px rgba(0,0,0,.14);
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
   border-color:rgba(0,199,190,.4);
 }
 .car-price-card:hover::before{opacity:1}
@@ -5678,34 +5678,34 @@ textarea.sb-cell-desc{
 .car-card-flagship::before{
   background:linear-gradient(90deg,#FF9F0A,#FF7A00);
 }
-.car-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.car-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
 .car-series-badge{
-  font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:7px;
+  font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:6px;
   background:rgba(0,199,190,.12);color:#00A89F;letter-spacing:.3px;
 }
 .car-series-d{background:rgba(255,159,10,.14);color:#FF9F0A}
 .car-power-tag{
-  font-size:.66rem;font-weight:600;padding:2px 8px;border-radius:6px;
+  font-size:.6rem;font-weight:600;padding:2px 7px;border-radius:5px;
 }
 .car-power-ev{background:rgba(52,199,89,.12);color:#34C759}
 .car-power-both{background:rgba(88,86,214,.12);color:#5856D6}
-.car-card-name{font-size:1.1rem;font-weight:800;color:var(--text-primary);margin-bottom:2px}
-.car-card-pos{font-size:.76rem;color:var(--text-tertiary);margin-bottom:12px}
+.car-card-name{font-size:.98rem;font-weight:800;color:var(--text-primary);margin-bottom:1px}
+.car-card-pos{font-size:.7rem;color:var(--text-tertiary);margin-bottom:8px}
 .car-card-price{
-  font-size:1.8rem;font-weight:900;
+  font-size:1.45rem;font-weight:900;
   background:linear-gradient(135deg,#00C7BE,#00A89F);
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
-  line-height:1.1;margin-bottom:6px;
+  line-height:1.1;margin-bottom:4px;
 }
 .car-card-flagship .car-card-price{
   background:linear-gradient(135deg,#FF9F0A,#FF7A00);
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.car-price-unit{font-size:.85rem;font-weight:600;margin-left:2px}
-.car-card-spec{font-size:.74rem;color:var(--text-secondary);line-height:1.5}
+.car-price-unit{font-size:.72rem;font-weight:600;margin-left:2px}
+.car-card-spec{font-size:.68rem;color:var(--text-secondary);line-height:1.45}
 .car-price-foot{
-  margin-top:16px;text-align:center;font-size:.72rem;color:var(--text-tertiary);
-  padding-top:12px;border-top:1px solid var(--glass-border);
+  margin-top:12px;text-align:center;font-size:.7rem;color:var(--text-tertiary);
+  padding-top:10px;border-top:1px solid var(--glass-border);
 }
