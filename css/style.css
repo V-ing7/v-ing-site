@@ -5630,10 +5630,29 @@ textarea.sb-cell-desc{
 .car-price-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;flex-wrap:wrap}
 .car-price-title{font-size:1.15rem;font-weight:800;margin:0;color:var(--text-primary)}
 .car-price-sub{font-size:.8rem;color:var(--text-tertiary)}
-.car-price-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:14px;
+.car-price-rows{display:flex;flex-direction:column;gap:14px}
+.car-series-row{
+  display:flex;align-items:stretch;gap:12px;
+}
+.car-series-label{
+  flex:0 0 56px;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:800;letter-spacing:1px;
+  border-radius:12px;
+  background:rgba(0,199,190,.1);color:#00A89F;
+  writing-mode:vertical-rl;text-orientation:upright;
+  min-height:100%;
+}
+.car-series-d-label{background:rgba(255,159,10,.12);color:#FF9F0A}
+.car-series-cards{
+  flex:1;display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+}
+@media(max-width:600px){
+  .car-series-row{flex-direction:column}
+  .car-series-label{
+    flex:none;width:auto;writing-mode:horizontal-tb;text-orientation:mixed;
+    padding:6px 12px;justify-content:flex-start;
+  }
 }
 .car-price-card{
   position:relative;
