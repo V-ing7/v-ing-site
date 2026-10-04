@@ -5632,27 +5632,18 @@ textarea.sb-cell-desc{
 .car-price-sub{font-size:.74rem;color:var(--text-tertiary)}
 .car-price-rows{display:flex;flex-direction:column;gap:10px}
 .car-series-row{
-  display:flex;align-items:stretch;gap:10px;
+  display:flex;flex-direction:column;gap:6px;
 }
 .car-series-label{
-  flex:0 0 44px;display:flex;align-items:center;justify-content:center;
-  font-size:.78rem;font-weight:800;letter-spacing:1px;
-  border-radius:10px;
+  align-self:flex-start;
+  font-size:.72rem;font-weight:800;letter-spacing:.5px;
+  padding:2px 8px;border-radius:6px;
   background:rgba(0,199,190,.1);color:#00A89F;
-  writing-mode:vertical-rl;text-orientation:upright;
-  min-height:100%;
 }
 .car-series-d-label{background:rgba(255,159,10,.12);color:#FF9F0A}
 .car-series-cards{
-  flex:1;display:grid;gap:10px;
+  display:grid;gap:10px;
   grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
-}
-@media(max-width:600px){
-  .car-series-row{flex-direction:column}
-  .car-series-label{
-    flex:none;width:auto;writing-mode:horizontal-tb;text-orientation:mixed;
-    padding:5px 10px;justify-content:flex-start;font-size:.78rem;
-  }
 }
 .car-price-card{
   position:relative;
