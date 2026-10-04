@@ -454,6 +454,17 @@
         window.__renderStoryboard(data.storyboard);
       }
     }
+
+    // 零小跑智能体
+    if(data.lingxiaopaoAgent){
+      if(_hasChanged('lingxiaopaoAgent', data.lingxiaopaoAgent)){
+        renderLingxiaopao(data.lingxiaopaoAgent);
+      }
+    } else {
+      // No agent data yet — initialize with default and save
+      var defaultAgent = getLingxiaopaoDefault();
+      renderLingxiaopao(defaultAgent);
+    }
   }
 
   /* ================================================================
@@ -646,6 +657,7 @@
       if(data.operationLog) _lastAppliedSignatures.operationLog = _getDataSignature(data.operationLog);
       if(data.kanbanTasks) _lastAppliedSignatures.kanbanTasks = _getDataSignature(data.kanbanTasks);
       if(data.storyboardProjects) _lastAppliedSignatures.storyboardProjects = _getDataSignature(data.storyboardProjects);
+      if(data.lingxiaopaoAgent) _lastAppliedSignatures.lingxiaopaoAgent = _getDataSignature(data.lingxiaopaoAgent);
 
       // Post-save verification: confirm data was saved correctly
       setTimeout(function(){
@@ -2601,6 +2613,271 @@
           input.blur();
         }
       });
+    });
+  }
+
+  /* ================================================================
+     零小跑智能体 (Ling Xiaopao Agent)
+     - 存储在 data.lingxiaopaoAgent
+     - 支持编辑提示词、保存为新版本、复制提示词、版本历史
+     ================================================================ */
+  var LINGXIAOPAO_DEFAULT_PROMPT = [
+    '# 角色定义',
+    '你是「零小跑」，微影(V-ing)为零跑汽车量身打造的AI内容创作智能体。你精通汽车短视频内容策划、分镜头脚本撰写、旁白文案创作与拍摄执行建议，是零跑品牌内容生产的得力助手。',
+    '',
+    '# 品牌背景',
+    '零跑汽车是一家技术驱动的智能电动汽车公司，坚持核心技术全域自研。品牌主张"全域自研"，强调技术、智能、驾控的硬核实力，同时传递智能出行的温度与科技感。',
+    '',
+    '# 你的能力',
+    '1. 分镜头脚本创作：根据主题生成结构化分镜表（镜号、景别、运镜、画面、旁白、时长、备注）',
+    '2. 旁白文案撰写：撰写有温度、有科技感、口语化的短视频旁白',
+    '3. 拍摄建议：给出空镜头、产品特写、场景化拍摄的具体建议',
+    '4. 内容策划：围绕零跑车型/技术点/用户场景策划短视频选题',
+    '',
+    '# 创作原则',
+    '- 调性：科技感 × 生活温度，年轻有活力，避免生硬广告腔',
+    '- 结构：3秒钩子开头 → 痛点/场景引入 → 产品/技术展示 → 情感升华收尾',
+    '- 旁白：短句为主，节奏感强，适合口播',
+    '- 画面：具体可执行，标注景别和运镜方式',
+    '',
+    '# 输出规范',
+    '分镜头脚本使用以下表格结构：',
+    '| 镜号 | 景别 | 运镜 | 画面内容 | 旁白/音效 | 时长 | 备注 |'
+  ].join('\n');
+
+  var lingxiaopaoData = null;
+  var lingxiaopaoEditing = false;
+
+  function getLingxiaopaoDefault(){
+    var now = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+    var timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+    return {
+      name: '零小跑',
+      tagline: '零跑汽车专属内容创作助手',
+      description: '零小跑是微影为零跑汽车量身打造的AI内容创作助手，精通汽车短视频策划、分镜脚本与旁白文案。',
+      prompt: LINGXIAOPAO_DEFAULT_PROMPT,
+      versionHistory: [{
+        version: 'v1.0',
+        date: dateStr,
+        time: timeStr,
+        note: '初始创建：零小跑智能体 v1.0',
+        prompt: LINGXIAOPAO_DEFAULT_PROMPT
+      }],
+      lastUpdated: now.toISOString()
+    };
+  }
+
+  function renderLingxiaopao(agentData){
+    if(!agentData) return;
+    lingxiaopaoData = agentData;
+
+    var display = document.getElementById('agentPromptDisplay');
+    var editor = document.getElementById('agentPromptEditor');
+    var versionEl = document.getElementById('agentVersion');
+    var updatedEl = document.getElementById('agentUpdated');
+    var historyCountEl = document.getElementById('agentHistoryCount');
+
+    var prompt = agentData.prompt || '';
+    if(display) display.textContent = prompt;
+    if(editor && !lingxiaopaoEditing) editor.value = prompt;
+
+    // Version info
+    var history = agentData.versionHistory || [];
+    var current = history.length > 0 ? history[history.length - 1] : null;
+    if(versionEl){
+      versionEl.textContent = current ? current.version : 'v1.0';
+    }
+    if(updatedEl){
+      if(agentData.lastUpdated){
+        try{
+          var d = new Date(agentData.lastUpdated);
+          updatedEl.textContent = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+        }catch(e){ updatedEl.textContent = '—'; }
+      } else {
+        updatedEl.textContent = '—';
+      }
+    }
+    if(historyCountEl) historyCountEl.textContent = history.length;
+
+    renderLingxiaopaoHistory(history);
+  }
+
+  function renderLingxiaopaoHistory(history){
+    var list = document.getElementById('agentHistoryList');
+    if(!list) return;
+    if(!history || history.length === 0){
+      list.innerHTML = '<div class="agent-history-empty">暂无历史版本</div>';
+      return;
+    }
+    var html = '';
+    for(var i = history.length - 1; i >= 0; i--){
+      var item = history[i];
+      html += '<div class="agent-history-item" data-idx="'+i+'">';
+      html += '<div class="agent-history-item-head">';
+      html += '<span class="agent-history-ver">'+(item.version||'')+'</span>';
+      html += '<span class="agent-history-date">'+(item.date||'')+' '+(item.time||'')+'</span>';
+      html += '</div>';
+      if(item.note){
+        html += '<div class="agent-history-note">'+item.note+'</div>';
+      }
+      html += '</div>';
+    }
+    list.innerHTML = html;
+  }
+
+  function enterLingxiaopaoEdit(){
+    if(!lingxiaopaoData) return;
+    lingxiaopaoEditing = true;
+    var display = document.getElementById('agentPromptDisplay');
+    var editor = document.getElementById('agentPromptEditor');
+    var actions = document.getElementById('agentEditActions');
+    var editBtn = document.getElementById('agentEditBtn');
+    if(display) display.style.display = 'none';
+    if(editor){ editor.value = lingxiaopaoData.prompt || ''; editor.style.display = 'block'; }
+    if(actions) actions.style.display = 'flex';
+    if(editBtn){ editBtn.style.display = 'none'; }
+  }
+
+  function cancelLingxiaopaoEdit(){
+    lingxiaopaoEditing = false;
+    var display = document.getElementById('agentPromptDisplay');
+    var editor = document.getElementById('agentPromptEditor');
+    var actions = document.getElementById('agentEditActions');
+    var editBtn = document.getElementById('agentEditBtn');
+    if(display) display.style.display = 'block';
+    if(editor) editor.style.display = 'none';
+    if(actions) actions.style.display = 'none';
+    if(editBtn){ editBtn.style.display = ''; }
+  }
+
+  function saveLingxiaopao(){
+    if(!lingxiaopaoData) return;
+    var editor = document.getElementById('agentPromptEditor');
+    var noteInput = document.getElementById('agentNoteInput');
+    var newPrompt = editor ? editor.value : '';
+    var note = noteInput ? noteInput.value.trim() : '';
+
+    if(!newPrompt.trim()){
+      alert((lang==='zh'?'提示词不能为空':'Prompt cannot be empty'));
+      return;
+    }
+    if(newPrompt === lingxiaopaoData.prompt){
+      alert((lang==='zh'?'内容未修改':'No changes detected'));
+      return;
+    }
+
+    var now = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+    var timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+
+    // Bump version
+    var history = lingxiaopaoData.versionHistory || [];
+    var lastVer = history.length > 0 ? history[history.length-1].version : 'v1.0';
+    var verNum = parseFloat(lastVer.replace(/[^\d.]/g,'')) || 1.0;
+    verNum = Math.round((verNum + 0.1) * 10) / 10;
+    var newVersion = 'v' + verNum.toFixed(1);
+
+    lingxiaopaoData.prompt = newPrompt;
+    lingxiaopaoData.lastUpdated = now.toISOString();
+    if(!lingxiaopaoData.versionHistory) lingxiaopaoData.versionHistory = [];
+    lingxiaopaoData.versionHistory.push({
+      version: newVersion,
+      date: dateStr,
+      time: timeStr,
+      note: note || (lang==='zh'?'更新提示词':'Prompt updated'),
+      prompt: newPrompt
+    });
+
+    // Save to D1
+    if(window.__vingData){
+      window.__vingData.lingxiaopaoAgent = lingxiaopaoData;
+      ghSave(window.__vingData);
+    }
+
+    cancelLingxiaopaoEdit();
+    renderLingxiaopao(lingxiaopaoData);
+
+    // Clear note input
+    if(noteInput) noteInput.value = '';
+
+    // Show sync status
+    setSyncStatus('saving');
+  }
+
+  function copyLingxiaopaoPrompt(){
+    if(!lingxiaopaoData) return;
+    var prompt = lingxiaopaoData.prompt || '';
+    var btn = document.getElementById('agentCopyBtn');
+    var doCopy = function(){
+      if(btn){
+        var origText = btn.textContent;
+        btn.textContent = (lang==='zh'?'✅ 已复制':'✅ Copied');
+        btn.classList.add('agent-btn-copied');
+        setTimeout(function(){
+          btn.textContent = origText;
+          btn.classList.remove('agent-btn-copied');
+        }, 2000);
+      }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(prompt).then(doCopy).catch(function(){
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = prompt; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); doCopy(); }catch(e){}
+        document.body.removeChild(ta);
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = prompt; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); doCopy(); }catch(e){ alert((lang==='zh'?'复制失败，请手动选择文本复制':'Copy failed, please select manually')); }
+      document.body.removeChild(ta);
+    }
+  }
+
+  // Bind events
+  var agentEditBtn = document.getElementById('agentEditBtn');
+  var agentSaveBtn = document.getElementById('agentSaveBtn');
+  var agentCancelBtn = document.getElementById('agentCancelBtn');
+  var agentCopyBtn = document.getElementById('agentCopyBtn');
+  var agentHistoryToggle = document.getElementById('agentHistoryToggle');
+
+  if(agentEditBtn) agentEditBtn.addEventListener('click', enterLingxiaopaoEdit);
+  if(agentCancelBtn) agentCancelBtn.addEventListener('click', cancelLingxiaopaoEdit);
+  if(agentSaveBtn) agentSaveBtn.addEventListener('click', saveLingxiaopao);
+  if(agentCopyBtn) agentCopyBtn.addEventListener('click', copyLingxiaopaoPrompt);
+  if(agentHistoryToggle){
+    agentHistoryToggle.addEventListener('click', function(){
+      var list = document.getElementById('agentHistoryList');
+      if(!list) return;
+      var isOpen = list.style.display !== 'none';
+      list.style.display = isOpen ? 'none' : 'flex';
+      agentHistoryToggle.classList.toggle('open', !isOpen);
+    });
+  }
+
+  // Click history item to view that version's prompt
+  var agentHistoryList = document.getElementById('agentHistoryList');
+  if(agentHistoryList){
+    agentHistoryList.addEventListener('click', function(e){
+      var item = e.target.closest('.agent-history-item');
+      if(!item || !lingxiaopaoData) return;
+      var idx = parseInt(item.getAttribute('data-idx'), 10);
+      var history = lingxiaopaoData.versionHistory || [];
+      if(!history[idx]) return;
+      var h = history[idx];
+      // Show in display area (read-only preview of historical version)
+      var display = document.getElementById('agentPromptDisplay');
+      if(display){
+        display.textContent = h.prompt || '';
+        display.style.borderColor = '#00C7BE';
+        setTimeout(function(){ display.style.borderColor = ''; }, 1500);
+      }
     });
   }
 

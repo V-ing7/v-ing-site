@@ -850,6 +850,63 @@
                 </div>
               </div>
             </div>
+
+            <!-- 零小跑智能体 -->
+            <div class="subpage-section reveal agent-section" id="lingxiaopao-agent">
+              <div class="agent-head">
+                <div class="agent-avatar">
+                  <span class="agent-avatar-emoji">🏎️</span>
+                  <span class="agent-avatar-ring"></span>
+                </div>
+                <div class="agent-head-info">
+                  <h3 class="agent-name">零小跑 <span class="agent-badge" data-cn="智能体" data-en="Agent">智能体</span></h3>
+                  <p class="agent-tagline" data-cn="零跑汽车专属内容创作助手" data-en="Leapmotor's dedicated content creation assistant">零跑汽车专属内容创作助手</p>
+                </div>
+                <div class="agent-actions">
+                  <button class="agent-btn agent-btn-copy" id="agentCopyBtn" data-cn="复制提示词" data-en="Copy Prompt">📋 复制提示词</button>
+                  <button class="agent-btn agent-btn-edit" id="agentEditBtn" data-cn="编辑" data-en="Edit">✏️ 编辑</button>
+                </div>
+              </div>
+
+              <div class="agent-meta">
+                <div class="agent-meta-item">
+                  <span class="agent-meta-label" data-cn="当前版本" data-en="Version">当前版本</span>
+                  <span class="agent-meta-value" id="agentVersion">v1.0</span>
+                </div>
+                <div class="agent-meta-item">
+                  <span class="agent-meta-label" data-cn="更新时间" data-en="Updated">更新时间</span>
+                  <span class="agent-meta-value" id="agentUpdated">—</span>
+                </div>
+                <div class="agent-meta-item">
+                  <span class="agent-meta-label" data-cn="历史版本" data-en="History">历史版本</span>
+                  <span class="agent-meta-value" id="agentHistoryCount">0</span>
+                </div>
+              </div>
+
+              <!-- Prompt 展示区 -->
+              <div class="agent-prompt-wrap" id="agentPromptWrap">
+                <div class="agent-prompt-toolbar">
+                  <span class="agent-prompt-label" data-cn="智能提示词" data-en="System Prompt">智能提示词</span>
+                  <span class="agent-prompt-hint" data-cn="点击「编辑」修改，保存后自动记录版本" data-en="Click Edit to modify, versions are auto-saved">点击「编辑」修改，保存后自动记录版本</span>
+                </div>
+                <pre class="agent-prompt-display" id="agentPromptDisplay"></pre>
+                <textarea class="agent-prompt-editor" id="agentPromptEditor" style="display:none;"></textarea>
+                <div class="agent-edit-actions" id="agentEditActions" style="display:none;">
+                  <input type="text" class="agent-note-input" id="agentNoteInput" placeholder="本次修改说明（可选）" data-cn-placeholder="本次修改说明（可选）" data-en-placeholder="Change note (optional)" />
+                  <button class="agent-btn agent-btn-cancel" id="agentCancelBtn" data-cn="取消" data-en="Cancel">取消</button>
+                  <button class="agent-btn agent-btn-save" id="agentSaveBtn" data-cn="保存为新版本" data-en="Save as New Version">💾 保存为新版本</button>
+                </div>
+              </div>
+
+              <!-- 版本历史 -->
+              <div class="agent-history">
+                <button class="agent-history-toggle" id="agentHistoryToggle">
+                  <span data-cn="📜 版本历史" data-en="📜 Version History">📜 版本历史</span>
+                  <span class="agent-history-arrow">▾</span>
+                </button>
+                <div class="agent-history-list" id="agentHistoryList" style="display:none;"></div>
+              </div>
+            </div>
           </div>
 
           <!-- Sub-page: 中鑫之宝 -->
