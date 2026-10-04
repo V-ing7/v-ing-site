@@ -465,6 +465,16 @@
       var defaultAgent = getLingxiaopaoDefault();
       renderLingxiaopao(defaultAgent);
     }
+
+    // Vmi 智能体
+    if(data.vmiAgent){
+      if(_hasChanged('vmiAgent', data.vmiAgent)){
+        renderVmi(data.vmiAgent);
+      }
+    } else {
+      var defaultVmi = getVmiDefault();
+      renderVmi(defaultVmi);
+    }
   }
 
   /* ================================================================
@@ -658,6 +668,7 @@
       if(data.kanbanTasks) _lastAppliedSignatures.kanbanTasks = _getDataSignature(data.kanbanTasks);
       if(data.storyboardProjects) _lastAppliedSignatures.storyboardProjects = _getDataSignature(data.storyboardProjects);
       if(data.lingxiaopaoAgent) _lastAppliedSignatures.lingxiaopaoAgent = _getDataSignature(data.lingxiaopaoAgent);
+      if(data.vmiAgent) _lastAppliedSignatures.vmiAgent = _getDataSignature(data.vmiAgent);
 
       // Post-save verification: confirm data was saved correctly
       setTimeout(function(){
@@ -1502,7 +1513,8 @@
     plan:document.getElementById('ws-panel-plan'),
     unified:document.getElementById('ws-panel-unified'),
     storyboard:document.getElementById('ws-panel-storyboard'),
-    console:document.getElementById('ws-panel-console')
+    console:document.getElementById('ws-panel-console'),
+    agent:document.getElementById('ws-panel-agent')
   };
   var collabHub=document.getElementById('collabHub');
   var wsSubpages=document.querySelectorAll('.ws-subpage');
@@ -1517,8 +1529,8 @@
     });
     // Move indicator (4-segment)
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4');
-      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5');
+      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -2876,6 +2888,259 @@
       if(display){
         display.textContent = h.prompt || '';
         display.style.borderColor = '#00C7BE';
+        setTimeout(function(){ display.style.borderColor = ''; }, 1500);
+      }
+    });
+  }
+
+  /* ================================================================
+     Vmi 智能体 (Remotion 视频包装助手)
+     - 存储在 data.vmiAgent
+     - 支持编辑提示词、保存为新版本、复制提示词、版本历史
+     ================================================================ */
+  var VMI_DEFAULT_PROMPT = [
+    '# 角色定义',
+    '你是「Vmi」，微影(V-ing)专属的 Remotion 视频包装智能体。你精通 Remotion 框架，擅长用 React 代码生成可直接套用的视频包装模板——标题条、人名条、转场、角标、字幕条、动效封面等，所有素材默认透明背景，可直接叠加到任意视频上。',
+    '',
+    '# 核心能力',
+    '1. 包装模板生成：根据需求输出完整可用的 Remotion React 组件（Composition + 子组件）',
+    '2. 透明背景输出：所有模板默认 transparent 背景，方便在剪辑软件中直接叠加',
+    '3. 参数化设计：时长、颜色、文案、动效参数均通过 props 暴露，便于复用和批量替换',
+    '4. 动效规范：使用 @remotion/transitions、spring()、interpolate() 实现丝滑动效',
+    '5. 输出规范：附带使用说明（如何在 Remotion 项目中引入、如何在 <Composition> 中注册）',
+    '',
+    '# 技术栈',
+    '- 框架：Remotion + React + TypeScript',
+    '- 动画：remotion 的 useCurrentFrame、useVideoConfig、interpolate、spring、Easing',
+    '- 转场：@remotion/transitions',
+    '- 字体：默认使用系统字体或 Google Fonts，通过 loadFont 加载',
+    '',
+    '# 创作原则',
+    '- 调性：现代、简洁、有节奏感，符合短视频审美',
+    '- 透明：所有包装背景透明，仅保留前景元素',
+    '- 可复用：组件 props 化，同一模板可适配不同文案/颜色',
+    '- 高性能：避免逐帧重计算，善用 useMemo',
+    '',
+    '# 输出格式',
+    '每次输出包含：',
+    '1. 组件代码（带注释）',
+    '2. <Composition> 注册示例（含 durationInFrames、fps、width、height）',
+    '3. 使用说明（如何修改文案/颜色/时长）',
+    '4. 透明背景提示：<Composition> 不设背景色，组件根节点 background: transparent'
+  ].join('\n');
+
+  var vmiData = null;
+  var vmiEditing = false;
+
+  function getVmiDefault(){
+    var now = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+    var timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+    return {
+      name: 'Vmi',
+      tagline: 'Remotion 视频包装模板生成助手 · 透明背景可直接套用',
+      description: 'Vmi 是微影专属的 Remotion 视频包装智能体，擅长生成透明背景、可直接套用的标题条、转场、角标等包装模板。',
+      prompt: VMI_DEFAULT_PROMPT,
+      versionHistory: [{
+        version: 'v1.0',
+        date: dateStr,
+        time: timeStr,
+        note: '初始创建：Vmi 智能体 v1.0',
+        prompt: VMI_DEFAULT_PROMPT
+      }],
+      lastUpdated: now.toISOString()
+    };
+  }
+
+  function renderVmi(agentData){
+    if(!agentData) return;
+    vmiData = agentData;
+
+    var display = document.getElementById('vmiPromptDisplay');
+    var editor = document.getElementById('vmiPromptEditor');
+    var versionEl = document.getElementById('vmiVersion');
+    var updatedEl = document.getElementById('vmiUpdated');
+    var historyCountEl = document.getElementById('vmiHistoryCount');
+
+    var prompt = agentData.prompt || '';
+    if(display) display.textContent = prompt;
+    if(editor && !vmiEditing) editor.value = prompt;
+
+    var history = agentData.versionHistory || [];
+    var latest = history[history.length - 1];
+    if(versionEl) versionEl.textContent = (latest && latest.version) || 'v1.0';
+    if(historyCountEl) historyCountEl.textContent = history.length;
+    if(updatedEl){
+      if(agentData.lastUpdated){
+        try{
+          var d = new Date(agentData.lastUpdated);
+          updatedEl.textContent = d.getFullYear()+'-'+
+            String(d.getMonth()+1).padStart(2,'0')+'-'+
+            String(d.getDate()).padStart(2,'0')+' '+
+            String(d.getHours()).padStart(2,'0')+':'+
+            String(d.getMinutes()).padStart(2,'0');
+        }catch(e){ updatedEl.textContent = '—'; }
+      } else { updatedEl.textContent = '—'; }
+    }
+
+    var list = document.getElementById('vmiHistoryList');
+    if(list){
+      if(!history.length){
+        list.innerHTML = '<div class="agent-history-empty">暂无历史版本</div>';
+      } else {
+        var html = '';
+        for(var i=history.length-1;i>=0;i--){
+          var item = history[i];
+          html += '<div class="agent-history-item" data-idx="'+i+'">';
+          html += '<div class="agent-history-item-head">';
+          html += '<span class="agent-history-ver">'+(item.version||'')+'</span>';
+          html += '<span class="agent-history-date">'+(item.date||'')+' '+(item.time||'')+'</span>';
+          html += '</div>';
+          if(item.note) html += '<div class="agent-history-note">'+item.note+'</div>';
+          html += '</div>';
+        }
+        list.innerHTML = html;
+      }
+    }
+  }
+
+  function enterVmiEdit(){
+    if(!vmiData) return;
+    vmiEditing = true;
+    var display = document.getElementById('vmiPromptDisplay');
+    var editor = document.getElementById('vmiPromptEditor');
+    var actions = document.getElementById('vmiEditActions');
+    var editBtn = document.getElementById('vmiEditBtn');
+    if(display) display.style.display = 'none';
+    if(editor){ editor.value = vmiData.prompt || ''; editor.style.display = 'block'; editor.focus(); }
+    if(actions) actions.style.display = 'flex';
+    if(editBtn) editBtn.style.display = 'none';
+  }
+
+  function cancelVmiEdit(){
+    vmiEditing = false;
+    var display = document.getElementById('vmiPromptDisplay');
+    var editor = document.getElementById('vmiPromptEditor');
+    var actions = document.getElementById('vmiEditActions');
+    var editBtn = document.getElementById('vmiEditBtn');
+    if(display) display.style.display = 'block';
+    if(editor) editor.style.display = 'none';
+    if(actions) actions.style.display = 'none';
+    if(editBtn) editBtn.style.display = '';
+  }
+
+  function saveVmi(){
+    if(!vmiData) return;
+    var editor = document.getElementById('vmiPromptEditor');
+    var noteInput = document.getElementById('vmiNoteInput');
+    var newPrompt = editor ? editor.value : '';
+    var note = noteInput ? noteInput.value.trim() : '';
+
+    if(newPrompt === vmiData.prompt){
+      cancelVmiEdit();
+      return;
+    }
+
+    var now = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+    var timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+
+    var history = vmiData.versionHistory || [];
+    var lastVer = history.length ? history[history.length-1].version : 'v1.0';
+    var verNum = parseFloat(lastVer.replace('v','')) || 1.0;
+    var newVer = 'v'+(verNum + 0.1).toFixed(1);
+
+    vmiData.prompt = newPrompt;
+    vmiData.lastUpdated = now.toISOString();
+    if(!vmiData.versionHistory) vmiData.versionHistory = [];
+    vmiData.versionHistory.push({
+      version: newVer,
+      date: dateStr,
+      time: timeStr,
+      note: note || '手动修改',
+      prompt: newPrompt
+    });
+
+    if(window.__vingData){
+      window.__vingData.vmiAgent = vmiData;
+      ghSave(window.__vingData);
+    }
+
+    if(noteInput) noteInput.value = '';
+    vmiEditing = false;
+    renderVmi(vmiData);
+
+    var display = document.getElementById('vmiPromptDisplay');
+    var editorEl = document.getElementById('vmiPromptEditor');
+    var actions = document.getElementById('vmiEditActions');
+    var editBtn = document.getElementById('vmiEditBtn');
+    if(display) display.style.display = 'block';
+    if(editorEl) editorEl.style.display = 'none';
+    if(actions) actions.style.display = 'none';
+    if(editBtn) editBtn.style.display = '';
+  }
+
+  function copyVmiPrompt(){
+    if(!vmiData) return;
+    var prompt = vmiData.prompt || '';
+    var btn = document.getElementById('vmiCopyBtn');
+    var done = function(){
+      if(btn){
+        var original = btn.textContent;
+        btn.textContent = lang==='zh' ? '✅ 已复制' : '✅ Copied';
+        btn.classList.add('agent-btn-copied');
+        setTimeout(function(){ btn.textContent = original; btn.classList.remove('agent-btn-copied'); }, 1800);
+      }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(prompt).then(done).catch(function(){
+        var ta = document.createElement('textarea');
+        ta.value = prompt; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta); done();
+      });
+    } else {
+      var ta2 = document.createElement('textarea');
+      ta2.value = prompt; document.body.appendChild(ta2); ta2.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta2); done();
+    }
+  }
+
+  var vmiEditBtn = document.getElementById('vmiEditBtn');
+  var vmiSaveBtn = document.getElementById('vmiSaveBtn');
+  var vmiCancelBtn = document.getElementById('vmiCancelBtn');
+  var vmiCopyBtn = document.getElementById('vmiCopyBtn');
+  var vmiHistoryToggle = document.getElementById('vmiHistoryToggle');
+
+  if(vmiEditBtn) vmiEditBtn.addEventListener('click', enterVmiEdit);
+  if(vmiCancelBtn) vmiCancelBtn.addEventListener('click', cancelVmiEdit);
+  if(vmiSaveBtn) vmiSaveBtn.addEventListener('click', saveVmi);
+  if(vmiCopyBtn) vmiCopyBtn.addEventListener('click', copyVmiPrompt);
+  if(vmiHistoryToggle){
+    vmiHistoryToggle.addEventListener('click', function(){
+      var list = document.getElementById('vmiHistoryList');
+      if(!list) return;
+      var isOpen = list.style.display !== 'none';
+      list.style.display = isOpen ? 'none' : 'block';
+      vmiHistoryToggle.classList.toggle('open', !isOpen);
+    });
+  }
+  var vmiHistoryList = document.getElementById('vmiHistoryList');
+  if(vmiHistoryList){
+    vmiHistoryList.addEventListener('click', function(e){
+      var item = e.target.closest('.agent-history-item');
+      if(!item || !vmiData) return;
+      var idx = parseInt(item.getAttribute('data-idx'), 10);
+      var history = vmiData.versionHistory || [];
+      if(!history[idx]) return;
+      var h = history[idx];
+      var display = document.getElementById('vmiPromptDisplay');
+      if(display){
+        display.textContent = h.prompt || '';
+        display.style.borderColor = '#7B61FF';
         setTimeout(function(){ display.style.borderColor = ''; }, 1500);
       }
     });

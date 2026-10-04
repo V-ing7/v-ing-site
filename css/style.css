@@ -2197,6 +2197,10 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   box-shadow:0 4px 16px rgba(0,199,190,.3);
 }
 .agent-avatar-emoji{font-size:1.6rem;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2))}
+.agent-avatar-svg{display:flex;align-items:center;justify-content:center;line-height:0}
+#vmi-agent .agent-avatar{background:transparent;box-shadow:0 4px 16px rgba(123,97,255,.3)}
+#vmi-agent .agent-avatar-ring{border-color:rgba(123,97,255,.4)}
+#vmi-agent .agent-badge{background:linear-gradient(135deg,#7B61FF,#5B3FD6)}
 .agent-avatar-ring{
   position:absolute;inset:-3px;border-radius:16px;border:2px solid rgba(0,199,190,.4);
   animation:agent-pulse 2.4s ease-in-out infinite;
