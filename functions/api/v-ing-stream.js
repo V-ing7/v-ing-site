@@ -77,6 +77,11 @@ export async function onRequestGet(context) {
         }
       };
 
+      // 轮询循环（async loop）
+      const startTime = Date.now();
+      let lastSentUpdate = null;
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
       // 立即查一次并发初始状态
       try {
         const snap = await fetchD1Snapshot(env);
@@ -89,8 +94,10 @@ export async function onRequestGet(context) {
               source: 'd1',
               timestamp: Date.now()
             });
+            lastSentUpdate = dataLastUpdated;
           } else {
             send('ready', { lastUpdated: dataLastUpdated, since: since });
+            lastSentUpdate = dataLastUpdated;
           }
         } else {
           send('ready', { lastUpdated: null, since: since });
@@ -98,11 +105,6 @@ export async function onRequestGet(context) {
       } catch (e) {
         send('error', { message: 'Initial fetch failed' });
       }
-
-      // 轮询循环（async loop）
-      const startTime = Date.now();
-      let lastSentUpdate = null;
-      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
       // 客户端断开时清理
       try {
