@@ -178,6 +178,8 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   position:fixed;
   top:0;left:0;right:0;
   z-index:100;
+  padding-top:constant(safe-area-inset-top);
+  padding-top:env(safe-area-inset-top);
   transition:all .4s cubic-bezier(.4,0,.2,1);
 }
 .nav-inner{
@@ -348,6 +350,9 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   background:var(--surface-2);
 }
 .ctrl-btn:active{transform:scale(.95)}
+.refresh-btn svg{transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.refresh-btn:hover svg{transform:rotate(180deg)}
+.refresh-btn:active svg{transform:rotate(360deg)}
 .lang-toggle{width:auto;padding:0 14px;font-size:.82rem;font-weight:600;letter-spacing:.05em}
 .theme-toggle .icon-sun,
 .theme-toggle .icon-moon{
@@ -5703,4 +5708,347 @@ textarea.sb-cell-desc{
 .car-price-foot{
   margin-top:12px;text-align:center;font-size:.7rem;color:var(--text-tertiary);
   padding-top:10px;border-top:1px solid var(--glass-border);
+}
+
+/* ================================================================
+   Ve Card — Cinema Ticket Business Card (migrated from Ve site)
+   Scoped under .ve-card-panel to avoid conflicts with bc-card-v2.
+   ================================================================ */
+.ve-card-panel{
+  --vc-bg:#000;
+  --vc-surface:#1a1a1a;
+  --vc-label:#e6be8a;
+  --vc-label-2:#C9A96E;
+  --vc-hairline:rgba(201,169,110,.14);
+  --vc-hairline-strong:rgba(201,169,110,.24);
+  position:relative;
+  padding:32px 20px 48px;
+  display:flex;flex-direction:column;align-items:center;gap:28px;
+  background:
+    radial-gradient(700px 400px at 50% 10%,rgba(72,72,74,.18),transparent 60%),
+    radial-gradient(500px 300px at 15% 90%,rgba(99,99,102,.1),transparent 60%),
+    radial-gradient(500px 300px at 85% 90%,rgba(99,99,102,.1),transparent 60%);
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.ve-card-panel::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.03;
+}
+.ve-card-panel > *{position:relative;z-index:1}
+
+.vc-page-title{
+  display:flex;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:4px;color:#86868b;
+  text-transform:uppercase;font-weight:500;
+}
+.vc-page-title .dot{width:4px;height:4px;border-radius:50%;background:#86868b}
+
+.vc-face-label{
+  font-size:9px;letter-spacing:3px;color:#86868b;
+  text-transform:uppercase;font-weight:500;
+  margin-bottom:-8px;
+}
+.vc-face-label .cn{color:#5a5a5e;margin-left:6px}
+
+.vc-card-wrap{
+  filter:drop-shadow(0 40px 80px rgba(0,0,0,.7)) drop-shadow(0 0 40px rgba(201,169,110,.08)) drop-shadow(0 8px 16px rgba(0,0,0,.5));
+}
+
+/* ---- Front ---- */
+.vc-ticket{
+  display:flex;
+  width:100mm;height:50mm;
+  background:var(--vc-surface);
+  border-radius:4mm;
+  overflow:hidden;
+  position:relative;
+}
+.vc-ticket::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(135deg,rgba(201,169,110,.06) 0%,transparent 30%,transparent 70%,rgba(201,169,110,.04) 100%);
+  border-radius:4mm;
+}
+.vc-main{
+  width:70mm;height:50mm;
+  background:var(--vc-surface);
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:4mm;
+}
+.vc-main .vc-slogan{
+  display:flex;flex-direction:column;align-items:center;gap:3mm;
+}
+.vc-main .vc-slogan .vc-title{
+  font-family:'ZCOOL XiaoWei','Noto Sans SC',serif;
+  font-size:22px;font-weight:400;
+  color:var(--vc-label);
+  letter-spacing:4px;line-height:1;
+  text-align:center;
+  text-shadow:0 0 8mm rgba(201,169,110,.18);
+}
+.vc-main .vc-slogan .vc-sep{
+  width:24mm;height:1px;
+  background:linear-gradient(90deg,transparent,var(--vc-hairline-strong) 50%,transparent);
+}
+.vc-main .vc-slogan .vc-subtitle{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:300;font-size:7px;
+  letter-spacing:.5em;text-indent:.5em;
+  color:var(--vc-label-2);
+  text-transform:uppercase;line-height:1;
+}
+.vc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:3.5mm;
+  border-bottom:0.2mm solid var(--vc-hairline);
+}
+.vc-brand{display:flex;align-items:flex-end;gap:1.8mm}
+.vc-brand .vc-logo{
+  width:5.5mm;height:5.5mm;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--vc-label);
+}
+.vc-brand .vc-logo svg{
+  width:5.5mm;height:5.5mm;display:block;
+  opacity:.95;transform:scale(.96);transform-origin:center;
+  filter:drop-shadow(0 0 0.5mm rgba(201,169,110,.3));
+}
+.vc-brand .vc-wordmark{
+  display:flex;flex-direction:column;justify-content:center;
+  gap:0.4mm;padding-right:2mm;
+}
+.vc-brand .vc-wordmark .vc-main-cn{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
+  font-size:11px;font-weight:700;
+  color:var(--vc-label);
+  letter-spacing:-0.01em;line-height:1;
+}
+.vc-brand .vc-wordmark .vc-main-cn .dot{color:var(--vc-label-2)}
+.vc-brand .vc-wordmark .vc-sub-en{
+  font-family:'Inter',sans-serif;
+  font-size:6.5px;font-weight:500;
+  color:var(--vc-label-2);
+  letter-spacing:2px;line-height:1;
+  text-transform:uppercase;
+}
+.vc-no{
+  font-size:7px;font-weight:600;color:var(--vc-label-2);
+  letter-spacing:1.2px;font-variant-numeric:tabular-nums;
+  padding:1.1mm 2.2mm;background:rgba(201,169,110,.06);
+  border:0.2mm solid var(--vc-hairline);
+  border-radius:2.2mm;
+}
+.vc-body{
+  flex:1;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:1.5mm 0 1mm;
+}
+.vc-name{
+  font-family:'Noto Sans SC',sans-serif;
+  font-weight:700;font-size:11px;
+  color:var(--vc-label);
+  letter-spacing:2px;line-height:1;
+}
+.vc-name-en{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
+  font-size:8px;font-weight:600;
+  color:var(--vc-label-2);letter-spacing:-0.01em;
+  margin-top:1mm;
+}
+.vc-role{
+  margin-top:2mm;
+  font-size:9px;font-weight:400;color:var(--vc-label-2);
+  letter-spacing:3px;
+}
+.vc-slogan-text{
+  margin-top:2.5mm;
+  font-size:6.5px;font-weight:400;color:var(--vc-label-2);
+  letter-spacing:1.5px;line-height:1.4;
+  opacity:.85;
+}
+.vc-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:3mm;
+  border-top:0.2mm solid var(--vc-hairline);
+}
+.vc-foot .vc-wx{display:flex;align-items:center;gap:1.6mm}
+.vc-foot .vc-wx .vc-ico{
+  width:4mm;height:4mm;border-radius:1.1mm;
+  background:var(--vc-label);
+  color:#2b2b30;font-size:3.4px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Sans SC',sans-serif;
+}
+.vc-foot .vc-wx .vc-v{
+  font-weight:600;color:var(--vc-label);
+  letter-spacing:0.6px;font-size:8.5px;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Perforation */
+.vc-perf{width:0;position:relative;z-index:3}
+.vc-perf::before{
+  content:'';position:absolute;top:3mm;bottom:3mm;left:0;
+  width:0;border-left:0.3mm dashed var(--vc-hairline-strong);
+}
+.vc-notch{
+  position:absolute;width:2.5mm;height:2.5mm;
+  background:var(--vc-bg);border-radius:50%;
+  left:50%;transform:translateX(-50%);z-index:4;
+}
+.vc-notch.top{top:-1.25mm}
+.vc-notch.bottom{bottom:-1.25mm}
+
+/* Sub stub */
+.vc-sub{
+  width:30mm;height:50mm;
+  background:#1a1a1a;
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2.5mm;padding:4mm 3mm;
+}
+.vc-sub .vc-sub-logo{
+  width:6mm;height:6mm;color:var(--vc-label);
+  display:flex;align-items:center;justify-content:center;
+}
+.vc-sub .vc-sub-logo svg{width:6mm;height:6mm;opacity:.95;filter:drop-shadow(0 0 0.5mm rgba(201,169,110,.25))}
+.vc-sub .vc-brand-cn{
+  font-size:8px;font-weight:700;color:var(--vc-label);
+  letter-spacing:0.5px;line-height:1;text-align:center;
+}
+.vc-sub .vc-brand-cn .dot{color:var(--vc-label-2)}
+.vc-sub .vc-brand-en{
+  font-size:4.5px;font-weight:500;color:var(--vc-label-2);
+  letter-spacing:2px;text-transform:uppercase;line-height:1;
+  text-align:center;margin-top:0.8mm;
+}
+
+/* ---- Back ---- */
+.vc-back{
+  display:flex;
+  width:100mm;height:50mm;
+  background:var(--vc-surface);
+  border-radius:4mm;overflow:hidden;position:relative;
+}
+.vc-back::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(135deg,rgba(201,169,110,.05) 0%,transparent 30%,transparent 70%,rgba(201,169,110,.03) 100%);
+  border-radius:4mm;
+}
+.vc-back .vc-b-main{
+  width:70mm;height:50mm;
+  background:var(--vc-surface);
+  display:flex;flex-direction:column;
+  padding:4.5mm 5.5mm 4mm;
+  position:relative;
+}
+.vc-back .vc-b-sub{
+  width:30mm;height:50mm;
+  background:#1a1a1a;
+  display:flex;flex-direction:column;
+  padding:4.5mm 0 4mm;position:relative;
+}
+.vc-back .vc-b-sub .vc-s-head{
+  text-align:center;
+  font-size:7px;font-weight:700;letter-spacing:4px;
+  color:var(--vc-label);text-transform:uppercase;
+  padding-bottom:3mm;position:relative;
+}
+.vc-back .vc-b-sub .vc-s-head::after{
+  content:'';position:absolute;left:50%;bottom:0;
+  transform:translateX(-50%);width:4mm;height:0.3mm;background:var(--vc-label);
+}
+.vc-back .vc-b-sub .vc-s-head .cn{
+  display:block;font-size:5px;font-weight:400;
+  color:var(--vc-label-2);letter-spacing:2.5px;margin-top:0.6mm;
+}
+.vc-back .vc-b-sub .vc-s-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2.5mm;padding:0 3mm;
+}
+.vc-back .vc-b-sub .vc-qr{
+  width:11mm;height:11mm;border-radius:1.5mm;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;padding:0.6mm;
+}
+.vc-back .vc-b-sub .vc-qr svg,
+.vc-back .vc-b-sub .vc-qr canvas{width:100%;height:100%;display:block}
+.vc-back .vc-b-sub .vc-s-foot{
+  margin:0 3.5mm;padding-top:3mm;
+  border-top:0.2mm solid var(--vc-hairline);
+  text-align:center;font-size:8px;font-weight:600;
+  color:var(--vc-label);letter-spacing:2px;font-variant-numeric:tabular-nums;
+}
+.vc-back .vc-b-perf{width:0;position:relative;z-index:3}
+.vc-back .vc-b-perf::before{
+  content:'';position:absolute;top:3mm;bottom:3mm;left:0;
+  width:0;border-left:0.3mm dashed var(--vc-hairline-strong);
+}
+.vc-back .vc-b-notch{
+  position:absolute;width:2.5mm;height:2.5mm;
+  background:var(--vc-bg);border-radius:50%;
+  left:50%;transform:translateX(-50%);z-index:4;
+}
+.vc-back .vc-b-notch.top{top:-1.25mm}
+.vc-back .vc-b-notch.bottom{bottom:-1.25mm}
+
+/* Meta + legend */
+.vc-meta-line{
+  font-size:10px;color:#86868b;letter-spacing:1px;
+  display:flex;align-items:center;gap:8px;
+}
+.vc-meta-line .sep{width:3px;height:3px;border-radius:50%;background:#48484a}
+.vc-legend{
+  display:flex;flex-wrap:wrap;gap:16px 28px;justify-content:center;
+  max-width:460px;
+}
+.vc-legend .item{display:flex;align-items:center;gap:8px}
+.vc-legend .swatch{
+  width:14px;height:14px;border-radius:3px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.12);
+}
+.vc-legend .info{display:flex;flex-direction:column}
+.vc-legend .hex{font-family:'JetBrains Mono','Courier New',monospace;font-size:11px;font-weight:600;color:#e8d5b0}
+.vc-legend .desc{font-size:9px;color:#86868b;margin-top:1px}
+
+/* Production spec table */
+.vc-spec-section{
+  width:100%;max-width:460px;
+  background:var(--vc-surface);border-radius:10px;padding:20px 18px;
+  border:1px solid rgba(255,255,255,.05);
+}
+.vc-spec-title{
+  font-size:11px;letter-spacing:3px;color:#86868b;
+  text-transform:uppercase;font-weight:600;
+  margin-bottom:14px;text-align:center;
+}
+.vc-spec-table{
+  width:100%;border-collapse:collapse;
+  font-size:10px;color:#c8c8cc;
+}
+.vc-spec-table th,.vc-spec-table td{
+  padding:7px 12px;text-align:left;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.vc-spec-table th{
+  color:#86868b;font-weight:500;letter-spacing:1px;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.vc-spec-table td.val{
+  font-family:'JetBrains Mono','Courier New',monospace;
+  color:#e6be8a;font-weight:600;white-space:nowrap;
+}
+.vc-spec-table td.desc{color:#86868b}
+.vc-spec-table tr:last-child td{border-bottom:none}
+.vc-spec-group td:first-child{color:#e8d5b0;font-weight:600}
+
+/* Responsive scale for small screens */
+@media(max-width:520px){
+  .ve-card-panel{padding:24px 12px 36px;gap:22px}
+  .vc-card-wrap{transform:scale(.82);transform-origin:top center}
+  .ve-card-panel .vc-face-label{margin-bottom:0}
 }

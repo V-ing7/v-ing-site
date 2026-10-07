@@ -1044,6 +1044,34 @@
   themeToggle.addEventListener('click',toggleTheme);
   initTheme();
 
+  /* ---------- Refresh Button (force bypass iOS home-screen cache) ---------- */
+  var refreshBtn=document.getElementById('refreshBtn');
+  if(refreshBtn){
+    refreshBtn.addEventListener('click',function(){
+      // Force a hard reload that bypasses the HTTP cache (iOS web clip friendly)
+      if(navigator.serviceWorker){
+        navigator.serviceWorker.getRegistrations().then(function(regs){
+          Promise.all(regs.map(function(r){return r.unregister();})).finally(function(){
+            if(window.caches){
+              caches.keys().then(function(keys){
+                return Promise.all(keys.map(function(k){return caches.delete(k);}));
+              }).finally(function(){ doHardReload(); });
+            }else{ doHardReload(); }
+          });
+        });
+      }else{
+        doHardReload();
+      }
+    });
+  }
+  function doHardReload(){
+    // Strip any previous _r param, then append a fresh timestamp to force
+    // revalidation of the document itself (defeats iOS web-clip snapshot cache)
+    var qs=location.search.replace(/[?&]_r=\d+/g,'');
+    var prefix=qs.length>0 ? qs+'&' : '?';
+    location.href=location.pathname+prefix+'_r='+Date.now()+location.hash;
+  }
+
   /* ---------- Language Toggle ---------- */
   var lang=localStorage.getItem('v-ing-lang')||'zh';
   function applyLang(){
@@ -1514,7 +1542,8 @@
     unified:document.getElementById('ws-panel-unified'),
     storyboard:document.getElementById('ws-panel-storyboard'),
     console:document.getElementById('ws-panel-console'),
-    agent:document.getElementById('ws-panel-agent')
+    agent:document.getElementById('ws-panel-agent'),
+    card:document.getElementById('ws-panel-card')
   };
   var collabHub=document.getElementById('collabHub');
   var wsSubpages=document.querySelectorAll('.ws-subpage');
@@ -1527,10 +1556,10 @@
       btn.classList.remove('active');
       if(btn.getAttribute('data-ws-tab')===tab)btn.classList.add('active');
     });
-    // Move indicator (4-segment)
+    // Move indicator (6-segment)
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5');
-      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5','seg-pos-6');
+      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1561,9 +1590,10 @@
         setTimeout(function(){animateRingsInContainer(unifiedWrap)},300);
       }
     }
-    // Initialize QR code when switching to card panel
+    // Initialize QR codes when switching to card panel
     if(tab==='card'){
       setTimeout(initCustomQR,200);
+      setTimeout(initVeCardQR,250);
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
@@ -4112,6 +4142,33 @@
     if(!_qrReady){
       setTimeout(initCustomQR,500);
     }
+  }
+
+  // Ve card (cinema ticket) QR — gold on white, encodes V-ing site
+  var _veQRInstance=null,_veQRReady=false;
+  function initVeCardQR(){
+    var container=document.getElementById('veCardQR');
+    if(!container)return;
+    container.innerHTML='';
+    if(typeof QRCodeStyling!=='undefined'){
+      try{
+        _veQRInstance=new QRCodeStyling({
+          width:200,height:200,type:'canvas',
+          data:_qrData,
+          dotsOptions:{type:'rounded',color:'#8a6a3a'},
+          backgroundOptions:{color:'#ffffff'},
+          cornersSquareOptions:{type:'extra-rounded',color:'#8a6a3a'},
+          cornersDotOptions:{type:'dot',color:'#8a6a3a'},
+          qrOptions:{errorCorrectionLevel:'M'}
+        });
+        _veQRInstance.append(container);
+        _veQRReady=true;
+        return;
+      }catch(e){
+        console.warn('[V-ing] Ve card QR failed',e);
+      }
+    }
+    if(!_veQRReady){setTimeout(initVeCardQR,500);}
   }
 
   function updateQRTheme(){
