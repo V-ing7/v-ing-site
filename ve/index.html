@@ -4,24 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ve · 微意设计</title>
-<meta name="description" content="Ve · 微意设计工作室 — 独立设计与视觉创作">
+<meta name="description" content="Ve · 微意设计工作室 — 以细微之意,造视觉之境。专注于品牌视觉、印刷物与数字界面。">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
 <link rel="apple-touch-icon" href="assets/logo.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
+  /* ============================================================
+     Ve · 微意设计 · Editorial Edition
+     设计理念：「微意」即细微之处见意境
+     版式灵感：杂志编辑设计 × 隅田宫 火祭海报 × 苹果 HIG
+     ============================================================ */
   :root{
     --bg:#000000;
     --surface:#1C1C1E;
     --surface-2:#2C2C2E;
+    --surface-3:#1A1A1C;
     --ink:#F2F2F7;
     --ink-dim:rgba(235,235,245,.6);
-    --gold:#98989D;
-    --gold-bright:#AEAEB2;
-    --line:rgba(84,84,88,.6);
-    --line-strong:rgba(84,84,88,.32);
+    --ink-faint:rgba(235,235,245,.32);
+    --accent:#98989D;
+    --accent-strong:#AEAEB2;
+    --hairline:rgba(84,84,88,.6);
+    --hairline-soft:rgba(84,84,88,.24);
+    --hairline-strong:rgba(174,174,178,.32);
+    --glow:rgba(174,174,178,.12);
+    --grain-opacity:.04;
+    --ease-out:cubic-bezier(.16,1,.3,1);
+    --ease-in-out:cubic-bezier(.65,0,.35,1);
   }
+
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
@@ -32,331 +45,647 @@
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
-  /* 噪点纹理 */
+  /* 噪点纹理 — 增加印刷质感 */
   body::before{
     content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
-    opacity:.035;
+    opacity:var(--grain-opacity);
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .wrap{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 40px}
+  /* 大尺寸氛围光斑 */
+  body::after{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(800px 600px at 80% 15%, rgba(174,174,178,.06), transparent 60%),
+      radial-gradient(700px 500px at 10% 80%, rgba(152,152,157,.04), transparent 65%);
+  }
+  .wrap{position:relative;z-index:2;max-width:1400px;margin:0 auto;padding:0 48px}
 
-  /* ===== 顶部导航 ===== */
+  /* ===== 导航 ===== */
   .nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
     display:flex;align-items:center;justify-content:space-between;
-    padding:22px 40px;
-    background:rgba(28,28,30,.72);
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
-    border-bottom:1px solid var(--line);
+    padding:20px 48px;
+    background:rgba(0,0,0,.5);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border-bottom:1px solid var(--hairline-soft);
   }
-  .nav-brand{display:flex;align-items:center;gap:12px}
+  .nav-brand{display:flex;align-items:center;gap:14px;cursor:pointer}
   .nav-brand .mark{
-    width:30px;height:30px;color:var(--gold-bright);
+    width:28px;height:28px;color:var(--ink);
     display:flex;align-items:center;justify-content:center;
+    transition:transform .6s var(--ease-out);
   }
+  .nav-brand:hover .mark{transform:rotate(180deg)}
   .nav-brand .mark svg{width:100%;height:100%}
   .nav-brand .name{
+    font-family:'Cormorant Garamond','Noto Serif SC',serif;
+    font-size:18px;font-weight:400;letter-spacing:1px;color:var(--ink);
+    font-style:italic;
+  }
+  .nav-brand .name .cn{
     font-family:'Noto Serif SC',serif;
-    font-size:15px;font-weight:500;letter-spacing:2px;color:var(--ink);
+    font-style:normal;
+    margin-right:8px;
+    font-size:15px;
+    letter-spacing:3px;
+    color:var(--ink-dim);
   }
-  .nav-brand .name .en{
-    display:block;font-family:'JetBrains Mono',monospace;
-    font-size:9px;font-weight:400;letter-spacing:3px;color:var(--gold);
-    margin-top:2px;
-  }
-  .nav-links{display:flex;gap:32px}
+  .nav-links{display:flex;gap:36px}
   .nav-links a{
-    font-size:12px;letter-spacing:2px;color:var(--ink-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:2px;color:var(--ink-dim);
     text-decoration:none;transition:color .3s;
     text-transform:uppercase;
+    position:relative;
+    padding:4px 0;
   }
-  .nav-links a:hover{color:var(--gold-bright)}
+  .nav-links a::after{
+    content:'';position:absolute;bottom:0;left:0;height:1px;width:0;
+    background:var(--accent-strong);
+    transition:width .4s var(--ease-out);
+  }
+  .nav-links a:hover{color:var(--ink)}
+  .nav-links a:hover::after{width:100%}
 
   /* ===== Hero ===== */
   .hero{
     min-height:100vh;
-    display:flex;align-items:center;
-    padding:120px 0 80px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:stretch;
+    padding:100px 0 60px;
+    position:relative;
+    gap:0;
+  }
+  /* 左侧 — 编辑大标题区 */
+  .hero-left{
+    padding:80px 0;
+    display:flex;flex-direction:column;justify-content:space-between;
     position:relative;
   }
-  .hero-grid{
-    display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
-  }
-  .hero-tag{
-    display:inline-flex;align-items:center;gap:8px;
+  .hero-eyebrow{
+    display:flex;align-items:center;gap:14px;
     font-family:'JetBrains Mono',monospace;
-    font-size:11px;letter-spacing:3px;color:var(--gold);
-    margin-bottom:28px;
+    font-size:11px;letter-spacing:3px;color:var(--accent);
+    margin-bottom:60px;
+    text-transform:uppercase;
   }
-  .hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .hero-eyebrow .line{
+    width:48px;height:1px;background:var(--accent);
+  }
   .hero-title{
     font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
-    font-size:clamp(64px,11vw,140px);
-    line-height:.95;
+    font-size:clamp(120px,18vw,240px);
+    line-height:.88;
     color:var(--ink);
-    letter-spacing:6px;
+    letter-spacing:0;
     margin-bottom:24px;
+    position:relative;
   }
-  .hero-title .accent{
-    background:linear-gradient(180deg,var(--gold-bright),var(--gold));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
+  .hero-title .char{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(40px);
+    animation:rise .9s var(--ease-out) forwards;
   }
-  .hero-sub{
+  .hero-title .char:nth-child(1){animation-delay:.1s}
+  .hero-title .char:nth-child(2){animation-delay:.25s}
+  .hero-title .char.italic{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    color:var(--accent-strong);
+    margin-left:-0.05em;
+  }
+  @keyframes rise{
+    to{opacity:1;transform:translateY(0)}
+  }
+  .hero-subtitle{
+    font-family:'Cormorant Garamond','Noto Serif SC',serif;
+    font-size:22px;font-weight:300;font-style:italic;
+    color:var(--ink-dim);
+    letter-spacing:1px;
+    margin-bottom:36px;
+    max-width:420px;
+    line-height:1.5;
+  }
+  .hero-subtitle .cn{
     font-family:'Noto Serif SC',serif;
-    font-size:18px;font-weight:300;color:var(--ink-dim);
-    letter-spacing:1px;max-width:380px;
-    margin-bottom:40px;
+    font-style:normal;
+    display:block;
+    font-size:15px;
+    letter-spacing:4px;
+    color:var(--ink-faint);
+    margin-top:8px;
   }
   .hero-meta{
-    display:flex;gap:40px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;
+    padding-top:32px;
+    border-top:1px solid var(--hairline-soft);
   }
-  .hero-meta .item{display:flex;flex-direction:column;gap:4px}
+  .hero-meta .item{display:flex;flex-direction:column;gap:6px}
   .hero-meta .k{
     font-family:'JetBrains Mono',monospace;
-    font-size:10px;letter-spacing:2px;color:var(--ink-dim);
+    font-size:9px;letter-spacing:2px;color:var(--ink-faint);
+    text-transform:uppercase;
   }
-  .hero-meta .v{font-size:13px;color:var(--gold-bright);letter-spacing:1px}
+  .hero-meta .v{
+    font-family:'Cormorant Garamond',serif;
+    font-size:16px;font-style:italic;
+    color:var(--ink);letter-spacing:.5px;
+  }
+  .hero-meta .v .num{
+    font-family:'JetBrains Mono',monospace;
+    font-style:normal;
+    color:var(--accent-strong);
+  }
 
-  /* Hero 卡片展示 */
-  .hero-card{
+  /* 右侧 — 票券大图 + 装饰 */
+  .hero-right{
     position:relative;
-    display:flex;flex-direction:column;align-items:center;gap:24px;
+    display:flex;align-items:center;justify-content:center;
+    padding:40px 0;
+  }
+  .hero-right::before{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent,rgba(28,28,30,.4),transparent);
+    pointer-events:none;
+  }
+  .ticket-stage{
+    position:relative;
+    width:100%;max-width:520px;
+    perspective:1200px;
   }
   .ticket{
-    width:100%;max-width:520px;
+    width:100%;aspect-ratio:1.6/1;
     background:var(--surface-2);
-    border-radius:16px;
-    box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 60px rgba(152,152,157,.08);
+    border-radius:14px;
+    box-shadow:
+      0 60px 120px rgba(0,0,0,.8),
+      0 30px 60px rgba(0,0,0,.5),
+      0 0 80px var(--glow),
+      inset 0 1px 0 rgba(255,255,255,.04);
     position:relative;overflow:hidden;
+    transform:rotate(-3deg) rotateX(8deg) rotateY(-6deg);
+    transition:transform .8s var(--ease-out);
   }
+  .ticket:hover{transform:rotate(0deg) rotateX(0deg) rotateY(0deg) scale(1.02)}
   .ticket::before{
     content:'';position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(135deg,rgba(152,152,157,.06),transparent 35%,transparent 65%,rgba(152,152,157,.04));
+    background:
+      linear-gradient(135deg,rgba(174,174,178,.08),transparent 30%,transparent 70%,rgba(174,174,178,.05)),
+      radial-gradient(circle at 20% 20%, rgba(174,174,178,.06), transparent 50%);
   }
   .ticket-front{
-    display:flex;height:260px;
+    display:flex;height:100%;
   }
   .ticket-main{
     flex:7;display:flex;align-items:center;justify-content:center;
-    padding:24px;
+    padding:32px;
+    position:relative;
+  }
+  .ticket-main::before{
+    content:'';position:absolute;
+    top:16px;left:16px;right:16px;bottom:16px;
+    border:1px solid var(--hairline-soft);
+    border-radius:6px;
+    pointer-events:none;
   }
   .ticket-main .slogan{
     display:flex;flex-direction:column;align-items:center;gap:14px;
+    position:relative;
+  }
+  .ticket-main .slogan .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:8px;letter-spacing:3px;color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:4px;
   }
   .ticket-main .slogan .t{
     font-family:'ZCOOL XiaoWei',serif;
-    font-size:30px;color:var(--gold-bright);letter-spacing:5px;line-height:1;
-    text-shadow:0 0 30px rgba(152,152,157,.2);
+    font-size:34px;color:var(--ink);letter-spacing:6px;line-height:1;
+    text-shadow:0 0 24px rgba(174,174,178,.15);
   }
   .ticket-main .slogan .sep{
-    width:80px;height:1px;
-    background:linear-gradient(90deg,transparent,var(--line-strong),transparent);
+    width:60px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--hairline-strong),transparent);
   }
-  .ticket-main .slogan .s{
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;font-weight:300;letter-spacing:.4em;text-indent:.4em;
-    color:var(--gold);text-transform:uppercase;
+  .ticket-main .slogan .en{
+    font-family:'Cormorant Garamond',serif;
+    font-size:13px;font-style:italic;font-weight:300;
+    letter-spacing:2px;
+    color:var(--accent-strong);
   }
   .ticket-perf{
     width:0;position:relative;
   }
   .ticket-perf::before{
-    content:'';position:absolute;top:16px;bottom:16px;left:0;width:0;
-    border-left:1px dashed var(--line-strong);
+    content:'';position:absolute;top:20px;bottom:20px;left:0;width:0;
+    border-left:1px dashed var(--hairline-strong);
   }
   .ticket-notch{
-    position:absolute;width:10px;height:10px;border-radius:50%;
+    position:absolute;width:14px;height:14px;border-radius:50%;
     background:var(--bg);left:50%;transform:translateX(-50%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.6);
   }
-  .ticket-notch.top{top:-5px}
-  .ticket-notch.bottom{bottom:-5px}
+  .ticket-notch.top{top:-7px}
+  .ticket-notch.bottom{bottom:-7px}
   .ticket-sub{
-    flex:3;background:#2C2C2E;
+    flex:3;background:linear-gradient(180deg,#1A1A1C,#252527);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:10px;padding:20px 12px;
+    gap:12px;padding:24px 14px;
+    position:relative;
   }
   .ticket-sub .logo{
-    width:36px;height:36px;color:var(--gold-bright);
+    width:42px;height:42px;color:var(--ink);
   }
   .ticket-sub .logo svg{width:100%;height:100%}
   .ticket-sub .cn{
-    font-size:13px;font-weight:700;color:var(--gold-bright);letter-spacing:1px;
+    font-family:'Noto Serif SC',serif;
+    font-size:14px;font-weight:700;color:var(--ink);letter-spacing:1px;
   }
-  .ticket-sub .cn .dot{color:var(--gold)}
+  .ticket-sub .cn .dot{color:var(--accent)}
   .ticket-sub .en{
     font-family:'JetBrains Mono',monospace;
-    font-size:7px;font-weight:500;color:var(--gold);letter-spacing:2px;
+    font-size:7px;font-weight:500;color:var(--accent);letter-spacing:2px;
     text-transform:uppercase;
   }
-  .ticket-caption{
+  .ticket-sub .num{
     font-family:'JetBrains Mono',monospace;
-    font-size:11px;letter-spacing:2px;color:var(--ink-dim);
+    font-size:8px;color:var(--ink-faint);letter-spacing:1px;
+    margin-top:6px;
+  }
+  /* 装饰编号 */
+  .stage-no{
+    position:absolute;
+    top:-8px;right:-8px;
+    font-family:'Cormorant Garamond',serif;
+    font-size:140px;font-weight:300;font-style:italic;
+    color:transparent;
+    -webkit-text-stroke:1px var(--hairline-strong);
+    line-height:1;
+    pointer-events:none;
+    z-index:-1;
+  }
+  .stage-tag{
+    position:absolute;
+    bottom:-30px;left:0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:3px;color:var(--accent);
     text-transform:uppercase;
+  }
+  .stage-tag::before{
+    content:'';display:inline-block;width:24px;height:1px;
+    background:var(--accent);margin-right:10px;vertical-align:middle;
   }
 
   /* ===== 通用 section ===== */
-  section{padding:100px 0;position:relative}
+  section{padding:120px 0;position:relative}
   .section-head{
-    display:flex;align-items:flex-end;justify-content:space-between;
-    margin-bottom:60px;
-    border-bottom:1px solid var(--line);
+    display:grid;grid-template-columns:auto 1fr auto;
+    align-items:end;gap:48px;
+    margin-bottom:80px;
     padding-bottom:24px;
+    border-bottom:1px solid var(--hairline-soft);
   }
   .section-head .label{
     font-family:'JetBrains Mono',monospace;
-    font-size:11px;letter-spacing:3px;color:var(--gold);
-    text-transform:uppercase;margin-bottom:12px;
+    font-size:11px;letter-spacing:3px;color:var(--accent);
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+  }
+  .section-head .label::before{
+    content:'';width:24px;height:1px;background:var(--accent);
   }
   .section-head h2{
-    font-family:'Noto Serif SC',serif;
-    font-size:36px;font-weight:400;color:var(--ink);
-    letter-spacing:2px;
+    font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+    font-size:clamp(40px,5vw,68px);font-weight:400;color:var(--ink);
+    letter-spacing:4px;
+    line-height:1;
   }
   .section-head .no{
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;color:var(--ink-dim);letter-spacing:2px;
+    font-family:'Cormorant Garamond',serif;
+    font-size:48px;font-style:italic;font-weight:300;
+    color:var(--ink-faint);
+    line-height:1;
   }
 
-  /* ===== 作品展示 ===== */
+  /* ===== 作品 ===== */
   .works-grid{
-    display:grid;grid-template-columns:1fr 1fr;gap:40px;
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    background:var(--hairline-soft);
+    border:1px solid var(--hairline-soft);
+    border-radius:16px;overflow:hidden;
   }
   .work-card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:32px;
-    transition:border-color .4s,transform .4s;
+    background:var(--bg);
+    padding:48px;
+    transition:background .5s var(--ease-out);
+    position:relative;
+    overflow:hidden;
   }
-  .work-card:hover{border-color:var(--line-strong);transform:translateY(-4px)}
+  .work-card:hover{background:var(--surface-3)}
+  .work-card::before{
+    content:'';position:absolute;
+    top:0;left:0;width:2px;height:0;
+    background:var(--accent-strong);
+    transition:height .6s var(--ease-out);
+  }
+  .work-card:hover::before{height:100%}
   .work-card .w-label{
     font-family:'JetBrains Mono',monospace;
-    font-size:10px;letter-spacing:2px;color:var(--gold);
-    text-transform:uppercase;margin-bottom:16px;
+    font-size:10px;letter-spacing:2px;color:var(--accent);
+    text-transform:uppercase;margin-bottom:24px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .work-card .w-label .idx{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;font-size:14px;
+    color:var(--ink-faint);
+    letter-spacing:0;
   }
   .work-card h3{
-    font-family:'Noto Serif SC',serif;
-    font-size:22px;font-weight:500;color:var(--ink);
-    margin-bottom:10px;letter-spacing:1px;
+    font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+    font-size:32px;font-weight:400;color:var(--ink);
+    margin-bottom:14px;letter-spacing:2px;
+    line-height:1.2;
+  }
+  .work-card .h-en{
+    font-family:'Cormorant Garamond',serif;
+    font-size:16px;font-style:italic;font-weight:300;
+    color:var(--ink-dim);letter-spacing:1px;
+    margin-bottom:20px;
   }
   .work-card p{
-    font-size:13px;color:var(--ink-dim);line-height:1.7;margin-bottom:20px;
+    font-size:13px;color:var(--ink-dim);line-height:1.8;margin-bottom:24px;
+    max-width:380px;
   }
-  .work-card .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .work-card .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
   .work-card .tag{
     font-family:'JetBrains Mono',monospace;
-    font-size:10px;padding:4px 10px;border-radius:4px;
-    background:rgba(152,152,157,.08);color:var(--gold);
-    letter-spacing:1px;
+    font-size:9px;padding:5px 12px;border-radius:3px;
+    background:rgba(174,174,178,.08);color:var(--accent-strong);
+    letter-spacing:1.5px;text-transform:uppercase;
+    border:1px solid var(--hairline-soft);
   }
   .work-card .preview{
-    margin-top:20px;border-radius:8px;overflow:hidden;
-    border:1px solid var(--line);
+    margin-top:24px;border-radius:8px;overflow:hidden;
+    border:1px solid var(--hairline-soft);
   }
   .work-card .w-link{
-    display:inline-block;margin-top:16px;
+    display:inline-flex;align-items:center;gap:8px;margin-top:24px;
     font-family:'JetBrains Mono',monospace;font-size:11px;
-    color:var(--gold);text-decoration:none;letter-spacing:1px;
-    transition:color .3s;
+    color:var(--ink);text-decoration:none;letter-spacing:2px;
+    text-transform:uppercase;
+    transition:gap .4s var(--ease-out);
   }
-  .work-card .w-link:hover{color:var(--gold-bright);text-decoration:underline}
+  .work-card .w-link .arrow{
+    display:inline-block;width:24px;height:1px;background:var(--ink);
+    position:relative;transition:width .4s var(--ease-out);
+  }
+  .work-card .w-link:hover{gap:14px}
+  .work-card .w-link:hover .arrow{width:36px}
   .mini-ticket{
     background:var(--surface-2);
-    display:flex;height:100px;
+    display:flex;height:120px;
   }
   .mini-ticket .m-main{
-    flex:7;display:flex;align-items:center;justify-content:center;
+    flex:7;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;
+    position:relative;
   }
-  .mini-ticket .m-main span{
-    font-family:'ZCOOL XiaoWei',serif;font-size:14px;color:var(--gold-bright);letter-spacing:2px;
+  .mini-ticket .m-main .t{
+    font-family:'ZCOOL XiaoWei',serif;font-size:16px;color:var(--ink);letter-spacing:3px;
+  }
+  .mini-ticket .m-main .s{
+    font-family:'Cormorant Garamond',serif;font-size:10px;font-style:italic;
+    color:var(--accent);letter-spacing:1px;
   }
   .mini-ticket .m-perf{width:0;position:relative}
   .mini-ticket .m-perf::before{
-    content:'';position:absolute;top:8px;bottom:8px;left:0;width:0;
-    border-left:1px dashed var(--line-strong);
+    content:'';position:absolute;top:10px;bottom:10px;left:0;width:0;
+    border-left:1px dashed var(--hairline-strong);
   }
   .mini-ticket .m-sub{
-    flex:3;background:#2C2C2E;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:4px;
+    flex:3;background:linear-gradient(180deg,#1A1A1C,#252527);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:6px;
   }
-  .mini-ticket .m-sub .lg{width:18px;height:18px;color:var(--gold-bright)}
+  .mini-ticket .m-sub .lg{width:22px;height:22px;color:var(--ink)}
   .mini-ticket .m-sub .lg svg{width:100%;height:100%}
-  .mini-ticket .m-sub .nm{font-size:7px;color:var(--gold-bright);font-weight:700}
+  .mini-ticket .m-sub .nm{font-size:8px;color:var(--ink);font-weight:700;letter-spacing:.5px}
+  .coming-soon{
+    display:flex;align-items:center;justify-content:center;height:120px;
+    background:var(--surface-2);
+    color:var(--ink-faint);
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px;font-style:italic;letter-spacing:4px;
+    position:relative;
+  }
+  .coming-soon::before,.coming-soon::after{
+    content:'';width:24px;height:1px;background:var(--hairline-strong);
+  }
+  .coming-soon::before{margin-right:16px}
+  .coming-soon::after{margin-left:16px}
 
   /* ===== 设计细节 ===== */
   .details-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--hairline-soft);
+    border:1px solid var(--hairline-soft);
+    border-radius:16px;overflow:hidden;
   }
   .detail{
-    padding:28px;border:1px solid var(--line);border-radius:10px;
-    background:var(--surface);
+    padding:40px 32px;
+    background:var(--bg);
+    position:relative;
+    transition:background .5s var(--ease-out);
   }
+  .detail:hover{background:var(--surface-3)}
   .detail .ic{
-    width:36px;height:36px;border-radius:8px;
-    background:rgba(152,152,157,.1);
+    width:40px;height:40px;border-radius:10px;
+    background:rgba(174,174,178,.08);
+    border:1px solid var(--hairline-soft);
     display:flex;align-items:center;justify-content:center;
-    color:var(--gold-bright);margin-bottom:18px;
+    color:var(--accent-strong);margin-bottom:24px;
+  }
+  .detail .d-no{
+    position:absolute;top:24px;right:32px;
+    font-family:'Cormorant Garamond',serif;
+    font-size:14px;font-style:italic;
+    color:var(--ink-faint);
   }
   .detail h4{
-    font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px;letter-spacing:1px;
+    font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+    font-size:20px;font-weight:400;color:var(--ink);
+    margin-bottom:12px;letter-spacing:2px;
   }
-  .detail p{font-size:12px;color:var(--ink-dim);line-height:1.7}
+  .detail .h-en{
+    font-family:'Cormorant Garamond',serif;
+    font-size:13px;font-style:italic;
+    color:var(--ink-dim);
+    margin-bottom:16px;
+    letter-spacing:.5px;
+  }
+  .detail p{font-size:13px;color:var(--ink-dim);line-height:1.8}
   .detail .val{
     font-family:'JetBrains Mono',monospace;
-    font-size:11px;color:var(--gold);margin-top:10px;letter-spacing:1px;
+    font-size:10px;color:var(--accent-strong);
+    margin-top:18px;letter-spacing:1.5px;
+    padding-top:16px;border-top:1px solid var(--hairline-soft);
+    text-transform:uppercase;
   }
 
   /* ===== 色板 ===== */
   .palette{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
   }
   .swatch{
-    border-radius:10px;overflow:hidden;
-    border:1px solid var(--line);position:relative;
+    border-radius:14px;overflow:hidden;
+    border:1px solid var(--hairline-soft);
+    position:relative;
     display:flex;flex-direction:column;
+    transition:transform .5s var(--ease-out),border-color .5s;
   }
-  .swatch .color{height:90px;flex-shrink:0}
+  .swatch:hover{transform:translateY(-6px);border-color:var(--hairline-strong)}
+  .swatch .color{
+    height:140px;flex-shrink:0;
+    position:relative;
+  }
+  .swatch .color::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.4));
+    pointer-events:none;
+  }
   .swatch .info{
-    padding:14px;background:var(--surface);
+    padding:18px 16px;
+    background:var(--surface);
+    display:flex;justify-content:space-between;align-items:center;
   }
   .swatch .hex{
-    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    font-weight:500;color:var(--ink);
+    letter-spacing:.5px;
   }
-  .swatch .role{font-size:10px;color:var(--ink-dim);margin-top:4px}
+  .swatch .role{
+    font-family:'Cormorant Garamond',serif;
+    font-size:13px;font-style:italic;color:var(--ink-dim);
+  }
+
+  /* ===== Manifesto ===== */
+  .manifesto{
+    padding:160px 0;
+    text-align:center;
+    position:relative;
+  }
+  .manifesto::before{
+    content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:1px;height:80px;background:linear-gradient(180deg,transparent,var(--accent-strong));
+  }
+  .manifesto .m-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:4px;color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:32px;
+  }
+  .manifesto .m-text{
+    font-family:'ZCOOL XiaoWei','Noto Serif SC',serif;
+    font-size:clamp(28px,4vw,52px);
+    line-height:1.5;letter-spacing:6px;
+    color:var(--ink);
+    max-width:900px;margin:0 auto;
+  }
+  .manifesto .m-text .em{
+    color:var(--accent-strong);
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    letter-spacing:0;
+  }
 
   /* ===== Footer ===== */
   footer{
-    padding:60px 0 40px;
-    border-top:1px solid var(--line);
+    padding:80px 0 40px;
+    border-top:1px solid var(--hairline-soft);
     margin-top:60px;
+    position:relative;
+  }
+  footer::before{
+    content:'';position:absolute;top:-1px;left:0;width:80px;height:2px;
+    background:var(--accent-strong);
   }
   .foot-grid{
-    display:flex;justify-content:space-between;align-items:flex-start;gap:40px;
-    flex-wrap:wrap;
+    display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;
+    align-items:start;
   }
-  .foot-brand{display:flex;align-items:center;gap:14px}
-  .foot-brand .mark{width:32px;height:32px;color:var(--gold-bright)}
+  .foot-brand{display:flex;flex-direction:column;gap:20px}
+  .foot-brand .top{display:flex;align-items:center;gap:14px}
+  .foot-brand .mark{width:36px;height:36px;color:var(--ink)}
   .foot-brand .mark svg{width:100%;height:100%}
-  .foot-brand .name{font-family:'Noto Serif SC',serif;font-size:16px;color:var(--ink);letter-spacing:2px}
-  .foot-brand .en{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:3px}
-  .foot-links{display:flex;gap:28px}
-  .foot-links a{font-size:12px;color:var(--ink-dim);text-decoration:none;letter-spacing:1px;transition:color .3s}
-  .foot-links a:hover{color:var(--gold-bright)}
-  .foot-copy{
-    margin-top:40px;padding-top:20px;border-top:1px solid var(--line);
-    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);
-    letter-spacing:1px;text-align:center;
+  .foot-brand .name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px;font-style:italic;color:var(--ink);
+    letter-spacing:.5px;
   }
+  .foot-brand .name .cn{
+    font-family:'Noto Serif SC',serif;
+    font-style:normal;
+    font-size:16px;
+    color:var(--ink-dim);
+    margin-right:10px;
+    letter-spacing:3px;
+  }
+  .foot-brand .desc{
+    font-family:'Cormorant Garamond',serif;
+    font-size:14px;font-style:italic;
+    color:var(--ink-dim);
+    max-width:380px;line-height:1.7;
+  }
+  .foot-col h5{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;font-weight:500;letter-spacing:2px;
+    color:var(--accent);text-transform:uppercase;
+    margin-bottom:18px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--hairline-soft);
+  }
+  .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot-col a{
+    font-family:'Cormorant Garamond',serif;
+    font-size:14px;font-style:italic;color:var(--ink-dim);
+    text-decoration:none;letter-spacing:.5px;
+    transition:color .3s;
+  }
+  .foot-col a:hover{color:var(--ink)}
+  .foot-copy{
+    margin-top:80px;padding-top:24px;
+    border-top:1px solid var(--hairline-soft);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--ink-faint);
+    letter-spacing:1.5px;text-transform:uppercase;
+  }
+  .foot-copy .left{display:flex;gap:24px}
 
-  @media(max-width:768px){
-    .wrap{padding:0 20px}
-    .nav{padding:16px 20px}
+  /* ===== 滚动入场 ===== */
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease-out),transform 1s var(--ease-out)}
+  .reveal.in{opacity:1;transform:translateY(0)}
+
+  @media(max-width:900px){
+    .wrap{padding:0 24px}
+    .nav{padding:16px 24px}
     .nav-links{display:none}
-    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .hero{grid-template-columns:1fr;padding:80px 0 40px}
+    .hero-left{padding:40px 0}
+    .hero-title{font-size:96px}
+    .hero-meta{grid-template-columns:1fr 1fr}
     .works-grid,.details-grid,.palette{grid-template-columns:1fr}
-    .hero-title{font-size:64px}
+    .section-head{grid-template-columns:1fr;gap:16px}
+    .section-head .no{display:none}
+    .foot-grid{grid-template-columns:1fr;gap:40px}
+    .foot-copy{flex-direction:column;gap:12px;text-align:center}
+    .foot-copy .left{justify-content:center;flex-wrap:wrap}
+    .work-card{padding:32px 24px}
+    .detail{padding:32px 24px}
   }
 </style>
 </head>
@@ -364,40 +693,46 @@
 
 <!-- ===== 导航 ===== -->
 <nav class="nav">
-  <div class="nav-brand">
+  <a href="#" class="nav-brand" aria-label="微意设计">
     <div class="mark">
       <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg>
     </div>
-    <div class="name">微意<span class="en">VE DESIGN STUDIO</span></div>
-  </div>
+    <div class="name"><span class="cn">微意</span>Ve</div>
+  </a>
   <div class="nav-links">
-    <a href="#works">作品</a>
-    <a href="#details">细节</a>
-    <a href="#palette">色彩</a>
+    <a href="#works">Works</a>
+    <a href="#details">Details</a>
+    <a href="#palette">Palette</a>
+    <a href="#manifesto">Manifesto</a>
   </div>
 </nav>
 
 <!-- ===== Hero ===== -->
 <section class="hero">
-  <div class="wrap">
-    <div class="hero-grid">
+  <div class="wrap" style="display:contents">
+    <div class="hero-left">
       <div>
-        <div class="hero-tag"><span class="dot"></span>独立设计工作室 · EST. 2026</div>
-        <h1 class="hero-title">微<span class="accent">意</span></h1>
-        <p class="hero-sub">以细微之意,造视觉之境。<br>专注于品牌视觉、印刷物与数字界面的独立设计实践。</p>
-        <div class="hero-meta">
-          <div class="item"><span class="k">DISCIPLINE</span><span class="v">Brand · Print · UI</span></div>
-          <div class="item"><span class="k">LOCATION</span><span class="v">Shanghai, CN</span></div>
-        </div>
+        <div class="hero-eyebrow"><span class="line"></span>Independent Design Studio · Est. 2026</div>
+        <h1 class="hero-title"><span class="char">微</span><span class="char italic">意</span></h1>
+        <p class="hero-subtitle">Where nuance becomes form.<span class="cn">以细微之意,造视觉之境</span></p>
       </div>
-      <div class="hero-card">
+      <div class="hero-meta">
+        <div class="item"><span class="k">Discipline</span><span class="v">Brand · Print · UI</span></div>
+        <div class="item"><span class="k">Location</span><span class="v">Shanghai<span class="cn">上海</span></span></div>
+        <div class="item"><span class="k">Founded</span><span class="v"><span class="num">2026</span></span></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="ticket-stage">
+        <div class="stage-no">01</div>
         <div class="ticket">
           <div class="ticket-front">
             <div class="ticket-main">
               <div class="slogan">
+                <div class="label">— Slogan No.001 —</div>
                 <div class="t">我们正在进行时</div>
                 <div class="sep"></div>
-                <div class="s">WE ARE · ING</div>
+                <div class="en">We Are · In Progress</div>
               </div>
             </div>
             <div class="ticket-perf">
@@ -408,10 +743,11 @@
               <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
               <div class="cn">微影<span class="dot">.</span>ing</div>
               <div class="en">V-ING STUDIO</div>
+              <div class="num">№ 001 / 2026</div>
             </div>
           </div>
         </div>
-        <div class="ticket-caption">— Cinema Ticket Business Card · 2026 —</div>
+        <div class="stage-tag">Cinema Ticket Card · MMXXVI</div>
       </div>
     </div>
   </div>
@@ -420,18 +756,17 @@
 <!-- ===== 作品 ===== -->
 <section id="works">
   <div class="wrap">
-    <div class="section-head">
-      <div>
-        <div class="label">Selected Works</div>
-        <h2>作品</h2>
-      </div>
-      <div class="no">01 / 03</div>
+    <div class="section-head reveal">
+      <div class="label">Selected Works</div>
+      <h2>作品</h2>
+      <div class="no">01 / 04</div>
     </div>
-    <div class="works-grid">
+    <div class="works-grid reveal">
       <div class="work-card">
-        <div class="w-label">Business Card · 名片</div>
+        <div class="w-label"><span class="idx">i.</span>Business Card · 名片</div>
         <h3>电影票名片</h3>
-        <p>为微影.ing 工作室设计的电影票格式名片,以票根为载体,承载品牌身份与个人联络信息。主券为 slogan,副券为品牌标识,可撕式结构呼应「入场」意象。</p>
+        <div class="h-en">Cinema Ticket Card</div>
+        <p>为微影.ing 工作室设计的电影票格式名片,以票根为载体,承载品牌身份与个人联络信息。主券承载 slogan,副券承载品牌标识,可撕式结构呼应「入场」意象。</p>
         <div class="tags">
           <span class="tag">Print</span>
           <span class="tag">Identity</span>
@@ -439,7 +774,10 @@
         </div>
         <div class="preview">
           <div class="mini-ticket">
-            <div class="m-main"><span>我们正在进行时</span></div>
+            <div class="m-main">
+              <div class="t">我们正在进行时</div>
+              <div class="s">— No.001 —</div>
+            </div>
             <div class="m-perf"></div>
             <div class="m-sub">
               <div class="lg"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
@@ -447,19 +785,20 @@
             </div>
           </div>
         </div>
-        <a class="w-link" href="card.html">查看详情 →</a>
+        <a class="w-link" href="card.html">View Detail <span class="arrow"></span></a>
       </div>
       <div class="work-card">
-        <div class="w-label">Coming Soon</div>
+        <div class="w-label"><span class="idx">ii.</span>Coming Soon · 开发中</div>
         <h3>视觉识别系统</h3>
-        <p>品牌视觉识别系统开发中,涵盖标志规范、字体系统、色彩体系与应用物料。以克制的金色与深色基底,构建兼具温度与质感的视觉语言。</p>
+        <div class="h-en">Visual Identity System</div>
+        <p>品牌视觉识别系统开发中,涵盖标志规范、字体系统、色彩体系与应用物料。以克制的中性灰与深色基底,构建兼具温度与质感的视觉语言。</p>
         <div class="tags">
           <span class="tag">Identity</span>
           <span class="tag">System</span>
           <span class="tag">In Progress</span>
         </div>
-        <div class="preview" style="display:flex;align-items:center;justify-content:center;height:100px;background:var(--surface-2);color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px">
-          COMING SOON
+        <div class="preview">
+          <div class="coming-soon">Coming Soon</div>
         </div>
       </div>
     </div>
@@ -469,36 +808,40 @@
 <!-- ===== 设计细节 ===== -->
 <section id="details">
   <div class="wrap">
-    <div class="section-head">
-      <div>
-        <div class="label">Design Details</div>
-        <h2>细节</h2>
-      </div>
-      <div class="no">02 / 03</div>
+    <div class="section-head reveal">
+      <div class="label">Design Details</div>
+      <h2>细节</h2>
+      <div class="no">02 / 04</div>
     </div>
-    <div class="details-grid">
+    <div class="details-grid reveal">
       <div class="detail">
+        <div class="d-no">i.</div>
         <div class="ic">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
         </div>
         <h4>字体排印</h4>
-        <p>主标题采用 ZCOOL XiaoWei 雕版宋体,呈现东方书写质感;技术信息与编号使用 JetBrains Mono,构建精密的工程感。</p>
-        <div class="val">ZCOOL XiaoWei · JetBrains Mono</div>
+        <div class="h-en">Typography</div>
+        <p>主标题采用 ZCOOL XiaoWei 雕版宋体,呈现东方书写质感;技术信息与编号使用 JetBrains Mono,构建精密工程感;装饰文字采用 Cormorant Garamond 斜体,增添古典编辑气息。</p>
+        <div class="val">ZCOOL XiaoWei · JetBrains Mono · Cormorant</div>
       </div>
       <div class="detail">
+        <div class="d-no">ii.</div>
         <div class="ic">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
         </div>
         <h4>色彩系统</h4>
-        <p>以纯黑 #000000 为底色,#1C1C1E 为卡片表面,中性灰 #98989D 与 #AEAEB2 为强调色,延续 iOS 风格的克制与高级感。</p>
-        <div class="val">#000000 · #98989D · #AEAEB2</div>
+        <div class="h-en">Color System</div>
+        <p>以纯黑 #000000 为底色,#1C1C1E 为卡片表面,中性灰 #98989D 与 #AEAEB2 为强调色,延续 iOS 风格的克制与高级感,与微影主站视觉语言保持一致。</p>
+        <div class="val">#000000 · #1C1C1E · #98989D · #AEAEB2</div>
       </div>
       <div class="detail">
+        <div class="d-no">iii.</div>
         <div class="ic">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
         </div>
         <h4>印刷工艺</h4>
-        <p>100×50mm 电影票幅,四角 R4 圆角,主副券间以 Ø2.5mm 缺口 + 虚线构成撕线,可撕可存。</p>
+        <div class="h-en">Print Craft</div>
+        <p>100×50mm 电影票幅,四角 R4 圆角,主副券间以 Ø2.5mm 缺口 + 虚线构成撕线,可撕可存,模拟真实票券的触感与仪式感。</p>
         <div class="val">100×50mm · R4 · Notch Ø2.5</div>
       </div>
     </div>
@@ -508,30 +851,50 @@
 <!-- ===== 色板 ===== -->
 <section id="palette">
   <div class="wrap">
-    <div class="section-head">
-      <div>
-        <div class="label">Color Palette</div>
-        <h2>色彩</h2>
-      </div>
-      <div class="no">03 / 03</div>
+    <div class="section-head reveal">
+      <div class="label">Color Palette</div>
+      <h2>色彩</h2>
+      <div class="no">03 / 04</div>
     </div>
-    <div class="palette">
+    <div class="palette reveal">
       <div class="swatch">
         <div class="color" style="background:#000000"></div>
-        <div class="info"><div class="hex">#000000</div><div class="role">背景底色</div></div>
+        <div class="info">
+          <div class="hex">#000000</div>
+          <div class="role">Background</div>
+        </div>
       </div>
       <div class="swatch">
         <div class="color" style="background:#1C1C1E"></div>
-        <div class="info"><div class="hex">#1C1C1E</div><div class="role">卡片表面</div></div>
+        <div class="info">
+          <div class="hex">#1C1C1E</div>
+          <div class="role">Surface</div>
+        </div>
       </div>
       <div class="swatch">
         <div class="color" style="background:#AEAEB2"></div>
-        <div class="info"><div class="hex">#AEAEB2</div><div class="role">强强调色</div></div>
+        <div class="info">
+          <div class="hex">#AEAEB2</div>
+          <div class="role">Accent</div>
+        </div>
       </div>
       <div class="swatch">
         <div class="color" style="background:#98989D"></div>
-        <div class="info"><div class="hex">#98989D</div><div class="role">主强调色</div></div>
+        <div class="info">
+          <div class="hex">#98989D</div>
+          <div class="role">Secondary</div>
+        </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Manifesto ===== -->
+<section id="manifesto" class="manifesto">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="m-label">— Manifesto · 设计宣言 —</div>
+      <p class="m-text">细微之处,<span class="em">见</span>意境之远;<br>克制之中,见<span class="em">意</span>匠之深。</p>
     </div>
   </div>
 </section>
@@ -541,24 +904,55 @@
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <div class="mark">
-          <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg>
+        <div class="top">
+          <div class="mark">
+            <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg>
+          </div>
+          <div class="name"><span class="cn">微意</span>Ve</div>
         </div>
-        <div>
-          <div class="name">微意</div>
-          <div class="en">VE DESIGN STUDIO</div>
-        </div>
+        <p class="desc">An independent design studio crafting visual identities, printed matter, and digital interfaces — where every nuance carries intention.</p>
       </div>
-      <div class="foot-links">
-        <a href="#works">作品</a>
-        <a href="#details">细节</a>
-        <a href="#palette">色彩</a>
-        <a href="mailto:hello@ve.studio">联系</a>
+      <div class="foot-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="#works">Works</a></li>
+          <li><a href="#details">Details</a></li>
+          <li><a href="#palette">Palette</a></li>
+          <li><a href="#manifesto">Manifesto</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Connect</h5>
+        <ul>
+          <li><a href="mailto:hello@ve.studio">hello@ve.studio</a></li>
+          <li><a href="../index.html">V-ing 主站</a></li>
+          <li><a href="card.html">名片详情</a></li>
+        </ul>
       </div>
     </div>
-    <div class="foot-copy">© 2026 Ve Design Studio · 微意设计 · All rights reserved</div>
+    <div class="foot-copy">
+      <div class="left">
+        <span>© MMXXVI Ve Design Studio</span>
+        <span>微意设计</span>
+        <span>All Rights Reserved</span>
+      </div>
+      <div>Crafted with Intention</div>
+    </div>
   </div>
 </footer>
+
+<script>
+  // 滚动入场动画
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
 
 </body>
 </html>
