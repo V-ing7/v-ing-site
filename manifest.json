@@ -1,0 +1,22 @@
+{
+  "name": "微影 V-ing · 影视创作工作室",
+  "short_name": "微影",
+  "description": "微影 V-ing 影视创作工作室 — 我们正在进行时",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "version": "2026.10.07",
+  "icons": [
+    {
+      "src": "assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

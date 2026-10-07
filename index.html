@@ -8,11 +8,18 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="apple-touch-icon" href="assets/logo.svg" />
   <link rel="mask-icon" href="assets/logo.svg" color="#e6be8a" />
-  <link rel="stylesheet" href="css/style.css?v=20260925b">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="微影" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="stylesheet" href="css/style.css?v=20261007b">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-  <script src="js/lib/html2canvas.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="js/lib/html2canvas.min.js?v=20261007" defer></script>
   <script>
     /* Clear old service workers and caches from previous versions */
     if('serviceWorker' in navigator){
@@ -77,8 +84,6 @@
     .cqt-title{font-size:1.1rem;font-weight:700;margin:0 0 4px 0}
     .cqt-desc{font-size:.82rem;color:rgba(235,235,245,.4);margin:0}
     .cqt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .sub-sites{margin:56px 0}
-    .sub-sites .cqt-grid{grid-template-columns:auto;justify-content:center}
     .cqt-btn{display:flex;flex-direction:column;align-items:center;gap:10px;
       padding:20px 12px;border-radius:16px;text-decoration:none;
       background:rgba(255,255,255,.04);
@@ -93,12 +98,10 @@
     .cqt-sph .cqt-icon{color:#07c160;border-color:rgba(7,193,96,.4)}
     .cqt-xhs .cqt-icon{color:#ff2442;border-color:rgba(255,36,66,.4)}
     .cqt-bili .cqt-icon{color:#00AEEC;border-color:rgba(0,174,236,.4)}
-    .cqt-ve .cqt-icon{color:#e6be8a;border-color:rgba(230,190,138,.4)}
     .cqt-dy .cqt-btn:hover .cqt-icon{border-color:rgba(255,255,255,.6)}
     .cqt-sph .cqt-btn:hover .cqt-icon{border-color:rgba(7,193,96,.8)}
     .cqt-xhs .cqt-btn:hover .cqt-icon{border-color:rgba(255,36,66,.8)}
     .cqt-bili .cqt-btn:hover .cqt-icon{border-color:rgba(0,174,236,.8)}
-    .cqt-ve .cqt-btn:hover .cqt-icon{border-color:rgba(230,190,138,.8)}
     .cqt-icon svg{width:24px;height:24px}
     .cqt-logo-img{height:50%;width:auto;object-fit:contain;display:block}
     .cqt-info{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -194,6 +197,9 @@
       </div>
       <div class="nav-controls">
         <span class="sync-badge sync-loading" id="syncStatusBadge" data-cn="同步中..." data-en="Syncing..." title="点击强制同步" role="button" tabindex="0">同步中...</span>
+        <button class="ctrl-btn refresh-btn" id="refreshBtn" aria-label="刷新页面" title="刷新 / Reload">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
         <button class="ctrl-btn lang-toggle" id="langToggle" aria-label="Toggle language">
           <span class="lang-current" id="langCurrent">EN</span>
         </button>
@@ -696,25 +702,6 @@
                   <span class="collab-status collab-status-active" data-cn="● 合作进行中" data-en="● Active Partnership">● 合作进行中</span>
                   <span class="collab-enter" data-cn="查看详情 →" data-en="View Details →">查看详情 →</span>
                 </div>
-              </div>
-            </div>
-
-            <!-- 旗下网站 -->
-            <div class="sub-sites reveal">
-              <div class="cqt-head">
-                <h3 class="cqt-title" data-cn="旗下网站" data-en="Subsidiary Sites">旗下网站</h3>
-                <p class="cqt-desc" data-cn="工作室旗下独立站点" data-en="Independent sites under the studio">工作室旗下独立站点</p>
-              </div>
-              <div class="cqt-grid">
-                <a class="cqt-btn cqt-ve" href="ve/" target="_blank" rel="noopener">
-                  <div class="cqt-icon">
-                    <svg viewBox="0 0 354.9 295.83" fill="currentColor"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z"/></svg>
-                  </div>
-                  <div class="cqt-info">
-                    <span class="cqt-name" data-cn="微意设计 · Ve" data-en="Ve Design Studio">微意设计 · Ve</span>
-                    <span class="cqt-arrow">→</span>
-                  </div>
-                </a>
               </div>
             </div>
 
@@ -1323,13 +1310,14 @@
             <p class="section-desc reveal" data-cn="管理创作计划，追踪项目进度，让每一帧都按计划生长。" data-en="Manage creative schedules, track project progress, let every frame grow on plan.">管理创作计划，追踪项目进度，让每一帧都按计划生长。</p>
           </div>
           <!-- iOS Segmented Control -->
-          <div class="segmented-control seg-5 reveal" id="wsTabs">
+          <div class="segmented-control seg-6 reveal" id="wsTabs">
             <button class="seg-btn active" data-ws-tab="plan" data-cn="计划表" data-en="Schedule">计划表</button>
             <button class="seg-btn" data-ws-tab="unified" data-cn="日报" data-en="Report">日报</button>
             <button class="seg-btn" data-ws-tab="storyboard" data-cn="摄影表" data-en="Storyboard">摄影表</button>
             <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
             <button class="seg-btn" data-ws-tab="agent" data-cn="智能体" data-en="Agent">智能体</button>
-            <span class="seg-indicator seg-5-indicator" id="segIndicator"></span>
+            <button class="seg-btn" data-ws-tab="card" data-cn="名片" data-en="Card">名片</button>
+            <span class="seg-indicator seg-6-indicator" id="segIndicator"></span>
           </div>
         </div>
       </div>
@@ -1885,6 +1873,156 @@
         </div>
       </div>
 
+      <!-- ====== Panel 6: Business Card (migrated from Ve) ====== -->
+      <div class="ws-panel" id="ws-panel-card">
+        <div class="container">
+          <div class="ve-card-panel reveal">
+            <div class="vc-page-title">
+              <span>V-ING</span>
+              <span class="dot"></span>
+              <span>Cinema Ticket Card</span>
+            </div>
+
+            <div class="vc-face-label">FRONT <span class="cn">正面</span></div>
+            <div class="vc-card-wrap">
+              <div class="vc-ticket">
+                <!-- 主券：slogan -->
+                <div class="vc-main">
+                  <div class="vc-slogan">
+                    <div class="vc-title">我们正在进行时</div>
+                    <div class="vc-sep"></div>
+                    <div class="vc-subtitle">WE ARE · ING</div>
+                  </div>
+                </div>
+                <!-- 穿孔线 -->
+                <div class="vc-perf">
+                  <div class="vc-notch top"></div>
+                  <div class="vc-notch bottom"></div>
+                </div>
+                <!-- 副券：logo + 工作室名 -->
+                <div class="vc-sub">
+                  <div class="vc-sub-logo">
+                    <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <div class="vc-brand-cn">微影<span class="dot">.</span>ing</div>
+                  <div class="vc-brand-en">V-ING STUDIO</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="vc-face-label">BACK <span class="cn">反面</span></div>
+            <div class="vc-card-wrap">
+              <div class="vc-back">
+                <!-- 副区：STUB + 二维码 + 编号 -->
+                <div class="vc-b-sub">
+                  <div class="vc-s-head">STUB<span class="cn">存根</span></div>
+                  <div class="vc-s-body">
+                    <div class="vc-qr"><div id="veCardQR"></div></div>
+                  </div>
+                  <div class="vc-s-foot">001</div>
+                </div>
+                <!-- 穿孔线 -->
+                <div class="vc-b-perf">
+                  <div class="vc-b-notch top"></div>
+                  <div class="vc-b-notch bottom"></div>
+                </div>
+                <!-- 主区：个人信息 -->
+                <div class="vc-b-main">
+                  <div class="vc-head">
+                    <div class="vc-brand">
+                      <div class="vc-logo">
+                        <svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/>
+                        </svg>
+                      </div>
+                      <div class="vc-wordmark">
+                        <span class="vc-main-cn">微影<span class="dot">.</span>ing</span>
+                        <span class="vc-sub-en">V-ING STUDIO</span>
+                      </div>
+                    </div>
+                    <div class="vc-no">No.001</div>
+                  </div>
+                  <div class="vc-body">
+                    <div class="vc-name">林威</div>
+                    <div class="vc-name-en">Vikyi L.</div>
+                    <div class="vc-role">摄影剪辑</div>
+                    <div class="vc-slogan-text">我们正在进行时</div>
+                  </div>
+                  <div class="vc-foot">
+                    <div class="vc-wx">
+                      <div class="vc-ico">微</div>
+                      <span class="vc-v">Vking071</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="vc-meta-line">
+              <span>100 × 50 mm</span>
+              <span class="sep"></span>
+              <span>iOS Style</span>
+              <span class="sep"></span>
+              <span>Background #1a1a1a · Solid Colors</span>
+            </div>
+
+            <!-- 色值图例 -->
+            <div class="vc-legend">
+              <div class="item">
+                <div class="swatch" style="background:#e6be8a"></div>
+                <div class="info"><span class="hex">#e6be8a</span><span class="desc">主文字 · 品牌名 / 姓名 / 微信号 / STUB / 001</span></div>
+              </div>
+              <div class="item">
+                <div class="swatch" style="background:#C9A96E"></div>
+                <div class="info"><span class="hex">#C9A96E</span><span class="desc">辅文字 · V-ING STUDIO / No.001 / Vikyi L. / 摄影剪辑 / 存根</span></div>
+              </div>
+            </div>
+
+            <!-- 生产印刷规格表 -->
+            <div class="vc-spec-section">
+              <div class="vc-spec-title">Production Specification · 生产规格</div>
+              <table class="vc-spec-table">
+                <thead>
+                  <tr><th style="width:28%">项目 Item</th><th style="width:22%">数值 Value</th><th>备注 Note</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="vc-spec-group"><td colspan="3">整体尺寸 · Overall</td></tr>
+                  <tr><td>成品尺寸</td><td class="val">100 × 50 mm</td><td class="desc">含出血需 106 × 56 mm</td></tr>
+                  <tr><td>主券宽度</td><td class="val">70 mm</td><td class="desc">Main stub</td></tr>
+                  <tr><td>副券宽度</td><td class="val">30 mm</td><td class="desc">Sub stub</td></tr>
+                  <tr><td>卡片高度</td><td class="val">50 mm</td><td class="desc">Card height</td></tr>
+                  <tr class="vc-spec-group"><td colspan="3">圆角 · Corner Radius</td></tr>
+                  <tr><td>卡片外圆角</td><td class="val">R4 mm</td><td class="desc">四角统一</td></tr>
+                  <tr><td>编号圆角</td><td class="val">R2.2 mm</td><td class="desc">No.001 badge</td></tr>
+                  <tr><td>微信图标圆角</td><td class="val">R1.1 mm</td><td class="desc">WX icon 4×4mm</td></tr>
+                  <tr class="vc-spec-group"><td colspan="3">间距与边距 · Spacing</td></tr>
+                  <tr><td>主券内边距</td><td class="val">4.5 / 5.5 mm</td><td class="desc">上下 / 左右</td></tr>
+                  <tr><td>副券内边距</td><td class="val">4 / 3 mm</td><td class="desc">上下 / 左右</td></tr>
+                  <tr><td>顶部品牌行下间距</td><td class="val">3.5 mm</td><td class="desc">Head padding-bottom</td></tr>
+                  <tr><td>底部信息行上间距</td><td class="val">3 mm</td><td class="desc">Foot padding-top</td></tr>
+                  <tr class="vc-spec-group"><td colspan="3">穿孔线 · Perforation</td></tr>
+                  <tr><td>缺口直径</td><td class="val">2.5 mm</td><td class="desc">Notch diameter</td></tr>
+                  <tr><td>虚线宽度</td><td class="val">0.3 mm</td><td class="desc">Dashed line</td></tr>
+                  <tr class="vc-spec-group"><td colspan="3">副券内容 · Sub Stub</td></tr>
+                  <tr><td>logo</td><td class="val">6 × 6 mm</td><td class="desc">V-ing logo</td></tr>
+                  <tr><td>品牌中文</td><td class="val">8px / 700</td><td class="desc">微影.ing</td></tr>
+                  <tr><td>品牌英文</td><td class="val">4.5px / 500</td><td class="desc">V-ING STUDIO</td></tr>
+                  <tr class="vc-spec-group"><td colspan="3">字体字号 · Typography</td></tr>
+                  <tr><td>姓名（林威）</td><td class="val">11px / 700</td><td class="desc">Noto Sans SC</td></tr>
+                  <tr><td>英文名</td><td class="val">8px / 600</td><td class="desc">Vikyi L.</td></tr>
+                  <tr><td>职位</td><td class="val">9px / 400</td><td class="desc">摄影剪辑</td></tr>
+                  <tr><td>品牌中文</td><td class="val">11px / 700</td><td class="desc">微影.ing</td></tr>
+                  <tr><td>品牌英文</td><td class="val">6.5px / 500</td><td class="desc">V-ING STUDIO</td></tr>
+                  <tr><td>Slogan</td><td class="val">6.5px / 400</td><td class="desc">我们正在进行时</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ========== CONTACT VIEW ========== -->
@@ -2005,7 +2143,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20260927" defer></script>
+  <script src="js/app.js?v=20261007" defer></script>
 
 </body>
 </html>
