@@ -1537,6 +1537,14 @@
     });
   }
 
+  /* ---------- App Mode Detection (PWA standalone) ---------- */
+  var isAppMode=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  if(isAppMode){
+    document.documentElement.setAttribute('data-app','1');
+    var cardTabBtn=document.querySelector('.seg-btn[data-ws-tab="card"]');
+    if(cardTabBtn)cardTabBtn.style.display='none';
+  }
+
   /* ---------- Workspace: Segmented Control & Sub-pages ---------- */
   var wsTabs=document.getElementById('wsTabs');
   var segIndicator=document.getElementById('segIndicator');
