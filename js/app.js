@@ -3857,7 +3857,7 @@
   var consoleLastSync = document.getElementById('consoleLastSync');
   var consoleCopyBtn = document.getElementById('consoleCopyBtn');
 
-  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.4】\
+  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.5】\
 '
     + '我的网站数据存储在 Cloudflare D1 数据库中，请帮我拉取最新数据并继续工作。\
 '
@@ -3902,6 +3902,8 @@
     + '\
 '
     + '【修改规范】\
+'
+    + '- 术语约定：用户提到「app」= 修改 app.js；提到「网站」= 修改网站文件（index.html、style.css 等）\
 '
     + '- 修改 app.js（应用逻辑 / 本指令模版）时，不要修改网站文件（index.html、style.css 等）\
 '
