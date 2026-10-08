@@ -1206,7 +1206,7 @@
       });
 
       // Scroll to top
-      window.scrollTo({top:0,behavior:'smooth'});
+      window.scrollTo({top:0,behavior:'auto'});
 
       // Trigger reveals in new view
       setTimeout(function(){
@@ -1244,6 +1244,9 @@
     },240);
 
     currentView=target;
+
+    // Pause cinema hero's infinite animations when not on home (saves GPU)
+    document.body.classList.toggle('hero-paused', target!=='home');
 
     // Update URL hash
     if(history.replaceState){
@@ -1603,7 +1606,7 @@
       var rect=wsTabsEl.getBoundingClientRect();
       var targetY=window.scrollY+rect.top-80;
       if(Math.abs(window.scrollY-targetY)>20){
-        window.scrollTo({top:targetY,behavior:'smooth'});
+        window.scrollTo({top:targetY,behavior:'auto'});
       }
     }
   }
@@ -1630,7 +1633,7 @@
         var rect=scrollTarget.getBoundingClientRect();
         var targetY=window.scrollY+rect.top-80;
         if(Math.abs(window.scrollY-targetY)>20){
-          window.scrollTo({top:targetY,behavior:'smooth'});
+          window.scrollTo({top:targetY,behavior:'auto'});
         }
       }
       // Trigger reveals in sub-page
@@ -3854,7 +3857,7 @@
   var consoleLastSync = document.getElementById('consoleLastSync');
   var consoleCopyBtn = document.getElementById('consoleCopyBtn');
 
-  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.3】\
+  var CONSOLE_TEMPLATE = '【微影 V-ing 跨 AI 会话指令模版 v4.4】\
 '
     + '我的网站数据存储在 Cloudflare D1 数据库中，请帮我拉取最新数据并继续工作。\
 '
@@ -3895,6 +3898,16 @@
     + '修改数据需要密码，请向我询问密码后再操作\
 '
     + '密码提示：个人英文名\
+'
+    + '\
+'
+    + '【修改规范】\
+'
+    + '- 修改 app.js（应用逻辑 / 本指令模版）时，不要修改网站文件（index.html、style.css 等）\
+'
+    + '- 修改网站文件时，必须同步修改 app.js 中对应的逻辑\
+'
+    + '- 本指令模版的更新属于 app 修改，仅更新 app.js 中的 CONSOLE_TEMPLATE\
 '
     + '\
 '
