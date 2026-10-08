@@ -3838,6 +3838,46 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
    element to re-sample the background each frame (catastrophic on iOS).
    On touch devices, make these decorative layers static so the browser
    can cache backdrop layers and the main thread stays free. */
+/* ================================================================
+   渲染性能优化 (纯 CSS, 不依赖 JS)
+   ================================================================ */
+/* 跳过离屏内容渲染 — 故事板行(数量可能很多) */
+.sb-table tbody tr{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 56px;
+}
+/* 卡片类: 离屏时跳过渲染与布局 */
+.card,
+.stat-card,
+.work-card,
+.collab-card,
+.kanban-card,
+.agent-card,
+.feature-card{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 200px;
+}
+/* 隔离工作台面板: 切换面板不触发其他面板重绘 */
+.ws-panel{
+  contain:layout style paint;
+}
+/* 隔离英雄区动画容器, 防止背景动画重绘波及整页 */
+.hero,
+.cinema-hero,
+.card-section{
+  contain:layout style paint;
+}
+/* 工作台激活面板提升为独立合成层, 切换更跟手 */
+.ws-panel-active{
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+/* 故事板表格容器裁剪, 防止滚动重绘外溢 */
+.sb-table-wrap{
+  overflow:hidden;
+  contain:layout paint;
+}
+
 @media(pointer:coarse){
   /* Static background blobs — allows backdrop-filter caching */
   .blob{animation:none !important}
@@ -3871,6 +3911,20 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .sync-badge{
     backdrop-filter:blur(8px) saturate(150%) !important;
     -webkit-backdrop-filter:blur(8px) saturate(150%) !important;
+  }
+  /* 移动端降低阴影模糊半径 — box-shadow 渲染昂贵 */
+  .card,.stat-card,.work-card,.collab-card,.kanban-card,.ws-panel,.nav.scrolled .nav-inner{
+    box-shadow:0 2px 12px rgba(0,0,0,.08) !important;
+  }
+  /* 故事板行隔离, 滚动时不重绘其他行 (用 layout paint 避免表格行高度塌陷) */
+  .sb-table tbody tr{
+    contain:layout paint;
+    contain-intrinsic-size:auto 56px;
+  }
+  /* 动画元素提升为独立合成层, 避免重排重绘 */
+  .blob,.cinema-grain,.cinema-dust span,.ws-panel-active{
+    will-change:transform,opacity;
+    transform:translateZ(0);
   }
 }
 
