@@ -15,17 +15,33 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <style>html,body{background:#000;margin:0;}</style>
-  <link rel="stylesheet" href="css/style.css?v=20261015">
+  <style>
+    /* Critical inline CSS — first paint before external CSS loads */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#F2F2F7;min-height:100vh;min-height:100dvh;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif}
+    .cinema-hero{position:fixed;top:0;left:0;width:100%;height:100vh;height:100dvh;overflow:hidden;z-index:2;background:#000}
+    .main{position:relative;z-index:1;min-height:100vh}
+    .view{display:none}
+    .view-active{display:block}
+    .cinema-hero-spacer{height:100vh;height:100dvh}
+    /* Loader (existing #loader) needs critical styles so it shows before CSS loads */
+    .loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#000;flex-direction:column;gap:18px;transition:opacity .6s ease,visibility .6s ease}
+    .loader.hidden{opacity:0;visibility:hidden}
+    .loader-logo-wrap{display:flex;align-items:center;justify-content:center}
+    .loader-logo{width:72px;height:60px;opacity:.92}
+    .loader-text{color:#F2F2F7;font-size:14px;letter-spacing:.2em;opacity:.6}
+    @keyframes ving-pulse{0%,100%{opacity:.5}50%{opacity:1}}
+  </style>
+  <link rel="preload" href="css/style.css?v=20261017" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/style.css?v=20261017"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <script src="js/lib/html2canvas.min.js?v=20261007" defer></script>
   <script>
     /* Register service worker for offline cache + fast app launch */
     if('serviceWorker' in navigator){
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('sw.js?v=20261017').catch(function(){});
+        navigator.serviceWorker.register('sw.js?v=20261017a').catch(function(){});
       });
     }
   </script>
