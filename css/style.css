@@ -3,8 +3,8 @@
    ================================================================ */
 
 /* ---------- Reset & Base ---------- */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;scroll-padding-top:90px;overscroll-behavior-y:none}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:auto;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;scroll-padding-top:90px;overscroll-behavior-y:none}
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif;
   background:var(--bg);
@@ -252,7 +252,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   font-size:.88rem;
   font-weight:500;
   color:var(--text-secondary);
-  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  transition:color .15s ease,background .15s ease;
   position:relative;
 }
 .nav-link:hover{
@@ -343,26 +343,26 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   -webkit-backdrop-filter:saturate(180%) blur(20px);
   border:1px solid var(--glass-border);
   color:var(--text-primary);
-  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  transition:transform .12s ease,background .15s ease;
 }
 .ctrl-btn:hover{
   transform:scale(1.08);
   background:var(--surface-2);
 }
 .ctrl-btn:active{transform:scale(.95)}
-.refresh-btn svg{transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.refresh-btn svg{transition:transform .3s ease}
 .refresh-btn:hover svg{transform:rotate(180deg)}
 .refresh-btn:active svg{transform:rotate(360deg)}
 .lang-toggle{width:auto;padding:0 14px;font-size:.82rem;font-weight:600;letter-spacing:.05em}
 .theme-toggle .icon-sun,
 .theme-toggle .icon-moon{
-  transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.56,.64,1);
+  transition:opacity .2s ease,transform .2s ease;
 }
 .theme-toggle .icon-moon{display:none}
 [data-theme="dark"] .theme-toggle .icon-sun{display:none}
 [data-theme="dark"] .theme-toggle .icon-moon{display:block}
 .theme-toggle{position:relative;overflow:hidden}
-.theme-toggle svg{transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.theme-toggle svg{transition:transform .25s ease}
 .theme-toggle:active svg{transform:rotate(180deg) scale(.85)}
 
 /* Mobile menu toggle */
@@ -3833,6 +3833,47 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .blob{animation:none}
 }
 
+/* ---------- Mobile / Touch Performance ----------
+   Animated blobs + mix-blend-mode grain force every backdrop-filter
+   element to re-sample the background each frame (catastrophic on iOS).
+   On touch devices, make these decorative layers static so the browser
+   can cache backdrop layers and the main thread stays free. */
+@media(pointer:coarse){
+  /* Static background blobs — allows backdrop-filter caching */
+  .blob{animation:none !important}
+  /* Static film grain — drop expensive mix-blend-mode, use opacity */
+  .cinema-grain{
+    animation:none !important;
+    mix-blend-mode:normal !important;
+    opacity:.06 !important;
+  }
+  /* Static dust particles */
+  .cinema-dust span{animation:none !important;opacity:.4 !important}
+  /* Reduce backdrop-filter blur radius for cheaper background sampling */
+  .nav.scrolled .nav-inner,
+  .nav-controls,
+  .ctrl-btn,
+  .mobile-menu,
+  .btn-ghost,
+  .card,
+  .stat-card,
+  .contact-form,
+  .work-card,
+  .ws-panel,
+  .seg-btn,
+  .edit-toggle-btn,
+  .screenshot-btn,
+  .ws-back-btn,
+  .agent-btn,
+  .sb-btn,
+  .kanban-add-btn,
+  .ws-lock-key,
+  .sync-badge{
+    backdrop-filter:blur(8px) saturate(150%) !important;
+    -webkit-backdrop-filter:blur(8px) saturate(150%) !important;
+  }
+}
+
 /* ================================================================
    加载动画 Loader
    ================================================================ */
@@ -3987,17 +4028,11 @@ body,
 .footer-brand,
 .footer-links a,
 .footer-bottom,
-.ctrl-btn,
-.theme-toggle,
-.lang-toggle,
-.menu-toggle,
 .logo-text,
-.nav-link,
 .mobile-link,
 input,
 textarea,
 select,
-button,
 .work-card,
 .work-card-title,
 .work-card-desc,
@@ -4301,6 +4336,12 @@ body{
   10%{opacity:1}
   90%{opacity:.8}
   100%{transform:translateY(-10vh) translateX(60px) scale(1);opacity:0}
+}
+
+/* Pause infinite hero animations when cinema hero is hidden (off-home) */
+body.hero-paused .cinema-grain,
+body.hero-paused .cinema-dust span{
+  animation-play-state:paused !important;
 }
 
 /* Title */
