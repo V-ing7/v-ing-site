@@ -15,21 +15,17 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
+  <style>html,body{background:#000;margin:0;}</style>
   <link rel="stylesheet" href="css/style.css?v=20261015">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <script src="js/lib/html2canvas.min.js?v=20261007" defer></script>
   <script>
-    /* Clear old service workers and caches from previous versions */
+    /* Register service worker for offline cache + fast app launch */
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(function(regs){
-        regs.forEach(function(r){ r.unregister(); });
-      });
-    }
-    if('caches' in window){
-      caches.keys().then(function(keys){
-        keys.forEach(function(k){ caches.delete(k); });
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('sw.js?v=20261017').catch(function(){});
       });
     }
   </script>
