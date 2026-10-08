@@ -3840,13 +3840,13 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
    can cache backdrop layers and the main thread stays free. */
 /* ================================================================
    渲染性能优化 (纯 CSS, 不依赖 JS)
+   注意: 不使用 content-visibility:auto — 它会导致滚动时内容延迟出现
    ================================================================ */
-/* 跳过离屏内容渲染 — 故事板行(数量可能很多) */
+/* 故事板行: 隔离重绘, 滚动时行之间互不影响 */
 .sb-table tbody tr{
-  content-visibility:auto;
-  contain-intrinsic-size:auto 56px;
+  contain:layout paint;
 }
-/* 卡片类: 离屏时跳过渲染与布局 */
+/* 卡片类: 隔离重绘, 避免 hover/动画波及相邻卡片 */
 .card,
 .stat-card,
 .work-card,
@@ -3854,8 +3854,7 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
 .kanban-card,
 .agent-card,
 .feature-card{
-  content-visibility:auto;
-  contain-intrinsic-size:auto 200px;
+  contain:layout paint;
 }
 /* 隔离工作台面板: 切换面板不触发其他面板重绘 */
 .ws-panel{
@@ -3916,10 +3915,9 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   .card,.stat-card,.work-card,.collab-card,.kanban-card,.ws-panel,.nav.scrolled .nav-inner{
     box-shadow:0 2px 12px rgba(0,0,0,.08) !important;
   }
-  /* 故事板行隔离, 滚动时不重绘其他行 (用 layout paint 避免表格行高度塌陷) */
+  /* 故事板行隔离, 滚动时不重绘其他行 */
   .sb-table tbody tr{
     contain:layout paint;
-    contain-intrinsic-size:auto 56px;
   }
   /* 动画元素提升为独立合成层, 避免重排重绘 */
   .blob,.cinema-grain,.cinema-dust span,.ws-panel-active{
