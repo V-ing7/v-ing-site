@@ -1,9 +1,9 @@
 /* 微影 V-ing Service Worker — app shell 预缓存 + stale-while-revalidate */
-var CACHE = 'ving-v20261017';
+var CACHE = 'ving-v20261017a';
 var APP_SHELL = [
   './',
   './index.html',
-  './css/style.css',
+  './css/style.css?v=20261017',
   './js/app.js',
   './js/lib/html2canvas.min.js',
   './assets/logo.svg',
