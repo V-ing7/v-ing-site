@@ -1593,10 +1593,10 @@
         setTimeout(function(){animateRingsInContainer(unifiedWrap)},300);
       }
     }
-    // Initialize QR codes when switching to card panel
+    // Initialize QR codes when switching to card panel (only once)
     if(tab==='card'){
-      setTimeout(initCustomQR,200);
-      setTimeout(initVeCardQR,250);
+      if(!_qrReady)setTimeout(initCustomQR,200);
+      if(!_veQRReady)setTimeout(initVeCardQR,250);
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
@@ -4141,6 +4141,7 @@
   function initCustomQR(){
     var container=document.getElementById('bcQRCode');
     if(!container)return;
+    if(_qrReady)return;
     container.innerHTML='';
 
     if(typeof QRCodeStyling!=='undefined'){
@@ -4164,6 +4165,7 @@
   function initVeCardQR(){
     var container=document.getElementById('veCardQR');
     if(!container)return;
+    if(_veQRReady)return;
     container.innerHTML='';
     if(typeof QRCodeStyling!=='undefined'){
       try{
