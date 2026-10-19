@@ -59,6 +59,20 @@
      ================================================================ */
   function _nowISO(){ return new Date().toISOString(); }
 
+  // Shared HTML-escape helper (hoisted). Used by all renderers that build
+  // HTML strings via innerHTML to prevent stored XSS. Added v6.0 fix —
+  // previously escapeHtml only existed in nested/second-IIFE scopes, so
+  // callers in this (first) IIFE hit "escapeHtml is not defined" and the
+  // whole data-render chain aborted (sync badge stuck on 同步中...).
+  function escapeHtml(str){
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function _log(msg, level){
     var prefix = '[V-ing Sync]';
     if(level === 'warn'){ console.warn(prefix, msg); }
@@ -142,7 +156,7 @@
      Cloudflare Deploy Trigger (non-blocking, best-effort)
      ================================================================ */
   function triggerCloudflareDeploy(){
-    fetchWithTimeout(WORKER_API + '/api/deploy', {
+    fetchWithTimeout(WORKER_API + '/api/v-ing-deploy', {
       method: 'POST',
       headers: { 'X-Password': _getWsPassword() }
     }, 4000)
