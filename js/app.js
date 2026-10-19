@@ -1194,6 +1194,7 @@
         wsLockOverlay.style.transition='none';
         wsLockOverlay.classList.add('ws-lock-active');
         document.body.classList.add('ws-locked');
+        startLockViewportSync();
         requestAnimationFrame(function(){ wsLockOverlay.style.transition=''; });
       }
 
@@ -1496,6 +1497,35 @@
   var wsLockError=document.getElementById('wsLockError');
   var wsLockInput='';
 
+  // MOBILE FIX: size the lock overlay to the VISUAL viewport so the
+  // centered card stays above the on-screen keyboard. Without this, focusing
+  // the password input makes the browser pan the page and the lock screen
+  // appears to jump up from the bottom (felt as stutter). Only active while
+  // the lock is shown; no effect on desktop (height stays 100vh).
+  var _vvLockListener=null;
+  function _syncLockViewport(){
+    if(!wsLockOverlay)return;
+    var vv=window.visualViewport;
+    if(vv&&vv.height)wsLockOverlay.style.height=vv.height+'px';
+  }
+  function startLockViewportSync(){
+    if(!window.visualViewport||!wsLockOverlay)return;
+    _syncLockViewport();
+    if(!_vvLockListener){
+      _vvLockListener=function(){_syncLockViewport();};
+      window.visualViewport.addEventListener('resize',_vvLockListener);
+      window.visualViewport.addEventListener('scroll',_vvLockListener);
+    }
+  }
+  function stopLockViewportSync(){
+    if(window.visualViewport&&_vvLockListener){
+      window.visualViewport.removeEventListener('resize',_vvLockListener);
+      window.visualViewport.removeEventListener('scroll',_vvLockListener);
+    }
+    _vvLockListener=null;
+    if(wsLockOverlay)wsLockOverlay.style.height='';
+  }
+
   function _getWsPassword(){
     return sessionStorage.getItem(WS_PWD_KEY)||'';
   }
@@ -1508,6 +1538,7 @@
     // PERF: pause the full-screen animated blur blobs while the opaque
     // lock overlay covers them (they are invisible but still costly).
     document.body.classList.add('ws-locked');
+    startLockViewportSync();
     wsLockInput='';
     hideWsLockError();
     setTimeout(function(){
@@ -1518,6 +1549,7 @@
   function hideWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
     document.body.classList.remove('ws-locked');
+    stopLockViewportSync();
     sessionStorage.setItem(WS_LOCK_KEY,'1');
     sessionStorage.setItem(WS_PWD_KEY,wsLockInput);
     setTimeout(function(){checkReveals()},100);
