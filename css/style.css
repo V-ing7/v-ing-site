@@ -3936,6 +3936,16 @@ body.ws-locked .blob{
     will-change:transform,opacity;
     transform:translateZ(0);
   }
+  /* 页面级噪点 .grain 使用全屏 mix-blend-mode:overlay —— 会强制整层背景
+     每帧重新合成（加载动画叠加其上时尤其昂贵）。与 .cinema-grain 一致，在
+     触屏设备上拍平为普通混合。 */
+  .grain{
+    mix-blend-mode:normal !important;
+  }
+  /* 加载动画的描边绘制：移动端采用更便宜的栅格化策略，减少逐帧重绘开销 */
+  .loader-path{
+    shape-rendering:optimizeSpeed;
+  }
 }
 
 /* ================================================================
@@ -3977,6 +3987,12 @@ body.ws-locked .blob{
   display:flex;
   align-items:center;
   justify-content:center;
+  /* PERF: keep the infinite float on this wrapper (its own compositing layer)
+     so the complex SVG path below is rasterized once and only the cheap
+     transform is animated — previously the float ran on .loader-path, which
+     re-rasterized the whole vector path every frame. */
+  will-change:transform;
+  animation:loader-float 3s ease-in-out 1.65s infinite;
 }
 .loader-logo{
   width:100%;
@@ -3991,10 +4007,11 @@ body.ws-locked .blob{
   stroke-linejoin:round;
   stroke-dasharray:1200;
   stroke-dashoffset:1200;
+  /* PERF: the infinite float now lives on .loader-logo-wrap (see above) instead
+     of here, so the SVG path is not re-rasterized every frame. */
   animation:loader-draw 1.5s cubic-bezier(.25,.46,.45,.94) forwards,
-           loader-fill .3s cubic-bezier(.4,0,.2,1) 1.35s forwards,
-           loader-float 3s ease-in-out 1.65s infinite;
-  will-change:stroke-dashoffset,fill,transform;
+           loader-fill .3s cubic-bezier(.4,0,.2,1) 1.35s forwards;
+  will-change:stroke-dashoffset,fill;
 }
 @keyframes loader-draw{
   0%{stroke-dashoffset:1200}
