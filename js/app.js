@@ -1132,9 +1132,35 @@
   var currentView='home';
   var isAnimating=false;
 
+  // Remember the last view (+ its scroll position) so reopening the app from
+  // the home-screen icon (start_url has no #hash) returns to the exact page and
+  // position the user left. The unlocked flag stays in sessionStorage on
+  // purpose, so a fresh launch still asks for the workspace password.
+  var VIEW_IDS=['home','about','works','collab','workspace','contact'];
+  var LAST_VIEW_KEY='v-ing-last-view';
+  var SCROLL_MAP_KEY='v-ing-view-scroll';
+  var _restoreScrollY=null;
+
+  function readScrollMap(){
+    try{ return JSON.parse(localStorage.getItem(SCROLL_MAP_KEY))||{}; }catch(e){ return {}; }
+  }
+  function saveScrollFor(view){
+    if(!view)return;
+    try{
+      var m=readScrollMap();
+      m[view]=Math.max(0,Math.round(window.scrollY||0));
+      localStorage.setItem(SCROLL_MAP_KEY,JSON.stringify(m));
+    }catch(e){}
+  }
+  function savedScrollFor(view){
+    var v=readScrollMap()[view];
+    return (typeof v==='number')?v:null;
+  }
+
   function switchView(target){
     if(target===currentView||isAnimating)return;
     isAnimating=true;
+    var prevView=currentView;
 
     var oldView=document.getElementById('view-'+currentView);
     var newView=document.getElementById('view-'+target);
@@ -1230,8 +1256,22 @@
         }
       });
 
-      // Scroll to top
-      window.scrollTo({top:0,behavior:'auto'});
+      // Remember where the outgoing view was scrolled before leaving it
+      if(window.scrollY>0)saveScrollFor(prevView);
+
+      // Scroll to top — or to the remembered position when restoring the last
+      // view on launch. Re-apply a few times because the async D1 data may
+      // still be rendering and change the page height after the first attempt.
+      if(_restoreScrollY!=null){
+        var restoreY=_restoreScrollY;
+        _restoreScrollY=null;
+        window.scrollTo(0,restoreY);
+        [400,900,1600].forEach(function(d){
+          setTimeout(function(){ if(currentView===target)window.scrollTo(0,restoreY); },d);
+        });
+      }else{
+        window.scrollTo({top:0,behavior:'auto'});
+      }
 
       // Trigger reveals in new view
       setTimeout(function(){
@@ -1269,6 +1309,7 @@
     },240);
 
     currentView=target;
+    try{ localStorage.setItem(LAST_VIEW_KEY,target); }catch(e){}
 
     // Pause cinema hero's infinite animations when not on home (saves GPU)
     document.body.classList.toggle('hero-paused', target!=='home');
@@ -1291,13 +1332,32 @@
     });
   });
 
-  // Check URL hash on load
-  function checkHash(){
+  // Restore the view on load: a valid URL #hash wins (deep links, refresh);
+  // otherwise fall back to the last view the user was on — e.g. relaunching the
+  // app from the home-screen icon, whose start_url carries no #hash.
+  function restoreViewOnLoad(){
     var hash=window.location.hash.replace('#','');
-    if(hash&&['home','about','works','workspace','contact'].indexOf(hash)>-1){
-      switchView(hash);
+    var target=null;
+    if(hash&&VIEW_IDS.indexOf(hash)>-1){
+      target=hash;
+    }else{
+      var saved=null;
+      try{ saved=localStorage.getItem(LAST_VIEW_KEY); }catch(e){}
+      if(saved&&VIEW_IDS.indexOf(saved)>-1)target=saved;
+    }
+    if(target&&target!=='home'){
+      _restoreScrollY=savedScrollFor(target);
+      switchView(target);
     }
   }
+
+  // Persist the current scroll when the app is backgrounded or closed (covers
+  // swiping the PWA away, which never fires a normal unload path).
+  function persistCurrentScroll(){ saveScrollFor(currentView); }
+  window.addEventListener('pagehide',persistCurrentScroll);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='hidden')persistCurrentScroll();
+  });
 
   /* ---------- Mobile Menu ---------- */
   menuToggle.addEventListener('click',function(){
@@ -4227,7 +4287,7 @@
 
   /* ---------- Init ---------- */
   setupReveal();
-  checkHash();
+  restoreViewOnLoad();
 
   // Trigger initial reveals after a short delay (for loader)
   setTimeout(function(){
