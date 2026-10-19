@@ -22,6 +22,8 @@ function corsHeaders(request) {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, X-Password',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    'X-Content-Type-Options': 'nosniff',
   };
 }
 
@@ -79,9 +81,18 @@ function jsonResp(data, status, extraHeaders) {
   });
 }
 
+// SECURITY FIX v6.0 (2026-10-19): replaced plaintext === with timing-safe XOR
+// comparison (was vulnerable to timing attacks, unlike v-ing-data.js).
 function checkPassword(request, env) {
   const pwd = request.headers.get('X-Password');
-  return pwd === (env.WS_PASSWORD || env.WS_PWD);
+  if (!pwd || !env.WS_PASSWORD) return false;
+  const expected = env.WS_PASSWORD;
+  if (pwd.length !== expected.length) return false;
+  let result = 0;
+  for (let i = 0; i < pwd.length; i++) {
+    result |= pwd.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 export async function onRequestOptions(context) {

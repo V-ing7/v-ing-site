@@ -529,22 +529,18 @@
       }
 
       function submit(){
+        // SECURITY FIX v6.0: no client-side password check.
+        // Just collect whatever user types; server validates on PUT.
         var pwd = input.value.trim();
-        if(pwd === WS_PASSWORD){
-          sessionStorage.setItem(WS_PWD_KEY, pwd);
-          sessionStorage.setItem(WS_LOCK_KEY, '1');
-          cleanup();
-          resolve(pwd);
-        } else {
+        if(!pwd){
           error.style.display = 'block';
-          input.value = '';
           input.focus();
-          if(card){
-            card.style.animation = 'none';
-            void card.offsetWidth;
-            card.style.animation = 'shake 0.4s';
-          }
+          return;
         }
+        sessionStorage.setItem(WS_PWD_KEY, pwd);
+        sessionStorage.setItem(WS_LOCK_KEY, '1');
+        cleanup();
+        resolve(pwd);
       }
 
       function cancel(){
@@ -1459,7 +1455,12 @@
   }
 
   /* ---------- Workspace Password Lock ---------- */
-  var WS_PASSWORD='Vikyi';
+  // SECURITY FIX v6.0 (2026-10-19): HARDCODED PASSWORD REMOVED.
+  // Previously `var WS_PASSWORD='Vikyi'` lived right here — anyone
+  // could View Source → copy the exact secret → PUT arbitrary data
+  // via /api/v-ing-data. Client-side password checks are now
+  // REMOVED entirely. The server is the single source of truth;
+  // the workspace lock overlay is a UX gate only (no real auth).
   var WS_LOCK_KEY='v_ing_ws_unlocked';
   var WS_PWD_KEY='v_ing_ws_pwd';
   var wsLockOverlay=document.getElementById('wsLockOverlay');
@@ -1514,11 +1515,16 @@
     var inp=document.getElementById('wsLockTextInput');
     if(!inp)return;
     wsLockInput=inp.value;
-    if(wsLockInput===WS_PASSWORD){
-      hideWsLock();
-    }else{
-      showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
+    // SECURITY FIX v6.0: workspace lock no longer validates password.
+    // It's a UX gate only — the real protection is server-side on PUT.
+    // Accept any non-empty input, and also persist it so future PUTs
+    // during this session don't re-prompt.
+    if(!wsLockInput){
+      showWsLockError(lang==='zh'?'请输入内容':'Please enter something');
+      return;
     }
+    sessionStorage.setItem(WS_PWD_KEY, wsLockInput);
+    hideWsLock();
   }
   // Submit on Enter or button click
   document.addEventListener('keydown',function(e){
@@ -2769,11 +2775,12 @@
       var item = history[i];
       html += '<div class="agent-history-item" data-idx="'+i+'">';
       html += '<div class="agent-history-item-head">';
-      html += '<span class="agent-history-ver">'+(item.version||'')+'</span>';
-      html += '<span class="agent-history-date">'+(item.date||'')+' '+(item.time||'')+'</span>';
+      // SECURITY FIX v6.0: escapeHtml to prevent stored XSS via innerHTML
+      html += '<span class="agent-history-ver">'+escapeHtml(item.version||'')+'</span>';
+      html += '<span class="agent-history-date">'+escapeHtml((item.date||'')+' '+(item.time||''))+'</span>';
       html += '</div>';
       if(item.note){
-        html += '<div class="agent-history-note">'+item.note+'</div>';
+        html += '<div class="agent-history-note">'+escapeHtml(item.note)+'</div>';
       }
       html += '</div>';
     }
@@ -3085,10 +3092,11 @@
           var item = history[i];
           html += '<div class="agent-history-item" data-idx="'+i+'">';
           html += '<div class="agent-history-item-head">';
-          html += '<span class="agent-history-ver">'+(item.version||'')+'</span>';
-          html += '<span class="agent-history-date">'+(item.date||'')+' '+(item.time||'')+'</span>';
+          // SECURITY FIX v6.0: escapeHtml to prevent stored XSS
+          html += '<span class="agent-history-ver">'+escapeHtml(item.version||'')+'</span>';
+          html += '<span class="agent-history-date">'+escapeHtml((item.date||'')+' '+(item.time||''))+'</span>';
           html += '</div>';
-          if(item.note) html += '<div class="agent-history-note">'+item.note+'</div>';
+          if(item.note) html += '<div class="agent-history-note">'+escapeHtml(item.note)+'</div>';
           html += '</div>';
         }
         list.innerHTML = html;
@@ -3991,12 +3999,15 @@
       if(logs.length === 0){
         consoleLogList.innerHTML = '<div class="console-log-empty">暂无操作记录</div>';
       } else {
+        // SECURITY FIX v6.0: escapeHtml all data fields — this is stored XSS sink.
+        // attacker who knows the server password can inject <img onerror=...>
+        // into operationLog.action → executes for every visitor to workspace.
         consoleLogList.innerHTML = logs.map(function(log){
           return '<div class="console-log-item">'
             + '<div class="console-log-dot"></div>'
             + '<div class="console-log-body">'
-            + '<div class="console-log-meta">' + log.date + ' ' + log.time + '</div>'
-            + '<div class="console-log-text">' + log.action + '</div>'
+            + '<div class="console-log-meta">' + escapeHtml(log.date + ' ' + log.time) + '</div>'
+            + '<div class="console-log-text">' + escapeHtml(log.action || '') + '</div>'
             + '</div></div>';
         }).join('');
       }
@@ -4471,7 +4482,7 @@
             '<div class="sb-pcard-name">' + escapeHtml(proj.projectName || t('未命名项目','Untitled Project')) + '</div>' +
             '<div class="sb-pcard-meta">' +
               '<span class="sb-pcard-shots">' + shotCount + ' ' + t('任务','tasks') + '</span>' +
-              (proj.shootDate ? '<span class="sb-pcard-date">' + proj.shootDate + '</span>' : '') +
+              (proj.shootDate ? '<span class="sb-pcard-date">' + escapeHtml(proj.shootDate) + '</span>' : '') +
             '</div>' +
             '<div class="sb-pcard-updated">' + t('更新于','Updated') + ' ' + updated + '</div>' +
           '</div>' +
@@ -4840,7 +4851,7 @@
       var shotCount = (proj.rows || []).length;
       sbDetailInfo.innerHTML =
         '<span><span class="sb-detail-label">' + t('项目名称','Project') + ':</span> ' + escapeHtml(proj.projectName || '--') + '</span>' +
-        '<span><span class="sb-detail-label">' + t('拍摄日期','Shoot Date') + ':</span> ' + (proj.shootDate || '--') + '</span>' +
+        '<span><span class="sb-detail-label">' + t('拍摄日期','Shoot Date') + ':</span> ' + escapeHtml(proj.shootDate || '--') + '</span>' +
         '<span><span class="sb-detail-label">' + t('任务数','Tasks') + ':</span> ' + shotCount + '</span>';
     }
 
