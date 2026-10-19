@@ -1575,20 +1575,54 @@
       wsLockError.classList.remove('show');
     }
   }
+  // SECURITY v7.0: validate the workspace-lock password SERVER-SIDE via
+  // /api/v-ing-verify so the lock actually rejects wrong passwords, without
+  // embedding the secret in client code (the old hardcoded WS_PASSWORD leak).
+  // Resolves to { ok } / { ok:false, rateLimited } or rejects on network error.
+  function _verifyWsPassword(pwd){
+    return fetchWithTimeout(WORKER_API + '/api/v-ing-verify', {
+      method: 'POST',
+      headers: { 'X-Password': pwd, 'Content-Type': 'application/json' },
+      body: '{}'
+    }, 8000).then(function(res){
+      if(res.status === 403){ return { ok: false }; }
+      if(res.status === 429){ return { ok: false, rateLimited: true }; }
+      if(!res.ok){ throw new Error('verify HTTP ' + res.status); }
+      return res.json();
+    });
+  }
+
   function handleWsLockSubmit(){
     var inp=document.getElementById('wsLockTextInput');
     if(!inp)return;
-    wsLockInput=inp.value;
-    // SECURITY FIX v6.0: workspace lock no longer validates password.
-    // It's a UX gate only — the real protection is server-side on PUT.
-    // Accept any non-empty input, and also persist it so future PUTs
-    // during this session don't re-prompt.
-    if(!wsLockInput){
+    var pwd=inp.value;
+    if(!pwd){
       showWsLockError(lang==='zh'?'请输入内容':'Please enter something');
       return;
     }
-    sessionStorage.setItem(WS_PWD_KEY, wsLockInput);
-    hideWsLock();
+    var btn=wsLockOverlay?wsLockOverlay.querySelector('.ws-lock-submit'):null;
+    if(btn)btn.disabled=true;
+    _verifyWsPassword(pwd).then(function(r){
+      if(btn)btn.disabled=false;
+      if(r&&r.ok){
+        // Correct password — unlock and persist it for this session so later
+        // PUT saves don't re-prompt.
+        wsLockInput=pwd;
+        sessionStorage.setItem(WS_PWD_KEY, wsLockInput);
+        hideWsLock();
+        return;
+      }
+      if(r&&r.rateLimited){
+        showWsLockError(lang==='zh'?'尝试次数过多，请稍后再试':'Too many attempts, please try again later');
+      }else{
+        showWsLockError(lang==='zh'?'密码错误，请重试':'Wrong password, try again');
+      }
+      inp.value='';
+      inp.focus();
+    }).catch(function(){
+      if(btn)btn.disabled=false;
+      showWsLockError(lang==='zh'?'验证失败，请检查网络后重试':'Verification failed, please retry');
+    });
   }
   // Submit on Enter or button click
   document.addEventListener('keydown',function(e){
@@ -3966,6 +4000,8 @@
     + '修改数据：PUT https://v-ing-site.pages.dev/api/v-ing-data （需密码）\
 '
     + '触发部署：POST https://v-ing-site.pages.dev/api/v-ing-deploy （需密码）\
+'
+    + '校验密码：POST https://v-ing-site.pages.dev/api/v-ing-verify （需密码，仅返回 ok）\
 '
     + '健康检查：GET https://v-ing-site.pages.dev/api/v-ing-health\
 '
