@@ -2607,10 +2607,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   box-shadow:var(--shadow-sm);
 }
 .screenshot-btn:active{transform:scale(.95)}
-.screenshot-btn::before{
-  content:'📷';
-  font-size:.9rem;
-}
 .screenshot-btn.shooting{
   opacity:.6;
   pointer-events:none;
@@ -3017,7 +3013,6 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   transition:all .3s cubic-bezier(.34,1.56,.64,1);
   white-space:nowrap;
 }
-.edit-toggle-btn::before{content:'✏️';font-size:.85rem}
 .edit-toggle-btn:hover{
   color:var(--text-primary);
   background:var(--surface-2);
