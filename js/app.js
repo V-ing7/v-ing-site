@@ -1183,6 +1183,20 @@
       newView.style.opacity='0';
       newView.style.transform='translateY(14px)';
 
+      // Show the workspace password lock TOGETHER with the view becoming
+      // active, so protected content never flashes before the overlay
+      // appears (previously added ~660ms later -> visible content flash on
+      // mobile). The overlay's own opacity fade is skipped on entry so it is
+      // fully opaque inside the fading view (otherwise the semi-transparent
+      // overlay during its .4s fade would let the content show through).
+      // The transition is restored right after so unlock still fades out.
+      if(target==='workspace'&&!isWsUnlocked()&&wsLockOverlay){
+        wsLockOverlay.style.transition='none';
+        wsLockOverlay.classList.add('ws-lock-active');
+        document.body.classList.add('ws-locked');
+        requestAnimationFrame(function(){ wsLockOverlay.style.transition=''; });
+      }
+
       // Show cinema hero when entering home
       if(target==='home'&&cinemaHero){
         cinemaHero.style.opacity='1';
