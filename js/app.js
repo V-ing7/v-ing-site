@@ -1491,6 +1491,9 @@
   }
   function showWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.add('ws-lock-active');
+    // PERF: pause the full-screen animated blur blobs while the opaque
+    // lock overlay covers them (they are invisible but still costly).
+    document.body.classList.add('ws-locked');
     wsLockInput='';
     hideWsLockError();
     setTimeout(function(){
@@ -1500,6 +1503,7 @@
   }
   function hideWsLock(){
     if(wsLockOverlay)wsLockOverlay.classList.remove('ws-lock-active');
+    document.body.classList.remove('ws-locked');
     sessionStorage.setItem(WS_LOCK_KEY,'1');
     sessionStorage.setItem(WS_PWD_KEY,wsLockInput);
     setTimeout(function(){checkReveals()},100);

@@ -132,6 +132,17 @@ h1,h2,h3,h4{font-weight:700;line-height:1.15;letter-spacing:-.02em}
   filter:blur(80px);
   opacity:.8;
   transition:opacity .5s ease;
+  /* PERF: promote each blurred blob to its own compositor layer so the
+     expensive blur(80px) raster is cached and only the transform is
+     animated per frame (instead of re-rasterizing the blur every frame). */
+  will-change:transform;
+}
+/* PERF: the workspace lock overlay (background:var(--bg)) is fully opaque,
+   so the animated blurred blobs behind it are invisible. Pause them while
+   the password prompt is open to free the compositor/raster during the
+   interaction (fixes input stutter on the workspace password box). */
+body.ws-locked .blob{
+  animation-play-state:paused;
 }
 .blob-1{
   width:600px;height:600px;
