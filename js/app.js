@@ -1824,6 +1824,293 @@
     });
   }
 
+  /* ---------- Workspace: AI Assistant (DeepSeek) ---------- */
+  // The DeepSeek key never reaches the browser: this panel posts the
+  // conversation to /api/v-ing-ai, which authenticates with the workspace
+  // password (X-Password) and streams the completion back.
+  var aiChatLog=document.getElementById('aiChatLog');
+  var aiChatInput=document.getElementById('aiChatInput');
+  var aiChatSendBtn=document.getElementById('aiChatSend');
+  var aiChatClearBtn=document.getElementById('aiChatClear');
+  var aiChatStatus=document.getElementById('aiChatStatus');
+  var aiChatEmpty=document.getElementById('aiChatEmpty');
+  var aiFab=document.getElementById('aiFab');
+  var aiDock=document.getElementById('aiDock');
+  var aiDockClose=document.getElementById('aiDockClose');
+  var aiDockUnlock=document.getElementById('aiDockUnlock');
+  var aiMessages=[];
+  var aiBusy=false;
+  var aiDockOpen=false;
+
+  function aiRefreshLockState(){
+    if(!aiDock)return;
+    aiDock.classList.toggle('ai-dock-locked',!isWsUnlocked());
+  }
+
+  function aiOpenDock(){
+    if(!aiDock)return;
+    aiDockOpen=true;
+    aiDock.classList.add('open');
+    aiDock.setAttribute('aria-hidden','false');
+    if(aiFab){
+      aiFab.classList.add('active');
+      aiFab.setAttribute('aria-expanded','true');
+    }
+    aiRefreshLockState();
+    // Only auto-focus on pointer devices — on phones this would pop the
+    // keyboard immediately and cover the conversation.
+    if(isWsUnlocked()&&window.matchMedia&&window.matchMedia('(pointer:fine)').matches){
+      setTimeout(function(){ if(aiChatInput)aiChatInput.focus(); },260);
+    }
+  }
+
+  function aiCloseDock(){
+    if(!aiDock)return;
+    aiDockOpen=false;
+    aiDock.classList.remove('open');
+    aiDock.setAttribute('aria-hidden','true');
+    if(aiFab){
+      aiFab.classList.remove('active');
+      aiFab.setAttribute('aria-expanded','false');
+    }
+  }
+
+  function aiScrollToEnd(){
+    if(aiChatLog)aiChatLog.scrollTop=aiChatLog.scrollHeight;
+  }
+
+  function aiSetStatus(msg){
+    if(!aiChatStatus)return;
+    aiChatStatus.textContent=msg||'';
+    aiChatStatus.classList.toggle('show',!!msg);
+  }
+
+  function aiErrorText(kind){
+    var zh=lang==='zh';
+    if(kind==='auth')return zh?'密码已失效，请重新解锁工作台。':'Session expired. Please unlock the workspace again.';
+    if(kind==='rate')return zh?'请求太频繁，请稍后再试。':'Too many requests, please try again shortly.';
+    if(kind==='config')return zh?'AI 服务未配置：请在 Cloudflare 设置 DEEPSEEK_API_KEY。':'AI is not configured: set DEEPSEEK_API_KEY in Cloudflare.';
+    if(kind==='network')return zh?'连接失败，请检查网络后重试。':'Connection failed. Check your network and retry.';
+    return zh?'AI 暂时无法回复，请稍后重试。':'The assistant is unavailable. Please try again.';
+  }
+
+  function aiAddBubble(role,text){
+    var el=document.createElement('div');
+    el.className='ai-msg ai-msg-'+role;
+    el.textContent=text;
+    aiChatLog.appendChild(el);
+    aiScrollToEnd();
+    return el;
+  }
+
+  function aiShowTyping(){
+    var el=document.createElement('div');
+    el.className='ai-msg ai-msg-assistant';
+    el.innerHTML='<span class="ai-msg-typing"><i></i><i></i><i></i></span>';
+    aiChatLog.appendChild(el);
+    aiScrollToEnd();
+    return el;
+  }
+
+  // Parse DeepSeek's OpenAI-compatible SSE stream, calling onDelta(text) for
+  // every token chunk. Resolves with the full answer.
+  function aiConsumeStream(res,onDelta){
+    return new Promise(function(resolve,reject){
+      if(!res.body||!res.body.getReader){
+        return res.text().then(function(t){ resolve(t); },reject);
+      }
+      var reader=res.body.getReader();
+      var decoder=new TextDecoder('utf-8');
+      var buffer='';
+      var full='';
+      var finished=false;
+      function finish(err){
+        if(finished)return;
+        finished=true;
+        // Release the response body explicitly: stopping at [DONE] without
+        // cancelling leaves the connection open and shows up as ERR_ABORTED.
+        try{ if(reader.cancel)reader.cancel().catch(function(){}); }catch(e){}
+        if(err)reject(err); else resolve(full);
+      }
+      function pump(){
+        reader.read().then(function(r){
+          if(finished)return;
+          if(r.done){ finish(); return; }
+          buffer+=decoder.decode(r.value,{stream:true});
+          var blocks=buffer.split('\n\n');
+          buffer=blocks.pop();
+          for(var i=0;i<blocks.length;i++){
+            var lines=blocks[i].split('\n');
+            for(var j=0;j<lines.length;j++){
+              var line=lines[j].trim();
+              if(line.indexOf('data:')!==0)continue;
+              var data=line.slice(5).trim();
+              if(!data)continue;
+              if(data==='[DONE]'){ finish(); return; }
+              try{
+                var obj=JSON.parse(data);
+                if(obj.error){ finish(new Error('upstream')); return; }
+                var choice=obj.choices&&obj.choices[0];
+                var delta=choice&&choice.delta&&choice.delta.content;
+                if(typeof delta==='string'&&delta){
+                  full+=delta;
+                  onDelta(delta);
+                }
+              }catch(e){ /* keep-alive / non-JSON line */ }
+            }
+          }
+          pump();
+        }).catch(function(err){
+          if(err&&err.name==='AbortError'){ finish(); return; }
+          finish(err);
+        });
+      }
+      pump();
+    });
+  }
+
+  function aiResetComposer(){
+    aiBusy=false;
+    if(aiChatSendBtn)aiChatSendBtn.disabled=false;
+    aiSetStatus('');
+  }
+
+  function aiSend(){
+    if(!aiChatInput||aiBusy)return;
+    var text=aiChatInput.value.trim();
+    if(!text)return;
+
+    var pwd=_getWsPassword();
+    if(!pwd){
+      aiOpenDock();
+      aiRefreshLockState();
+      aiSetStatus(aiErrorText('auth'));
+      return;
+    }
+
+    if(aiChatEmpty)aiChatEmpty.style.display='none';
+    aiMessages.push({role:'user',content:text});
+    aiAddBubble('user',text);
+    aiChatInput.value='';
+    aiChatInput.style.height='auto';
+
+    aiBusy=true;
+    if(aiChatSendBtn)aiChatSendBtn.disabled=true;
+    aiSetStatus('');
+
+    var typing=aiShowTyping();
+    var bubble=null;
+    var pending='';
+    var rafId=0;
+
+    function flushDelta(){
+      rafId=0;
+      if(!bubble||!pending)return;
+      bubble.textContent+=pending;
+      pending='';
+      aiScrollToEnd();
+    }
+
+    var controller=new AbortController();
+    var watchdog=setTimeout(function(){ controller.abort(); },60000);
+
+    fetch(WORKER_API+'/api/v-ing-ai',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Password':pwd},
+      body:JSON.stringify({messages:aiMessages,model:'deepseek-chat'}),
+      signal:controller.signal
+    }).then(function(res){
+      if(!res.ok){
+        if(res.status===403)throw new Error('auth');
+        if(res.status===429)throw new Error('rate');
+        if(res.status===503)throw new Error('config');
+        throw new Error('http');
+      }
+      return aiConsumeStream(res,function(delta){
+        if(!bubble){
+          if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
+          bubble=aiAddBubble('assistant','');
+        }
+        // Batch token appends into one DOM write per animation frame so a
+        // fast stream does not force a layout for every single character.
+        pending+=delta;
+        if(!rafId)rafId=requestAnimationFrame(flushDelta);
+      });
+    }).then(function(full){
+      clearTimeout(watchdog);
+      if(rafId){ cancelAnimationFrame(rafId); flushDelta(); }
+      if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
+      if(!bubble){
+        bubble=aiAddBubble('assistant',lang==='zh'?'（没有返回内容）':'(No content returned)');
+      }
+      if(full)aiMessages.push({role:'assistant',content:full});
+      aiResetComposer();
+    }).catch(function(err){
+      clearTimeout(watchdog);
+      if(rafId){ cancelAnimationFrame(rafId); flushDelta(); }
+      if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
+      var kind=(err&&err.name==='AbortError')?'AbortError':((err&&err.message)||'');
+      if(kind!=='auth'&&kind!=='rate'&&kind!=='config'&&kind!=='AbortError'&&kind!=='http')kind='network';
+      if(kind==='AbortError'){
+        // Stopped/timed out: keep whatever was streamed, if anything.
+        if(bubble&&bubble.textContent){
+          aiMessages.push({role:'assistant',content:bubble.textContent});
+        }
+      }else{
+        if(bubble&&bubble.textContent){
+          aiMessages.push({role:'assistant',content:bubble.textContent});
+        }else{
+          aiAddBubble('error',aiErrorText(kind));
+        }
+        if(kind==='auth'||kind==='rate'||kind==='config')aiSetStatus(aiErrorText(kind));
+      }
+      aiResetComposer();
+    });
+  }
+
+  if(aiFab){
+    aiFab.addEventListener('click',function(){
+      if(aiDockOpen)aiCloseDock(); else aiOpenDock();
+    });
+  }
+  if(aiDockClose){
+    aiDockClose.addEventListener('click',aiCloseDock);
+  }
+  if(aiDockUnlock){
+    aiDockUnlock.addEventListener('click',function(){
+      aiCloseDock();
+      switchView('workspace');
+      if(window.location.hash!=='#workspace')window.location.hash='#workspace';
+    });
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&aiDockOpen)aiCloseDock();
+  });
+
+  if(aiChatSendBtn){
+    aiChatSendBtn.addEventListener('click',aiSend);
+  }
+  if(aiChatClearBtn){
+    aiChatClearBtn.addEventListener('click',function(){
+      aiMessages=[];
+      if(aiChatLog)aiChatLog.querySelectorAll('.ai-msg').forEach(function(el){el.remove();});
+      if(aiChatEmpty)aiChatEmpty.style.display='';
+      aiSetStatus('');
+    });
+  }
+  if(aiChatInput){
+    aiChatInput.addEventListener('input',function(){
+      aiChatInput.style.height='auto';
+      aiChatInput.style.height=Math.min(aiChatInput.scrollHeight,140)+'px';
+    });
+    aiChatInput.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){
+        e.preventDefault();
+        aiSend();
+      }
+    });
+  }
+
   collabCards.forEach(function(card){
     card.addEventListener('click',function(){
       var target=card.getAttribute('data-collab-target');

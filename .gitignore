@@ -7,3 +7,6 @@
 node_modules/
 工作台指令模版.md
 .wrangler/
+# Local Cloudflare secrets (DEEPSEEK_API_KEY, WS_PASSWORD, ...)
+.dev.vars
+.dev.vars.*
