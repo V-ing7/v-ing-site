@@ -241,7 +241,7 @@ export async function onRequestGet(context) {
     });
   } catch (e) {
     console.error('[v-ing-tts]', voice, e && e.message);
-    return new Response(JSON.stringify({ error: 'TTS unavailable' }), {
+    return new Response(JSON.stringify({ error: 'TTS unavailable', detail: String(e && e.message).slice(0, 120) }), {
       status: 502,
       headers: { 'Content-Type': 'application/json', ...corsHeaders() }
     });
