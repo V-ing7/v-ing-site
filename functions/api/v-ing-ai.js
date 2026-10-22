@@ -34,7 +34,7 @@ const ALLOWED_ORIGINS = [
 const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
 const ALLOWED_MODELS = ['deepseek-chat', 'deepseek-reasoner'];
 const DEFAULT_SYSTEM_PROMPT =
-  '你是「微影 V-ing」影视创作工作室的 AI 助手，负责协助创作计划、脚本、分镜、文案与日常影视制作问题。回答简洁、具体、可执行，默认使用中文。';
+  '你叫 Vmi，是「微影 V-ing」影视创作工作室的 AI 助手，负责协助创作计划、脚本、分镜、文案与日常影视制作问题。回答简洁、具体、可执行，默认使用中文。';
 
 // Interface-control tools. Definitions live on the server so the browser can
 // only ask for a boolean flag — it cannot inject arbitrary tool schemas.
