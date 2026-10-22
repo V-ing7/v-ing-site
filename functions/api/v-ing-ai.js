@@ -40,8 +40,9 @@ const DEFAULT_SYSTEM_PROMPT =
 // only ask for a boolean flag — it cannot inject arbitrary tool schemas.
 // Execution still happens client-side against a strict whitelist.
 const DEFAULT_SYSTEM_PROMPT_WITH_TOOLS = DEFAULT_SYSTEM_PROMPT +
-  ' 你还可以直接操作网站界面：切换页面、切换工作台标签、切换深浅主题、切换中英文、滚动页面。' +
-  '当用户的要求属于这些操作时，必须先调用对应的工具，再简短说明结果；不要在没有调用工具的情况下声称已经完成操作。';
+  ' 你还可以直接操作网站界面：切换页面、切换工作台标签、切换深浅主题、切换中英文、滚动页面，以及修改主播日报（更新拍摄/剪辑数量、修改主播名字、新增或删除主播）。' +
+  '当用户的要求属于这些操作时，必须先调用对应的工具，再简短说明结果；不要在没有调用工具的情况下声称已经完成操作。' +
+  '主播日报位于「工作台 → 日报」标签页，修改后会自动保存。';
 
 const VIEWS = ['home', 'about', 'works', 'links', 'workspace', 'contact'];
 const WS_TABS = ['plan', 'unified', 'storyboard', 'console', 'agent', 'card'];
@@ -61,9 +62,15 @@ function buildPageStateLine(state, toolsEnabled) {
   if (WS_TABS.includes(state.tab)) parts.push('工作台标签=' + (TAB_LABELS[state.tab] || state.tab));
   if (state.theme === 'dark' || state.theme === 'light') parts.push('主题=' + (state.theme === 'dark' ? '深色' : '浅色'));
   if (state.lang === 'zh' || state.lang === 'en') parts.push('语言=' + (state.lang === 'zh' ? '中文' : '英文'));
-  if (!parts.length) return '';
-  return '当前界面状态：' + parts.join('，') +
+  let line = '当前界面状态：' + parts.join('，') +
     '。如果用户要求的界面变化与当前状态已经一致，不要调用工具，直接简短说明即可。';
+  if (state.streamers && typeof state.streamers === 'object') {
+    const list = Object.entries(state.streamers)
+      .map(([k, v]) => `${v.name || k}（拍摄 ${v.shoot ?? '?'} / 剪辑 ${v.edit ?? '?'}）`)
+      .join('、');
+    line += '\n当前主播日报：' + list + '。';
+  }
+  return line;
 }
 
 // Distils durable facts from what the user said. Runs out-of-band.
@@ -143,6 +150,31 @@ const ALLOWED_TOOLS = [
         },
         required: ['target']
       }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'update_streamer',
+      description: '修改主播日报：更新某位主播的拍摄/剪辑数量、修改名字、新增或删除主播。修改前会自动保存快照以便撤销。',
+      parameters: {
+        type: 'object',
+        properties: {
+          action: { type: 'string', enum: ['set_count', 'rename', 'add', 'remove'], description: 'set_count 修改数字；rename 修改名字；add 新增主播；remove 删除主播' },
+          name: { type: 'string', description: '主播当前名字（add 时表示新主播名字）' },
+          field: { type: 'string', enum: ['shoot', 'edit'], description: 'set_count 时指定 shoot 拍摄或 edit 剪辑' },
+          value: { type: 'number', description: 'set_count 时的新数值' },
+          newName: { type: 'string', description: 'rename 时指定新名字' }
+        },
+        required: ['action', 'name']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'undo_streamer_change',
+      description: '撤销最近一次 AI 对主播日报的修改，最多可撤销 10 次。'
     }
   }
 ];

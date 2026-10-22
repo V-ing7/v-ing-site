@@ -1844,6 +1844,7 @@
   var aiDockClose=document.getElementById('aiDockClose');
   var aiDockUnlock=document.getElementById('aiDockUnlock');
   var aiMemoryBtn=document.getElementById('aiMemoryBtn');
+  var aiUndoBtn=document.getElementById('aiUndoBtn');
   var aiMemoryPanel=document.getElementById('aiMemoryPanel');
   var aiMemoryList=document.getElementById('aiMemoryList');
   var aiMemoryClear=document.getElementById('aiMemoryClear');
@@ -2116,6 +2117,8 @@
   var AI_TABS=['plan','unified','storyboard','console','agent','card'];
   var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片'};
   var AI_MAX_TOOL_ROUNDS=2;
+  var AI_STREAMER_HISTORY=[];
+  var AI_MAX_STREAMER_HISTORY=10;
 
   function aiAddActionLine(text){
     var el=document.createElement('div');
@@ -2124,6 +2127,46 @@
     aiChatLog.appendChild(el);
     aiScrollToEnd();
     return el;
+  }
+
+  function aiUpdateUndoButton(){
+    if(!aiUndoBtn)return;
+    var count=AI_STREAMER_HISTORY.length;
+    aiUndoBtn.disabled=count===0;
+    aiUndoBtn.setAttribute('data-count',String(count));
+    aiUndoBtn.textContent=(lang==='en'?'Undo':'撤销')+(count?' ('+count+')':'');
+  }
+  function aiSnapshotStreamers(){
+    var snap={};
+    try{ snap=JSON.parse(JSON.stringify(streamerData||{})); }catch(e){}
+    AI_STREAMER_HISTORY.push(snap);
+    if(AI_STREAMER_HISTORY.length>AI_MAX_STREAMER_HISTORY)AI_STREAMER_HISTORY.shift();
+    aiUpdateUndoButton();
+  }
+  function aiFindStreamerKey(name){
+    var n=String(name||'').trim();
+    if(!n)return '';
+    var keys=Object.keys(streamerData||{});
+    for(var i=0;i<keys.length;i++){
+      if(streamerData[keys[i]].name===n)return keys[i];
+    }
+    return '';
+  }
+  function aiNextStreamerKey(){
+    var max=-1;
+    Object.keys(streamerData||{}).forEach(function(k){
+      var m=k.match(/^streamer_(\d+)$/);
+      if(m)max=Math.max(max,parseInt(m[1],10));
+    });
+    return 'streamer_'+(max+1);
+  }
+  function aiApplyStreamers(newData){
+    streamerData=newData||{};
+    if(window.__vingData)window.__vingData.streamers=streamerData;
+    refreshAllVisuals(streamerData);
+    try{ localStorage.setItem('ving-unified-report-data',JSON.stringify(streamerData)); }catch(e){}
+    if(window.__vingData)ghSave(window.__vingData);
+    aiUpdateUndoButton();
   }
 
   function aiRunTool(name,rawArgs){
@@ -2162,6 +2205,52 @@
         else return {ok:false,error:'unknown_target'};
         return {ok:true,target:tg};
       }
+      if(name==='update_streamer'){
+        var action=String(args.action||'');
+        var nm=String(args.name||'').trim();
+        if(!nm)return {ok:false,error:'missing_name'};
+        aiSnapshotStreamers();
+        if(action==='set_count'){
+          var field=String(args.field||'');
+          if(field!=='shoot'&&field!=='edit')return {ok:false,error:'invalid_field'};
+          if(typeof args.value!=='number'||args.value<0)return {ok:false,error:'invalid_value'};
+          var key=aiFindStreamerKey(nm);
+          if(!key)return {ok:false,error:'streamer_not_found'};
+          streamerData[key][field]=Math.floor(args.value);
+          aiApplyStreamers(streamerData);
+          return {ok:true,action:'set_count',name:nm,field:field,value:streamerData[key][field]};
+        }
+        if(action==='rename'){
+          var newName=String(args.newName||'').trim();
+          if(!newName)return {ok:false,error:'missing_new_name'};
+          var key=aiFindStreamerKey(nm);
+          if(!key)return {ok:false,error:'streamer_not_found'};
+          streamerData[key].name=newName;
+          aiApplyStreamers(streamerData);
+          return {ok:true,action:'rename',oldName:nm,newName:newName};
+        }
+        if(action==='add'){
+          if(aiFindStreamerKey(nm))return {ok:false,error:'streamer_exists'};
+          var newKey=aiNextStreamerKey();
+          streamerData[newKey]={name:nm,shoot:0,edit:0};
+          aiApplyStreamers(streamerData);
+          return {ok:true,action:'add',name:nm,key:newKey};
+        }
+        if(action==='remove'){
+          var key=aiFindStreamerKey(nm);
+          if(!key)return {ok:false,error:'streamer_not_found'};
+          delete streamerData[key];
+          aiApplyStreamers(streamerData);
+          return {ok:true,action:'remove',name:nm};
+        }
+        return {ok:false,error:'invalid_action'};
+      }
+      if(name==='undo_streamer_change'){
+        if(!AI_STREAMER_HISTORY.length)return {ok:false,error:'no_history'};
+        var prev=AI_STREAMER_HISTORY.pop();
+        aiApplyStreamers(prev);
+        return {ok:true,remaining:AI_STREAMER_HISTORY.length};
+      }
     }catch(e){ return {ok:false,error:'execution_failed'}; }
     return {ok:false,error:'unknown_tool'};
   }
@@ -2172,7 +2261,8 @@
       view:(typeof currentView==='string'?currentView:''),
       tab:tabBtn?tabBtn.getAttribute('data-ws-tab'):'',
       theme:html.getAttribute('data-theme')||'dark',
-      lang:lang
+      lang:lang,
+      streamers:streamerData||{}
     };
   }
 
@@ -2182,6 +2272,14 @@
     if(name==='set_theme')return result.theme==='light'?'已切换为浅色主题':'已切换为深色主题';
     if(name==='set_language')return result.lang==='en'?'已切换为英文':'已切换为中文';
     if(name==='scroll_to')return result.target==='top'?'已滚动到顶部':'已滚动到底部';
+    if(name==='update_streamer'){
+      if(result.action==='set_count')return '已更新 '+result.name+' 的'+(result.field==='shoot'?'拍摄':'剪辑')+'为 '+result.value;
+      if(result.action==='rename')return '已将 '+result.oldName+' 重命名为 '+result.newName;
+      if(result.action==='add')return '已新增主播 '+result.name;
+      if(result.action==='remove')return '已删除主播 '+result.name;
+      return '已更新主播日报';
+    }
+    if(name==='undo_streamer_change')return '已撤销，还可撤销 '+result.remaining+' 次';
     return '已执行 '+name;
   }
 
@@ -2337,6 +2435,16 @@
   }
   if(aiMemoryBtn){
     aiMemoryBtn.addEventListener('click',aiToggleMemoryPanel);
+  }
+  if(aiUndoBtn){
+    aiUndoBtn.addEventListener('click',function(){
+      var result=aiRunTool('undo_streamer_change','{}');
+      if(result&&result.ok){
+        aiAddActionLine('已撤销，还可撤销 '+result.remaining+' 次');
+      }else{
+        aiAddActionLine('没有可撤销的操作');
+      }
+    });
   }
   if(aiMemoryClose){
     aiMemoryClose.addEventListener('click',aiCloseMemoryPanel);
