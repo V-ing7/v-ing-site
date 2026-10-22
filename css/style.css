@@ -6622,21 +6622,6 @@ body.ws-locked .ai-dock{
   .ai-fab-ring{display:none}
 }
 
-/* ---------- Workspace AI Memory panel ---------- */
-.ws-memory{
-  display:flex;
-  flex-direction:column;
-  margin-top:18px;
-  border-radius:14px;
-  background:var(--surface-glass);
-  border:1px solid var(--glass-border);
-  overflow:hidden;
-}
-.ws-memory .ai-memory-list{
-  max-height:60vh;
-  min-height:220px;
-}
-
 /* ---------- Vmi settings panel ---------- */
 .vmi-settings{
   margin-top:18px;
@@ -6722,6 +6707,21 @@ body.ws-locked .ai-dock{
   font-size:.75rem;
   line-height:1.6;
   color:var(--text-tertiary);
+}
+.vmi-settings-memory{
+  display:flex;
+  flex-direction:column;
+  margin-top:20px;
+  padding-top:16px;
+  border-top:1px solid var(--glass-border);
+}
+.vmi-settings-memory .ai-memory-head{
+  padding:0 0 10px;
+}
+.vmi-settings-memory .ai-memory-list{
+  padding:0;
+  max-height:50vh;
+  min-height:140px;
 }
 @media(max-width:600px){
   .vmi-settings{padding:16px 14px}

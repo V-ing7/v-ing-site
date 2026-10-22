@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="css/style.css?v=20261022d">
+  <link rel="stylesheet" href="css/style.css?v=20261022e">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -1313,7 +1313,6 @@
             <button class="seg-btn" data-ws-tab="console" data-cn="指令" data-en="Console">指令</button>
             <button class="seg-btn" data-ws-tab="agent" data-cn="智能体" data-en="Agent">智能体</button>
             <button class="seg-btn" data-ws-tab="card" data-cn="名片" data-en="Card">名片</button>
-            <button class="seg-btn" data-ws-tab="memory" data-cn="记忆" data-en="Memory">记忆</button>
             <button class="seg-btn" data-ws-tab="settings" data-cn="设置" data-en="Settings">设置</button>
             <span class="seg-indicator seg-7-indicator" id="segIndicator"></span>
           </div>
@@ -2032,22 +2031,7 @@
         </div>
       </div>
 
-      <!-- ====== Panel 7: AI Memory ====== -->
-      <div class="ws-panel" id="ws-panel-memory">
-        <div class="container">
-          <div class="ws-memory reveal">
-            <div class="ai-memory-head">
-              <span data-cn="AI 长期记忆" data-en="AI Long-term Memory">AI 长期记忆</span>
-              <div class="ai-memory-head-actions">
-                <button class="ai-memory-clear" id="wsMemoryClear" type="button" data-cn="清空全部" data-en="Clear all">清空全部</button>
-              </div>
-            </div>
-            <div class="ai-memory-list" id="wsMemoryList"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ====== Panel 8: Vmi Settings ====== -->
+      <!-- ====== Panel 7: Vmi Settings ====== -->
       <div class="ws-panel" id="ws-panel-settings">
         <div class="container">
           <div class="vmi-settings reveal">
@@ -2066,6 +2050,16 @@
               <button type="button" class="vmi-btn" id="vmiKeyClear" data-cn="清除自定义 Key" data-en="Remove custom key">清除自定义 Key</button>
             </div>
             <p class="vmi-settings-hint" data-cn="保存后立即生效，无需重新部署。清除后会回退到云端环境变量中的 Key。" data-en="Changes apply immediately, no redeploy needed. Removing falls back to the key in the environment variables.">保存后立即生效，无需重新部署。清除后会回退到云端环境变量中的 Key。</p>
+
+            <div class="vmi-settings-memory">
+              <div class="ai-memory-head">
+                <span data-cn="长期记忆" data-en="Long-term memory">长期记忆</span>
+                <div class="ai-memory-head-actions">
+                  <button class="ai-memory-clear" id="wsMemoryClear" type="button" data-cn="清空全部" data-en="Clear all">清空全部</button>
+                </div>
+              </div>
+              <div class="ai-memory-list" id="wsMemoryList"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -2233,7 +2227,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20261022d" defer></script>
+  <script src="js/app.js?v=20261022e" defer></script>
 
 </body>
 </html>
