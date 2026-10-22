@@ -80,6 +80,7 @@
   .card.playing button.play{border-color:var(--accent);background:rgba(224,62,62,.14);}
   .card.picked button.pick{color:#fff;border-color:rgba(255,255,255,.55);}
   .err{color:#ff7b7b;font-size:.72rem;margin-top:4px;}
+  .card audio.fallback{flex:1 1 100%;width:100%;margin-top:8px;}
   footer{max-width:760px;margin:26px auto 0;color:var(--dim);font-size:.75rem;line-height:1.7;}
   @media(max-width:480px){
     body{padding:26px 14px 56px;}
@@ -128,6 +129,11 @@
   var pwdSave = document.getElementById('pwdSave');
   var gateNote = document.getElementById('gateNote');
   var audio = new Audio();
+  audio.setAttribute('playsinline', '');
+  audio.setAttribute('webkit-playsinline', '');
+  audio.preload = 'auto';
+  var SILENT = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=';
+  var unlocked = false;
   var current = null;
   var pwd = '';
 
@@ -172,6 +178,37 @@
     return p;
   }
 
+  // iOS/Safari only allow playback started inside a user gesture. Play a
+  // silent clip on the tap so the fetched MP3 can autoplay afterwards.
+  function unlock(){
+    if (unlocked) return;
+    try{
+      audio.muted = true;
+      audio.src = SILENT;
+      var p = audio.play();
+      var done = function(){
+        try{ audio.pause(); audio.currentTime = 0; }catch(e){}
+        audio.muted = false;
+        unlocked = true;
+      };
+      if (p && typeof p.then === 'function'){ p.then(done).catch(function(){ audio.muted = false; }); }
+      else { done(); }
+    }catch(e){ audio.muted = false; }
+  }
+
+  // If the browser still refuses to play, show a native player so the clip is
+  // reachable with a direct tap.
+  function nativePlayer(card, url){
+    var old = card.querySelector('audio.fallback');
+    if (old) old.remove();
+    var el = document.createElement('audio');
+    el.className = 'fallback';
+    el.controls = true;
+    el.setAttribute('playsinline', '');
+    el.src = url;
+    card.appendChild(el);
+  }
+
   function errText(res, d){
     if (res.status === 403) return '密码不对，请重新输入。';
     if (res.status === 503) {
@@ -194,6 +231,7 @@
     var p = readPwd();
     if (!p) return;
 
+    unlock();
     setIdle();
     current = card;
     card.classList.add('playing');
@@ -211,12 +249,14 @@
       .then(function(blob){
         if (!blob.size) throw new Error('生成失败，请再点一次。');
         var url = URL.createObjectURL(blob);
+        audio.muted = false;
         audio.src = url;
         audio.play().then(function(){
           if (btn.textContent === '生成中') btn.textContent = '播放中';
           note('已解锁，可以直接点试听。');
         }).catch(function(){
-          throw new Error('浏览器拦截了播放，请再点一次。');
+          nativePlayer(card, url);
+          throw new Error('浏览器拦截了播放，请点下方播放条。');
         });
       })
       .catch(function(err){
