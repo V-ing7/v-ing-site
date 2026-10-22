@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="css/style.css?v=20261022c">
+  <link rel="stylesheet" href="css/style.css?v=20261022d">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -1314,6 +1314,7 @@
             <button class="seg-btn" data-ws-tab="agent" data-cn="智能体" data-en="Agent">智能体</button>
             <button class="seg-btn" data-ws-tab="card" data-cn="名片" data-en="Card">名片</button>
             <button class="seg-btn" data-ws-tab="memory" data-cn="记忆" data-en="Memory">记忆</button>
+            <button class="seg-btn" data-ws-tab="settings" data-cn="设置" data-en="Settings">设置</button>
             <span class="seg-indicator seg-7-indicator" id="segIndicator"></span>
           </div>
         </div>
@@ -2046,6 +2047,29 @@
         </div>
       </div>
 
+      <!-- ====== Panel 8: Vmi Settings ====== -->
+      <div class="ws-panel" id="ws-panel-settings">
+        <div class="container">
+          <div class="vmi-settings reveal">
+            <div class="vmi-settings-head">
+              <h3 data-cn="Vmi 设置" data-en="Vmi Settings">Vmi 设置</h3>
+              <p data-cn="更换 DeepSeek API Key。Key 只保存在云端数据库，页面不会回显明文。" data-en="Replace the DeepSeek API key. It is stored server-side only and never shown in full.">更换 DeepSeek API Key。Key 只保存在云端数据库，页面不会回显明文。</p>
+            </div>
+            <div class="vmi-settings-status" id="vmiKeyStatus"></div>
+            <div class="vmi-settings-row">
+              <input type="password" id="vmiKeyInput" class="vmi-settings-input"
+                autocomplete="off" spellcheck="false"
+                placeholder="粘贴新的 API Key（sk-...）"
+                data-cn-placeholder="粘贴新的 API Key（sk-...）"
+                data-en-placeholder="Paste a new API key (sk-...)">
+              <button type="button" class="vmi-btn vmi-btn-primary" id="vmiKeySave" data-cn="保存" data-en="Save">保存</button>
+              <button type="button" class="vmi-btn" id="vmiKeyClear" data-cn="清除自定义 Key" data-en="Remove custom key">清除自定义 Key</button>
+            </div>
+            <p class="vmi-settings-hint" data-cn="保存后立即生效，无需重新部署。清除后会回退到云端环境变量中的 Key。" data-en="Changes apply immediately, no redeploy needed. Removing falls back to the key in the environment variables.">保存后立即生效，无需重新部署。清除后会回退到云端环境变量中的 Key。</p>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ========== CONTACT VIEW ========== -->
@@ -2209,7 +2233,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20261022c" defer></script>
+  <script src="js/app.js?v=20261022d" defer></script>
 
 </body>
 </html>

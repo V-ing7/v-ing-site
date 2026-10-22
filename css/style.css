@@ -6636,3 +6636,94 @@ body.ws-locked .ai-dock{
   max-height:60vh;
   min-height:220px;
 }
+
+/* ---------- Vmi settings panel ---------- */
+.vmi-settings{
+  margin-top:18px;
+  padding:20px 18px;
+  border-radius:14px;
+  background:var(--surface-glass);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--glass-border);
+}
+.vmi-settings-head h3{
+  font-size:1.05rem;
+  font-weight:700;
+  color:var(--text-primary);
+}
+.vmi-settings-head p{
+  margin-top:6px;
+  font-size:.82rem;
+  line-height:1.6;
+  color:var(--text-secondary);
+}
+.vmi-settings-status{
+  margin-top:14px;
+  padding:9px 12px;
+  border-radius:10px;
+  font-size:.8rem;
+  line-height:1.55;
+  word-break:break-all;
+  color:var(--text-secondary);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--glass-border);
+}
+.vmi-settings-status.ok{color:var(--text-primary)}
+.vmi-settings-status.error{
+  color:#FF6B6B;
+  border-color:rgba(255,107,107,.32);
+}
+[data-theme="light"] .vmi-settings-status{background:rgba(0,0,0,.035)}
+[data-theme="light"] .vmi-settings-status.error{
+  color:#D70015;
+  border-color:rgba(215,0,21,.24);
+}
+.vmi-settings-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.vmi-settings-input{
+  flex:1 1 240px;
+  min-width:0;
+  padding:10px 12px;
+  border-radius:10px;
+  font-size:.85rem;
+  color:var(--text-primary);
+  background:var(--surface-2);
+  border:1px solid var(--glass-border);
+}
+.vmi-settings-input:focus{
+  outline:none;
+  border-color:var(--accent-strong);
+}
+.vmi-settings-input::placeholder{color:var(--text-tertiary)}
+.vmi-btn{
+  padding:10px 16px;
+  border-radius:10px;
+  font-size:.84rem;
+  font-weight:600;
+  white-space:nowrap;
+  color:var(--text-primary);
+  background:var(--surface-2);
+  border:1px solid var(--glass-border);
+  transition:opacity .2s ease;
+}
+.vmi-btn:active{opacity:.65}
+.vmi-btn-primary{
+  color:var(--bg);
+  background:var(--text-primary);
+  border-color:transparent;
+}
+.vmi-settings-hint{
+  margin-top:10px;
+  font-size:.75rem;
+  line-height:1.6;
+  color:var(--text-tertiary);
+}
+@media(max-width:600px){
+  .vmi-settings{padding:16px 14px}
+  .vmi-settings-row .vmi-btn{flex:1 1 auto}
+}
