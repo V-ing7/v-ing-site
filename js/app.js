@@ -1365,9 +1365,20 @@
   });
 
   /* ---------- Mobile Menu ---------- */
+  function closeMobileMenu(){
+    menuToggle.classList.remove('active');
+    mobileMenu.classList.remove('open');
+  }
   menuToggle.addEventListener('click',function(){
     menuToggle.classList.toggle('active');
     mobileMenu.classList.toggle('open');
+  });
+  // Tapping anywhere outside the nav (e.g. a blank area of the page) closes the
+  // mobile menu. Without this the menu could only be dismissed via the toggle.
+  document.addEventListener('click',function(e){
+    if(!mobileMenu.classList.contains('open'))return;
+    if(e.target.closest('#nav'))return;
+    closeMobileMenu();
   });
 
   /* ---------- Nav Scroll Effect ---------- */
