@@ -1787,9 +1787,10 @@
       if(!_qrReady)setTimeout(initCustomQR,200);
       if(!_veQRReady)setTimeout(initVeCardQR,250);
     }
-    // Settings panel holds both the key config and the long-term memories
+    // Settings panel holds the key config, voice config and long-term memories
     if(tab==='settings'){
       vmiLoadKeyStatus();
+      vmiLoadVoiceStatus();
       aiLoadMemories(wsMemoryList);
     }
     // Trigger reveals
@@ -1868,6 +1869,11 @@
   var vmiKeyInput=document.getElementById('vmiKeyInput');
   var vmiKeySave=document.getElementById('vmiKeySave');
   var vmiKeyClear=document.getElementById('vmiKeyClear');
+  var vmiVoiceStatus=document.getElementById('vmiVoiceStatus');
+  var vmiVoiceRegion=document.getElementById('vmiVoiceRegion');
+  var vmiVoiceKey=document.getElementById('vmiVoiceKey');
+  var vmiVoiceSave=document.getElementById('vmiVoiceSave');
+  var vmiVoiceClear=document.getElementById('vmiVoiceClear');
   var aiMessages=[];
   var aiBusy=false;
   var aiDockOpen=false;
@@ -2172,6 +2178,103 @@
     }).catch(function(err){
       var auth=err&&err.message==='auth';
       vmiSetStatus(auth
+        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (lang==='zh'?'清除失败，请稍后重试。':'Remove failed. Try again.'),'error');
+    });
+  }
+
+  /* ---------- Vmi settings (voice / Azure Speech) ---------- */
+  function vmiVoiceRequest(method,body){
+    var pwd=_getWsPassword();
+    if(!pwd)return Promise.reject(new Error('auth'));
+    var opts={method:method,headers:{'X-Password':pwd}};
+    if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+    return fetch(WORKER_API+'/api/v-ing-voice-config',opts).then(function(res){
+      if(!res.ok)throw new Error(res.status===403?'auth':'http');
+      return res.json();
+    });
+  }
+
+  function vmiSetVoiceStatus(text,kind){
+    if(!vmiVoiceStatus)return;
+    vmiVoiceStatus.textContent=text;
+    vmiVoiceStatus.className='vmi-settings-status'+(kind?' '+kind:'');
+  }
+
+  function vmiRenderVoiceStatus(d,prefix){
+    if(!vmiVoiceStatus)return;
+    var zh=lang==='zh';
+    if(!d||!d.hasKey){
+      vmiSetVoiceStatus(zh
+        ? '当前：尚未配置语音 Key，试听与朗读不可用。'
+        : 'Current: no voice key, audition and speech are unavailable.','error');
+      return;
+    }
+    if(!d.region){
+      vmiSetVoiceStatus(zh
+        ? '当前：已保存 Key，但缺少区域，请补填区域后保存。'
+        : 'Current: key saved but the region is missing.','error');
+      return;
+    }
+    if(vmiVoiceRegion&&!vmiVoiceRegion.value)vmiVoiceRegion.value=d.region;
+    var mid=d.source==='custom'
+      ? (zh?'自定义 Key':'custom key')
+      : (zh?'环境变量 Key':'environment key');
+    vmiSetVoiceStatus((prefix?prefix+' ':'')+(zh?'当前：使用':'Current: using')+' '+mid+
+      '（'+d.masked+' · '+d.region+'）','ok');
+  }
+
+  function vmiLoadVoiceStatus(){
+    if(!vmiVoiceStatus)return;
+    vmiSetVoiceStatus(lang==='zh'?'正在读取…':'Loading…','');
+    vmiVoiceRequest('GET','').then(function(d){
+      vmiRenderVoiceStatus(d);
+    }).catch(function(err){
+      var auth=err&&err.message==='auth';
+      vmiSetVoiceStatus(auth
+        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (lang==='zh'?'读取失败，请稍后重试。':'Could not load. Try again.'),'error');
+    });
+  }
+
+  function vmiSaveVoice(){
+    var region=(vmiVoiceRegion?vmiVoiceRegion.value:'').trim().toLowerCase();
+    var key=(vmiVoiceKey?vmiVoiceKey.value:'').trim();
+    if(!/^[a-z0-9-]{2,30}$/.test(region)){
+      vmiSetVoiceStatus(lang==='zh'
+        ? '区域格式不对，例如 eastasia 或 eastus。'
+        : 'Region looks wrong, e.g. eastasia or eastus.','error');
+      return;
+    }
+    if(key.length<16){
+      vmiSetVoiceStatus(lang==='zh'
+        ? '请输入完整的 Azure 语音 Key。'
+        : 'Enter the complete Azure Speech key.','error');
+      return;
+    }
+    vmiSetVoiceStatus(lang==='zh'?'正在保存…':'Saving…','');
+    vmiVoiceRequest('POST',{key:key,region:region}).then(function(d){
+      if(vmiVoiceKey)vmiVoiceKey.value='';
+      vmiRenderVoiceStatus(d,lang==='zh'?'已保存。':'Saved.');
+    }).catch(function(err){
+      var auth=err&&err.message==='auth';
+      vmiSetVoiceStatus(auth
+        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (lang==='zh'?'保存失败，请检查 Key 与区域。':'Save failed. Check the key and region.'),'error');
+    });
+  }
+
+  function vmiClearVoice(){
+    var ok=window.confirm(lang==='zh'
+      ? '清除语音 Key 与区域？清除后试听与朗读将不可用。'
+      : 'Remove the voice key and region? Audition and speech will stop working.');
+    if(!ok)return;
+    vmiVoiceRequest('DELETE','').then(function(d){
+      if(vmiVoiceRegion)vmiVoiceRegion.value='';
+      vmiRenderVoiceStatus(d,lang==='zh'?'已清除。':'Removed.');
+    }).catch(function(err){
+      var auth=err&&err.message==='auth';
+      vmiSetVoiceStatus(auth
         ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
         : (lang==='zh'?'清除失败，请稍后重试。':'Remove failed. Try again.'),'error');
     });
@@ -2652,6 +2755,22 @@
   if(vmiKeyInput){
     vmiKeyInput.addEventListener('keydown',function(e){
       if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); vmiSaveKey(); }
+    });
+  }
+  if(vmiVoiceSave){
+    vmiVoiceSave.addEventListener('click',vmiSaveVoice);
+  }
+  if(vmiVoiceClear){
+    vmiVoiceClear.addEventListener('click',vmiClearVoice);
+  }
+  if(vmiVoiceKey){
+    vmiVoiceKey.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); vmiSaveVoice(); }
+    });
+  }
+  if(vmiVoiceRegion){
+    vmiVoiceRegion.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); vmiSaveVoice(); }
     });
   }
   if(aiDockUnlock){

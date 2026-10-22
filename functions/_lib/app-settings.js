@@ -8,6 +8,8 @@
 
 const SETTINGS_TABLE = 'app_settings';
 export const AI_KEY_SETTING = 'deepseek_api_key';
+export const VOICE_KEY_SETTING = 'azure_speech_key';
+export const VOICE_REGION_SETTING = 'azure_speech_region';
 
 export async function ensureSettingsTable(env) {
   await env.DB.prepare(
@@ -59,4 +61,29 @@ export async function resolveApiKey(env) {
     return { key: env.DEEPSEEK_API_KEY, source: 'env' };
   }
   return { key: '', source: 'none' };
+}
+
+// Azure Speech config. Key and region are stored separately because Azure
+// rejects a correct key paired with the wrong region.
+export async function resolveVoiceConfig(env) {
+  let key = '';
+  let region = '';
+  let source = 'env';
+  let updatedAt = null;
+
+  if (env.DB) {
+    const storedKey = await getSetting(env, VOICE_KEY_SETTING);
+    if (storedKey && storedKey.value) {
+      key = storedKey.value;
+      source = 'custom';
+      updatedAt = storedKey.updatedAt;
+    }
+    const storedRegion = await getSetting(env, VOICE_REGION_SETTING);
+    if (storedRegion && storedRegion.value) region = storedRegion.value;
+  }
+  if (!key && env.AZURE_SPEECH_KEY) key = env.AZURE_SPEECH_KEY;
+  if (!region && env.AZURE_SPEECH_REGION) region = env.AZURE_SPEECH_REGION;
+  if (!key) source = 'none';
+
+  return { key, region, source, updatedAt };
 }

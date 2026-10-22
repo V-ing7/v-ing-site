@@ -6685,6 +6685,15 @@ body.ws-locked .ai-dock{
   border-color:var(--accent-strong);
 }
 .vmi-settings-input::placeholder{color:var(--text-tertiary)}
+.vmi-input-short{flex:0 1 150px}
+.vmi-settings-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  align-self:flex-start;
+  margin-top:12px;
+  text-decoration:none;
+}
 .vmi-btn{
   padding:10px 16px;
   border-radius:10px;
