@@ -1724,7 +1724,6 @@
     console:document.getElementById('ws-panel-console'),
     agent:document.getElementById('ws-panel-agent'),
     card:document.getElementById('ws-panel-card'),
-    memory:document.getElementById('ws-panel-memory'),
     settings:document.getElementById('ws-panel-settings')
   };
   var collabHub=document.getElementById('collabHub');
@@ -1741,7 +1740,7 @@
     // Move indicator
     if(segIndicator){
       segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5','seg-pos-6','seg-pos-7','seg-pos-8');
-      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6,'memory':7,'settings':8}[tab] || 1;
+      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6,'settings':7}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1777,13 +1776,10 @@
       if(!_qrReady)setTimeout(initCustomQR,200);
       if(!_veQRReady)setTimeout(initVeCardQR,250);
     }
-    // Load AI long-term memories when switching to memory panel
-    if(tab==='memory'){
-      aiLoadMemories(wsMemoryList);
-    }
-    // Load Vmi key status when switching to settings panel
+    // Settings panel holds both the key config and the long-term memories
     if(tab==='settings'){
       vmiLoadKeyStatus();
+      aiLoadMemories(wsMemoryList);
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
@@ -2188,8 +2184,8 @@
   // is rejected here, so a bad/forged tool call cannot touch the site.
   var AI_VIEWS=['home','about','works','links','workspace','contact'];
   var AI_VIEW_LABELS={home:'首页',about:'关于',works:'作品',links:'联动',workspace:'工作台',contact:'联系'};
-  var AI_TABS=['plan','unified','storyboard','console','agent','card','memory','settings'];
-  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片',memory:'记忆',settings:'设置'};
+  var AI_TABS=['plan','unified','storyboard','console','agent','card','settings'];
+  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片',settings:'设置'};
   var AI_MAX_TOOL_ROUNDS=2;
   var AI_STREAMER_HISTORY=[];
   var AI_MAX_STREAMER_HISTORY=10;
