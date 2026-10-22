@@ -6708,17 +6708,17 @@ body.ws-locked .ai-dock{
   line-height:1.6;
   color:var(--text-tertiary);
 }
-.vmi-settings-memory{
+.vmi-settings-block{
   display:flex;
   flex-direction:column;
   margin-top:20px;
   padding-top:16px;
   border-top:1px solid var(--glass-border);
 }
-.vmi-settings-memory .ai-memory-head{
+.vmi-settings-block .ai-memory-head{
   padding:0 0 10px;
 }
-.vmi-settings-memory .ai-memory-list{
+.vmi-settings-block .ai-memory-list{
   padding:0;
   max-height:50vh;
   min-height:140px;
