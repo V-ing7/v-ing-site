@@ -1985,7 +1985,7 @@
     if(kind==='rate')return zh?'请求太频繁，请稍后再试。':'Too many requests, please try again shortly.';
     if(kind==='config')return zh?'AI 服务未配置：请在 Cloudflare 设置 DEEPSEEK_API_KEY。':'AI is not configured: set DEEPSEEK_API_KEY in Cloudflare.';
     if(kind==='network')return zh?'连接失败，请检查网络后重试。':'Connection failed. Check your network and retry.';
-    return zh?'AI 暂时无法回复，请稍后重试。':'The assistant is unavailable. Please try again.';
+    return zh?'Vmi 暂时无法回复，请稍后重试。':'Vmi is unavailable. Please try again.';
   }
 
   function aiAddBubble(role,text){
