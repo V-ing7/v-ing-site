@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="css/style.css?v=20261022h">
+  <link rel="stylesheet" href="css/style.css?v=20261022k">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -2053,6 +2053,30 @@
 
             <div class="vmi-settings-block">
               <div class="ai-memory-head">
+                <span data-cn="语音（Azure）" data-en="Voice (Azure)">语音（Azure）</span>
+              </div>
+              <div class="vmi-settings-status" id="vmiVoiceStatus"></div>
+              <div class="vmi-settings-row">
+                <input type="text" id="vmiVoiceRegion" class="vmi-settings-input vmi-input-short"
+                  autocomplete="off" spellcheck="false"
+                  placeholder="区域，如 eastasia"
+                  data-cn-placeholder="区域，如 eastasia"
+                  data-en-placeholder="Region, e.g. eastasia">
+                <input type="password" id="vmiVoiceKey" class="vmi-settings-input"
+                  autocomplete="off" spellcheck="false"
+                  placeholder="粘贴 Azure 语音 Key"
+                  data-cn-placeholder="粘贴 Azure 语音 Key"
+                  data-en-placeholder="Paste the Azure Speech key">
+                <button type="button" class="vmi-btn vmi-btn-primary" id="vmiVoiceSave" data-cn="保存" data-en="Save">保存</button>
+                <button type="button" class="vmi-btn" id="vmiVoiceClear" data-cn="清除" data-en="Remove">清除</button>
+              </div>
+              <p class="vmi-settings-hint" data-cn="区域是创建资源时选的，例如 eastasia、eastus、japaneast。Key 与区域都只存在云端数据库。" data-en="Region is the one you picked when creating the resource, e.g. eastasia, eastus, japaneast. Both stay server-side.">区域是创建资源时选的，例如 eastasia、eastus、japaneast。Key 与区域都只存在云端数据库。</p>
+              <a class="vmi-btn vmi-settings-link" href="/voice-test" target="_blank" rel="noopener"
+                data-cn="试听 10 个音色" data-en="Audition 10 voices">试听 10 个音色</a>
+            </div>
+
+            <div class="vmi-settings-block">
+              <div class="ai-memory-head">
                 <span data-cn="长期记忆" data-en="Long-term memory">长期记忆</span>
                 <div class="ai-memory-head-actions">
                   <button class="ai-memory-clear" id="wsMemoryClear" type="button" data-cn="清空全部" data-en="Clear all">清空全部</button>
@@ -2238,7 +2262,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20261022h" defer></script>
+  <script src="js/app.js?v=20261022k" defer></script>
 
 </body>
 </html>
