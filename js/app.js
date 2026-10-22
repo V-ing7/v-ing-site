@@ -1870,8 +1870,11 @@
   var vmiKeySave=document.getElementById('vmiKeySave');
   var vmiKeyClear=document.getElementById('vmiKeyClear');
   var vmiVoiceStatus=document.getElementById('vmiVoiceStatus');
+  var vmiVoiceSecretId=document.getElementById('vmiVoiceSecretId');
+  var vmiVoiceSecretKey=document.getElementById('vmiVoiceSecretKey');
   var vmiVoiceRegion=document.getElementById('vmiVoiceRegion');
-  var vmiVoiceKey=document.getElementById('vmiVoiceKey');
+  var vmiVoiceSelect=document.getElementById('vmiVoiceSelect');
+  var vmiVoiceAuto=document.getElementById('vmiVoiceAuto');
   var vmiVoiceSave=document.getElementById('vmiVoiceSave');
   var vmiVoiceClear=document.getElementById('vmiVoiceClear');
   var aiMessages=[];
@@ -1896,6 +1899,7 @@
     }
     aiRefreshLockState();
     aiLoadChat();
+    aiLoadVoicePref();
     // Only auto-focus on pointer devices — on phones this would pop the
     // keyboard immediately and cover the conversation.
     if(isWsUnlocked()&&window.matchMedia&&window.matchMedia('(pointer:fine)').matches){
@@ -2183,7 +2187,16 @@
     });
   }
 
-  /* ---------- Vmi settings (voice / Azure Speech) ---------- */
+  /* ---------- Vmi settings (voice / Tencent Cloud TTS) ---------- */
+  var AI_VOICE_AUTO_KEY='ving-vmi-voice-auto';
+  var AI_VOICE_DEFAULT=101001;
+  var aiVoiceId=AI_VOICE_DEFAULT;
+  var aiVoiceAuto=false;
+  var aiAudio=null;
+  var aiAudioUrl='';
+  try{ aiVoiceAuto=localStorage.getItem(AI_VOICE_AUTO_KEY)==='1'; }catch(e){}
+  if(vmiVoiceAuto)vmiVoiceAuto.checked=aiVoiceAuto;
+
   function vmiVoiceRequest(method,body){
     var pwd=_getWsPassword();
     if(!pwd)return Promise.reject(new Error('auth'));
@@ -2201,27 +2214,31 @@
     vmiVoiceStatus.className='vmi-settings-status'+(kind?' '+kind:'');
   }
 
+  function vmiVoiceLabel(id){
+    if(!vmiVoiceSelect)return String(id);
+    var opt=vmiVoiceSelect.querySelector('option[value="'+id+'"]');
+    return opt?opt.textContent.replace(/^\d+\s*·\s*/,''):String(id);
+  }
+
   function vmiRenderVoiceStatus(d,prefix){
     if(!vmiVoiceStatus)return;
     var zh=lang==='zh';
+    if(d&&d.voiceId){
+      aiVoiceId=parseInt(d.voiceId,10)||aiVoiceId;
+      if(vmiVoiceSelect)vmiVoiceSelect.value=String(aiVoiceId);
+    }
+    if(d&&d.region&&vmiVoiceRegion&&!vmiVoiceRegion.value)vmiVoiceRegion.value=d.region;
     if(!d||!d.hasKey){
       vmiSetVoiceStatus(zh
-        ? '当前：尚未配置语音 Key，试听与朗读不可用。'
-        : 'Current: no voice key, audition and speech are unavailable.','error');
+        ? '当前：尚未配置腾讯云凭据，试听与朗读不可用。'
+        : 'Current: no Tencent Cloud credentials, audition and speech are unavailable.','error');
       return;
     }
-    if(!d.region){
-      vmiSetVoiceStatus(zh
-        ? '当前：已保存 Key，但缺少区域，请补填区域后保存。'
-        : 'Current: key saved but the region is missing.','error');
-      return;
-    }
-    if(vmiVoiceRegion&&!vmiVoiceRegion.value)vmiVoiceRegion.value=d.region;
     var mid=d.source==='custom'
-      ? (zh?'自定义 Key':'custom key')
-      : (zh?'环境变量 Key':'environment key');
+      ? (zh?'自定义凭据':'custom credentials')
+      : (zh?'环境变量凭据':'environment credentials');
     vmiSetVoiceStatus((prefix?prefix+' ':'')+(zh?'当前：使用':'Current: using')+' '+mid+
-      '（'+d.masked+' · '+d.region+'）','ok');
+      '（'+d.masked+' · '+d.region+' · '+(zh?'音色 ':'voice ')+vmiVoiceLabel(aiVoiceId)+'）','ok');
   }
 
   function vmiLoadVoiceStatus(){
@@ -2238,39 +2255,42 @@
   }
 
   function vmiSaveVoice(){
-    var region=(vmiVoiceRegion?vmiVoiceRegion.value:'').trim().toLowerCase();
-    var key=(vmiVoiceKey?vmiVoiceKey.value:'').trim();
+    var secretId=(vmiVoiceSecretId?vmiVoiceSecretId.value:'').trim();
+    var secretKey=(vmiVoiceSecretKey?vmiVoiceSecretKey.value:'').trim();
+    var region=(vmiVoiceRegion?vmiVoiceRegion.value:'').trim().toLowerCase()||'ap-guangzhou';
+    var voiceId=vmiVoiceSelect?(parseInt(vmiVoiceSelect.value,10)||AI_VOICE_DEFAULT):AI_VOICE_DEFAULT;
+    var zh=lang==='zh';
+    if(secretId&&(secretId.length<10||/\s/.test(secretId))){
+      vmiSetVoiceStatus(zh?'SecretId 格式不对，应以 AKID 开头且不含空格。':'SecretId looks wrong — it should start with AKID and contain no spaces.','error');
+      return;
+    }
+    if(secretKey&&(secretKey.length<10||/\s/.test(secretKey))){
+      vmiSetVoiceStatus(zh?'SecretKey 格式不对，请粘贴完整的 SecretKey。':'SecretKey looks wrong. Paste the complete key.','error');
+      return;
+    }
     if(!/^[a-z0-9-]{2,30}$/.test(region)){
-      vmiSetVoiceStatus(lang==='zh'
-        ? '区域格式不对，例如 eastasia 或 eastus。'
-        : 'Region looks wrong, e.g. eastasia or eastus.','error');
+      vmiSetVoiceStatus(zh?'区域格式不对，例如 ap-guangzhou。':'Region looks wrong, e.g. ap-guangzhou.','error');
       return;
     }
-    if(key.length<16){
-      vmiSetVoiceStatus(lang==='zh'
-        ? '请输入完整的 Azure 语音 Key。'
-        : 'Enter the complete Azure Speech key.','error');
-      return;
-    }
-    vmiSetVoiceStatus(lang==='zh'?'正在保存…':'Saving…','');
-    vmiVoiceRequest('POST',{key:key,region:region}).then(function(d){
-      if(vmiVoiceKey)vmiVoiceKey.value='';
-      vmiRenderVoiceStatus(d,lang==='zh'?'已保存。':'Saved.');
+    vmiSetVoiceStatus(zh?'正在保存…':'Saving…','');
+    vmiVoiceRequest('POST',{secretId:secretId,secretKey:secretKey,region:region,voiceId:voiceId}).then(function(d){
+      if(vmiVoiceSecretId)vmiVoiceSecretId.value='';
+      if(vmiVoiceSecretKey)vmiVoiceSecretKey.value='';
+      vmiRenderVoiceStatus(d,zh?'已保存。':'Saved.');
     }).catch(function(err){
       var auth=err&&err.message==='auth';
       vmiSetVoiceStatus(auth
-        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
-        : (lang==='zh'?'保存失败，请检查 Key 与区域。':'Save failed. Check the key and region.'),'error');
+        ? (zh?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (zh?'保存失败：首次配置需要同时填写 SecretId 和 SecretKey。':'Save failed: the first setup needs both SecretId and SecretKey.'),'error');
     });
   }
 
   function vmiClearVoice(){
     var ok=window.confirm(lang==='zh'
-      ? '清除语音 Key 与区域？清除后试听与朗读将不可用。'
-      : 'Remove the voice key and region? Audition and speech will stop working.');
+      ? '清除腾讯云凭据？清除后试听与朗读将不可用。'
+      : 'Remove the Tencent Cloud credentials? Audition and speech will stop working.');
     if(!ok)return;
     vmiVoiceRequest('DELETE','').then(function(d){
-      if(vmiVoiceRegion)vmiVoiceRegion.value='';
       vmiRenderVoiceStatus(d,lang==='zh'?'已清除。':'Removed.');
     }).catch(function(err){
       var auth=err&&err.message==='auth';
@@ -2278,6 +2298,57 @@
         ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
         : (lang==='zh'?'清除失败，请稍后重试。':'Remove failed. Try again.'),'error');
     });
+  }
+
+  // Strip markdown so the voice does not read out asterisks and brackets.
+  function aiPlainText(text){
+    return String(text||'')
+      .replace(/```[\s\S]*?```/g,' ')
+      .replace(/`([^`]*)`/g,'$1')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g,' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g,'$1')
+      .replace(/[*#_~>|]/g,'')
+      .replace(/^\s*[-+]\s+/gm,'')
+      .replace(/\s+/g,' ')
+      .trim()
+      .slice(0,600);
+  }
+
+  function aiSpeak(text){
+    if(!aiVoiceAuto)return;
+    var pwd=_getWsPassword();
+    if(!pwd)return;
+    var plain=aiPlainText(text);
+    if(!plain)return;
+    fetch(WORKER_API+'/api/v-ing-tts?voice='+aiVoiceId+'&text='+encodeURIComponent(plain),{
+      headers:{'X-Password':pwd}
+    }).then(function(res){
+      if(!res.ok)throw new Error('http');
+      return res.blob();
+    }).then(function(blob){
+      if(!blob.size)return;
+      if(!aiAudio)aiAudio=new Audio();
+      if(aiAudioUrl)URL.revokeObjectURL(aiAudioUrl);
+      aiAudioUrl=URL.createObjectURL(blob);
+      aiAudio.src=aiAudioUrl;
+      // Autoplay can be blocked on mobile after an async fetch; stay silent
+      // rather than throwing a playback error into the conversation.
+      aiAudio.play().catch(function(){});
+    }).catch(function(){});
+  }
+
+  // Load the chosen voice once so auto-speak works before opening Settings.
+  function aiLoadVoicePref(){
+    if(!isWsUnlocked())return;
+    var pwd=_getWsPassword();
+    if(!pwd)return;
+    fetch(WORKER_API+'/api/v-ing-voice-config',{headers:{'X-Password':pwd}}).then(function(res){
+      if(!res.ok)throw new Error('http');
+      return res.json();
+    }).then(function(d){
+      var id=d&&parseInt(d.voiceId,10);
+      if(id)aiVoiceId=id;
+    }).catch(function(){});
   }
 
   function aiSetStatus(msg){
@@ -2690,6 +2761,7 @@
         bubble=aiAddBubble('assistant',full||(lang==='zh'?'（没有返回内容）':'(No content returned)'));
       }
       if(full)aiMessages.push({role:'assistant',content:full});
+      if(full)aiSpeak(full);
       aiResetComposer();
     }).catch(function(err){
       clearTyping();
@@ -2763,9 +2835,20 @@
   if(vmiVoiceClear){
     vmiVoiceClear.addEventListener('click',vmiClearVoice);
   }
-  if(vmiVoiceKey){
-    vmiVoiceKey.addEventListener('keydown',function(e){
+  if(vmiVoiceSecretKey){
+    vmiVoiceSecretKey.addEventListener('keydown',function(e){
       if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); vmiSaveVoice(); }
+    });
+  }
+  if(vmiVoiceSecretId){
+    vmiVoiceSecretId.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); vmiSaveVoice(); }
+    });
+  }
+  if(vmiVoiceAuto){
+    vmiVoiceAuto.addEventListener('change',function(){
+      aiVoiceAuto=!!vmiVoiceAuto.checked;
+      try{ localStorage.setItem(AI_VOICE_AUTO_KEY,aiVoiceAuto?'1':'0'); }catch(e){}
     });
   }
   if(vmiVoiceRegion){

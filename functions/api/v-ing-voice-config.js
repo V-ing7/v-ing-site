@@ -1,20 +1,23 @@
 /**
- * V-ing Site API — voice settings (Azure Speech key)
+ * V-ing Site API — voice settings (Tencent Cloud TTS credentials)
  *
- *   GET    /api/v-ing-voice-config   key status (masked) + region
- *   POST   /api/v-ing-voice-config   save { key, region }
- *   DELETE /api/v-ing-voice-config   drop the custom pair, fall back to env
+ *   GET    /api/v-ing-voice-config   credential status (masked) + region + voice
+ *   POST   /api/v-ing-voice-config   save { secretId, secretKey, region, voiceId }
+ *   DELETE /api/v-ing-voice-config   drop the credentials, fall back to env
  *
  * All methods require the workspace password in the X-Password header.
- * The key is stored in D1 (env.DB) and only ever read server-side by
+ * Credentials are stored in D1 (env.DB) and only ever read server-side by
  * /api/v-ing-tts — the browser receives a mask such as ••••••••4f2a.
  */
 
 import {
-  VOICE_KEY_SETTING,
-  VOICE_REGION_SETTING,
+  TTS_DEFAULT_REGION,
+  TTS_REGION_SETTING,
+  TTS_SECRET_ID_SETTING,
+  TTS_SECRET_KEY_SETTING,
+  TTS_VOICE_IDS,
+  TTS_VOICE_SETTING,
   deleteSetting,
-  getSetting,
   resolveVoiceConfig,
   setSetting
 } from '../_lib/app-settings.js';
@@ -29,8 +32,8 @@ const ALLOWED_ORIGINS = [
 const RATE_WINDOW = 60000;
 const RATE_LIMIT = 20;
 const MAX_BODY_BYTES = 4096;
-const MAX_KEY_CHARS = 200;
-const MIN_KEY_CHARS = 16;
+const MIN_CRED_CHARS = 10;
+const MAX_CRED_CHARS = 128;
 const REGION_RE = /^[a-z0-9-]{2,30}$/;
 
 const rateStore = new Map();
@@ -91,13 +94,21 @@ function maskKey(key) {
   return '••••••••' + key.slice(-4);
 }
 
+function validCredential(value) {
+  return typeof value === 'string' &&
+    value.length >= MIN_CRED_CHARS &&
+    value.length <= MAX_CRED_CHARS &&
+    !/\s/.test(value);
+}
+
 async function buildStatus(env) {
   const resolved = await resolveVoiceConfig(env);
   return {
-    hasKey: !!resolved.key,
+    hasKey: resolved.hasKey,
     source: resolved.source,
+    masked: maskKey(resolved.secretId),
     region: resolved.region || '',
-    masked: maskKey(resolved.key),
+    voiceId: resolved.voiceId,
     updatedAt: resolved.updatedAt
   };
 }
@@ -144,19 +155,33 @@ export async function onRequestPost(context) {
     return jsonResp({ error: 'Invalid JSON' }, 400, hdrs);
   }
 
-  const key = typeof body.key === 'string' ? body.key.trim() : '';
+  const secretId = typeof body.secretId === 'string' ? body.secretId.trim() : '';
+  const secretKey = typeof body.secretKey === 'string' ? body.secretKey.trim() : '';
   const region = typeof body.region === 'string' ? body.region.trim().toLowerCase() : '';
+  const voiceRaw = body.voiceId == null ? '' : String(body.voiceId).trim();
+  const voiceId = voiceRaw ? parseInt(voiceRaw, 10) : 0;
 
-  if (key.length < MIN_KEY_CHARS || key.length > MAX_KEY_CHARS || /\s/.test(key)) {
-    return jsonResp({ error: 'Invalid key' }, 400, hdrs);
-  }
-  if (!REGION_RE.test(region)) {
-    return jsonResp({ error: 'Invalid region' }, 400, hdrs);
-  }
+  if (secretId && !validCredential(secretId)) return jsonResp({ error: 'Invalid secretId' }, 400, hdrs);
+  if (secretKey && !validCredential(secretKey)) return jsonResp({ error: 'Invalid secretKey' }, 400, hdrs);
+  if (region && !REGION_RE.test(region)) return jsonResp({ error: 'Invalid region' }, 400, hdrs);
+  if (voiceRaw && !TTS_VOICE_IDS.includes(voiceId)) return jsonResp({ error: 'Invalid voice' }, 400, hdrs);
 
   try {
-    await setSetting(env, VOICE_KEY_SETTING, key);
-    await setSetting(env, VOICE_REGION_SETTING, region);
+    const existing = await resolveVoiceConfig(env);
+    // Empty fields mean "keep what is already saved", so the user can change
+    // only the region or the voice without retyping the credentials.
+    const nextId = secretId || existing.secretId;
+    const nextKey = secretKey || existing.secretKey;
+
+    if (!nextId || !nextKey) {
+      return jsonResp({ error: 'Both secretId and secretKey are required' }, 400, hdrs);
+    }
+
+    if (secretId) await setSetting(env, TTS_SECRET_ID_SETTING, secretId);
+    if (secretKey) await setSetting(env, TTS_SECRET_KEY_SETTING, secretKey);
+    if (region) await setSetting(env, TTS_REGION_SETTING, region);
+    if (voiceRaw) await setSetting(env, TTS_VOICE_SETTING, String(voiceId));
+
     return jsonResp({ ok: true, ...(await buildStatus(env)) }, 200, hdrs);
   } catch (e) {
     console.error('[v-ing-voice-config] write failed:', e && e.message);
@@ -174,8 +199,11 @@ export async function onRequestDelete(context) {
   if (!checkPassword(request, env)) return jsonResp({ error: 'Unauthorized' }, 403, hdrs);
 
   try {
-    await deleteSetting(env, VOICE_KEY_SETTING);
-    await deleteSetting(env, VOICE_REGION_SETTING);
+    await deleteSetting(env, TTS_SECRET_ID_SETTING);
+    await deleteSetting(env, TTS_SECRET_KEY_SETTING);
+    await deleteSetting(env, TTS_REGION_SETTING);
+    // Keep the chosen voice — it is harmless without credentials.
+    await setSetting(env, TTS_REGION_SETTING, TTS_DEFAULT_REGION);
     return jsonResp({ ok: true, ...(await buildStatus(env)) }, 200, hdrs);
   } catch (e) {
     console.error('[v-ing-voice-config] delete failed:', e && e.message);
