@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>音色试听 · Vmi</title>
+<style>
+  :root{
+    --bg:#080808;
+    --panel:#111;
+    --line:rgba(255,255,255,.12);
+    --text:#f2f2f2;
+    --dim:#8a8a8a;
+    --accent:#e03e3e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:48px 20px 72px;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter","Noto Sans SC",-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{max-width:760px;margin:0 auto 32px;}
+  h1{margin:0 0 10px;font-size:1.5rem;font-weight:600;letter-spacing:.02em;}
+  p.lead{margin:0;color:var(--dim);font-size:.85rem;line-height:1.7;}
+  .grid{max-width:760px;margin:0 auto;display:grid;gap:10px;}
+  .card{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--panel);
+    transition:border-color .2s,background .2s;
+  }
+  .card.playing{border-color:rgba(224,62,62,.65);background:#171010;}
+  .num{
+    flex:0 0 30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.75rem;color:var(--dim);
+    border:1px solid var(--line);
+    font-variant-numeric:tabular-nums;
+  }
+  .card.playing .num{color:#fff;border-color:var(--accent);}
+  .info{flex:1;min-width:0;}
+  .name{font-size:.95rem;margin-bottom:4px;}
+  .desc{font-size:.75rem;color:var(--dim);line-height:1.5;}
+  button.play{
+    flex:0 0 auto;
+    min-width:76px;
+    padding:9px 14px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--text);
+    font-size:.78rem;
+    cursor:pointer;
+    transition:background .2s,border-color .2s;
+    font-family:inherit;
+  }
+  button.play:hover{border-color:rgba(255,255,255,.4);}
+  button.play:disabled{opacity:.4;cursor:default;}
+  .card.playing button.play{border-color:var(--accent);background:rgba(224,62,62,.14);}
+  .err{color:#ff7b7b;font-size:.72rem;margin-top:4px;}
+  footer{max-width:760px;margin:26px auto 0;color:var(--dim);font-size:.75rem;line-height:1.7;}
+  @media(max-width:480px){
+    body{padding:28px 14px 56px;}
+    .card{padding:12px;gap:10px;}
+    button.play{min-width:64px;padding:8px 10px;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vmi 音色试听</h1>
+  <p class="lead">10 个中文音色，同一句「欢迎回家，Vikyi」。点「试听」听完，记下喜欢的编号告诉我即可。<br>第 1 号最接近小爱同学的调子。</p>
+</header>
+<div class="grid" id="grid"></div>
+<footer>
+  音频由微软 Edge 语音合成实时生成，首次播放约需 1–3 秒。选好后我把它接到 Vmi 的回复播报里。
+</footer>
+<script>
+(function(){
+  var TEXT = '欢迎回家，Vikyi';
+  var VOICES = [
+    { key:'zh-CN-XiaoxiaoNeural',          name:'晓晓', desc:'温柔女声 · 清晰亲和，最接近小爱' },
+    { key:'zh-CN-XiaoyiNeural',            name:'晓伊', desc:'活泼女声 · 轻快，语气偏年轻' },
+    { key:'zh-CN-liaoning-XiaobeiNeural',  name:'晓北', desc:'东北女声 · 带北方口音，幽默' },
+    { key:'zh-CN-shaanxi-XiaoniNeural',    name:'晓妮', desc:'陕西女声 · 明亮，带西北口音' },
+    { key:'zh-TW-HsiaoChenNeural',         name:'晓臻', desc:'台湾女声 · 柔和，台湾腔' },
+    { key:'zh-TW-HsiaoYuNeural',           name:'晓雨', desc:'台湾女声 · 更甜，语气轻' },
+    { key:'zh-HK-HiuMaanNeural',           name:'晓曼', desc:'粤语女声 · 试听句为粤语读法' },
+    { key:'zh-CN-YunxiNeural',             name:'云希', desc:'阳光男声 · 少年感，轻松' },
+    { key:'zh-CN-YunyangNeural',           name:'云扬', desc:'播音男声 · 专业沉稳，像播报' },
+    { key:'zh-CN-YunxiaNeural',            name:'云夏', desc:'少年音 · 偏可爱，音调偏高' }
+  ];
+
+  var grid = document.getElementById('grid');
+  var audio = new Audio();
+  var current = null;
+
+  audio.addEventListener('ended', function(){ setIdle(); });
+  audio.addEventListener('error', function(){
+    if(current) fail(current, '生成失败，稍后再试');
+    setIdle();
+  });
+
+  function setIdle(){
+    grid.querySelectorAll('.card.playing').forEach(function(c){ c.classList.remove('playing'); });
+    grid.querySelectorAll('button.play').forEach(function(b){ b.disabled = false; b.textContent = '试听'; });
+    current = null;
+  }
+
+  function fail(card, msg){
+    var old = card.querySelector('.err');
+    if(old) old.remove();
+    var el = document.createElement('div');
+    el.className = 'err';
+    el.textContent = msg;
+    card.querySelector('.info').appendChild(el);
+  }
+
+  VOICES.forEach(function(v, i){
+    var card = document.createElement('div');
+    card.className = 'card';
+
+    var num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = String(i + 1);
+
+    var info = document.createElement('div');
+    info.className = 'info';
+    var name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = v.name;
+    var desc = document.createElement('div');
+    desc.className = 'desc';
+    desc.textContent = v.desc;
+    info.appendChild(name);
+    info.appendChild(desc);
+
+    var btn = document.createElement('button');
+    btn.className = 'play';
+    btn.type = 'button';
+    btn.textContent = '试听';
+    btn.addEventListener('click', function(){
+      var old = card.querySelector('.err');
+      if(old) old.remove();
+      if(current === card && !audio.paused){
+        audio.pause();
+        setIdle();
+        return;
+      }
+      setIdle();
+      current = card;
+      card.classList.add('playing');
+      btn.disabled = true;
+      btn.textContent = '播放中';
+      audio.src = '/api/v-ing-tts?voice=' + encodeURIComponent(v.key) +
+                   '&text=' + encodeURIComponent(TEXT);
+      audio.play().catch(function(){
+        fail(card, '无法播放，请再点一次');
+        setIdle();
+      });
+    });
+
+    card.appendChild(num);
+    card.appendChild(info);
+    card.appendChild(btn);
+    grid.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>
