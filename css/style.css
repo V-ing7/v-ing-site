@@ -6232,15 +6232,11 @@ textarea.sb-cell-desc{
   width:min(380px,calc(100vw - 36px));
   max-height:min(66vh,560px);
   border-radius:20px;
-  background:linear-gradient(160deg,rgba(30,30,34,.12),rgba(12,12,15,.20));
+  background:linear-gradient(160deg,rgba(30,30,34,.14),rgba(12,12,15,.20));
   backdrop-filter:blur(10px) saturate(200%) brightness(1.08);
   -webkit-backdrop-filter:blur(10px) saturate(200%) brightness(1.08);
-  border:1px solid rgba(255,255,255,.22);
-  box-shadow:
-    0 14px 36px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.30),
-    inset 0 -1px 0 rgba(0,0,0,.22),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.26);
+  box-shadow:0 12px 28px rgba(0,0,0,.22);
   overflow:hidden;
   opacity:0;
   visibility:hidden;
@@ -6248,17 +6244,6 @@ textarea.sb-cell-desc{
   transform:translateY(14px) scale(.96);
   transform-origin:bottom right;
   transition:opacity .25s ease,visibility .25s ease,transform .3s cubic-bezier(.34,1.4,.64,1);
-}
-/* Glass sheen: a soft top-left highlight plus a warm amber corner, so the
-   panel reads as real frosted glass rather than a flat translucent box. */
-.ai-dock::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(120% 62% at 10% 0%,rgba(255,255,255,.40),transparent 62%),
-    radial-gradient(95% 55% at 102% 104%,rgba(230,190,138,.28),transparent 66%);
 }
 .ai-dock > *{
   position:relative;
@@ -6284,7 +6269,6 @@ textarea.sb-cell-desc{
   gap:8px;
   font-size:.95rem;
   font-weight:700;
-  text-shadow:0 1px 2px rgba(0,0,0,.55);
 }
 .ai-dock-dot{
   width:8px;
@@ -6305,11 +6289,10 @@ textarea.sb-cell-desc{
   font-size:.76rem;
   font-weight:600;
   color:var(--text-primary);
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.20);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.18);
   backdrop-filter:blur(8px) saturate(160%);
   -webkit-backdrop-filter:blur(8px) saturate(160%);
-  text-shadow:0 1px 1px rgba(0,0,0,.42);
   transition:opacity .2s,background .2s,border-color .2s;
 }
 .ai-dock-close{
@@ -6361,19 +6344,15 @@ textarea.sb-cell-desc{
 .ai-msg-user{
   align-self:flex-end;
   border-bottom-right-radius:6px;
-  background:linear-gradient(135deg,rgba(230,190,138,.20),rgba(230,190,138,.08));
+  background:linear-gradient(135deg,rgba(230,190,138,.22),rgba(230,190,138,.10));
   border:1px solid rgba(230,190,138,.34);
   color:#F9F0E2;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 1px 2px rgba(0,0,0,.35);
-  text-shadow:0 1px 1px rgba(0,0,0,.25);
 }
 .ai-msg-assistant{
   border-bottom-left-radius:6px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);
   color:var(--text-primary);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 1px 2px rgba(0,0,0,.35);
-  text-shadow:0 1px 1px rgba(0,0,0,.22);
 }
 .ai-msg-error{
   border-bottom-left-radius:6px;
@@ -6457,15 +6436,13 @@ textarea.sb-cell-desc{
   gap:8px;
   padding:8px 10px;
   border-radius:10px;
-  background:rgba(255,255,255,.035);
-  border:1px solid rgba(255,255,255,.14);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 1px 2px rgba(0,0,0,.3);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);
   font-size:.79rem;
   line-height:1.55;
   color:var(--text-primary);
-  text-shadow:0 1px 1px rgba(0,0,0,.22);
 }
-[data-theme="light"] .ai-memory-item{background:rgba(255,255,255,.28);border-color:rgba(0,0,0,.10);text-shadow:none}
+[data-theme="light"] .ai-memory-item{background:rgba(255,255,255,.35);border-color:rgba(0,0,0,.10)}
 .ai-memory-item-text{flex:1 1 auto;word-break:break-word;white-space:pre-wrap}
 .ai-memory-del{
   flex:0 0 auto;
@@ -6490,16 +6467,11 @@ textarea.sb-cell-desc{
 }
 /* Light theme: keep the same frosted glass language, inverted. */
 [data-theme="light"] .ai-dock{
-  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(240,240,245,.22));
+  background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(240,240,245,.24));
   backdrop-filter:blur(10px) saturate(200%) brightness(1.06);
   -webkit-backdrop-filter:blur(10px) saturate(200%) brightness(1.06);
-  border-color:rgba(255,255,255,.82);
-  box-shadow:0 14px 36px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.95);
-}
-[data-theme="light"] .ai-dock::before{
-  background:
-    radial-gradient(120% 62% at 10% 0%,rgba(255,255,255,.68),transparent 62%),
-    radial-gradient(95% 55% at 102% 104%,rgba(166,124,66,.10),transparent 66%);
+  border-color:rgba(255,255,255,.90);
+  box-shadow:0 12px 28px rgba(0,0,0,.10);
 }
 [data-theme="light"] .ai-dock-head,
 [data-theme="light"] .ai-chat-composer{border-color:rgba(0,0,0,.07)}
@@ -6511,27 +6483,22 @@ textarea.sb-cell-desc{
 }
 [data-theme="light"] .ai-msg-user{
   color:#4A3418;
-  background:linear-gradient(135deg,rgba(166,124,66,.12),rgba(166,124,66,.05));
+  background:linear-gradient(135deg,rgba(166,124,66,.14),rgba(166,124,66,.06));
   border-color:rgba(166,124,66,.26);
-  text-shadow:none;
 }
 [data-theme="light"] .ai-msg-assistant{
-  background:rgba(255,255,255,.40);
-  border-color:rgba(0,0,0,.12);
-  box-shadow:0 1px 3px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.92);
-  text-shadow:none;
+  background:rgba(255,255,255,.42);
+  border-color:rgba(0,0,0,.10);
 }
 [data-theme="light"] .ai-chat-input{
-  background:rgba(255,255,255,.25);
+  background:rgba(255,255,255,.28);
   border-color:rgba(0,0,0,.10);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.92);
 }
 [data-theme="light"] .ai-chat-input:focus{border-color:rgba(166,124,66,.45)}
 [data-theme="light"] .ai-chat-send{
   color:#8A6A3A;
-  background:rgba(255,255,255,.22);
+  background:rgba(255,255,255,.24);
   border-color:rgba(0,0,0,.14);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 3px 10px rgba(0,0,0,.08);
 }
 [data-theme="light"] .ai-chat-send:active{background:rgba(166,124,66,.14)}
 [data-theme="light"] .ai-dock-unlock{
@@ -6562,10 +6529,8 @@ textarea.sb-cell-desc{
   display:flex;
   gap:10px;
   padding:10px 12px;
-  border-top:1px solid rgba(255,255,255,.10);
+  border-top:1px solid rgba(255,255,255,.08);
   background:rgba(255,255,255,.01);
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
 }
 .ai-chat-input{
   flex:1;
@@ -6574,10 +6539,7 @@ textarea.sb-cell-desc{
   padding:9px 13px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.16);
-  background:rgba(255,255,255,.022);
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
   color:var(--text-primary);
   font-size:.875rem;
   line-height:1.5;
@@ -6596,19 +6558,15 @@ textarea.sb-cell-desc{
   justify-content:center;
   border-radius:13px;
   color:#E6BE8A;
-  background:rgba(255,255,255,.03);
+  background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.26);
   backdrop-filter:blur(12px) saturate(170%);
   -webkit-backdrop-filter:blur(12px) saturate(170%);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.26),
-    inset 0 -1px 0 rgba(0,0,0,.22),
-    0 3px 10px rgba(0,0,0,.22);
   transition:opacity .2s,transform .1s,background .2s,border-color .2s;
 }
 .ai-chat-send:active{transform:scale(.94);background:rgba(230,190,138,.18);border-color:rgba(230,190,138,.4)}
 .ai-chat-send:disabled{opacity:.4;transform:none}
-/* Touch devices: same look, smaller blur radius to protect scroll smoothness. */
+/* Touch devices: smaller blur radius to protect scroll smoothness. */
 @media(pointer:coarse){
   .ai-dock{
     backdrop-filter:blur(8px) saturate(180%);
@@ -6617,14 +6575,6 @@ textarea.sb-cell-desc{
   .ai-chat-send{
     backdrop-filter:blur(6px) saturate(170%);
     -webkit-backdrop-filter:blur(6px) saturate(170%);
-  }
-  .ai-chat-composer{
-    backdrop-filter:blur(4px) saturate(160%);
-    -webkit-backdrop-filter:blur(4px) saturate(160%);
-  }
-  .ai-chat-input{
-    backdrop-filter:blur(4px) saturate(160%);
-    -webkit-backdrop-filter:blur(4px) saturate(160%);
   }
 }
 .ai-chat-status{
@@ -6664,7 +6614,6 @@ textarea.sb-cell-desc{
   border:1px solid rgba(230,190,138,.40);
   backdrop-filter:blur(14px) saturate(160%);
   -webkit-backdrop-filter:blur(14px) saturate(160%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
 }
 .ai-dock.ai-dock-locked .ai-chat-log,
 .ai-dock.ai-dock-locked .ai-chat-composer,
