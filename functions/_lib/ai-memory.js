@@ -4,8 +4,9 @@
  */
 
 const MAX_ROWS = 200;
+const MAX_MOMENTS = 8;
 const MAX_CONTENT_CHARS = 200;
-const MAX_BLOCK_CHARS = 1800;
+const MAX_BLOCK_CHARS = 2400;
 
 export async function ensureMemoryTable(env) {
   await env.DB.prepare(
@@ -58,7 +59,8 @@ export function buildMemoryBlock(rows) {
     used += line.length;
   }
   if (!lines.length) return '';
-  return '[长期记忆]\n以下是此前记录的用户长期信息，回答时自然运用，不要逐条复述：\n' + lines.join('\n');
+  return '[你记得的事]\n下面是你和用户以前聊到过的信息。像老朋友一样，在真正相关的时候自然带出（例如「你上次说……」），' +
+    '不要逐条复述，也不要编造没有记录的内容：\n' + lines.join('\n');
 }
 
 export async function saveMemories(env, items, source) {
@@ -68,7 +70,7 @@ export async function saveMemories(env, items, source) {
     if (!item || typeof item.content !== 'string') continue;
     const content = item.content.trim().slice(0, MAX_CONTENT_CHARS);
     if (content.length < 3) continue;
-    const kind = ['fact', 'preference', 'profile', 'project'].includes(item.kind)
+    const kind = ['fact', 'preference', 'profile', 'project', 'moment'].includes(item.kind)
       ? item.kind
       : 'fact';
     try {
@@ -84,6 +86,13 @@ export async function saveMemories(env, items, source) {
   await env.DB.prepare(
     `DELETE FROM ai_memory WHERE id NOT IN (
        SELECT id FROM ai_memory ORDER BY updated_at DESC LIMIT ${MAX_ROWS}
+     )`
+  ).run();
+  // "What is going on right now" goes stale fast, so keep only the newest few
+  // moment entries instead of letting old moods pile up.
+  await env.DB.prepare(
+    `DELETE FROM ai_memory WHERE kind = 'moment' AND id NOT IN (
+       SELECT id FROM ai_memory WHERE kind = 'moment' ORDER BY updated_at DESC LIMIT ${MAX_MOMENTS}
      )`
   ).run();
   return saved;

@@ -35,7 +35,9 @@ const ALLOWED_ORIGINS = [
 const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
 const ALLOWED_MODELS = ['deepseek-chat', 'deepseek-reasoner'];
 const DEFAULT_SYSTEM_PROMPT =
-  '你叫 Vmi，是「微影 V-ing」影视创作工作室的 AI 助手，负责协助创作计划、脚本、分镜、文案与日常影视制作问题。回答简洁、具体、可执行，默认使用中文。';
+  '你叫 Vmi，是「微影 V-ing」影视创作工作室的 AI 助手，负责协助创作计划、脚本、分镜、文案与日常影视制作问题。默认使用中文。' +
+  '你和用户是熟识的朋友关系：说话自然、有温度，不客套，回答仍然简洁、具体、可执行。' +
+  '如果对话里给出了长期记忆，那就是你本来就知道的事——在真正相关的时候像老朋友一样自然带出（例如「你上次说……」），不要逐条罗列、不要生硬复述；记忆里没有的事不要假装记得，可以直接问。';
 
 // Interface-control tools. Definitions live on the server so the browser can
 // only ask for a boolean flag — it cannot inject arbitrary tool schemas.
@@ -75,13 +77,15 @@ function buildPageStateLine(state, toolsEnabled) {
   return line;
 }
 
-// Distils durable facts from what the user said. Runs out-of-band.
+// Distils durable facts from what the user said. Runs out-of-band, after every
+// turn, so the user never has to say "remember this".
 const MEMORY_EXTRACT_PROMPT =
-  '你是记忆整理器。从「最近用户消息」中提取值得长期记住的稳定信息：身份或职业、长期偏好、称呼习惯、正在进行的项目与约定。' +
-  '不要记录一次性的寒暄、天气、临时数字，也不要记录助手说过的话。' +
-  '如果「已有记忆」中已有含义相同的内容，不要重复输出。' +
-  '每条用第三人称陈述，不超过 80 字。' +
-  '只输出 JSON：{"memories":[{"content":"...","kind":"fact|preference|profile|project"}]}；没有可记的就输出 {"memories":[]}。';
+  '你是朋友之间的记忆整理器。从「最近用户消息」里挑出能让下次聊天自然接上的信息：怎么称呼用户、他最近的状态或情绪、正在做的事与项目进展、喜好和忌讳、约好的事或他托付的事，以及他明确要求记住的内容。' +
+  '不要记录寒暄、天气、一次性数字、密码或证件号等敏感信息，也不要记录助手说过的话。' +
+  '「已有记忆」里含义相同的不要重复输出；若新信息推翻了旧的，输出更新后的版本。' +
+  '每条用第三人称陈述，像给朋友写的备注一样简短，不超过 60 字。' +
+  'kind 取值：profile（身份/称呼）、preference（喜好与忌讳）、project（正在做的事）、moment（近况与情绪）、fact（其他）。' +
+  '只输出 JSON：{"memories":[{"content":"...","kind":"profile|preference|project|moment|fact"}]}；没有可记的就输出 {"memories":[]}。';
 
 const ALLOWED_TOOLS = [
   {
@@ -369,7 +373,7 @@ async function extractMemories(env, apiKey, userText, existingBlock) {
     if (!content) return;
     const parsed = JSON.parse(content);
     const items = Array.isArray(parsed.memories) ? parsed.memories : [];
-    if (items.length) await saveMemories(env, items.slice(0, 5), 'auto');
+    if (items.length) await saveMemories(env, items.slice(0, 6), 'auto');
   } catch (e) {
     console.error('[v-ing-ai] memory extract failed:', e && e.message);
   }
@@ -439,7 +443,7 @@ export async function onRequestPost(context) {
   if (env.DB) {
     try {
       await ensureMemoryTable(env);
-      const rows = await loadMemories(env, 40);
+      const rows = await loadMemories(env, 60);
       memoryBlock = buildMemoryBlock(rows);
     } catch (e) {
       console.error('[v-ing-ai] memory load failed:', e && e.message);
