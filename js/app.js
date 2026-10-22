@@ -2194,6 +2194,8 @@
   var aiVoiceAuto=false;
   var aiAudio=null;
   var aiAudioUrl='';
+  var aiAudioUnlocked=false;
+  var AI_SILENT_WAV='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=';
   try{ aiVoiceAuto=localStorage.getItem(AI_VOICE_AUTO_KEY)==='1'; }catch(e){}
   if(vmiVoiceAuto)vmiVoiceAuto.checked=aiVoiceAuto;
 
@@ -2314,6 +2316,35 @@
       .slice(0,600);
   }
 
+  function aiEnsureAudio(){
+    if(aiAudio)return aiAudio;
+    aiAudio=new Audio();
+    aiAudio.setAttribute('playsinline','');
+    aiAudio.setAttribute('webkit-playsinline','');
+    aiAudio.preload='auto';
+    return aiAudio;
+  }
+
+  // iOS/Safari only start playback that begins inside a user gesture. Play a
+  // silent clip on the first tap to unlock the shared <audio> element, so the
+  // later async MP3 playback is not blocked.
+  function aiUnlockAudio(){
+    var el=aiEnsureAudio();
+    if(aiAudioUnlocked)return;
+    try{
+      el.muted=true;
+      el.src=AI_SILENT_WAV;
+      var p=el.play();
+      var done=function(){
+        try{ el.pause(); el.currentTime=0; }catch(e){}
+        el.muted=false;
+        aiAudioUnlocked=true;
+      };
+      if(p&&typeof p.then==='function'){ p.then(done).catch(function(){ el.muted=false; }); }
+      else{ done(); }
+    }catch(e){ el.muted=false; }
+  }
+
   function aiSpeak(text){
     if(!aiVoiceAuto)return;
     var pwd=_getWsPassword();
@@ -2327,13 +2358,13 @@
       return res.blob();
     }).then(function(blob){
       if(!blob.size)return;
-      if(!aiAudio)aiAudio=new Audio();
+      var el=aiEnsureAudio();
       if(aiAudioUrl)URL.revokeObjectURL(aiAudioUrl);
       aiAudioUrl=URL.createObjectURL(blob);
-      aiAudio.src=aiAudioUrl;
-      // Autoplay can be blocked on mobile after an async fetch; stay silent
-      // rather than throwing a playback error into the conversation.
-      aiAudio.play().catch(function(){});
+      el.src=aiAudioUrl;
+      // Autoplay can still be blocked on mobile; stay silent rather than
+      // throwing a playback error into the conversation.
+      el.play().catch(function(){});
     }).catch(function(){});
   }
 
@@ -2643,6 +2674,7 @@
 
   function aiSend(){
     if(!aiChatInput||aiBusy)return;
+    aiUnlockAudio();
     var text=aiChatInput.value.trim();
     if(!text)return;
 
@@ -2848,6 +2880,7 @@
   if(vmiVoiceAuto){
     vmiVoiceAuto.addEventListener('change',function(){
       aiVoiceAuto=!!vmiVoiceAuto.checked;
+      if(aiVoiceAuto)aiUnlockAudio();
       try{ localStorage.setItem(AI_VOICE_AUTO_KEY,aiVoiceAuto?'1':'0'); }catch(e){}
     });
   }
