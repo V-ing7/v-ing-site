@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="css/style.css?v=20261022f">
+  <link rel="stylesheet" href="css/style.css?v=20261022g">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -2051,7 +2051,7 @@
             </div>
             <p class="vmi-settings-hint" data-cn="保存后立即生效，无需重新部署。清除后会回退到云端环境变量中的 Key。" data-en="Changes apply immediately, no redeploy needed. Removing falls back to the key in the environment variables.">保存后立即生效，无需重新部署。清除后会回退到云端环境变量中的 Key。</p>
 
-            <div class="vmi-settings-memory">
+            <div class="vmi-settings-block">
               <div class="ai-memory-head">
                 <span data-cn="长期记忆" data-en="Long-term memory">长期记忆</span>
                 <div class="ai-memory-head-actions">
@@ -2059,6 +2059,16 @@
                 </div>
               </div>
               <div class="ai-memory-list" id="wsMemoryList"></div>
+            </div>
+
+            <div class="vmi-settings-block">
+              <div class="ai-memory-head">
+                <span data-cn="对话记录" data-en="Conversation">对话记录</span>
+                <div class="ai-memory-head-actions">
+                  <button class="ai-memory-clear" id="wsChatClear" type="button" data-cn="清空对话" data-en="Clear chat">清空对话</button>
+                </div>
+              </div>
+              <p class="vmi-settings-hint" id="wsChatHint" data-cn="对话会自动保存到云端，刷新页面或换设备解锁后都能接着聊。" data-en="Conversations are saved to the cloud, so a refresh or another device picks up where you left off.">对话会自动保存到云端，刷新页面或换设备解锁后都能接着聊。</p>
             </div>
           </div>
         </div>
@@ -2227,7 +2237,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20261022f" defer></script>
+  <script src="js/app.js?v=20261022g" defer></script>
 
 </body>
 </html>

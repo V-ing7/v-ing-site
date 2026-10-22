@@ -1862,6 +1862,8 @@
   var aiUndoBtn=document.getElementById('aiUndoBtn');
   var wsMemoryList=document.getElementById('wsMemoryList');
   var wsMemoryClear=document.getElementById('wsMemoryClear');
+  var wsChatClear=document.getElementById('wsChatClear');
+  var wsChatHint=document.getElementById('wsChatHint');
   var vmiKeyStatus=document.getElementById('vmiKeyStatus');
   var vmiKeyInput=document.getElementById('vmiKeyInput');
   var vmiKeySave=document.getElementById('vmiKeySave');
@@ -1869,6 +1871,8 @@
   var aiMessages=[];
   var aiBusy=false;
   var aiDockOpen=false;
+  var aiChatLoaded=false;
+  var aiChatSaveTimer=null;
 
   function aiRefreshLockState(){
     if(!aiDock)return;
@@ -1885,6 +1889,7 @@
       aiFab.setAttribute('aria-expanded','true');
     }
     aiRefreshLockState();
+    aiLoadChat();
     // Only auto-focus on pointer devices — on phones this would pop the
     // keyboard immediately and cover the conversation.
     if(isWsUnlocked()&&window.matchMedia&&window.matchMedia('(pointer:fine)').matches){
@@ -1905,6 +1910,103 @@
 
   function aiScrollToEnd(){
     if(aiChatLog)aiChatLog.scrollTop=aiChatLog.scrollHeight;
+  }
+
+  /* ---------- AI conversation history ---------- */
+  // The transcript lives in D1 behind /api/v-ing-ai-chat, so a refresh or a
+  // different device picks the conversation back up. Only plain user/assistant
+  // text is stored — tool-call plumbing never leaves the browser.
+  var AI_CHAT_MAX_MESSAGES=40;
+  var AI_CHAT_MAX_CHARS=20000;
+
+  function aiChatPayload(){
+    var all=[];
+    for(var i=0;i<aiMessages.length;i++){
+      var m=aiMessages[i];
+      if(!m||(m.role!=='user'&&m.role!=='assistant'))continue;
+      if(typeof m.content!=='string'||!m.content)continue;
+      all.push({role:m.role,content:m.content});
+    }
+    // Keep the newest turns only, capped on both count and characters so the
+    // restored conversation still fits the /api/v-ing-ai size limits.
+    var out=[];
+    var total=0;
+    for(var j=all.length-1;j>=0;j--){
+      var msg=all[j];
+      if(out.length&&(out.length>=AI_CHAT_MAX_MESSAGES||total+msg.content.length>AI_CHAT_MAX_CHARS))break;
+      out.unshift(msg);
+      total+=msg.content.length;
+    }
+    while(out.length&&out[0].role!=='user')out.shift();
+    return out;
+  }
+
+  function aiClearBubbles(){
+    if(!aiChatLog)return;
+    var nodes=aiChatLog.querySelectorAll('.ai-msg,.ai-action');
+    for(var i=nodes.length-1;i>=0;i--){
+      if(nodes[i].parentNode)nodes[i].parentNode.removeChild(nodes[i]);
+    }
+  }
+
+  function aiRenderHistory(items){
+    aiMessages=items||[];
+    aiClearBubbles();
+    aiMessages.forEach(function(m){
+      if(m.role==='user')aiAddBubble('user',m.content);
+      else if(m.content)aiAddBubble('assistant',m.content);
+    });
+    if(aiChatEmpty)aiChatEmpty.style.display=aiMessages.length?'none':'';
+  }
+
+  function aiLoadChat(){
+    if(aiChatLoaded||!aiChatLog)return;
+    if(!isWsUnlocked())return;
+    var pwd=_getWsPassword();
+    if(!pwd)return;
+    aiChatLoaded=true;
+    fetch(WORKER_API+'/api/v-ing-ai-chat',{headers:{'X-Password':pwd}}).then(function(res){
+      if(!res.ok)throw new Error(res.status===403?'auth':'http');
+      return res.json();
+    }).then(function(data){
+      var items=(data&&data.messages)||[];
+      if(!items.length)return;
+      // Don't clobber anything typed while the request was in flight.
+      if(aiMessages.length)return;
+      aiRenderHistory(items);
+      aiScrollToEnd();
+    }).catch(function(){
+      aiChatLoaded=false;
+    });
+  }
+
+  function aiPersistChat(){
+    if(!isWsUnlocked())return;
+    if(aiChatSaveTimer)clearTimeout(aiChatSaveTimer);
+    aiChatSaveTimer=setTimeout(function(){
+      aiChatSaveTimer=null;
+      var pwd=_getWsPassword();
+      if(!pwd)return;
+      fetch(WORKER_API+'/api/v-ing-ai-chat',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Password':pwd},
+        body:JSON.stringify({messages:aiChatPayload()})
+      }).catch(function(){});
+    },600);
+  }
+
+  function aiClearChat(done){
+    var pwd=_getWsPassword();
+    if(!pwd){ if(done)done(false); return; }
+    if(aiChatSaveTimer){clearTimeout(aiChatSaveTimer);aiChatSaveTimer=null;}
+    fetch(WORKER_API+'/api/v-ing-ai-chat',{method:'DELETE',headers:{'X-Password':pwd}}).then(function(res){
+      if(!res.ok)throw new Error('http');
+      aiMessages=[];
+      aiClearBubbles();
+      if(aiChatEmpty)aiChatEmpty.style.display='';
+      aiChatLoaded=true;
+      if(done)done(true);
+    }).catch(function(){ if(done)done(false); });
   }
 
   /* ---------- AI long-term memory panel ---------- */
@@ -2188,6 +2290,7 @@
     aiBusy=false;
     if(aiChatSendBtn)aiChatSendBtn.disabled=false;
     aiSetStatus('');
+    aiPersistChat();
   }
 
   /* ---------- AI interface control (strict whitelist) ---------- */
@@ -2380,6 +2483,7 @@
     if(aiChatEmpty)aiChatEmpty.style.display='none';
     aiMessages.push({role:'user',content:text});
     aiAddBubble('user',text);
+    aiPersistChat();
     aiChatInput.value='';
     aiChatInput.style.height='auto';
 
@@ -2526,6 +2630,18 @@
   }
   if(wsMemoryClear){
     wsMemoryClear.addEventListener('click',function(){ aiClearAllMemories(wsMemoryList); });
+  }
+  if(wsChatClear){
+    wsChatClear.addEventListener('click',function(){
+      wsChatClear.disabled=true;
+      aiClearChat(function(ok){
+        wsChatClear.disabled=false;
+        if(!wsChatHint)return;
+        wsChatHint.textContent=ok
+          ? (lang==='zh'?'对话记录已清空。':'Conversation cleared.')
+          : (lang==='zh'?'清空失败：请先解锁工作台或稍后重试。':'Could not clear. Unlock the workspace or try again.');
+      });
+    });
   }
   if(vmiKeySave){
     vmiKeySave.addEventListener('click',vmiSaveKey);
