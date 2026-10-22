@@ -1841,19 +1841,13 @@
   var aiChatLog=document.getElementById('aiChatLog');
   var aiChatInput=document.getElementById('aiChatInput');
   var aiChatSendBtn=document.getElementById('aiChatSend');
-  var aiChatClearBtn=document.getElementById('aiChatClear');
   var aiChatStatus=document.getElementById('aiChatStatus');
   var aiChatEmpty=document.getElementById('aiChatEmpty');
   var aiFab=document.getElementById('aiFab');
   var aiDock=document.getElementById('aiDock');
   var aiDockClose=document.getElementById('aiDockClose');
   var aiDockUnlock=document.getElementById('aiDockUnlock');
-  var aiMemoryBtn=document.getElementById('aiMemoryBtn');
   var aiUndoBtn=document.getElementById('aiUndoBtn');
-  var aiMemoryPanel=document.getElementById('aiMemoryPanel');
-  var aiMemoryList=document.getElementById('aiMemoryList');
-  var aiMemoryClear=document.getElementById('aiMemoryClear');
-  var aiMemoryClose=document.getElementById('aiMemoryClose');
   var wsMemoryList=document.getElementById('wsMemoryList');
   var wsMemoryClear=document.getElementById('wsMemoryClear');
   var aiMessages=[];
@@ -1887,7 +1881,6 @@
     aiDockOpen=false;
     aiDock.classList.remove('open');
     aiDock.setAttribute('aria-hidden','true');
-    aiCloseMemoryPanel();
     if(aiFab){
       aiFab.classList.remove('active');
       aiFab.setAttribute('aria-expanded','false');
@@ -1901,8 +1894,7 @@
   /* ---------- AI long-term memory panel ---------- */
   // Memories live in D1 behind /api/v-ing-ai-memory. The browser only ever
   // sees the distilled text — never the model key.
-  function aiMemoryMessage(text, targetList){
-    var list=targetList||aiMemoryList;
+  function aiMemoryMessage(text, list){
     if(!list)return;
     list.innerHTML='';
     var el=document.createElement('div');
@@ -1922,8 +1914,7 @@
     });
   }
 
-  function aiRenderMemories(items, targetList){
-    var list=targetList||aiMemoryList;
+  function aiRenderMemories(items, list){
     if(!list)return;
     list.innerHTML='';
     if(!items||!items.length){
@@ -1950,16 +1941,14 @@
     });
   }
 
-  function aiMemoryFail(err, targetList){
-    var list=targetList||aiMemoryList;
+  function aiMemoryFail(err, list){
     var auth=err&&err.message==='auth';
     aiMemoryMessage(auth
       ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
       : (lang==='zh'?'记忆读取失败，请稍后重试。':'Could not load memory. Try again.'), list);
   }
 
-  function aiLoadMemories(targetList){
-    var list=targetList||aiMemoryList;
+  function aiLoadMemories(list){
     if(!list)return;
     aiMemoryMessage('…', list);
     aiMemoryRequest('GET','').then(function(d){
@@ -1967,15 +1956,13 @@
     }).catch(function(err){ aiMemoryFail(err, list); });
   }
 
-  function aiDeleteMemory(id, targetList){
-    var list=targetList||aiMemoryList;
+  function aiDeleteMemory(id, list){
     aiMemoryRequest('DELETE','?id='+encodeURIComponent(id)).then(function(d){
       aiRenderMemories(d.memories, list);
     }).catch(function(err){ aiMemoryFail(err, list); });
   }
 
-  function aiClearAllMemories(targetList){
-    var list=targetList||aiMemoryList;
+  function aiClearAllMemories(list){
     if(!list)return;
     var ok=window.confirm(lang==='zh'
       ? '确定清空全部长期记忆？此操作不可撤销。'
@@ -1984,27 +1971,6 @@
     aiMemoryRequest('DELETE','?all=1').then(function(d){
       aiRenderMemories(d.memories, list);
     }).catch(function(err){ aiMemoryFail(err, list); });
-  }
-
-  function aiOpenMemoryPanel(){
-    if(!aiDock||!aiMemoryPanel)return;
-    aiDock.classList.add('memory-open');
-    aiMemoryPanel.hidden=false;
-    if(aiMemoryBtn)aiMemoryBtn.classList.add('active');
-    aiLoadMemories();
-  }
-
-  function aiCloseMemoryPanel(){
-    if(!aiDock||!aiMemoryPanel)return;
-    aiDock.classList.remove('memory-open');
-    aiMemoryPanel.hidden=true;
-    if(aiMemoryBtn)aiMemoryBtn.classList.remove('active');
-  }
-
-  function aiToggleMemoryPanel(){
-    if(!aiDock)return;
-    if(aiDock.classList.contains('memory-open'))aiCloseMemoryPanel();
-    else aiOpenMemoryPanel();
   }
 
   function aiSetStatus(msg){
@@ -2446,9 +2412,6 @@
   if(aiDockClose){
     aiDockClose.addEventListener('click',aiCloseDock);
   }
-  if(aiMemoryBtn){
-    aiMemoryBtn.addEventListener('click',aiToggleMemoryPanel);
-  }
   if(aiUndoBtn){
     aiUndoBtn.addEventListener('click',function(){
       var result=aiRunTool('undo_streamer_change','{}');
@@ -2458,12 +2421,6 @@
         aiAddActionLine('没有可撤销的操作');
       }
     });
-  }
-  if(aiMemoryClose){
-    aiMemoryClose.addEventListener('click',aiCloseMemoryPanel);
-  }
-  if(aiMemoryClear){
-    aiMemoryClear.addEventListener('click',aiClearAllMemories);
   }
   if(wsMemoryClear){
     wsMemoryClear.addEventListener('click',function(){ aiClearAllMemories(wsMemoryList); });
@@ -2481,14 +2438,6 @@
 
   if(aiChatSendBtn){
     aiChatSendBtn.addEventListener('click',aiSend);
-  }
-  if(aiChatClearBtn){
-    aiChatClearBtn.addEventListener('click',function(){
-      aiMessages=[];
-      if(aiChatLog)aiChatLog.querySelectorAll('.ai-msg').forEach(function(el){el.remove();});
-      if(aiChatEmpty)aiChatEmpty.style.display='';
-      aiSetStatus('');
-    });
   }
   if(aiChatInput){
     aiChatInput.addEventListener('input',function(){

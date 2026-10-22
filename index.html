@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="css/style.css?v=20261022a">
+  <link rel="stylesheet" href="css/style.css?v=20261022b">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -2177,9 +2177,7 @@
         <span data-cn="AI 助手" data-en="AI Assistant">AI 助手</span>
       </div>
       <div class="ai-dock-actions">
-        <button class="ai-dock-btn" id="aiMemoryBtn" type="button" data-cn="记忆" data-en="Memory">记忆</button>
         <button class="ai-dock-btn" id="aiUndoBtn" type="button" disabled data-cn="撤销" data-en="Undo" data-count="0">撤销</button>
-        <button class="ai-dock-btn" id="aiChatClear" type="button" data-cn="清空" data-en="Clear">清空</button>
         <button class="ai-dock-close" id="aiDockClose" type="button" aria-label="关闭">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
@@ -2190,17 +2188,6 @@
       <div class="ai-chat-empty" id="aiChatEmpty">
         <p data-cn="问我关于计划、脚本、分镜、文案的任何问题。" data-en="Ask me anything about schedules, scripts, storyboards or copy.">问我关于计划、脚本、分镜、文案的任何问题。</p>
       </div>
-    </div>
-
-    <div class="ai-memory" id="aiMemoryPanel" hidden>
-      <div class="ai-memory-head">
-        <span data-cn="长期记忆" data-en="Long-term memory">长期记忆</span>
-        <div class="ai-memory-head-actions">
-          <button class="ai-memory-clear" id="aiMemoryClear" type="button" data-cn="清空全部" data-en="Clear all">清空全部</button>
-          <button class="ai-memory-close" id="aiMemoryClose" type="button" aria-label="关闭">×</button>
-        </div>
-      </div>
-      <div class="ai-memory-list" id="aiMemoryList"></div>
     </div>
 
     <div class="ai-chat-composer">
@@ -2222,7 +2209,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20261022a" defer></script>
+  <script src="js/app.js?v=20261022b" defer></script>
 
 </body>
 </html>
