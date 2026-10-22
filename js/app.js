@@ -1724,7 +1724,8 @@
     console:document.getElementById('ws-panel-console'),
     agent:document.getElementById('ws-panel-agent'),
     card:document.getElementById('ws-panel-card'),
-    memory:document.getElementById('ws-panel-memory')
+    memory:document.getElementById('ws-panel-memory'),
+    settings:document.getElementById('ws-panel-settings')
   };
   var collabHub=document.getElementById('collabHub');
   var wsSubpages=document.querySelectorAll('.ws-subpage');
@@ -1737,10 +1738,10 @@
       btn.classList.remove('active');
       if(btn.getAttribute('data-ws-tab')===tab)btn.classList.add('active');
     });
-    // Move indicator (7-segment)
+    // Move indicator
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5','seg-pos-6','seg-pos-7');
-      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6,'memory':7}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5','seg-pos-6','seg-pos-7','seg-pos-8');
+      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6,'memory':7,'settings':8}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1779,6 +1780,10 @@
     // Load AI long-term memories when switching to memory panel
     if(tab==='memory'){
       aiLoadMemories(wsMemoryList);
+    }
+    // Load Vmi key status when switching to settings panel
+    if(tab==='settings'){
+      vmiLoadKeyStatus();
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
@@ -1850,6 +1855,10 @@
   var aiUndoBtn=document.getElementById('aiUndoBtn');
   var wsMemoryList=document.getElementById('wsMemoryList');
   var wsMemoryClear=document.getElementById('wsMemoryClear');
+  var vmiKeyStatus=document.getElementById('vmiKeyStatus');
+  var vmiKeyInput=document.getElementById('vmiKeyInput');
+  var vmiKeySave=document.getElementById('vmiKeySave');
+  var vmiKeyClear=document.getElementById('vmiKeyClear');
   var aiMessages=[];
   var aiBusy=false;
   var aiDockOpen=false;
@@ -1973,6 +1982,92 @@
     }).catch(function(err){ aiMemoryFail(err, list); });
   }
 
+  /* ---------- Vmi settings (API key) ---------- */
+  // The key is written straight to D1 through /api/v-ing-ai-config. The
+  // response only contains a mask, so the plaintext never comes back here.
+  function vmiConfigRequest(method,body){
+    var pwd=_getWsPassword();
+    if(!pwd)return Promise.reject(new Error('auth'));
+    var opts={method:method,headers:{'X-Password':pwd}};
+    if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+    return fetch(WORKER_API+'/api/v-ing-ai-config',opts).then(function(res){
+      if(!res.ok)throw new Error(res.status===403?'auth':'http');
+      return res.json();
+    });
+  }
+
+  function vmiSetStatus(text,kind){
+    if(!vmiKeyStatus)return;
+    vmiKeyStatus.textContent=text;
+    vmiKeyStatus.className='vmi-settings-status'+(kind?' '+kind:'');
+  }
+
+  function vmiRenderKeyStatus(d,prefix){
+    if(!vmiKeyStatus)return;
+    var zh=lang==='zh';
+    if(!d||!d.hasKey){
+      vmiSetStatus(zh?'当前：尚未配置 Key，Vmi 无法回复。':'Current: no key configured, Vmi cannot reply.','error');
+      return;
+    }
+    var when='';
+    if(d.updatedAt){
+      try{
+        when=(zh?' · ':' · ')+new Date(d.updatedAt).toLocaleString(zh?'zh-CN':'en-US');
+      }catch(e){}
+    }
+    var mid=d.source==='custom'
+      ? (zh?'自定义 Key':'custom key')
+      : (zh?'环境变量 Key':'environment key');
+    vmiSetStatus((prefix?prefix+' ':'')+(zh?'当前：使用':'Current: using')+' '+mid+'（'+d.masked+'）'+when,'ok');
+  }
+
+  function vmiLoadKeyStatus(){
+    if(!vmiKeyStatus)return;
+    vmiSetStatus(lang==='zh'?'正在读取…':'Loading…','');
+    vmiConfigRequest('GET','').then(function(d){
+      vmiRenderKeyStatus(d);
+    }).catch(function(err){
+      var auth=err&&err.message==='auth';
+      vmiSetStatus(auth
+        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (lang==='zh'?'读取失败，请稍后重试。':'Could not load. Try again.'),'error');
+    });
+  }
+
+  function vmiSaveKey(){
+    if(!vmiKeyInput)return;
+    var key=(vmiKeyInput.value||'').trim();
+    if(key.length<8){
+      vmiSetStatus(lang==='zh'?'请输入完整的 API Key。':'Enter a complete API key.','error');
+      return;
+    }
+    vmiSetStatus(lang==='zh'?'正在保存…':'Saving…','');
+    vmiConfigRequest('POST',{apiKey:key}).then(function(d){
+      vmiKeyInput.value='';
+      vmiRenderKeyStatus(d,lang==='zh'?'已保存。':'Saved.');
+    }).catch(function(err){
+      var auth=err&&err.message==='auth';
+      vmiSetStatus(auth
+        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (lang==='zh'?'保存失败，请检查 Key 后重试。':'Save failed. Check the key and retry.'),'error');
+    });
+  }
+
+  function vmiClearKey(){
+    var ok=window.confirm(lang==='zh'
+      ? '清除自定义 Key，改用云端环境变量中的 Key？'
+      : 'Remove the custom key and fall back to the environment key?');
+    if(!ok)return;
+    vmiConfigRequest('DELETE','').then(function(d){
+      vmiRenderKeyStatus(d,lang==='zh'?'已清除。':'Removed.');
+    }).catch(function(err){
+      var auth=err&&err.message==='auth';
+      vmiSetStatus(auth
+        ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+        : (lang==='zh'?'清除失败，请稍后重试。':'Remove failed. Try again.'),'error');
+    });
+  }
+
   function aiSetStatus(msg){
     if(!aiChatStatus)return;
     aiChatStatus.textContent=msg||'';
@@ -1983,7 +2078,7 @@
     var zh=lang==='zh';
     if(kind==='auth')return zh?'密码已失效，请重新解锁工作台。':'Session expired. Please unlock the workspace again.';
     if(kind==='rate')return zh?'请求太频繁，请稍后再试。':'Too many requests, please try again shortly.';
-    if(kind==='config')return zh?'AI 服务未配置：请在 Cloudflare 设置 DEEPSEEK_API_KEY。':'AI is not configured: set DEEPSEEK_API_KEY in Cloudflare.';
+    if(kind==='config')return zh?'Vmi 的 API Key 无效或未配置，请到「工作台 → 设置」更换。':'The Vmi API key is missing or invalid. Update it in Workspace → Settings.';
     if(kind==='network')return zh?'连接失败，请检查网络后重试。':'Connection failed. Check your network and retry.';
     return zh?'Vmi 暂时无法回复，请稍后重试。':'Vmi is unavailable. Please try again.';
   }
@@ -2093,8 +2188,8 @@
   // is rejected here, so a bad/forged tool call cannot touch the site.
   var AI_VIEWS=['home','about','works','links','workspace','contact'];
   var AI_VIEW_LABELS={home:'首页',about:'关于',works:'作品',links:'联动',workspace:'工作台',contact:'联系'};
-  var AI_TABS=['plan','unified','storyboard','console','agent','card'];
-  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片'};
+  var AI_TABS=['plan','unified','storyboard','console','agent','card','memory','settings'];
+  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片',memory:'记忆',settings:'设置'};
   var AI_MAX_TOOL_ROUNDS=2;
   var AI_STREAMER_HISTORY=[];
   var AI_MAX_STREAMER_HISTORY=10;
@@ -2424,6 +2519,17 @@
   }
   if(wsMemoryClear){
     wsMemoryClear.addEventListener('click',function(){ aiClearAllMemories(wsMemoryList); });
+  }
+  if(vmiKeySave){
+    vmiKeySave.addEventListener('click',vmiSaveKey);
+  }
+  if(vmiKeyClear){
+    vmiKeyClear.addEventListener('click',vmiClearKey);
+  }
+  if(vmiKeyInput){
+    vmiKeyInput.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); vmiSaveKey(); }
+    });
   }
   if(aiDockUnlock){
     aiDockUnlock.addEventListener('click',function(){

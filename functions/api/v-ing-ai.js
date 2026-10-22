@@ -23,6 +23,7 @@ import {
   buildMemoryBlock,
   saveMemories
 } from '../_lib/ai-memory.js';
+import { resolveApiKey } from '../_lib/app-settings.js';
 
 const ALLOWED_ORIGINS = [
   'https://v-ing-site.pages.dev',
@@ -45,12 +46,13 @@ const DEFAULT_SYSTEM_PROMPT_WITH_TOOLS = DEFAULT_SYSTEM_PROMPT +
   '主播日报位于「工作台 → 日报」标签页，修改后会自动保存。';
 
 const VIEWS = ['home', 'about', 'works', 'links', 'workspace', 'contact'];
-const WS_TABS = ['plan', 'unified', 'storyboard', 'console', 'agent', 'card'];
+const WS_TABS = ['plan', 'unified', 'storyboard', 'console', 'agent', 'card', 'memory', 'settings'];
 const VIEW_LABELS = {
   home: '首页', about: '关于', works: '作品', links: '联动', workspace: '工作台', contact: '联系'
 };
 const TAB_LABELS = {
-  plan: '计划表', unified: '日报', storyboard: '摄影表', console: '指令', agent: '智能体', card: '名片'
+  plan: '计划表', unified: '日报', storyboard: '摄影表', console: '指令', agent: '智能体', card: '名片',
+  memory: '记忆', settings: '设置'
 };
 
 // Tell the model what the UI currently looks like so it does not fire a tool
@@ -104,7 +106,7 @@ const ALLOWED_TOOLS = [
       parameters: {
         type: 'object',
         properties: {
-          tab: { type: 'string', enum: WS_TABS, description: 'plan 计划表、unified 日报、storyboard 摄影表、console 指令、agent 智能体、card 名片' }
+          tab: { type: 'string', enum: WS_TABS, description: 'plan 计划表、unified 日报、storyboard 摄影表、console 指令、agent 智能体、card 名片、memory 记忆、settings 设置' }
         },
         required: ['tab']
       }
@@ -334,13 +336,13 @@ function normalizePayload(body) {
   };
 }
 
-async function extractMemories(env, userText, existingBlock) {
+async function extractMemories(env, apiKey, userText, existingBlock) {
   try {
     const res = await fetch(DEEPSEEK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + env.DEEPSEEK_API_KEY
+        'Authorization': 'Bearer ' + apiKey
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
@@ -395,9 +397,11 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { request, env } = context;
   const hdrs = corsHeaders(request);
-  if (!env.DEEPSEEK_API_KEY) {
+  const resolvedKey = await resolveApiKey(env);
+  if (!resolvedKey.key) {
     return jsonResp({ error: 'AI not configured' }, 503, hdrs);
   }
+  const apiKey = resolvedKey.key;
 
   const rl = checkRateLimit(getClientIP(request));
   if (!rl.allowed) {
@@ -462,7 +466,7 @@ export async function onRequestPost(context) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + env.DEEPSEEK_API_KEY,
+        'Authorization': 'Bearer ' + apiKey,
         'Accept': 'text/event-stream'
       },
       body: JSON.stringify(upstreamBody)
@@ -475,6 +479,11 @@ export async function onRequestPost(context) {
   if (!upstream.ok) {
     const detail = await upstream.text().catch(() => '');
     console.error('[v-ing-ai] upstream', upstream.status, detail.slice(0, 500));
+    // 401/403 means the stored key is invalid or revoked — surface it as a
+    // configuration problem so the settings panel can be pointed at.
+    if (upstream.status === 401 || upstream.status === 403) {
+      return jsonResp({ error: 'Invalid key' }, 503, hdrs);
+    }
     // Do not leak upstream error bodies (may contain key/quota details).
     return jsonResp({ error: 'Upstream error' }, 502, hdrs);
   }
@@ -490,7 +499,7 @@ export async function onRequestPost(context) {
       .join('\n---\n')
       .slice(0, 2000);
     if (recentUserText) {
-      context.waitUntil(extractMemories(env, recentUserText, memoryBlock));
+      context.waitUntil(extractMemories(env, apiKey, recentUserText, memoryBlock));
     }
   }
 
