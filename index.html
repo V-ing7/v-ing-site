@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="微影" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="stylesheet" href="css/style.css?v=20261022k">
+  <link rel="stylesheet" href="css/style.css?v=20261022l">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -2053,24 +2053,48 @@
 
             <div class="vmi-settings-block">
               <div class="ai-memory-head">
-                <span data-cn="语音（Azure）" data-en="Voice (Azure)">语音（Azure）</span>
+                <span data-cn="语音（腾讯云）" data-en="Voice (Tencent Cloud)">语音（腾讯云）</span>
               </div>
               <div class="vmi-settings-status" id="vmiVoiceStatus"></div>
               <div class="vmi-settings-row">
+                <input type="text" id="vmiVoiceSecretId" class="vmi-settings-input"
+                  autocomplete="off" spellcheck="false"
+                  placeholder="SecretId（AKID...）"
+                  data-cn-placeholder="SecretId（AKID...）"
+                  data-en-placeholder="SecretId (AKID...)">
+                <input type="password" id="vmiVoiceSecretKey" class="vmi-settings-input"
+                  autocomplete="off" spellcheck="false"
+                  placeholder="SecretKey"
+                  data-cn-placeholder="SecretKey"
+                  data-en-placeholder="SecretKey">
+              </div>
+              <div class="vmi-settings-row">
                 <input type="text" id="vmiVoiceRegion" class="vmi-settings-input vmi-input-short"
                   autocomplete="off" spellcheck="false"
-                  placeholder="区域，如 eastasia"
-                  data-cn-placeholder="区域，如 eastasia"
-                  data-en-placeholder="Region, e.g. eastasia">
-                <input type="password" id="vmiVoiceKey" class="vmi-settings-input"
-                  autocomplete="off" spellcheck="false"
-                  placeholder="粘贴 Azure 语音 Key"
-                  data-cn-placeholder="粘贴 Azure 语音 Key"
-                  data-en-placeholder="Paste the Azure Speech key">
+                  value="ap-guangzhou"
+                  placeholder="区域，默认 ap-guangzhou"
+                  data-cn-placeholder="区域，默认 ap-guangzhou"
+                  data-en-placeholder="Region, default ap-guangzhou">
+                <select id="vmiVoiceSelect" class="vmi-settings-input vmi-settings-select">
+                  <option value="101001">1 · 智瑜 · 情感女声</option>
+                  <option value="101011">2 · 智燕 · 新闻女声</option>
+                  <option value="101027">3 · 智梅 · 通用女声</option>
+                  <option value="101026">4 · 智希 · 通用女声</option>
+                  <option value="101055">5 · 智付 · 通用女声</option>
+                  <option value="101016">6 · 智甜 · 女童声</option>
+                  <option value="101004">7 · 智云 · 通用男声</option>
+                  <option value="101030">8 · 智柯 · 通用男声</option>
+                  <option value="101013">9 · 智辉 · 新闻男声</option>
+                  <option value="101021">10 · 智瑞 · 新闻男声</option>
+                </select>
                 <button type="button" class="vmi-btn vmi-btn-primary" id="vmiVoiceSave" data-cn="保存" data-en="Save">保存</button>
                 <button type="button" class="vmi-btn" id="vmiVoiceClear" data-cn="清除" data-en="Remove">清除</button>
               </div>
-              <p class="vmi-settings-hint" data-cn="区域是创建资源时选的，例如 eastasia、eastus、japaneast。Key 与区域都只存在云端数据库。" data-en="Region is the one you picked when creating the resource, e.g. eastasia, eastus, japaneast. Both stay server-side.">区域是创建资源时选的，例如 eastasia、eastus、japaneast。Key 与区域都只存在云端数据库。</p>
+              <label class="vmi-settings-toggle">
+                <input type="checkbox" id="vmiVoiceAuto">
+                <span data-cn="Vmi 回复后自动朗读" data-en="Read Vmi replies aloud">Vmi 回复后自动朗读</span>
+              </label>
+              <p class="vmi-settings-hint" data-cn="SecretId / SecretKey 在腾讯云「访问管理 → API 密钥管理」获取；开通语音合成后到「语音合成控制台 → 资源包管理」领取 800 万字符免费包。凭据只存在云端数据库，页面不回显明文。" data-en="Get the SecretId/SecretKey from Tencent Cloud Access Management → API Keys, then claim the 8M-character free pack in the TTS console. Credentials stay server-side.">SecretId / SecretKey 在腾讯云「访问管理 → API 密钥管理」获取；开通语音合成后到「语音合成控制台 → 资源包管理」领取 800 万字符免费包。凭据只存在云端数据库，页面不回显明文。</p>
               <a class="vmi-btn vmi-settings-link" href="/voice-test" target="_blank" rel="noopener"
                 data-cn="试听 10 个音色" data-en="Audition 10 voices">试听 10 个音色</a>
             </div>
@@ -2262,7 +2286,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script src="js/app.js?v=20261022k" defer></script>
+  <script src="js/app.js?v=20261022l" defer></script>
 
 </body>
 </html>

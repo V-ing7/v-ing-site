@@ -1,15 +1,17 @@
 /**
- * V-ing Site API — Azure Speech synthesis proxy
- * GET /api/v-ing-tts?voice=<short name>&text=<text>
+ * V-ing Site API — Tencent Cloud TTS proxy
+ * GET /api/v-ing-tts?voice=<101001>&text=<text>
  *
- * Reads the Azure Speech key/region from D1 (or env) and returns one MP3.
- * The key never reaches the browser; the browser only asks for a voice + text.
+ * Reads the Tencent SecretId/SecretKey from D1 (or env) and returns one MP3.
+ * The credentials never reach the browser; the browser only asks for a voice
+ * and some text. Requests are signed with TC3-HMAC-SHA256 per the Tencent
+ * Cloud API v3 spec.
  *
- * The endpoint is behind the workspace password so it cannot be used as a free
- * TTS engine for arbitrary sites, plus a per-IP rate limit on top.
+ * The endpoint sits behind the workspace password so it cannot be used as a
+ * free TTS engine for arbitrary sites, plus a per-IP rate limit on top.
  */
 
-import { resolveVoiceConfig } from '../_lib/app-settings.js';
+import { resolveVoiceConfig, TTS_VOICE_IDS } from '../_lib/app-settings.js';
 
 const ALLOWED_ORIGINS = [
   'https://v-ing-site.pages.dev',
@@ -18,25 +20,17 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000'
 ];
 
-// zh-CN voices offered on the audition page.
-const VOICES = [
-  'zh-CN-XiaoxiaoNeural',
-  'zh-CN-XiaoyiNeural',
-  'zh-CN-XiaochenNeural',
-  'zh-CN-XiaohanNeural',
-  'zh-CN-XiaomengNeural',
-  'zh-CN-XiaoqiuNeural',
-  'zh-CN-XiaoyanNeural',
-  'zh-CN-XiaoshuangNeural',
-  'zh-CN-YunxiNeural',
-  'zh-CN-YunyangNeural'
-];
+const TTS_HOST = 'tts.tencentcloudapi.com';
+const TTS_SERVICE = 'tts';
+const TTS_ACTION = 'TextToVoice';
+const TTS_VERSION = '2019-08-23';
 
 const MAX_TEXT_CHARS = 600;
 const RATE_WINDOW = 60000;
 const RATE_LIMIT = 60; // 60 clips / minute / IP (audition page plays 10 quickly)
 
 const rateStore = new Map();
+const encoder = new TextEncoder();
 
 function corsHeaders(request) {
   const origin = request.headers.get('Origin') || '';
@@ -87,20 +81,70 @@ function checkPassword(request, env) {
   return result === 0;
 }
 
-function escapeXml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
-function buildSsml(text, voice) {
-  return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='zh-CN'>" +
-    "<voice name='" + voice + "'>" +
-    escapeXml(text) +
-    '</voice></speak>';
+async function sha256Hex(text) {
+  return toHex(await crypto.subtle.digest('SHA-256', encoder.encode(text)));
+}
+
+async function hmac(keyBytes, message) {
+  const key = await crypto.subtle.importKey(
+    'raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  return crypto.subtle.sign('HMAC', key, encoder.encode(message));
+}
+
+// TC3-HMAC-SHA256 signing. `host` is part of the canonical request but must
+// not be set on the outgoing Request — fetch derives it from the URL.
+async function buildAuthHeaders(config, payload) {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
+  const contentType = 'application/json; charset=utf-8';
+
+  const canonicalRequest = [
+    'POST',
+    '/',
+    '',
+    'content-type:' + contentType,
+    'host:' + TTS_HOST,
+    '',
+    'content-type;host',
+    await sha256Hex(payload)
+  ].join('\n');
+
+  const credentialScope = date + '/' + TTS_SERVICE + '/tc3_request';
+  const stringToSign = [
+    'TC3-HMAC-SHA256',
+    String(timestamp),
+    credentialScope,
+    await sha256Hex(canonicalRequest)
+  ].join('\n');
+
+  const secretDate = await hmac(encoder.encode('TC3' + config.secretKey), date);
+  const secretService = await hmac(secretDate, TTS_SERVICE);
+  const secretSigning = await hmac(secretService, 'tc3_request');
+  const signature = toHex(await hmac(secretSigning, stringToSign));
+
+  return {
+    'Content-Type': contentType,
+    'X-TC-Action': TTS_ACTION,
+    'X-TC-Version': TTS_VERSION,
+    'X-TC-Timestamp': String(timestamp),
+    'X-TC-Region': config.region,
+    'Authorization': 'TC3-HMAC-SHA256 Credential=' + config.secretId + '/' +
+      credentialScope + ', SignedHeaders=content-type;host, Signature=' + signature
+  };
+}
+
+function base64ToBytes(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
 }
 
 export async function onRequestOptions(context) {
@@ -111,10 +155,10 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const hdrs = corsHeaders(request);
   const url = new URL(request.url);
-  const voice = url.searchParams.get('voice') || VOICES[0];
+  const voiceParam = parseInt(url.searchParams.get('voice') || '', 10);
   const text = (url.searchParams.get('text') || '').trim().slice(0, MAX_TEXT_CHARS);
 
-  if (!VOICES.includes(voice)) return jsonResp({ error: 'Unknown voice' }, 400, hdrs);
+  if (!TTS_VOICE_IDS.includes(voiceParam)) return jsonResp({ error: 'Unknown voice' }, 400, hdrs);
   if (!text) return jsonResp({ error: 'Empty text' }, 400, hdrs);
   if (!checkRateLimit(getClientIP(request)).allowed) {
     return jsonResp({ error: 'Too many requests' }, 429, hdrs);
@@ -122,44 +166,71 @@ export async function onRequestGet(context) {
   if (!checkPassword(request, env)) return jsonResp({ error: 'Unauthorized' }, 403, hdrs);
 
   const config = await resolveVoiceConfig(env);
-  if (!config.key || !config.region) {
+  if (!config.hasKey) {
     return jsonResp({ error: 'Voice not configured' }, 503, hdrs);
   }
 
+  const payload = JSON.stringify({
+    Text: text,
+    SessionId: 'v-ing-' + Date.now(),
+    VoiceType: voiceParam,
+    Speed: 0,
+    Volume: 0,
+    Pitch: 0,
+    Codec: 'mp3',
+    SampleRate: 16000,
+    ProjectId: 0
+  });
+
   let upstream;
   try {
-    upstream = await fetch(
-      'https://' + config.region + '.tts.speech.microsoft.com/cognitiveservices/v1',
-      {
-        method: 'POST',
-        headers: {
-          'Ocp-Apim-Subscription-Key': config.key,
-          'Content-Type': 'application/ssml+xml',
-          'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3',
-          'User-Agent': 'v-ing-site'
-        },
-        body: buildSsml(text, voice),
-        signal: AbortSignal.timeout(20000)
-      }
-    );
+    upstream = await fetch('https://' + TTS_HOST, {
+      method: 'POST',
+      headers: await buildAuthHeaders(config, payload),
+      body: payload,
+      signal: AbortSignal.timeout(20000)
+    });
   } catch (e) {
     console.error('[v-ing-tts] upstream failed:', e && e.message);
     return jsonResp({ error: 'Upstream unavailable' }, 502, hdrs);
   }
 
-  if (!upstream.ok) {
-    const detail = await upstream.text().catch(() => '');
-    console.error('[v-ing-tts]', upstream.status, detail.slice(0, 300));
-    if (upstream.status === 401 || upstream.status === 403) {
+  let data;
+  try {
+    data = await upstream.json();
+  } catch (e) {
+    console.error('[v-ing-tts] invalid response:', upstream.status);
+    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+  }
+
+  const result = (data && data.Response) || {};
+
+  // Tencent returns HTTP 200 even for API-level failures; the Error object is
+  // the only signal, so it has to be inspected explicitly.
+  if (result.Error) {
+    const code = String(result.Error.Code || '');
+    console.error('[v-ing-tts]', code, String(result.Error.Message || '').slice(0, 200));
+    if (/AuthFailure|Signature|SecretId/i.test(code)) {
       return jsonResp({ error: 'Invalid voice key' }, 503, hdrs);
     }
-    if (upstream.status === 429) {
+    if (/Arrears|NoFreeAmount|LimitExceeded|ResourceUnavailable|UserNotRegistered/i.test(code)) {
       return jsonResp({ error: 'Voice quota exceeded' }, 503, hdrs);
     }
     return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
   }
 
-  const audio = await upstream.arrayBuffer();
+  if (!result.Audio) {
+    console.error('[v-ing-tts] empty audio, requestId:', result.RequestId || '');
+    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+  }
+
+  let audio;
+  try {
+    audio = base64ToBytes(result.Audio);
+  } catch (e) {
+    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+  }
+
   return new Response(audio, {
     status: 200,
     headers: {

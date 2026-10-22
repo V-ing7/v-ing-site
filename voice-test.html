@@ -53,6 +53,7 @@
     transition:border-color .2s,background .2s;
   }
   .card.playing{border-color:rgba(224,62,62,.65);background:#171010;}
+  .card.picked{border-color:rgba(255,255,255,.55);}
   .num{
     flex:0 0 30px;height:30px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
@@ -64,29 +65,34 @@
   .info{flex:1;min-width:0;}
   .name{font-size:.95rem;margin-bottom:4px;}
   .desc{font-size:.75rem;color:var(--dim);line-height:1.5;}
-  button.play{
-    flex:0 0 auto;min-width:76px;
+  .actions{flex:0 0 auto;display:flex;align-items:center;gap:8px;}
+  button.play,button.pick{
+    flex:0 0 auto;
     padding:9px 14px;border-radius:999px;
     border:1px solid var(--line);background:transparent;color:var(--text);
     font-size:.78rem;cursor:pointer;font-family:inherit;
     transition:background .2s,border-color .2s;
   }
-  button.play:hover{border-color:rgba(255,255,255,.4);}
+  button.play{min-width:64px;}
+  button.pick{min-width:52px;color:var(--dim);}
+  button.play:hover,button.pick:hover{border-color:rgba(255,255,255,.4);}
   button.play:disabled{opacity:.45;cursor:default;}
   .card.playing button.play{border-color:var(--accent);background:rgba(224,62,62,.14);}
+  .card.picked button.pick{color:#fff;border-color:rgba(255,255,255,.55);}
   .err{color:#ff7b7b;font-size:.72rem;margin-top:4px;}
   footer{max-width:760px;margin:26px auto 0;color:var(--dim);font-size:.75rem;line-height:1.7;}
   @media(max-width:480px){
     body{padding:26px 14px 56px;}
-    .card{padding:12px;gap:10px;}
-    button.play{min-width:64px;padding:8px 10px;}
+    .card{padding:12px;gap:10px;flex-wrap:wrap;}
+    .actions{width:100%;justify-content:flex-end;}
+    button.play{flex:1;}
   }
 </style>
 </head>
 <body>
 <header>
   <h1>Vmi 音色试听</h1>
-  <p class="lead">10 个 Azure 中文音色，同一句「欢迎回家，Vikyi」。听完记下喜欢的编号告诉我即可。<br>第 1 号晓晓最接近小爱同学的调子。</p>
+  <p class="lead">10 个腾讯云精品音色，同一句「欢迎回家，Vikyi」。听完点「选它」，Vmi 就用这个音色播报。<br>第 1 号智瑜最接近小爱同学的调子。</p>
 </header>
 
 <div class="gate" id="gate">
@@ -97,7 +103,7 @@
 
 <div class="grid" id="grid"></div>
 <footer>
-  音频由 Azure 语音合成实时生成，首次播放约需 1–2 秒。选好后我再把音色接进 Vmi 的回复播报。
+  音频由腾讯云语音合成实时生成，首次播放约需 1–2 秒。精选音色都在 800 万字符免费包范围内。
 </footer>
 
 <script>
@@ -105,16 +111,16 @@
   var TEXT = '欢迎回家，Vikyi';
   var PWD_KEY = 'v_ing_ws_pwd';
   var VOICES = [
-    { key:'zh-CN-XiaoxiaoNeural',   name:'晓晓', desc:'温暖女声 · 清晰亲和，最接近小爱' },
-    { key:'zh-CN-XiaoyiNeural',     name:'晓伊', desc:'活泼女声 · 轻快，语气年轻' },
-    { key:'zh-CN-XiaochenNeural',   name:'晓辰', desc:'随性女声 · 像日常聊天' },
-    { key:'zh-CN-XiaohanNeural',    name:'晓涵', desc:'温柔女声 · 语速平稳，偏柔和' },
-    { key:'zh-CN-XiaomengNeural',   name:'晓梦', desc:'甜美女声 · 音调偏高' },
-    { key:'zh-CN-XiaoqiuNeural',    name:'晓秋', desc:'知性女声 · 成熟、播报感' },
-    { key:'zh-CN-XiaoyanNeural',    name:'晓颜', desc:'亲和女声 · 口语自然' },
-    { key:'zh-CN-XiaoshuangNeural', name:'晓双', desc:'童声 · 小女孩音色' },
-    { key:'zh-CN-YunxiNeural',      name:'云希', desc:'阳光男声 · 少年感' },
-    { key:'zh-CN-YunyangNeural',    name:'云扬', desc:'播音男声 · 专业沉稳' }
+    { key:101001, name:'智瑜', desc:'情感女声 · 温暖自然，最接近小爱' },
+    { key:101011, name:'智燕', desc:'新闻女声 · 清晰、播报感' },
+    { key:101027, name:'智梅', desc:'通用女声 · 平稳亲和' },
+    { key:101026, name:'智希', desc:'通用女声 · 语气轻快' },
+    { key:101055, name:'智付', desc:'通用女声 · 干净利落' },
+    { key:101016, name:'智甜', desc:'女童声 · 小女孩音色' },
+    { key:101004, name:'智云', desc:'通用男声 · 沉稳' },
+    { key:101030, name:'智柯', desc:'通用男声 · 日常口语' },
+    { key:101013, name:'智辉', desc:'新闻男声 · 专业播音' },
+    { key:101021, name:'智瑞', desc:'新闻男声 · 成熟稳重' }
   ];
 
   var grid = document.getElementById('grid');
@@ -154,6 +160,29 @@
     card.querySelector('.info').appendChild(el);
   }
 
+  function readPwd(){
+    var p = (pwdInput.value || '').trim();
+    if (!p){
+      note('先输入工作台密码。', true);
+      pwdInput.focus();
+      return '';
+    }
+    pwd = p;
+    try { sessionStorage.setItem(PWD_KEY, p); } catch (e) {}
+    return p;
+  }
+
+  function errText(res, d){
+    if (res.status === 403) return '密码不对，请重新输入。';
+    if (res.status === 503) {
+      if (d.error === 'Voice not configured') return '还没配置腾讯云凭据，先去「工作台 → 设置 → 语音」保存 SecretId / SecretKey。';
+      if (d.error === 'Invalid voice key') return '腾讯云凭据无效，请回设置里检查 SecretId / SecretKey。';
+      if (d.error === 'Voice quota exceeded') return '免费额度用完或未领取免费包，请到腾讯云语音合成控制台检查。';
+    }
+    if (res.status === 400 && d.error === 'Unknown voice') return '这个音色暂不可用。';
+    return '生成失败（' + res.status + '），稍后再试。';
+  }
+
   function play(card, btn, voice){
     var old = card.querySelector('.err');
     if (old) old.remove();
@@ -162,14 +191,8 @@
       setIdle();
       return;
     }
-    var p = (pwdInput.value || '').trim();
-    if (!p){
-      note('先输入工作台密码，再点试听。', true);
-      pwdInput.focus();
-      return;
-    }
-    pwd = p;
-    try { sessionStorage.setItem(PWD_KEY, p); } catch (e) {}
+    var p = readPwd();
+    if (!p) return;
 
     setIdle();
     current = card;
@@ -182,13 +205,7 @@
       .then(function(res){
         if (res.ok) return res.blob();
         return res.json().catch(function(){ return {}; }).then(function(d){
-          if (res.status === 403) throw new Error('密码不对，请重新输入。');
-          if (res.status === 503) {
-            if (d.error === 'Voice not configured') throw new Error('还没配置语音 Key，先去「工作台 → 设置 → 语音」保存。');
-            if (d.error === 'Invalid voice key') throw new Error('Azure Key 无效或区域不匹配，请回设置里检查。');
-            if (d.error === 'Voice quota exceeded') throw new Error('Azure 免费额度用完了，稍后再试。');
-          }
-          throw new Error('生成失败（' + res.status + '），稍后再试。');
+          throw new Error(errText(res, d || {}));
         });
       })
       .then(function(blob){
@@ -207,6 +224,34 @@
         fail(card, err.message);
         setIdle();
       });
+  }
+
+  function pick(card, btn, voice){
+    var p = readPwd();
+    if (!p) return;
+    btn.disabled = true;
+    fetch('/api/v-ing-voice-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Password': p },
+      body: JSON.stringify({ voiceId: voice.key })
+    }).then(function(res){
+      if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(d){
+        if (res.status === 403) throw new Error('密码不对，请重新输入。');
+        if (d.error && d.error.indexOf('secretId') >= 0) {
+          throw new Error('先在「工作台 → 设置 → 语音」保存 SecretId / SecretKey，再选音色。');
+        }
+        throw new Error(d.error || '保存失败，请稍后再试。');
+      });
+      return res.json();
+    }).then(function(){
+      grid.querySelectorAll('.card.picked').forEach(function(c){ c.classList.remove('picked'); });
+      card.classList.add('picked');
+      note('已选定「' + voice.name + '」，Vmi 之后用这个音色播报。');
+    }).catch(function(err){
+      note(err.message, true);
+    }).then(function(){
+      btn.disabled = false;
+    });
   }
 
   VOICES.forEach(function(v, i){
@@ -228,27 +273,32 @@
     info.appendChild(name);
     info.appendChild(desc);
 
+    var actions = document.createElement('div');
+    actions.className = 'actions';
+
     var btn = document.createElement('button');
     btn.className = 'play';
     btn.type = 'button';
     btn.textContent = '试听';
     btn.addEventListener('click', function(){ play(card, btn, v); });
 
+    var pickBtn = document.createElement('button');
+    pickBtn.className = 'pick';
+    pickBtn.type = 'button';
+    pickBtn.textContent = '选它';
+    pickBtn.addEventListener('click', function(){ pick(card, pickBtn, v); });
+
+    actions.appendChild(btn);
+    actions.appendChild(pickBtn);
+
     card.appendChild(num);
     card.appendChild(info);
-    card.appendChild(btn);
+    card.appendChild(actions);
     grid.appendChild(card);
   });
 
   pwdSave.addEventListener('click', function(){
-    var p = (pwdInput.value || '').trim();
-    if (!p){
-      note('先输入工作台密码。', true);
-      pwdInput.focus();
-      return;
-    }
-    pwd = p;
-    try { sessionStorage.setItem(PWD_KEY, p); } catch (e) {}
+    if (!readPwd()) return;
     note('已解锁，点任意一条试听。');
   });
 
