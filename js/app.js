@@ -1037,9 +1037,7 @@
     }
   }
 
-  function toggleTheme(){
-    var current=html.getAttribute('data-theme');
-    var next=current==='dark'?'light':'dark';
+  function applyTheme(next){
     html.setAttribute('data-theme',next);
     localStorage.setItem('v-ing-theme',next);
     if(window.__vingData){
@@ -1049,6 +1047,10 @@
     requestAnimationFrame(function(){ checkReveals(); });
     // Re-render QR code with theme-appropriate color
     setTimeout(updateQRTheme,50);
+  }
+
+  function toggleTheme(){
+    applyTheme(html.getAttribute('data-theme')==='dark'?'light':'dark');
   }
 
   themeToggle.addEventListener('click',toggleTheme);
@@ -1115,8 +1117,8 @@
     // Update document title
     document.title=lang==='zh'?'微影 V-ing | 影视创作工作室':'V-ing | Film & Video Creation Studio';
   }
-  function toggleLang(){
-    lang=lang==='zh'?'en':'zh';
+  function setLang(next){
+    lang=next==='en'?'en':'zh';
     localStorage.setItem('v-ing-lang',lang);
     applyLang();
     // Sync to GitHub
@@ -1124,6 +1126,9 @@
       window.__vingData.lang = lang;
       ghSave(window.__vingData);
     }
+  }
+  function toggleLang(){
+    setLang(lang==='zh'?'en':'zh');
   }
   langToggle.addEventListener('click',toggleLang);
   applyLang();
@@ -1838,6 +1843,11 @@
   var aiDock=document.getElementById('aiDock');
   var aiDockClose=document.getElementById('aiDockClose');
   var aiDockUnlock=document.getElementById('aiDockUnlock');
+  var aiMemoryBtn=document.getElementById('aiMemoryBtn');
+  var aiMemoryPanel=document.getElementById('aiMemoryPanel');
+  var aiMemoryList=document.getElementById('aiMemoryList');
+  var aiMemoryClear=document.getElementById('aiMemoryClear');
+  var aiMemoryClose=document.getElementById('aiMemoryClose');
   var aiMessages=[];
   var aiBusy=false;
   var aiDockOpen=false;
@@ -1869,6 +1879,7 @@
     aiDockOpen=false;
     aiDock.classList.remove('open');
     aiDock.setAttribute('aria-hidden','true');
+    aiCloseMemoryPanel();
     if(aiFab){
       aiFab.classList.remove('active');
       aiFab.setAttribute('aria-expanded','false');
@@ -1877,6 +1888,109 @@
 
   function aiScrollToEnd(){
     if(aiChatLog)aiChatLog.scrollTop=aiChatLog.scrollHeight;
+  }
+
+  /* ---------- AI long-term memory panel ---------- */
+  // Memories live in D1 behind /api/v-ing-ai-memory. The browser only ever
+  // sees the distilled text — never the model key.
+  function aiMemoryMessage(text){
+    if(!aiMemoryList)return;
+    aiMemoryList.innerHTML='';
+    var el=document.createElement('div');
+    el.className='ai-memory-empty';
+    el.textContent=text;
+    aiMemoryList.appendChild(el);
+  }
+
+  function aiMemoryRequest(method,query,body){
+    var pwd=_getWsPassword();
+    if(!pwd)return Promise.reject(new Error('auth'));
+    var opts={method:method,headers:{'X-Password':pwd}};
+    if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+    return fetch(WORKER_API+'/api/v-ing-ai-memory'+(query||''),opts).then(function(res){
+      if(!res.ok)throw new Error(res.status===403?'auth':'http');
+      return res.json();
+    });
+  }
+
+  function aiRenderMemories(items){
+    if(!aiMemoryList)return;
+    aiMemoryList.innerHTML='';
+    if(!items||!items.length){
+      aiMemoryMessage(lang==='zh'
+        ? '还没有记忆。聊几句后我会自动记住重要信息。'
+        : 'No memories yet. I will remember important details as we talk.');
+      return;
+    }
+    items.forEach(function(it){
+      var row=document.createElement('div');
+      row.className='ai-memory-item';
+      var span=document.createElement('span');
+      span.className='ai-memory-item-text';
+      span.textContent=it.content;
+      var del=document.createElement('button');
+      del.type='button';
+      del.className='ai-memory-del';
+      del.setAttribute('aria-label',lang==='zh'?'删除':'Delete');
+      del.textContent='×';
+      del.addEventListener('click',function(){ aiDeleteMemory(it.id); });
+      row.appendChild(span);
+      row.appendChild(del);
+      aiMemoryList.appendChild(row);
+    });
+  }
+
+  function aiMemoryFail(err){
+    var auth=err&&err.message==='auth';
+    aiMemoryMessage(auth
+      ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
+      : (lang==='zh'?'记忆读取失败，请稍后重试。':'Could not load memory. Try again.'));
+  }
+
+  function aiLoadMemories(){
+    if(!aiMemoryList)return;
+    aiMemoryMessage('…');
+    aiMemoryRequest('GET','').then(function(d){
+      aiRenderMemories(d.memories);
+    }).catch(aiMemoryFail);
+  }
+
+  function aiDeleteMemory(id){
+    aiMemoryRequest('DELETE','?id='+encodeURIComponent(id)).then(function(d){
+      aiRenderMemories(d.memories);
+    }).catch(aiMemoryFail);
+  }
+
+  function aiClearAllMemories(){
+    if(!aiMemoryList)return;
+    var ok=window.confirm(lang==='zh'
+      ? '确定清空全部长期记忆？此操作不可撤销。'
+      : 'Clear all long-term memories? This cannot be undone.');
+    if(!ok)return;
+    aiMemoryRequest('DELETE','?all=1').then(function(d){
+      aiRenderMemories(d.memories);
+    }).catch(aiMemoryFail);
+  }
+
+  function aiOpenMemoryPanel(){
+    if(!aiDock||!aiMemoryPanel)return;
+    aiDock.classList.add('memory-open');
+    aiMemoryPanel.hidden=false;
+    if(aiMemoryBtn)aiMemoryBtn.classList.add('active');
+    aiLoadMemories();
+  }
+
+  function aiCloseMemoryPanel(){
+    if(!aiDock||!aiMemoryPanel)return;
+    aiDock.classList.remove('memory-open');
+    aiMemoryPanel.hidden=true;
+    if(aiMemoryBtn)aiMemoryBtn.classList.remove('active');
+  }
+
+  function aiToggleMemoryPanel(){
+    if(!aiDock)return;
+    if(aiDock.classList.contains('memory-open'))aiCloseMemoryPanel();
+    else aiOpenMemoryPanel();
   }
 
   function aiSetStatus(msg){
@@ -1913,16 +2027,18 @@
   }
 
   // Parse DeepSeek's OpenAI-compatible SSE stream, calling onDelta(text) for
-  // every token chunk. Resolves with the full answer.
+  // every token chunk. Resolves with { text, toolCalls } — toolCalls are the
+  // function calls the model asked for, already reassembled from deltas.
   function aiConsumeStream(res,onDelta){
     return new Promise(function(resolve,reject){
       if(!res.body||!res.body.getReader){
-        return res.text().then(function(t){ resolve(t); },reject);
+        return res.text().then(function(t){ resolve({text:t,toolCalls:[]}); },reject);
       }
       var reader=res.body.getReader();
       var decoder=new TextDecoder('utf-8');
       var buffer='';
       var full='';
+      var toolCalls=[];
       var finished=false;
       function finish(err){
         if(finished)return;
@@ -1930,7 +2046,7 @@
         // Release the response body explicitly: stopping at [DONE] without
         // cancelling leaves the connection open and shows up as ERR_ABORTED.
         try{ if(reader.cancel)reader.cancel().catch(function(){}); }catch(e){}
-        if(err)reject(err); else resolve(full);
+        if(err)reject(err); else resolve({text:full,toolCalls:toolCalls.filter(function(c){return !!c;})});
       }
       function pump(){
         reader.read().then(function(r){
@@ -1951,10 +2067,27 @@
                 var obj=JSON.parse(data);
                 if(obj.error){ finish(new Error('upstream')); return; }
                 var choice=obj.choices&&obj.choices[0];
-                var delta=choice&&choice.delta&&choice.delta.content;
-                if(typeof delta==='string'&&delta){
-                  full+=delta;
-                  onDelta(delta);
+                var d=choice&&choice.delta;
+                if(d){
+                  if(typeof d.content==='string'&&d.content){
+                    full+=d.content;
+                    onDelta(d.content);
+                  }
+                  // Tool calls stream as fragments: the first chunk carries
+                  // id/name, later chunks only append argument text.
+                  if(Array.isArray(d.tool_calls)){
+                    for(var k=0;k<d.tool_calls.length;k++){
+                      var part=d.tool_calls[k];
+                      if(!part)continue;
+                      var idx=(typeof part.index==='number')?part.index:k;
+                      if(!toolCalls[idx])toolCalls[idx]={id:'',type:'function',function:{name:'',arguments:''}};
+                      if(part.id)toolCalls[idx].id=part.id;
+                      if(part.function){
+                        if(part.function.name)toolCalls[idx].function.name+=part.function.name;
+                        if(part.function.arguments)toolCalls[idx].function.arguments+=part.function.arguments;
+                      }
+                    }
+                  }
                 }
               }catch(e){ /* keep-alive / non-JSON line */ }
             }
@@ -1973,6 +2106,83 @@
     aiBusy=false;
     if(aiChatSendBtn)aiChatSendBtn.disabled=false;
     aiSetStatus('');
+  }
+
+  /* ---------- AI interface control (strict whitelist) ---------- */
+  // The model can only request these five actions. Anything outside the list
+  // is rejected here, so a bad/forged tool call cannot touch the site.
+  var AI_VIEWS=['home','about','works','links','workspace','contact'];
+  var AI_VIEW_LABELS={home:'首页',about:'关于',works:'作品',links:'联动',workspace:'工作台',contact:'联系'};
+  var AI_TABS=['plan','unified','storyboard','console','agent','card'];
+  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片'};
+  var AI_MAX_TOOL_ROUNDS=2;
+
+  function aiAddActionLine(text){
+    var el=document.createElement('div');
+    el.className='ai-action';
+    el.textContent='↳ '+text;
+    aiChatLog.appendChild(el);
+    aiScrollToEnd();
+    return el;
+  }
+
+  function aiRunTool(name,rawArgs){
+    var args={};
+    try{ args=JSON.parse(rawArgs||'{}')||{}; }catch(e){ return {ok:false,error:'invalid_arguments'}; }
+    try{
+      if(name==='navigate'){
+        var v=String(args.view||'');
+        if(AI_VIEWS.indexOf(v)<0)return {ok:false,error:'unknown_view'};
+        switchView(v);
+        return {ok:true,view:v,label:AI_VIEW_LABELS[v]};
+      }
+      if(name==='workspace_tab'){
+        var t=String(args.tab||'');
+        if(AI_TABS.indexOf(t)<0)return {ok:false,error:'unknown_tab'};
+        switchView('workspace');
+        switchWsTab(t);
+        return {ok:true,tab:t,label:AI_TAB_LABELS[t]};
+      }
+      if(name==='set_theme'){
+        var th=String(args.theme||'');
+        if(th!=='dark'&&th!=='light')return {ok:false,error:'unknown_theme'};
+        applyTheme(th);
+        return {ok:true,theme:th};
+      }
+      if(name==='set_language'){
+        var lg=String(args.lang||'');
+        if(lg!=='zh'&&lg!=='en')return {ok:false,error:'unknown_lang'};
+        setLang(lg);
+        return {ok:true,lang:lg};
+      }
+      if(name==='scroll_to'){
+        var tg=String(args.target||'');
+        if(tg==='top')window.scrollTo({top:0,behavior:'smooth'});
+        else if(tg==='bottom')window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'});
+        else return {ok:false,error:'unknown_target'};
+        return {ok:true,target:tg};
+      }
+    }catch(e){ return {ok:false,error:'execution_failed'}; }
+    return {ok:false,error:'unknown_tool'};
+  }
+
+  function aiPageState(){
+    var tabBtn=document.querySelector('.seg-btn.active');
+    return {
+      view:(typeof currentView==='string'?currentView:''),
+      tab:tabBtn?tabBtn.getAttribute('data-ws-tab'):'',
+      theme:html.getAttribute('data-theme')||'dark',
+      lang:lang
+    };
+  }
+
+  function aiToolNote(name,result){
+    if(name==='navigate')return '已切换到「'+(result.label||result.view)+'」';
+    if(name==='workspace_tab')return '已打开工作台 · '+(result.label||result.tab);
+    if(name==='set_theme')return result.theme==='light'?'已切换为浅色主题':'已切换为深色主题';
+    if(name==='set_language')return result.lang==='en'?'已切换为英文':'已切换为中文';
+    if(name==='scroll_to')return result.target==='top'?'已滚动到顶部':'已滚动到底部';
+    return '已执行 '+name;
   }
 
   function aiSend(){
@@ -2002,7 +2212,12 @@
     var bubble=null;
     var pending='';
     var rafId=0;
+    var rounds=0;
 
+    function clearTyping(){
+      if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
+      typing=null;
+    }
     function flushDelta(){
       rafId=0;
       if(!bubble||!pending)return;
@@ -2010,45 +2225,89 @@
       pending='';
       aiScrollToEnd();
     }
-
-    var controller=new AbortController();
-    var watchdog=setTimeout(function(){ controller.abort(); },60000);
-
-    fetch(WORKER_API+'/api/v-ing-ai',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-Password':pwd},
-      body:JSON.stringify({messages:aiMessages,model:'deepseek-chat'}),
-      signal:controller.signal
-    }).then(function(res){
-      if(!res.ok){
-        if(res.status===403)throw new Error('auth');
-        if(res.status===429)throw new Error('rate');
-        if(res.status===503)throw new Error('config');
-        throw new Error('http');
-      }
-      return aiConsumeStream(res,function(delta){
-        if(!bubble){
-          if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
-          bubble=aiAddBubble('assistant','');
-        }
-        // Batch token appends into one DOM write per animation frame so a
-        // fast stream does not force a layout for every single character.
-        pending+=delta;
-        if(!rafId)rafId=requestAnimationFrame(flushDelta);
-      });
-    }).then(function(full){
-      clearTimeout(watchdog);
-      if(rafId){ cancelAnimationFrame(rafId); flushDelta(); }
-      if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
+    function onDelta(delta){
       if(!bubble){
-        bubble=aiAddBubble('assistant',lang==='zh'?'（没有返回内容）':'(No content returned)');
+        clearTyping();
+        bubble=aiAddBubble('assistant','');
+      }
+      // Batch token appends into one DOM write per animation frame so a
+      // fast stream does not force a layout for every single character.
+      pending+=delta;
+      if(!rafId)rafId=requestAnimationFrame(flushDelta);
+    }
+
+    function requestRound(){
+      var controller=new AbortController();
+      var watchdog=setTimeout(function(){ controller.abort(); },60000);
+      return fetch(WORKER_API+'/api/v-ing-ai',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Password':pwd},
+        body:JSON.stringify({
+          messages:aiMessages,
+          model:'deepseek-chat',
+          tools_enabled:rounds<AI_MAX_TOOL_ROUNDS,
+          page_state:aiPageState()
+        }),
+        signal:controller.signal
+      }).then(function(res){
+        if(!res.ok){
+          clearTimeout(watchdog);
+          if(res.status===403)throw new Error('auth');
+          if(res.status===429)throw new Error('rate');
+          if(res.status===503)throw new Error('config');
+          throw new Error('http');
+        }
+        return aiConsumeStream(res,onDelta).then(function(out){
+          clearTimeout(watchdog);
+          return out;
+        },function(err){
+          clearTimeout(watchdog);
+          throw err;
+        });
+      },function(err){
+        clearTimeout(watchdog);
+        throw err;
+      });
+    }
+
+    function step(){
+      return requestRound().then(function(out){
+        if(rafId){ cancelAnimationFrame(rafId); flushDelta(); }
+        if(out.toolCalls&&out.toolCalls.length&&rounds<AI_MAX_TOOL_ROUNDS){
+          rounds++;
+          aiMessages.push({role:'assistant',content:out.text||'',tool_calls:out.toolCalls});
+          var notes=[];
+          out.toolCalls.forEach(function(tc){
+            var fn=tc.function||{};
+            var result=aiRunTool(fn.name,fn.arguments);
+            aiMessages.push({
+              role:'tool',
+              tool_call_id:tc.id||('call_'+rounds+'_'+notes.length),
+              content:JSON.stringify(result)
+            });
+            if(result&&result.ok)notes.push(aiToolNote(fn.name,result));
+          });
+          bubble=null;
+          pending='';
+          clearTyping();
+          if(notes.length)aiAddActionLine(notes.join(' · '));
+          return step();
+        }
+        return out.text;
+      });
+    }
+
+    step().then(function(full){
+      clearTyping();
+      if(rafId){ cancelAnimationFrame(rafId); flushDelta(); }
+      if(!bubble){
+        bubble=aiAddBubble('assistant',full||(lang==='zh'?'（没有返回内容）':'(No content returned)'));
       }
       if(full)aiMessages.push({role:'assistant',content:full});
       aiResetComposer();
     }).catch(function(err){
-      clearTimeout(watchdog);
+      clearTyping();
       if(rafId){ cancelAnimationFrame(rafId); flushDelta(); }
-      if(typing&&typing.parentNode)typing.parentNode.removeChild(typing);
       var kind=(err&&err.name==='AbortError')?'AbortError':((err&&err.message)||'');
       if(kind!=='auth'&&kind!=='rate'&&kind!=='config'&&kind!=='AbortError'&&kind!=='http')kind='network';
       if(kind==='AbortError'){
@@ -2075,6 +2334,15 @@
   }
   if(aiDockClose){
     aiDockClose.addEventListener('click',aiCloseDock);
+  }
+  if(aiMemoryBtn){
+    aiMemoryBtn.addEventListener('click',aiToggleMemoryPanel);
+  }
+  if(aiMemoryClose){
+    aiMemoryClose.addEventListener('click',aiCloseMemoryPanel);
+  }
+  if(aiMemoryClear){
+    aiMemoryClear.addEventListener('click',aiClearAllMemories);
   }
   if(aiDockUnlock){
     aiDockUnlock.addEventListener('click',function(){
