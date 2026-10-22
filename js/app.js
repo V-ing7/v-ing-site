@@ -1723,7 +1723,8 @@
     storyboard:document.getElementById('ws-panel-storyboard'),
     console:document.getElementById('ws-panel-console'),
     agent:document.getElementById('ws-panel-agent'),
-    card:document.getElementById('ws-panel-card')
+    card:document.getElementById('ws-panel-card'),
+    memory:document.getElementById('ws-panel-memory')
   };
   var collabHub=document.getElementById('collabHub');
   var wsSubpages=document.querySelectorAll('.ws-subpage');
@@ -1736,10 +1737,10 @@
       btn.classList.remove('active');
       if(btn.getAttribute('data-ws-tab')===tab)btn.classList.add('active');
     });
-    // Move indicator (6-segment)
+    // Move indicator (7-segment)
     if(segIndicator){
-      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5','seg-pos-6');
-      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6}[tab] || 1;
+      segIndicator.classList.remove('seg-right','seg-pos-1','seg-pos-2','seg-pos-3','seg-pos-4','seg-pos-5','seg-pos-6','seg-pos-7');
+      var pos = {'plan':1,'unified':2,'storyboard':3,'console':4,'agent':5,'card':6,'memory':7}[tab] || 1;
       segIndicator.classList.add('seg-pos-'+pos);
     }
     // Switch panels
@@ -1774,6 +1775,10 @@
     if(tab==='card'){
       if(!_qrReady)setTimeout(initCustomQR,200);
       if(!_veQRReady)setTimeout(initVeCardQR,250);
+    }
+    // Load AI long-term memories when switching to memory panel
+    if(tab==='memory'){
+      aiLoadMemories(wsMemoryList);
     }
     // Trigger reveals
     setTimeout(function(){checkReveals()},100);
@@ -1849,6 +1854,8 @@
   var aiMemoryList=document.getElementById('aiMemoryList');
   var aiMemoryClear=document.getElementById('aiMemoryClear');
   var aiMemoryClose=document.getElementById('aiMemoryClose');
+  var wsMemoryList=document.getElementById('wsMemoryList');
+  var wsMemoryClear=document.getElementById('wsMemoryClear');
   var aiMessages=[];
   var aiBusy=false;
   var aiDockOpen=false;
@@ -1894,13 +1901,14 @@
   /* ---------- AI long-term memory panel ---------- */
   // Memories live in D1 behind /api/v-ing-ai-memory. The browser only ever
   // sees the distilled text — never the model key.
-  function aiMemoryMessage(text){
-    if(!aiMemoryList)return;
-    aiMemoryList.innerHTML='';
+  function aiMemoryMessage(text, targetList){
+    var list=targetList||aiMemoryList;
+    if(!list)return;
+    list.innerHTML='';
     var el=document.createElement('div');
     el.className='ai-memory-empty';
     el.textContent=text;
-    aiMemoryList.appendChild(el);
+    list.appendChild(el);
   }
 
   function aiMemoryRequest(method,query,body){
@@ -1914,13 +1922,14 @@
     });
   }
 
-  function aiRenderMemories(items){
-    if(!aiMemoryList)return;
-    aiMemoryList.innerHTML='';
+  function aiRenderMemories(items, targetList){
+    var list=targetList||aiMemoryList;
+    if(!list)return;
+    list.innerHTML='';
     if(!items||!items.length){
       aiMemoryMessage(lang==='zh'
         ? '还没有记忆。聊几句后我会自动记住重要信息。'
-        : 'No memories yet. I will remember important details as we talk.');
+        : 'No memories yet. I will remember important details as we talk.', list);
       return;
     }
     items.forEach(function(it){
@@ -1934,43 +1943,47 @@
       del.className='ai-memory-del';
       del.setAttribute('aria-label',lang==='zh'?'删除':'Delete');
       del.textContent='×';
-      del.addEventListener('click',function(){ aiDeleteMemory(it.id); });
+      del.addEventListener('click',function(){ aiDeleteMemory(it.id, list); });
       row.appendChild(span);
       row.appendChild(del);
-      aiMemoryList.appendChild(row);
+      list.appendChild(row);
     });
   }
 
-  function aiMemoryFail(err){
+  function aiMemoryFail(err, targetList){
+    var list=targetList||aiMemoryList;
     var auth=err&&err.message==='auth';
     aiMemoryMessage(auth
       ? (lang==='zh'?'密码已失效，请重新解锁。':'Session expired. Unlock again.')
-      : (lang==='zh'?'记忆读取失败，请稍后重试。':'Could not load memory. Try again.'));
+      : (lang==='zh'?'记忆读取失败，请稍后重试。':'Could not load memory. Try again.'), list);
   }
 
-  function aiLoadMemories(){
-    if(!aiMemoryList)return;
-    aiMemoryMessage('…');
+  function aiLoadMemories(targetList){
+    var list=targetList||aiMemoryList;
+    if(!list)return;
+    aiMemoryMessage('…', list);
     aiMemoryRequest('GET','').then(function(d){
-      aiRenderMemories(d.memories);
-    }).catch(aiMemoryFail);
+      aiRenderMemories(d.memories, list);
+    }).catch(function(err){ aiMemoryFail(err, list); });
   }
 
-  function aiDeleteMemory(id){
+  function aiDeleteMemory(id, targetList){
+    var list=targetList||aiMemoryList;
     aiMemoryRequest('DELETE','?id='+encodeURIComponent(id)).then(function(d){
-      aiRenderMemories(d.memories);
-    }).catch(aiMemoryFail);
+      aiRenderMemories(d.memories, list);
+    }).catch(function(err){ aiMemoryFail(err, list); });
   }
 
-  function aiClearAllMemories(){
-    if(!aiMemoryList)return;
+  function aiClearAllMemories(targetList){
+    var list=targetList||aiMemoryList;
+    if(!list)return;
     var ok=window.confirm(lang==='zh'
       ? '确定清空全部长期记忆？此操作不可撤销。'
       : 'Clear all long-term memories? This cannot be undone.');
     if(!ok)return;
     aiMemoryRequest('DELETE','?all=1').then(function(d){
-      aiRenderMemories(d.memories);
-    }).catch(aiMemoryFail);
+      aiRenderMemories(d.memories, list);
+    }).catch(function(err){ aiMemoryFail(err, list); });
   }
 
   function aiOpenMemoryPanel(){
@@ -2451,6 +2464,9 @@
   }
   if(aiMemoryClear){
     aiMemoryClear.addEventListener('click',aiClearAllMemories);
+  }
+  if(wsMemoryClear){
+    wsMemoryClear.addEventListener('click',function(){ aiClearAllMemories(wsMemoryList); });
   }
   if(aiDockUnlock){
     aiDockUnlock.addEventListener('click',function(){

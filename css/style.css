@@ -6648,3 +6648,18 @@ body.ws-locked .ai-dock{
   .ai-fab{animation:none}
   .ai-fab-ring{display:none}
 }
+
+/* ---------- Workspace AI Memory panel ---------- */
+.ws-memory{
+  display:flex;
+  flex-direction:column;
+  margin-top:18px;
+  border-radius:14px;
+  background:var(--surface-glass);
+  border:1px solid var(--glass-border);
+  overflow:hidden;
+}
+.ws-memory .ai-memory-list{
+  max-height:60vh;
+  min-height:220px;
+}
