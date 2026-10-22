@@ -10,7 +10,19 @@
  *     Unlocked-workspace users only.
  *   - Per-IP rate limiting, body size / message count / length caps.
  *   - Upstream errors are logged server-side and returned as generic text.
+ *
+ * LONG-TERM MEMORY:
+ *   - Stored in D1 (env.DB), loaded into the system prompt on every turn.
+ *   - New stable facts are distilled from user messages in the background
+ *     via context.waitUntil, so streaming latency is unaffected.
  */
+
+import {
+  ensureMemoryTable,
+  loadMemories,
+  buildMemoryBlock,
+  saveMemories
+} from '../_lib/ai-memory.js';
 
 const ALLOWED_ORIGINS = [
   'https://v-ing-site.pages.dev',
@@ -24,13 +36,125 @@ const ALLOWED_MODELS = ['deepseek-chat', 'deepseek-reasoner'];
 const DEFAULT_SYSTEM_PROMPT =
   '你是「微影 V-ing」影视创作工作室的 AI 助手，负责协助创作计划、脚本、分镜、文案与日常影视制作问题。回答简洁、具体、可执行，默认使用中文。';
 
+// Interface-control tools. Definitions live on the server so the browser can
+// only ask for a boolean flag — it cannot inject arbitrary tool schemas.
+// Execution still happens client-side against a strict whitelist.
+const DEFAULT_SYSTEM_PROMPT_WITH_TOOLS = DEFAULT_SYSTEM_PROMPT +
+  ' 你还可以直接操作网站界面：切换页面、切换工作台标签、切换深浅主题、切换中英文、滚动页面。' +
+  '当用户的要求属于这些操作时，必须先调用对应的工具，再简短说明结果；不要在没有调用工具的情况下声称已经完成操作。';
+
+const VIEWS = ['home', 'about', 'works', 'links', 'workspace', 'contact'];
+const WS_TABS = ['plan', 'unified', 'storyboard', 'console', 'agent', 'card'];
+const VIEW_LABELS = {
+  home: '首页', about: '关于', works: '作品', links: '联动', workspace: '工作台', contact: '联系'
+};
+const TAB_LABELS = {
+  plan: '计划表', unified: '日报', storyboard: '摄影表', console: '指令', agent: '智能体', card: '名片'
+};
+
+// Tell the model what the UI currently looks like so it does not fire a tool
+// call for a state that is already in place.
+function buildPageStateLine(state, toolsEnabled) {
+  if (!toolsEnabled || !state || typeof state !== 'object') return '';
+  const parts = [];
+  if (VIEWS.includes(state.view)) parts.push('页面=' + (VIEW_LABELS[state.view] || state.view));
+  if (WS_TABS.includes(state.tab)) parts.push('工作台标签=' + (TAB_LABELS[state.tab] || state.tab));
+  if (state.theme === 'dark' || state.theme === 'light') parts.push('主题=' + (state.theme === 'dark' ? '深色' : '浅色'));
+  if (state.lang === 'zh' || state.lang === 'en') parts.push('语言=' + (state.lang === 'zh' ? '中文' : '英文'));
+  if (!parts.length) return '';
+  return '当前界面状态：' + parts.join('，') +
+    '。如果用户要求的界面变化与当前状态已经一致，不要调用工具，直接简短说明即可。';
+}
+
+// Distils durable facts from what the user said. Runs out-of-band.
+const MEMORY_EXTRACT_PROMPT =
+  '你是记忆整理器。从「最近用户消息」中提取值得长期记住的稳定信息：身份或职业、长期偏好、称呼习惯、正在进行的项目与约定。' +
+  '不要记录一次性的寒暄、天气、临时数字，也不要记录助手说过的话。' +
+  '如果「已有记忆」中已有含义相同的内容，不要重复输出。' +
+  '每条用第三人称陈述，不超过 80 字。' +
+  '只输出 JSON：{"memories":[{"content":"...","kind":"fact|preference|profile|project"}]}；没有可记的就输出 {"memories":[]}。';
+
+const ALLOWED_TOOLS = [
+  {
+    type: 'function',
+    function: {
+      name: 'navigate',
+      description: '切换到网站的某个页面视图。',
+      parameters: {
+        type: 'object',
+        properties: {
+          view: { type: 'string', enum: VIEWS, description: '目标页面：home 首页、about 关于、works 作品、links 联动、workspace 工作台、contact 联系' }
+        },
+        required: ['view']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'workspace_tab',
+      description: '在工作台中切换到某个标签页（会同时把页面切到工作台）。',
+      parameters: {
+        type: 'object',
+        properties: {
+          tab: { type: 'string', enum: WS_TABS, description: 'plan 计划表、unified 日报、storyboard 摄影表、console 指令、agent 智能体、card 名片' }
+        },
+        required: ['tab']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'set_theme',
+      description: '切换网站的深浅色主题。',
+      parameters: {
+        type: 'object',
+        properties: {
+          theme: { type: 'string', enum: ['dark', 'light'], description: 'dark 深色，light 浅色' }
+        },
+        required: ['theme']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'set_language',
+      description: '切换网站界面语言。',
+      parameters: {
+        type: 'object',
+        properties: {
+          lang: { type: 'string', enum: ['zh', 'en'], description: 'zh 中文，en 英文' }
+        },
+        required: ['lang']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'scroll_to',
+      description: '在当前页面滚动到顶部或底部。',
+      parameters: {
+        type: 'object',
+        properties: {
+          target: { type: 'string', enum: ['top', 'bottom'], description: 'top 顶部，bottom 底部' }
+        },
+        required: ['target']
+      }
+    }
+  }
+];
+
 // --- Limits ---
 const RATE_WINDOW = 60000;      // 60s window
 const RATE_LIMIT = 12;          // 12 requests / minute / IP
 const MAX_BODY_BYTES = 200000;  // ~200KB request body
-const MAX_MESSAGES = 40;
+const MAX_MESSAGES = 60;        // includes assistant tool_calls + tool results
 const MAX_MESSAGE_CHARS = 6000;
 const MAX_TOTAL_CHARS = 24000;
+const MAX_TOOL_CALLS = 6;
 
 const rateStore = new Map();
 
@@ -110,6 +234,37 @@ function normalizePayload(body) {
   for (const item of body.messages) {
     if (!item || typeof item !== 'object') return { error: 'Invalid message' };
     const role = item.role;
+
+    // Tool result produced by the browser after executing a whitelisted action.
+    if (role === 'tool') {
+      if (typeof item.tool_call_id !== 'string' || !item.tool_call_id) {
+        return { error: 'Invalid tool message' };
+      }
+      const content = typeof item.content === 'string' ? item.content : '';
+      if (content.length > MAX_MESSAGE_CHARS) return { error: 'Message too long' };
+      totalChars += content.length;
+      messages.push({ role: 'tool', tool_call_id: item.tool_call_id, content });
+      continue;
+    }
+
+    // Assistant turn that requested tools. Content may legitimately be empty.
+    if (role === 'assistant' && Array.isArray(item.tool_calls) && item.tool_calls.length) {
+      if (item.tool_calls.length > MAX_TOOL_CALLS) return { error: 'Too many tool calls' };
+      const calls = [];
+      for (const tc of item.tool_calls) {
+        if (!tc || tc.type !== 'function' || !tc.function) return { error: 'Invalid tool call' };
+        const name = tc.function.name;
+        const args = typeof tc.function.arguments === 'string' ? tc.function.arguments : '{}';
+        if (typeof name !== 'string' || !name || name.length > 64) return { error: 'Invalid tool call' };
+        if (args.length > 2000) return { error: 'Tool arguments too long' };
+        calls.push({ id: String(tc.id || ''), type: 'function', function: { name, arguments: args } });
+      }
+      const content = typeof item.content === 'string' ? item.content : '';
+      totalChars += content.length;
+      messages.push({ role: 'assistant', content, tool_calls: calls });
+      continue;
+    }
+
     const content = item.content;
     if (role !== 'user' && role !== 'assistant' && role !== 'system') {
       return { error: 'Invalid role' };
@@ -125,10 +280,15 @@ function normalizePayload(body) {
   }
   if (totalChars > MAX_TOTAL_CHARS) return { error: 'Conversation too long' };
 
+  const toolsEnabled = body.tools_enabled === true;
+
   // Always keep a server-owned system prompt at the top unless the client
   // already supplied one.
   if (messages[0].role !== 'system') {
-    messages.unshift({ role: 'system', content: DEFAULT_SYSTEM_PROMPT });
+    let systemContent = toolsEnabled ? DEFAULT_SYSTEM_PROMPT_WITH_TOOLS : DEFAULT_SYSTEM_PROMPT;
+    const stateLine = buildPageStateLine(body.page_state, toolsEnabled);
+    if (stateLine) systemContent += '\n\n' + stateLine;
+    messages.unshift({ role: 'system', content: systemContent });
   }
 
   const model = ALLOWED_MODELS.includes(body.model) ? body.model : 'deepseek-chat';
@@ -136,9 +296,49 @@ function normalizePayload(body) {
     messages,
     model,
     stream: true,
+    toolsEnabled,
     temperature: clampNumber(body.temperature, 0, 1.5, 1),
     max_tokens: clampNumber(body.max_tokens, 1, 4096, 2048)
   };
+}
+
+async function extractMemories(env, userText, existingBlock) {
+  try {
+    const res = await fetch(DEEPSEEK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + env.DEEPSEEK_API_KEY
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: MEMORY_EXTRACT_PROMPT },
+          {
+            role: 'user',
+            content: '已有记忆：\n' + (existingBlock || '（无）') +
+                     '\n\n最近用户消息：\n' + userText
+          }
+        ],
+        stream: false,
+        temperature: 0,
+        max_tokens: 400,
+        response_format: { type: 'json_object' }
+      })
+    });
+    if (!res.ok) {
+      console.error('[v-ing-ai] memory extract upstream', res.status);
+      return;
+    }
+    const json = await res.json();
+    const content = (json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content) || '';
+    if (!content) return;
+    const parsed = JSON.parse(content);
+    const items = Array.isArray(parsed.memories) ? parsed.memories : [];
+    if (items.length) await saveMemories(env, items.slice(0, 5), 'auto');
+  } catch (e) {
+    console.error('[v-ing-ai] memory extract failed:', e && e.message);
+  }
 }
 
 function sseError(message, status) {
@@ -163,7 +363,6 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { request, env } = context;
   const hdrs = corsHeaders(request);
-
   if (!env.DEEPSEEK_API_KEY) {
     return jsonResp({ error: 'AI not configured' }, 503, hdrs);
   }
@@ -198,8 +397,35 @@ export async function onRequestPost(context) {
     return jsonResp({ error: payload.error }, 400, hdrs);
   }
 
+  // Load long-term memory into the system prompt. Failures are non-fatal:
+  // the assistant still works, it just answers without stored context.
+  let memoryBlock = '';
+  if (env.DB) {
+    try {
+      await ensureMemoryTable(env);
+      const rows = await loadMemories(env, 40);
+      memoryBlock = buildMemoryBlock(rows);
+    } catch (e) {
+      console.error('[v-ing-ai] memory load failed:', e && e.message);
+    }
+  }
+  if (memoryBlock && payload.messages[0] && payload.messages[0].role === 'system') {
+    payload.messages[0].content += '\n\n' + memoryBlock;
+  }
+
   let upstream;
   try {
+    const upstreamBody = {
+      model: payload.model,
+      messages: payload.messages,
+      stream: payload.stream,
+      temperature: payload.temperature,
+      max_tokens: payload.max_tokens
+    };
+    if (payload.toolsEnabled) {
+      upstreamBody.tools = ALLOWED_TOOLS;
+      upstreamBody.tool_choice = 'auto';
+    }
     upstream = await fetch(DEEPSEEK_URL, {
       method: 'POST',
       headers: {
@@ -207,13 +433,7 @@ export async function onRequestPost(context) {
         'Authorization': 'Bearer ' + env.DEEPSEEK_API_KEY,
         'Accept': 'text/event-stream'
       },
-      body: JSON.stringify({
-        model: payload.model,
-        messages: payload.messages,
-        stream: payload.stream,
-        temperature: payload.temperature,
-        max_tokens: payload.max_tokens
-      })
+      body: JSON.stringify(upstreamBody)
     });
   } catch (e) {
     console.error('[v-ing-ai] upstream fetch failed:', e && e.message);
@@ -225,6 +445,21 @@ export async function onRequestPost(context) {
     console.error('[v-ing-ai] upstream', upstream.status, detail.slice(0, 500));
     // Do not leak upstream error bodies (may contain key/quota details).
     return jsonResp({ error: 'Upstream error' }, 502, hdrs);
+  }
+
+  // Distil durable facts from this turn in the background. waitUntil keeps it
+  // off the response path, so the stream is not delayed and a failure here
+  // never affects the chat.
+  if (env.DB && typeof context.waitUntil === 'function') {
+    const recentUserText = payload.messages
+      .filter(function (m) { return m.role === 'user'; })
+      .slice(-4)
+      .map(function (m) { return m.content; })
+      .join('\n---\n')
+      .slice(0, 2000);
+    if (recentUserText) {
+      context.waitUntil(extractMemories(env, recentUserText, memoryBlock));
+    }
   }
 
   // Pass the SSE stream through untouched; the browser parser handles it.
