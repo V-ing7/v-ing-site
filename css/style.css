@@ -6379,16 +6379,6 @@ textarea.sb-cell-desc{
   color:var(--text-secondary);
 }
 /* ---------- AI long-term memory panel ---------- */
-.ai-memory{
-  display:none;
-  flex:1 1 auto;
-  flex-direction:column;
-  min-height:0;
-  overflow:hidden;
-}
-.ai-dock.memory-open .ai-chat-log,
-.ai-dock.memory-open .ai-chat-composer{display:none}
-.ai-dock.memory-open .ai-memory{display:flex}
 .ai-memory-head{
   display:flex;
   align-items:center;
@@ -6407,18 +6397,6 @@ textarea.sb-cell-desc{
   border-radius:7px;
 }
 .ai-memory-clear:active{opacity:.6}
-.ai-memory-close{
-  width:24px;
-  height:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  font-size:16px;
-  line-height:1;
-  color:var(--text-secondary);
-}
-.ai-memory-close:active{opacity:.6}
 .ai-memory-list{
   flex:1 1 auto;
   min-height:0;
@@ -6460,10 +6438,6 @@ textarea.sb-cell-desc{
   font-size:.79rem;
   line-height:1.6;
   color:var(--text-tertiary);
-}
-.ai-dock-btn.active{
-  color:var(--text-primary);
-  background:rgba(255,255,255,.1);
 }
 /* Light theme: keep the same frosted glass language, inverted. */
 [data-theme="light"] .ai-dock{
@@ -6617,7 +6591,6 @@ textarea.sb-cell-desc{
 }
 .ai-dock.ai-dock-locked .ai-chat-log,
 .ai-dock.ai-dock-locked .ai-chat-composer,
-.ai-dock.ai-dock-locked .ai-memory,
 .ai-dock.ai-dock-locked .ai-chat-status{display:none}
 .ai-dock.ai-dock-locked .ai-dock-btn{display:none}
 .ai-dock.ai-dock-locked .ai-dock-lock{display:flex}
