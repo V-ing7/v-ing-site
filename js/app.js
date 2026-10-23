@@ -2538,6 +2538,11 @@
   var AI_MAX_TOOL_ROUNDS=2;
   var AI_STREAMER_HISTORY=[];
   var AI_MAX_STREAMER_HISTORY=10;
+  // The user message of the current turn, kept for tool-call gating.
+  var AI_USER_TURN_TEXT='';
+  // clear_cache only runs when the user's own message contains one of these
+  // words — the model cannot clear the cache by deciding to on its own.
+  var AI_CLEAR_CACHE_WORDS=['清理缓存','清除缓存','清缓存','清空缓存','刷新缓存','刷新页面','刷新一下','加载最新版本','更新版本'];
 
   function aiAddActionLine(text){
     var el=document.createElement('div');
@@ -2588,7 +2593,7 @@
     aiUpdateUndoButton();
   }
 
-  function aiRunTool(name,rawArgs){
+  function aiRunTool(name,rawArgs,userText){
     var args={};
     try{ args=JSON.parse(rawArgs||'{}')||{}; }catch(e){ return {ok:false,error:'invalid_arguments'}; }
     try{
@@ -2671,6 +2676,20 @@
         return {ok:true,remaining:AI_STREAMER_HISTORY.length};
       }
       if(name==='clear_cache'){
+        // Hard gate: the model occasionally fires this tool spuriously (e.g.
+        // on "update the data"), wiping SW/Cache Storage and reloading in the
+        // middle of a task. It only runs when the user's own message this
+        // turn literally asks for a cache clear / page refresh; otherwise the
+        // call is rejected and the model just answers normally.
+        var saidClear=false;
+        var ut=String(userText||'');
+        for(var gi=0;gi<AI_CLEAR_CACHE_WORDS.length;gi++){
+          if(ut.indexOf(AI_CLEAR_CACHE_WORDS[gi])>=0){ saidClear=true; break; }
+        }
+        if(!saidClear){
+          return {ok:false,error:'not_requested',
+            hint:'用户没有明确要求清理缓存，本次调用已被拒绝。直接正常回答用户即可，不要再次调用本工具。'};
+        }
         // Unregister every service worker and wipe all Cache Storage, then
         // reload with a timestamp so the next document fetch bypasses HTTP cache.
         var jobs=[];
@@ -2728,6 +2747,7 @@
     aiUnlockAudio();
     var text=aiChatInput.value.trim();
     if(!text)return;
+    AI_USER_TURN_TEXT=text;
 
     var pwd=_getWsPassword();
     if(!pwd){
@@ -2819,7 +2839,7 @@
           var notes=[];
           out.toolCalls.forEach(function(tc){
             var fn=tc.function||{};
-            var result=aiRunTool(fn.name,fn.arguments);
+            var result=aiRunTool(fn.name,fn.arguments,AI_USER_TURN_TEXT);
             aiMessages.push({
               role:'tool',
               tool_call_id:tc.id||('call_'+rounds+'_'+notes.length),
