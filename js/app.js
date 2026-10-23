@@ -2670,6 +2670,26 @@
         aiApplyStreamers(prev);
         return {ok:true,remaining:AI_STREAMER_HISTORY.length};
       }
+      if(name==='clear_cache'){
+        // Unregister every service worker and wipe all Cache Storage, then
+        // reload with a timestamp so the next document fetch bypasses HTTP cache.
+        var jobs=[];
+        if('serviceWorker' in navigator){
+          jobs.push(navigator.serviceWorker.getRegistrations().then(function(regs){
+            return Promise.all(regs.map(function(r){return r.unregister();}));
+          }));
+        }
+        if('caches' in window){
+          jobs.push(caches.keys().then(function(keys){
+            return Promise.all(keys.map(function(k){return caches.delete(k);}));
+          }));
+        }
+        Promise.all(jobs).then(function(){
+          var sep=location.search?'&':'?';
+          location.replace(location.pathname+location.search+sep+'_r='+Date.now()+location.hash);
+        });
+        return {ok:true,reloading:true};
+      }
     }catch(e){ return {ok:false,error:'execution_failed'}; }
     return {ok:false,error:'unknown_tool'};
   }
@@ -2699,6 +2719,7 @@
       return '已更新主播日报';
     }
     if(name==='undo_streamer_change')return '已撤销，还可撤销 '+result.remaining+' 次';
+    if(name==='clear_cache')return '正在清理缓存并刷新页面…';
     return '已执行 '+name;
   }
 
