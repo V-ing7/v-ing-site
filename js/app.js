@@ -2195,7 +2195,9 @@
   var aiAudio=null;
   var aiAudioUrl='';
   var aiAudioUnlocked=false;
-  var AI_SILENT_WAV='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=';
+  var aiAudioCtx=null;
+  // 100ms of silence — used to unlock audio on iOS inside the user gesture.
+  var AI_SILENT_WAV='data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
   try{ aiVoiceAuto=localStorage.getItem(AI_VOICE_AUTO_KEY)==='1'; }catch(e){}
   if(vmiVoiceAuto)vmiVoiceAuto.checked=aiVoiceAuto;
 
@@ -2325,12 +2327,16 @@
     return aiAudio;
   }
 
-  // iOS/Safari only start playback that begins inside a user gesture. Play a
-  // silent clip on the first tap to unlock the shared <audio> element, so the
-  // later async MP3 playback is not blocked.
+  // iOS/Safari only start playback that begins inside a user gesture. Unlock
+  // by resuming a Web Audio context AND playing a silent clip on the same tap.
   function aiUnlockAudio(){
     var el=aiEnsureAudio();
     if(aiAudioUnlocked)return;
+    try{
+      var AC=window.AudioContext||window.webkitAudioContext;
+      if(AC&&!aiAudioCtx){ aiAudioCtx=new AC(); }
+      if(aiAudioCtx&&aiAudioCtx.state==='suspended'){ aiAudioCtx.resume(); }
+    }catch(e){}
     try{
       el.muted=true;
       el.src=AI_SILENT_WAV;
@@ -2345,6 +2351,15 @@
     }catch(e){ el.muted=false; }
   }
 
+  function aiVoiceErrText(res){
+    var zh=lang==='zh';
+    if(res.status===403)return zh?'工作台密码已失效，请重新解锁。':'Session expired. Unlock the workspace again.';
+    if(res.status===503)return zh?'语音凭据未配置或无效，请检查设置。':'Voice credentials missing or invalid. Check Settings.';
+    if(res.status===502)return zh?'语音合成服务暂时不可用。':'Voice synthesis unavailable.';
+    if(res.status===429)return zh?'请求太频繁，稍后再试。':'Too many requests. Try again later.';
+    return zh?'语音朗读失败（'+res.status+'）。':'Speech failed ('+res.status+').';
+  }
+
   function aiSpeak(text){
     if(!aiVoiceAuto)return;
     var pwd=_getWsPassword();
@@ -2354,18 +2369,19 @@
     fetch(WORKER_API+'/api/v-ing-tts?voice='+aiVoiceId+'&text='+encodeURIComponent(plain),{
       headers:{'X-Password':pwd}
     }).then(function(res){
-      if(!res.ok)throw new Error('http');
+      if(!res.ok){ aiSetStatus(aiVoiceErrText(res)); throw new Error('http'); }
       return res.blob();
     }).then(function(blob){
-      if(!blob.size)return;
+      if(!blob.size){ aiSetStatus(lang==='zh'?'音频为空，稍后再试。':'Empty audio. Try again.'); return; }
       var el=aiEnsureAudio();
       if(aiAudioUrl)URL.revokeObjectURL(aiAudioUrl);
       aiAudioUrl=URL.createObjectURL(blob);
       el.src=aiAudioUrl;
-      // Autoplay can still be blocked on mobile; stay silent rather than
-      // throwing a playback error into the conversation.
-      el.play().catch(function(){});
-    }).catch(function(){});
+      el.play().catch(function(){
+        // Mobile may still block; surface a hint so it isn't a silent failure.
+        aiSetStatus(lang==='zh'?'浏览器拦截了播放，请再发一条消息重试。':'Playback blocked. Send another message to retry.');
+      });
+    }).catch(function(e){ /* status already surfaced */ });
   }
 
   // Load the chosen voice once so auto-speak works before opening Settings.
