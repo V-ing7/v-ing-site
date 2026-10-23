@@ -32,6 +32,21 @@ const RATE_LIMIT = 60; // 60 clips / minute / IP (audition page plays 10 quickly
 const rateStore = new Map();
 const encoder = new TextEncoder();
 
+// Durable server-side audio cache. One row per (voice, text) pair so that
+// repeated requests return the stored clip instead of re-consuming
+// Tencent TTS characters.
+const TTS_CACHE_TABLE = 'tts_cache';
+
+async function ensureCacheTable(env) {
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS ${TTS_CACHE_TABLE} (
+      hash TEXT PRIMARY KEY,
+      audio BLOB NOT NULL,
+      created_at INTEGER NOT NULL
+    )`
+  ).run();
+}
+
 function corsHeaders(request) {
   const origin = request.headers.get('Origin') || '';
   const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -170,6 +185,38 @@ export async function onRequestGet(context) {
     return jsonResp({ error: 'Voice not configured' }, 503, hdrs);
   }
 
+  // Cloud cache lookup: a previous synthesis of the same voice+text pair
+  // is returned without calling Tencent, so characters are never
+  // consumed twice for the same content.
+  let cachedAudio = null;
+  if (env.DB) {
+    try {
+      await ensureCacheTable(env);
+      const row = await env.DB
+        .prepare('SELECT audio FROM tts_cache WHERE hash = ?')
+        .bind(await sha256Hex(voiceParam + '|' + text))
+        .first();
+      if (row && row.audio) {
+        const bytes = new Uint8Array(row.audio);
+        if (bytes.byteLength > 0) cachedAudio = bytes;
+      }
+    } catch (e) {
+      console.error('[v-ing-tts] cache read failed:', e && e.message);
+    }
+  }
+  if (cachedAudio) {
+    return new Response(cachedAudio, {
+      status: 200,
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': String(cachedAudio.byteLength),
+        'Cache-Control': 'private, max-age=600',
+        'X-Cache': 'HIT',
+        ...hdrs
+      }
+    });
+  }
+
   // Only parameters accepted by TextToVoice (2019-08-23). Pitch/ProjectId
   // are not part of this action and made Tencent reject every request with
   // UnknownParameter — "The parameter `Pitch` is not recognized."
@@ -235,6 +282,20 @@ export async function onRequestGet(context) {
     return jsonResp({ error: 'Voice synthesis failed', requestId: String(result.RequestId || '') }, 502, hdrs);
   }
 
+  // Store the clip for future repeats. Oversized blobs and requests
+  // without a database are skipped; a failed write never affects the
+  // response that is already ready.
+  if (env.DB && audio.byteLength <= 700000 && typeof context.waitUntil === 'function') {
+    context.waitUntil(
+      env.DB.prepare(
+        'INSERT OR REPLACE INTO tts_cache (hash, audio, created_at) VALUES (?, ?, ?)'
+      )
+        .bind(await sha256Hex(voiceParam + '|' + text), audio, Date.now())
+        .run()
+        .catch(e => console.error('[v-ing-tts] cache write failed:', e && e.message))
+    );
+  }
+
   return new Response(audio, {
     status: 200,
     headers: {
@@ -242,6 +303,7 @@ export async function onRequestGet(context) {
       'Content-Length': String(audio.byteLength),
       // private: keeps the clip out of the shared edge cache
       'Cache-Control': 'private, max-age=600',
+      'X-Cache': 'MISS',
       ...hdrs
     }
   });
