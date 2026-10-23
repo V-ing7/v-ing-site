@@ -21,17 +21,47 @@
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <script src="js/lib/html2canvas.min.js?v=20261007" defer></script>
   <script>
-    /* Clear old service workers and caches from previous versions */
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(function(regs){
-        regs.forEach(function(r){ r.unregister(); });
-      });
+  /* Cache kill switch — runs before anything else.
+     If a stale service worker controls this page, it served cached HTML.
+     Unregister all SWs + delete all caches, then reload once so the fresh
+     build loads. Also triggered by ?clearCache=1 in the URL. */
+  (function(){
+    var RELOAD_FLAG = 'ving_cache_reloaded';
+    var params;
+    try { params = new URLSearchParams(location.search); } catch(e){ params = null; }
+    var forceClear = !!(params && params.has('clearCache'));
+    var controlled = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+
+    function cleanup(){
+      var jobs = [];
+      if('serviceWorker' in navigator){
+        jobs.push(navigator.serviceWorker.getRegistrations().then(function(regs){
+          return Promise.all(regs.map(function(r){ return r.unregister(); }));
+        }));
+      }
+      if('caches' in window){
+        jobs.push(caches.keys().then(function(keys){
+          return Promise.all(keys.map(function(k){ return caches.delete(k); }));
+        }));
+      }
+      return Promise.all(jobs);
     }
-    if('caches' in window){
-      caches.keys().then(function(keys){
-        keys.forEach(function(k){ caches.delete(k); });
+
+    if((forceClear || controlled) && sessionStorage.getItem(RELOAD_FLAG) !== '1'){
+      cleanup().then(function(){
+        sessionStorage.setItem(RELOAD_FLAG, '1');
+        if(params){ params.delete('clearCache'); }
+        var qs = params ? params.toString() : '';
+        var url = location.pathname + (qs ? '?' + qs : '') + location.hash;
+        // append timestamp to bypass HTTP cache on the document itself
+        location.replace(url + (qs.indexOf('_r=') === -1 ? (qs ? '&' : '?') + '_r=' + Date.now() : ''));
       });
+    } else {
+      // No stale SW controlling — defensive cleanup only, no reload.
+      cleanup();
+      sessionStorage.removeItem(RELOAD_FLAG);
     }
+  })();
   </script>
   <style>
     .ws-lock-input-wrap{padding:0 20px;margin:8px 0 4px}
