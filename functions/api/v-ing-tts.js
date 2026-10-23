@@ -170,16 +170,17 @@ export async function onRequestGet(context) {
     return jsonResp({ error: 'Voice not configured' }, 503, hdrs);
   }
 
+  // Only parameters accepted by TextToVoice (2019-08-23). Pitch/ProjectId
+  // are not part of this action and made Tencent reject every request with
+  // UnknownParameter — "The parameter `Pitch` is not recognized."
   const payload = JSON.stringify({
     Text: text,
     SessionId: 'v-ing-' + Date.now(),
     VoiceType: voiceParam,
     Speed: 0,
     Volume: 0,
-    Pitch: 0,
     Codec: 'mp3',
-    SampleRate: 16000,
-    ProjectId: 0
+    SampleRate: 16000
   });
 
   let upstream;
