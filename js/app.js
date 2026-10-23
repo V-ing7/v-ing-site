@@ -2351,11 +2351,20 @@
     }catch(e){ el.muted=false; }
   }
 
-  function aiVoiceErrText(res){
+  function aiVoiceErrText(res, d){
     var zh=lang==='zh';
+    d=d||{};
     if(res.status===403)return zh?'工作台密码已失效，请重新解锁。':'Session expired. Unlock the workspace again.';
-    if(res.status===503)return zh?'语音凭据未配置或无效，请检查设置。':'Voice credentials missing or invalid. Check Settings.';
-    if(res.status===502)return zh?'语音合成服务暂时不可用。':'Voice synthesis unavailable.';
+    if(res.status===503){
+      if(d.error==='Voice not configured')return zh?'还没配置腾讯云凭据，请到「设置 → 语音」保存 SecretId / SecretKey。':'Tencent credentials missing. Save them in Settings → Voice.';
+      if(d.error==='Invalid voice key')return zh?'腾讯云凭据无效'+(d.code?'（'+d.code+'）':'')+'，请检查 SecretId / SecretKey。':'Invalid Tencent key'+(d.code?' ('+d.code+')':'')+'. Check SecretId / SecretKey.';
+      if(d.error==='Voice quota exceeded')return zh?'免费额度用完或未领取'+(d.code?'（'+d.code+'）':'')+'，请到腾讯云控制台检查。':'Quota exceeded'+(d.code?' ('+d.code+')':'')+'. Check Tencent console.';
+      return zh?'语音凭据未配置或无效，请检查设置。':'Voice credentials missing or invalid. Check Settings.';
+    }
+    if(res.status===502){
+      if(d.code)return zh?'语音合成失败（'+d.code+'）'+(d.message?'：'+d.message:'') :'Voice synthesis failed ('+d.code+')'+(d.message?': '+d.message:'');
+      return zh?'语音合成服务暂时不可用。':'Voice synthesis unavailable.';
+    }
     if(res.status===429)return zh?'请求太频繁，稍后再试。':'Too many requests. Try again later.';
     return zh?'语音朗读失败（'+res.status+'）。':'Speech failed ('+res.status+').';
   }
@@ -2369,7 +2378,12 @@
     fetch(WORKER_API+'/api/v-ing-tts?voice='+aiVoiceId+'&text='+encodeURIComponent(plain),{
       headers:{'X-Password':pwd}
     }).then(function(res){
-      if(!res.ok){ aiSetStatus(aiVoiceErrText(res)); throw new Error('http'); }
+      if(!res.ok){
+        return res.json().catch(function(){return {};}).then(function(d){
+          aiSetStatus(aiVoiceErrText(res,d));
+          throw new Error('http');
+        });
+      }
       return res.blob();
     }).then(function(blob){
       if(!blob.size){ aiSetStatus(lang==='zh'?'音频为空，稍后再试。':'Empty audio. Try again.'); return; }
