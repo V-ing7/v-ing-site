@@ -220,10 +220,11 @@
     if (res.status === 403) return '密码不对，请重新输入。';
     if (res.status === 503) {
       if (d.error === 'Voice not configured') return '还没配置腾讯云凭据，先去「工作台 → 设置 → 语音」保存 SecretId / SecretKey。';
-      if (d.error === 'Invalid voice key') return '腾讯云凭据无效，请回设置里检查 SecretId / SecretKey。';
-      if (d.error === 'Voice quota exceeded') return '免费额度用完或未领取免费包，请到腾讯云语音合成控制台检查。';
+      if (d.error === 'Invalid voice key') return '腾讯云凭据无效' + (d.code ? '（' + d.code + '）' : '') + '，请回设置里检查 SecretId / SecretKey。';
+      if (d.error === 'Voice quota exceeded') return '免费额度用完或未领取免费包' + (d.code ? '（' + d.code + '）' : '') + '，请到腾讯云语音合成控制台检查。';
     }
     if (res.status === 400 && d.error === 'Unknown voice') return '这个音色暂不可用。';
+    if (d.code) return '生成失败（' + res.status + '）：' + d.code + (d.message ? ' — ' + d.message : '');
     return '生成失败（' + res.status + '），稍后再试。';
   }
 

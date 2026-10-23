@@ -200,7 +200,7 @@ export async function onRequestGet(context) {
     data = await upstream.json();
   } catch (e) {
     console.error('[v-ing-tts] invalid response:', upstream.status);
-    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+    return jsonResp({ error: 'Voice synthesis failed', upstreamStatus: upstream.status }, 502, hdrs);
   }
 
   const result = (data && data.Response) || {};
@@ -209,26 +209,29 @@ export async function onRequestGet(context) {
   // the only signal, so it has to be inspected explicitly.
   if (result.Error) {
     const code = String(result.Error.Code || '');
-    console.error('[v-ing-tts]', code, String(result.Error.Message || '').slice(0, 200));
+    const message = String(result.Error.Message || '').slice(0, 200);
+    const requestId = String(result.RequestId || '');
+    console.error('[v-ing-tts]', code, message, requestId);
     if (/AuthFailure|Signature|SecretId/i.test(code)) {
-      return jsonResp({ error: 'Invalid voice key' }, 503, hdrs);
+      return jsonResp({ error: 'Invalid voice key', code, requestId }, 503, hdrs);
     }
     if (/Arrears|NoFreeAmount|LimitExceeded|ResourceUnavailable|UserNotRegistered/i.test(code)) {
-      return jsonResp({ error: 'Voice quota exceeded' }, 503, hdrs);
+      return jsonResp({ error: 'Voice quota exceeded', code, requestId }, 503, hdrs);
     }
-    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+    return jsonResp({ error: 'Voice synthesis failed', code, message, requestId }, 502, hdrs);
   }
 
   if (!result.Audio) {
-    console.error('[v-ing-tts] empty audio, requestId:', result.RequestId || '');
-    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+    const requestId = String(result.RequestId || '');
+    console.error('[v-ing-tts] empty audio, requestId:', requestId);
+    return jsonResp({ error: 'Voice synthesis failed', requestId }, 502, hdrs);
   }
 
   let audio;
   try {
     audio = base64ToBytes(result.Audio);
   } catch (e) {
-    return jsonResp({ error: 'Voice synthesis failed' }, 502, hdrs);
+    return jsonResp({ error: 'Voice synthesis failed', requestId: String(result.RequestId || '') }, 502, hdrs);
   }
 
   return new Response(audio, {
