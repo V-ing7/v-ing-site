@@ -45,7 +45,8 @@ const DEFAULT_SYSTEM_PROMPT =
 const DEFAULT_SYSTEM_PROMPT_WITH_TOOLS = DEFAULT_SYSTEM_PROMPT +
   ' 你还可以直接操作网站界面：切换页面、切换工作台标签、切换深浅主题、切换中英文、滚动页面，以及修改主播日报（更新拍摄/剪辑数量、修改主播名字、新增或删除主播）。' +
   '当用户的要求属于这些操作时，必须先调用对应的工具，再简短说明结果；不要在没有调用工具的情况下声称已经完成操作。' +
-  '主播日报位于「工作台 → 日报」标签页，修改后会自动保存。';
+  '主播日报位于「工作台 → 日报」标签页，修改后会自动保存。' +
+  '另外，当用户说「清理缓存」「刷新一下」「加载最新版本」之类的话时，调用 clear_cache 工具帮他清理浏览器缓存并刷新页面。';
 
 const VIEWS = ['home', 'about', 'works', 'links', 'workspace', 'contact'];
 const WS_TABS = ['plan', 'unified', 'storyboard', 'console', 'agent', 'card', 'settings'];
@@ -181,6 +182,13 @@ const ALLOWED_TOOLS = [
     function: {
       name: 'undo_streamer_change',
       description: '撤销最近一次 AI 对主播日报的修改，最多可撤销 10 次。'
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'clear_cache',
+      description: '清理浏览器缓存：注销所有 Service Worker、删除全部 Cache Storage，然后重新加载页面以获取最新版本。当用户说「清理缓存」「刷新缓存」「清缓存」「更新一下」「加载最新版本」等意思时调用。调用后页面会刷新，所以不要在同一条回复里再安排其它操作。'
     }
   }
 ];
