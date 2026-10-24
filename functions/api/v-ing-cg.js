@@ -20,7 +20,7 @@ const TABLE = 'cg_assets';
 const MAX_TITLE = 120;
 const MAX_TEXT = 4000;
 const MAX_PATH = 300;
-const ALLOWED_CATEGORIES = ['标题条', '数据卡', '角标', '转场', '其他'];
+const ALLOWED_CATEGORIES = ['标题条', '数据卡', '角标', '指针', '转场', '其他'];
 
 /* ---------------- rate limiting (in-memory, per isolate) ---------------- */
 const rateStore = new Map();
