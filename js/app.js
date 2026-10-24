@@ -1141,7 +1141,7 @@
   // the home-screen icon (start_url has no #hash) returns to the exact page and
   // position the user left. The unlocked flag stays in sessionStorage on
   // purpose, so a fresh launch still asks for the workspace password.
-  var VIEW_IDS=['home','about','works','collab','workspace','contact'];
+  var VIEW_IDS=['home','about','works','collab','workspace','cg','contact'];
   var LAST_VIEW_KEY='v-ing-last-view';
   var SCROLL_MAP_KEY='v-ing-view-scroll';
   var _restoreScrollY=null;
@@ -2531,8 +2531,8 @@
   /* ---------- AI interface control (strict whitelist) ---------- */
   // The model can only request these five actions. Anything outside the list
   // is rejected here, so a bad/forged tool call cannot touch the site.
-  var AI_VIEWS=['home','about','works','links','workspace','contact'];
-  var AI_VIEW_LABELS={home:'首页',about:'关于',works:'作品',links:'联动',workspace:'工作台',contact:'联系'};
+  var AI_VIEWS=['home','about','works','links','workspace','cg','contact'];
+  var AI_VIEW_LABELS={home:'首页',about:'关于',works:'作品',links:'联动',workspace:'工作台',cg:'CG素材',contact:'联系'};
   var AI_TABS=['plan','unified','storyboard','console','agent','card','settings'];
   var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片',settings:'设置'};
   var AI_MAX_TOOL_ROUNDS=2;
@@ -6880,4 +6880,461 @@
     }
   });
 
+})();
+
+/* ================================================================
+   CG Assets Library — 透明图层素材库
+   - 读：GET /api/v-ing-cg（公开，无需密码）
+   - 写：PUT / DELETE（需 X-Password，与工作台同一密码）
+   - 数据存 D1 的 cg_assets 表，字段含 prompt / style，便于复现
+   ================================================================ */
+(function(){
+  'use strict';
+
+  var CG_API = (function(){
+    var host = window.location.hostname;
+    if(host === 'v-ing-site.pages.dev' || host === 'localhost' || host === '127.0.0.1') return '';
+    return 'https://v-ing-site.pages.dev';
+  })();
+  var PWD_KEY = 'v_ing_ws_pwd';
+  var CATEGORIES = ['标题条', '数据卡', '角标', '转场', '其他'];
+  var assets = [];
+  var activeCat = '全部';
+  var editingId = null;
+  var loaded = false;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v == null ? '' : v)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function pwd(){ return sessionStorage.getItem(PWD_KEY) || ''; }
+
+  function api(method, opts){
+    opts = opts || {};
+    var url = CG_API + '/api/v-ing-cg' + (opts.query || '');
+    var init = { method: method, headers: {} };
+    if(opts.body){
+      init.headers['Content-Type'] = 'application/json';
+      init.body = JSON.stringify(opts.body);
+    }
+    if(opts.auth) init.headers['X-Password'] = pwd();
+    return fetch(url, init).then(function(res){
+      return res.json().catch(function(){ return {}; }).then(function(data){
+        if(!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+        return data;
+      });
+    });
+  }
+
+  /* ---------------- list rendering ---------------- */
+  function loadAssets(force){
+    if(loaded && !force) return Promise.resolve(assets);
+    return api('GET').then(function(d){
+      assets = Array.isArray(d.assets) ? d.assets : [];
+      loaded = true;
+      renderFilters();
+      renderGrid();
+      return assets;
+    }).catch(function(e){
+      loaded = true;
+      renderFilters();
+      renderGrid();
+      console.warn('[CG] load failed:', e.message);
+    });
+  }
+
+  function renderFilters(){
+    var box = $('cgFilters');
+    if(!box) return;
+    var cats = ['全部'].concat(CATEGORIES);
+    box.innerHTML = cats.map(function(c){
+      return '<button type="button" class="cg-chip' + (c === activeCat ? ' active' : '') +
+        '" data-cg-cat="' + esc(c) + '">' + esc(c) + '</button>';
+    }).join('');
+  }
+
+  function findAsset(id){
+    for(var i = 0; i < assets.length; i++){
+      if(assets[i].id === id) return assets[i];
+    }
+    return null;
+  }
+
+  function previewHTML(a){
+    if(a.webm){
+      return '<video muted loop autoplay playsinline preload="metadata"' +
+        (a.poster ? ' poster="' + esc(a.poster) + '"' : '') +
+        ' src="' + esc(a.webm) + '"></video>';
+    }
+    if(a.poster){
+      return '<img src="' + esc(a.poster) + '" alt="' + esc(a.title) + '" loading="lazy" decoding="async">';
+    }
+    return '<div class="cg-preview-empty">NO PREVIEW</div>';
+  }
+
+  function cardHTML(a){
+    var meta = [];
+    if(a.size) meta.push(esc(a.size));
+    if(a.duration) meta.push(a.duration + 's');
+    meta.push('Alpha');
+    var downloads = [];
+    if(a.webm) downloads.push('<a class="cg-btn cg-btn-primary" href="' + esc(a.webm) + '" download>下载 WebM</a>');
+    if(a.frames) downloads.push('<a class="cg-btn" href="' + esc(a.frames) + '" download>PNG 序列</a>');
+    if(a.mov) downloads.push('<a class="cg-btn" href="' + esc(a.mov) + '" download>ProRes 4444</a>');
+    if(!downloads.length) downloads.push('<span class="cg-meta">文件待上传</span>');
+
+    var promptBlock = '';
+    if(a.prompt || a.style){
+      promptBlock =
+        '<div class="cg-prompt" hidden>' +
+          (a.prompt ? '<h4>Prompt · 提示词</h4><pre>' + esc(a.prompt) + '</pre>' : '') +
+          (a.style ? '<h4>Style · 样式参数</h4><pre>' + esc(a.style) + '</pre>' : '') +
+          '<button type="button" class="cg-copy" data-cg-copy="' + esc(a.id) + '">复制全部</button>' +
+        '</div>';
+    }
+
+    return '<article class="cg-card" data-cg-id="' + esc(a.id) + '">' +
+      '<div class="cg-preview">' + previewHTML(a) +
+        '<span class="cg-badge">ALPHA</span>' +
+      '</div>' +
+      '<div class="cg-card-body">' +
+        '<div class="cg-title-row">' +
+          '<h3 class="cg-card-title">' + esc(a.title) + '</h3>' +
+          '<span class="cg-cat">' + esc(a.category) + '</span>' +
+        '</div>' +
+        '<div class="cg-meta">' + meta.join(' · ') + '</div>' +
+        '<div class="cg-actions">' + downloads.join('') +
+          (promptBlock ? '<button type="button" class="cg-btn cg-btn-ghost" data-cg-toggle="' + esc(a.id) + '">提示词</button>' : '') +
+        '</div>' +
+        promptBlock +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderGrid(){
+    var grid = $('cgGrid');
+    var empty = $('cgEmpty');
+    if(!grid) return;
+    var list = activeCat === '全部' ? assets : assets.filter(function(a){ return a.category === activeCat; });
+    grid.innerHTML = list.map(cardHTML).join('');
+    if(empty) empty.style.display = list.length ? 'none' : 'block';
+  }
+
+  /* ---------------- manage modal ---------------- */
+  var BTN_X = '<button type="button" class="cg-modal-x" data-cg-close aria-label="关闭">×</button>';
+
+  function modalShell(bodyHTML){
+    return '<div class="cg-modal-backdrop" data-cg-close></div>' +
+      '<div class="cg-modal-card" role="dialog" aria-modal="true" aria-labelledby="cgModalTitle">' +
+        '<div class="cg-modal-head">' +
+          '<h3 id="cgModalTitle">素材管理</h3>' + BTN_X +
+        '</div>' +
+        '<div class="cg-modal-body">' + bodyHTML + '</div>' +
+      '</div>';
+  }
+
+  function gateHTML(){
+    return modalShell(
+      '<div class="cg-gate">' +
+        '<p>输入工作台密码后可新增、修改或删除素材。</p>' +
+        '<input type="password" id="cgGateInput" autocomplete="current-password" placeholder="密码">' +
+        '<button type="button" class="cg-btn cg-btn-primary" id="cgGateBtn">解锁</button>' +
+        '<p class="cg-gate-error" id="cgGateError"></p>' +
+      '</div>'
+    );
+  }
+
+  function editorHTML(){
+    return modalShell(
+      '<div class="cg-manage-list" id="cgManageList"></div>' +
+      '<form class="cg-form" id="cgForm" autocomplete="off">' +
+        '<label>ID（英文/数字/短横线，留空自动生成）<input name="id" maxlength="64" placeholder="titlebar-glass"></label>' +
+        '<label>名称<input name="title" maxlength="120" required placeholder="液态玻璃标题条"></label>' +
+        '<label>分类<select name="category">' +
+          CATEGORIES.map(function(c){ return '<option value="' + c + '">' + c + '</option>'; }).join('') +
+        '</select></label>' +
+        '<label>尺寸<input name="size" maxlength="40" placeholder="1920×1080"></label>' +
+        '<label>时长（秒）<input name="duration" type="number" step="0.1" min="0" placeholder="4"></label>' +
+        '<label>排序（小的靠前）<input name="sort" type="number" step="1" placeholder="0"></label>' +
+        '<label class="full">WebM（透明预览/下载）<input name="webm" maxlength="300" placeholder="assets/cg/xxx.webm"></label>' +
+        '<label class="full">PNG 序列 zip（AE/PR 用）<input name="frames" maxlength="300" placeholder="assets/cg/xxx-frames.zip"></label>' +
+        '<label class="full">ProRes 4444 MOV（可选，文件较大）<input name="mov" maxlength="300" placeholder="assets/cg/xxx.mov"></label>' +
+        '<label class="full">封面图（可选）<input name="poster" maxlength="300" placeholder="assets/cg/xxx.png"></label>' +
+        '<label class="full">标签（逗号分隔）<input name="tags" maxlength="200" placeholder="液态玻璃,标题,片头"></label>' +
+        '<label class="full">提示词 Prompt<textarea name="prompt" rows="5" placeholder="生成时用的提示词..."></textarea></label>' +
+        '<label class="full">样式参数 Style（JSON）<textarea name="style" rows="5" class="mono" placeholder="{\"radius\":44,\"duration\":4}"></textarea></label>' +
+        '<p class="cg-form-msg" id="cgFormMsg"></p>' +
+        '<div class="cg-form-foot">' +
+          '<button type="button" class="cg-btn cg-btn-ghost" id="cgFormNew">清空 / 新增</button>' +
+          '<button type="button" class="cg-btn cg-btn-danger" id="cgFormDelete" style="display:none;">删除</button>' +
+          '<button type="submit" class="cg-btn cg-btn-primary" id="cgFormSave">保存</button>' +
+        '</div>' +
+      '</form>'
+    );
+  }
+
+  function openModal(){
+    var m = $('cgModal');
+    if(!m) return;
+    m.classList.add('open');
+    m.setAttribute('aria-hidden','false');
+    buildModal();
+  }
+
+  function closeModal(){
+    var m = $('cgModal');
+    if(!m) return;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden','true');
+    m.innerHTML = '';
+    editingId = null;
+  }
+
+  function buildModal(){
+    var m = $('cgModal');
+    if(!m) return;
+    if(!pwd()){
+      m.innerHTML = gateHTML();
+      var btn = $('cgGateBtn'), inp = $('cgGateInput');
+      function submitGate(){
+        var v = (inp.value || '').trim();
+        if(!v){ $('cgGateError').textContent = '请输入密码'; return; }
+        btn.disabled = true;
+        btn.textContent = '验证中...';
+        fetch(CG_API + '/api/v-ing-verify', { method:'POST', headers:{'X-Password':v} })
+          .then(function(r){ return r.json().catch(function(){ return {}; }); })
+          .then(function(d){
+            if(d && d.ok){
+              sessionStorage.setItem(PWD_KEY, v);
+              buildModal();
+            }else{
+              $('cgGateError').textContent = '密码不对，再试一次';
+              btn.disabled = false; btn.textContent = '解锁';
+            }
+          })
+          .catch(function(){
+            $('cgGateError').textContent = '网络异常，稍后重试';
+            btn.disabled = false; btn.textContent = '解锁';
+          });
+      }
+      btn.addEventListener('click', submitGate);
+      inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') submitGate(); });
+      setTimeout(function(){ inp.focus(); }, 80);
+      return;
+    }
+
+    m.innerHTML = editorHTML();
+    renderManageList();
+    bindEditor();
+    fillForm(editingId ? findAsset(editingId) : null);
+  }
+
+  function renderManageList(){
+    var box = $('cgManageList');
+    if(!box) return;
+    if(!assets.length){
+      box.innerHTML = '<div class="cg-meta">还没有素材，下面填表保存即为新增。</div>';
+      return;
+    }
+    box.innerHTML = assets.map(function(a){
+      return '<div class="cg-manage-row' + (a.id === editingId ? ' active' : '') + '">' +
+        '<span class="cg-mr-name">' + esc(a.title) + '</span>' +
+        '<span class="cg-mr-cat">' + esc(a.category) + '</span>' +
+        '<button type="button" data-cg-edit="' + esc(a.id) + '">编辑</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function fillForm(a){
+    var f = $('cgForm');
+    if(!f) return;
+    var el = f.elements;
+    var vals = a || {};
+    el.id.value = vals.id || '';
+    el.title.value = vals.title || '';
+    el.category.value = vals.category || CATEGORIES[0];
+    el.size.value = vals.size || '';
+    el.duration.value = vals.duration == null ? '' : vals.duration;
+    el.sort.value = vals.sort == null ? '' : vals.sort;
+    el.webm.value = vals.webm || '';
+    el.frames.value = vals.frames || '';
+    el.mov.value = vals.mov || '';
+    el.poster.value = vals.poster || '';
+    el.tags.value = vals.tags || '';
+    el.prompt.value = vals.prompt || '';
+    el.style.value = vals.style || '';
+    var del = $('cgFormDelete');
+    if(del) del.style.display = a ? '' : 'none';
+    var msg = $('cgFormMsg');
+    if(msg){ msg.textContent = ''; msg.className = 'cg-form-msg'; }
+  }
+
+  function bindEditor(){
+    var form = $('cgForm');
+    if(!form) return;
+
+    $('cgFormNew').addEventListener('click', function(){
+      editingId = null;
+      renderManageList();
+      fillForm(null);
+    });
+
+    $('cgFormDelete').addEventListener('click', function(){
+      if(!editingId) return;
+      if(!window.confirm('确定删除这条素材？')) return;
+      api('DELETE', { auth:true, query:'?id=' + encodeURIComponent(editingId) })
+        .then(function(){
+          assets = assets.filter(function(a){ return a.id !== editingId; });
+          editingId = null;
+          renderManageList(); fillForm(null); renderFilters(); renderGrid();
+          notify('已删除', 'ok');
+        })
+        .catch(function(e){ notify('删除失败：' + e.message, 'err'); });
+    });
+
+    $('cgManageList').addEventListener('click', function(e){
+      var b = e.target.closest('[data-cg-edit]');
+      if(!b) return;
+      editingId = b.getAttribute('data-cg-edit');
+      renderManageList();
+      fillForm(findAsset(editingId));
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var el = form.elements;
+      var title = el.title.value.trim();
+      if(!title){ notify('名称不能为空', 'err'); return; }
+      var styleRaw = el.style.value.trim();
+      if(styleRaw){
+        try{ JSON.parse(styleRaw); }
+        catch(err){ notify('样式参数不是合法 JSON', 'err'); return; }
+      }
+      var id = el.id.value.trim() || ('cg-' + Date.now().toString(36));
+      var payload = {
+        id: id,
+        title: title,
+        category: el.category.value,
+        size: el.size.value.trim(),
+        duration: el.duration.value === '' ? null : parseFloat(el.duration.value),
+        sort: el.sort.value === '' ? 0 : parseInt(el.sort.value, 10),
+        webm: el.webm.value.trim(),
+        frames: el.frames.value.trim(),
+        mov: el.mov.value.trim(),
+        poster: el.poster.value.trim(),
+        tags: el.tags.value.trim(),
+        prompt: el.prompt.value.trim(),
+        style: styleRaw
+      };
+      var saveBtn = $('cgFormSave');
+      saveBtn.disabled = true;
+      api('PUT', { auth:true, body:{ asset: payload } })
+        .then(function(d){
+          var saved = d.asset || payload;
+          var idx = -1;
+          for(var i = 0; i < assets.length; i++){ if(assets[i].id === saved.id){ idx = i; break; } }
+          if(idx >= 0) assets[idx] = saved; else assets.push(saved);
+          editingId = saved.id;
+          el.id.value = saved.id;
+          renderManageList();
+          renderFilters();
+          renderGrid();
+          notify('已保存', 'ok');
+        })
+        .catch(function(err){ notify('保存失败：' + err.message, 'err'); })
+        .then(function(){ saveBtn.disabled = false; });
+    });
+  }
+
+  function notify(text, kind){
+    var msg = $('cgFormMsg');
+    if(!msg) return;
+    msg.textContent = text;
+    msg.className = 'cg-form-msg ' + (kind || '');
+  }
+
+  /* ---------------- events ---------------- */
+  function bindGlobal(){
+    var grid = $('cgGrid');
+    if(grid){
+      grid.addEventListener('click', function(e){
+        var t = e.target.closest('[data-cg-toggle]');
+        if(t){
+          var card = t.closest('.cg-card');
+          var block = card && card.querySelector('.cg-prompt');
+          if(block){
+            var show = block.hasAttribute('hidden');
+            if(show) block.removeAttribute('hidden'); else block.setAttribute('hidden','');
+            t.textContent = show ? '收起' : '提示词';
+          }
+          return;
+        }
+        var c = e.target.closest('[data-cg-copy]');
+        if(c){
+          var a = findAsset(c.getAttribute('data-cg-copy'));
+          if(!a) return;
+          var text = (a.prompt ? 'Prompt:\n' + a.prompt + '\n\n' : '') +
+                     (a.style ? 'Style:\n' + a.style : '');
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(text).then(function(){
+              c.textContent = '已复制';
+              setTimeout(function(){ c.textContent = '复制全部'; }, 1600);
+            });
+          }
+        }
+      });
+    }
+
+    var filters = $('cgFilters');
+    if(filters){
+      filters.addEventListener('click', function(e){
+        var b = e.target.closest('[data-cg-cat]');
+        if(!b) return;
+        activeCat = b.getAttribute('data-cg-cat');
+        renderFilters();
+        renderGrid();
+      });
+    }
+
+    var manage = $('cgManageBtn');
+    if(manage) manage.addEventListener('click', openModal);
+
+    var modal = $('cgModal');
+    if(modal){
+      modal.addEventListener('click', function(e){
+        if(e.target.closest('[data-cg-close]')) closeModal();
+      });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      });
+    }
+  }
+
+  function init(){
+    if(!$('view-cg')) return;
+    bindGlobal();
+    loadAssets();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  }else{
+    init();
+  }
+
+  // Reload when the view is opened, so an edit made elsewhere shows up
+  // without a full refresh. switchView uses history.replaceState (no
+  // hashchange event), so listen to the nav clicks and the hash itself.
+  function reloadIfCg(){
+    if(window.location.hash === '#cg' || document.getElementById('view-cg')?.classList.contains('view-active')){
+      loadAssets(true);
+    }
+  }
+  document.addEventListener('click', function(e){
+    var nav = e.target.closest('[data-nav="cg"]');
+    if(nav) setTimeout(reloadIfCg, 500);
+  });
+  window.addEventListener('hashchange', reloadIfCg);
 })();
