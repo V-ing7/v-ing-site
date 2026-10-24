@@ -11,8 +11,8 @@ const Root = () => {
         component={TitleBarGlass}
         durationInFrames={120}
         fps={30}
-        width={1920}
-        height={1080}
+        width={3840}
+        height={2160}
         defaultProps={{
           title: '透明图层 · 视频包装',
           eyebrow: 'CG LIBRARY · 微影 V-ing',
@@ -20,6 +20,7 @@ const Root = () => {
           width: 1180,
           height: 232,
           radius: 44,
+          scale: 2,
         }}
       />
       <Composition

@@ -14,8 +14,10 @@ import {
  * 设计原则：
  * 1. 画布完全透明（无底色），输出带 alpha 的 WebM / PNG 序列，可直接叠在实拍画面上。
  * 2. 玻璃质感不依赖 backdrop-filter（渲染时背后是透明像素，模糊无内容），
- *    改用多层半透明白 + 顶部镜面渐变 + 1px 内描边 + 底部内发光叠加模拟。
- * 3. 动效：弹性入场 → 斜向高光扫过 → 文字逐层浮现 → 停留。
+ *    改用多层半透明 + 1px 内描边 + 底部内发光模拟。
+ * 3. 动效：弹性入场 → 文字逐层浮现 → 静止停留。无高光带、无扫光、无背后柔光。
+ * 4. width / height / radius 均为「设计单位」（以 1080p 为基准），
+ *    实际像素 = 设计值 × scale。4K 用 scale=2，其它尺寸同理等比放大。
  */
 
 const FONT =
@@ -30,12 +32,19 @@ export const TitleBarGlass = ({
   width = 1180,
   height = 232,
   radius = 44,
+  scale = 1,
   tone = 'dark',
   grain = 0.055,
   halo = 0,
 }) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+
+  // 设计单位 → 实际像素
+  const u = (n) => n * scale;
+  const w = u(width);
+  const h = u(height);
+  const r = u(radius);
 
   // ---- 入场：弹性缩放 + 上移 ----
   const enter = spring({
@@ -44,24 +53,28 @@ export const TitleBarGlass = ({
     config: {damping: 200, mass: 0.9, stiffness: 110},
   });
   const barOpacity = interpolate(frame, [0, 8], [0, 1], clamp);
-  const barY = interpolate(enter, [0, 1], [30, 0]);
+  const barY = interpolate(enter, [0, 1], [u(30), 0]);
   const barScale = interpolate(enter, [0, 1], [0.965, 1]);
 
   // ---- 文字分层浮现 ----
   const eyebrowO = interpolate(frame, [10, 24], [0, 1], clamp);
-  const eyebrowY = interpolate(frame, [10, 24], [10, 0], clamp);
+  const eyebrowY = interpolate(frame, [10, 24], [u(10), 0], clamp);
 
   const titleO = interpolate(frame, [14, 32], [0, 1], clamp);
-  const titleY = interpolate(frame, [14, 32], [24, 0], clamp);
-  const titleSpacing = interpolate(frame, [14, 40], [14, 3], {
-    ...clamp,
-    easing: Easing.out(Easing.cubic),
-  });
+  const titleY = interpolate(frame, [14, 32], [u(24), 0], clamp);
+  const titleSpacing = u(
+    interpolate(frame, [14, 40], [14, 3], {
+      ...clamp,
+      easing: Easing.out(Easing.cubic),
+    })
+  );
 
-  const lineW = interpolate(frame, [22, 48], [0, 168], {
-    ...clamp,
-    easing: Easing.inOut(Easing.cubic),
-  });
+  const lineW = u(
+    interpolate(frame, [22, 48], [0, 168], {
+      ...clamp,
+      easing: Easing.inOut(Easing.cubic),
+    })
+  );
 
   const tagO = interpolate(frame, [38, 54], [0, 1], clamp);
   const tagScale = interpolate(frame, [38, 54], [0.88, 1], clamp);
@@ -72,7 +85,7 @@ export const TitleBarGlass = ({
   const glass = {
     position: 'absolute',
     inset: 0,
-    borderRadius: radius,
+    borderRadius: r,
     background: isDark
       ? 'linear-gradient(180deg, rgba(255,255,255,0.13) 0%, rgba(26,26,32,0.34) 16%, rgba(14,14,20,0.46) 52%, rgba(6,6,10,0.58) 100%)'
       : 'linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.17) 30%, rgba(255,255,255,0.09) 62%, rgba(255,255,255,0.16) 100%)',
@@ -82,7 +95,7 @@ export const TitleBarGlass = ({
   const scrim = {
     position: 'absolute',
     inset: 0,
-    borderRadius: radius,
+    borderRadius: r,
     background: isDark
       ? 'linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.14) 100%)'
       : 'linear-gradient(180deg, rgba(0,0,0,0) 42%, rgba(0,0,0,0.10) 100%)',
@@ -91,10 +104,11 @@ export const TitleBarGlass = ({
   const innerBorder = {
     position: 'absolute',
     inset: 0,
-    borderRadius: radius,
-    border: '1px solid rgba(255,255,255,0.58)',
-    boxShadow:
-      'inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(255,255,255,0.22), inset 0 0 42px rgba(255,255,255,0.10), 0 18px 60px rgba(0,0,0,0.28)',
+    borderRadius: r,
+    border: `${Math.max(1, u(1))}px solid rgba(255,255,255,0.58)`,
+    boxShadow: `inset 0 ${u(1)}px 0 rgba(255,255,255,0.85), inset 0 -${u(1)}px 0 rgba(255,255,255,0.22), inset 0 0 ${u(
+      42
+    )}px rgba(255,255,255,0.10), 0 ${u(18)}px ${u(60)}px rgba(0,0,0,0.28)`,
   };
 
   return (
@@ -104,7 +118,7 @@ export const TitleBarGlass = ({
         <AbsoluteFill
           style={{
             opacity: barOpacity * halo,
-            background: `radial-gradient(ellipse ${width * 0.62}px ${height * 1.5}px at 50% 50%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 70%)`,
+            background: `radial-gradient(ellipse ${w * 0.62}px ${h * 1.5}px at 50% 50%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 70%)`,
           }}
         />
       )}
@@ -120,9 +134,9 @@ export const TitleBarGlass = ({
         <div
           style={{
             position: 'relative',
-            width,
-            height,
-            borderRadius: radius,
+            width: w,
+            height: h,
+            borderRadius: r,
             overflow: 'hidden',
             isolation: 'isolate',
           }}
@@ -138,8 +152,8 @@ export const TitleBarGlass = ({
               left: '8%',
               right: '8%',
               bottom: 0,
-              height: 2,
-              borderRadius: 2,
+              height: u(2),
+              borderRadius: u(2),
               background:
                 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)',
               opacity: 0.7,
@@ -169,21 +183,21 @@ export const TitleBarGlass = ({
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              paddingLeft: 64,
-              paddingRight: 64,
+              paddingLeft: u(64),
+              paddingRight: u(64),
               fontFamily: FONT,
             }}
           >
             <div
               style={{
-                fontSize: 21,
-                letterSpacing: 9,
+                fontSize: u(21),
+                letterSpacing: u(9),
                 textTransform: 'uppercase',
                 color: 'rgba(255,255,255,0.82)',
                 opacity: eyebrowO,
                 transform: `translateY(${eyebrowY}px)`,
-                marginBottom: 16,
-                textShadow: '0 1px 12px rgba(0,0,0,0.45)',
+                marginBottom: u(16),
+                textShadow: `0 ${u(1)}px ${u(12)}px rgba(0,0,0,0.45)`,
               }}
             >
               {eyebrow}
@@ -191,15 +205,16 @@ export const TitleBarGlass = ({
 
             <div
               style={{
-                fontSize: 74,
+                fontSize: u(74),
                 fontWeight: 600,
                 letterSpacing: titleSpacing,
                 color: '#FFFFFF',
                 lineHeight: 1.16,
                 opacity: titleO,
                 transform: `translateY(${titleY}px)`,
-                textShadow:
-                  '0 2px 26px rgba(0,0,0,0.50), 0 0 1px rgba(255,255,255,0.9), 0 1px 2px rgba(0,0,0,0.35)',
+                textShadow: `0 ${u(2)}px ${u(26)}px rgba(0,0,0,0.50), 0 0 ${u(
+                  1
+                )}px rgba(255,255,255,0.9), 0 ${u(1)}px ${u(2)}px rgba(0,0,0,0.35)`,
               }}
             >
               {title}
@@ -207,9 +222,9 @@ export const TitleBarGlass = ({
 
             <div
               style={{
-                height: 1,
+                height: Math.max(1, u(1)),
                 width: lineW,
-                marginTop: 22,
+                marginTop: u(22),
                 background:
                   'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 50%, rgba(255,255,255,0) 100%)',
               }}
@@ -220,18 +235,18 @@ export const TitleBarGlass = ({
           <div
             style={{
               position: 'absolute',
-              right: 34,
-              bottom: 28,
+              right: u(34),
+              bottom: u(28),
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
-              padding: '8px 16px',
+              gap: u(8),
+              padding: `${u(8)}px ${u(16)}px`,
               borderRadius: 999,
               background: 'rgba(255,255,255,0.16)',
-              border: '1px solid rgba(255,255,255,0.42)',
+              border: `${Math.max(1, u(1))}px solid rgba(255,255,255,0.42)`,
               color: 'rgba(255,255,255,0.88)',
-              fontSize: 16,
-              letterSpacing: 3,
+              fontSize: u(16),
+              letterSpacing: u(3),
               fontFamily: FONT,
               opacity: tagO,
               transform: `scale(${tagScale})`,
@@ -239,8 +254,8 @@ export const TitleBarGlass = ({
           >
             <span
               style={{
-                width: 6,
-                height: 6,
+                width: u(6),
+                height: u(6),
                 borderRadius: 999,
                 background: 'rgba(255,255,255,0.9)',
                 display: 'inline-block',
