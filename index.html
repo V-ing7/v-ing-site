@@ -18,7 +18,9 @@
   <link rel="stylesheet" href="css/style.css?v=20261022l">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <!-- 字体改成非阻塞加载：Google Fonts 在国内经常整段挂住，阻塞式 <link> 会让首屏一直白屏转圈 -->
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet"></noscript>
   <script src="js/lib/html2canvas.min.js?v=20261007" defer></script>
   <script>
   /* Cache kill switch — runs before anything else.
@@ -2336,7 +2338,8 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
+  <!-- async：cdn.jsdelivr.net 拉不动时不能挡住后面 defer 的 app.js，否则整页脚本都不执行 -->
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" async></script>
   <script src="js/app.js?v=20261024c" defer></script>
 
 </body>
