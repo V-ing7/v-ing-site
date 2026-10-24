@@ -47,18 +47,6 @@ export const TitleBarGlass = ({
   const barY = interpolate(enter, [0, 1], [30, 0]);
   const barScale = interpolate(enter, [0, 1], [0.965, 1]);
 
-  // ---- 斜向高光扫过 ----
-  const sweep = interpolate(frame, [24, 86], [-45, 145], {
-    ...clamp,
-    easing: Easing.inOut(Easing.cubic),
-  });
-  const sweepOpacity = interpolate(
-    frame,
-    [22, 34, 76, 90],
-    [0, 0.85, 0.85, 0],
-    clamp
-  );
-
   // ---- 文字分层浮现 ----
   const eyebrowO = interpolate(frame, [10, 24], [0, 1], clamp);
   const eyebrowY = interpolate(frame, [10, 24], [10, 0], clamp);
@@ -155,21 +143,6 @@ export const TitleBarGlass = ({
               background:
                 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)',
               opacity: 0.7,
-            }}
-          />
-          {/* 斜向扫光 */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '-60%',
-              bottom: '-60%',
-              width: '26%',
-              left: `${sweep}%`,
-              transform: 'rotate(18deg)',
-              background:
-                'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.42) 48%, rgba(255,255,255,0) 100%)',
-              filter: 'blur(12px)',
-              opacity: sweepOpacity,
             }}
           />
           {/* 细颗粒，避免大面积渐变出现色带 */}
