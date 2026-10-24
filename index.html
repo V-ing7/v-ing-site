@@ -223,6 +223,7 @@
         <a href="#works" class="nav-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
         <a href="#collab" class="nav-link" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
         <a href="#workspace" class="nav-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
+        <a href="#cg" class="nav-link" data-nav="cg" data-cn="CG素材" data-en="CG Assets">CG素材</a>
         <a href="#contact" class="nav-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
       </div>
       <div class="nav-controls">
@@ -248,6 +249,7 @@
       <a href="#works" class="mobile-link" data-nav="works" data-cn="作品" data-en="Works">作品</a>
       <a href="#collab" class="mobile-link" data-nav="collab" data-cn="联动" data-en="Collabs">联动</a>
       <a href="#workspace" class="mobile-link" data-nav="workspace" data-cn="工作台" data-en="Workspace">工作台</a>
+      <a href="#cg" class="mobile-link" data-nav="cg" data-cn="CG素材" data-en="CG Assets">CG素材</a>
       <a href="#contact" class="mobile-link" data-nav="contact" data-cn="联系" data-en="Contact">联系</a>
     </div>
   </nav>
@@ -2145,6 +2147,34 @@
       </div>
 
     </section>
+
+    <!-- ========== CG ASSETS VIEW ========== -->
+    <section class="view" id="view-cg" data-view="cg">
+      <div class="container cg-container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow" data-cn="CG 素材库" data-en="CG Asset Library">CG 素材库</span>
+          <h2 class="section-title section-title-lg" data-cn="透明图层 · 视频包装" data-en="Transparent Layers · Video Packaging">透明图层 · 视频包装</h2>
+          <p class="section-desc reveal" data-cn="用 Remotion 生成的透明底素材，可直接叠加到画面上。每条素材都保留了原始提示词与样式参数，随时复现或改一版。" data-en="Alpha-channel assets generated with Remotion, ready to layer onto footage. Every entry keeps its original prompt and style parameters so it can be reproduced or remixed.">用 Remotion 生成的透明底素材，可直接叠加到画面上。每条素材都保留了原始提示词与样式参数，随时复现或改一版。</p>
+        </div>
+
+        <div class="cg-specs reveal">
+          <span class="cg-spec"><b>1920×1080</b><i data-cn="画布" data-en="Canvas">画布</i></span>
+          <span class="cg-spec"><b>30 fps</b><i data-cn="帧率" data-en="Frame rate">帧率</i></span>
+          <span class="cg-spec"><b>Alpha</b><i data-cn="透明底" data-en="Transparency">透明底</i></span>
+          <span class="cg-spec"><b>WebM · PNG</b><i data-cn="交付格式" data-en="Delivery">交付格式</i></span>
+        </div>
+
+        <div class="cg-toolbar">
+          <div class="cg-filters" id="cgFilters"></div>
+          <button type="button" class="cg-btn cg-btn-ghost" id="cgManageBtn" data-cn="管理素材" data-en="Manage">管理素材</button>
+        </div>
+
+        <div class="cg-grid" id="cgGrid"></div>
+        <p class="cg-empty" id="cgEmpty" style="display:none;" data-cn="素材库还是空的。点「管理素材」新增第一条。" data-en="The library is empty — use Manage to add the first one.">素材库还是空的。点「管理素材」新增第一条。</p>
+      </div>
+    </section>
+
+    <div class="cg-modal" id="cgModal" aria-hidden="true"></div>
 
     <!-- ========== CONTACT VIEW ========== -->
     <section class="view" id="view-contact" data-view="contact">
