@@ -6987,10 +6987,17 @@
 
     var promptBlock = '';
     if(a.prompt || a.prompt_ios || a.style){
+      // 双提示词时渲染 Win / iOS 切换选项卡，默认显示 Windows
+      var dual = !!(a.prompt && a.prompt_ios);
       promptBlock =
         '<div class="cg-prompt" hidden>' +
-          (a.prompt ? '<h4>Windows · 提示词</h4><pre>' + esc(a.prompt) + '</pre>' : '') +
-          (a.prompt_ios ? '<h4>iOS · 提示词</h4><pre>' + esc(a.prompt_ios) + '</pre>' : '') +
+          (dual ?
+            '<div class="cg-tabs">' +
+              '<button type="button" class="cg-btn cg-btn-primary" data-cg-tab="win">Windows</button> ' +
+              '<button type="button" class="cg-btn cg-btn-ghost" data-cg-tab="ios">iOS</button>' +
+            '</div>' : '') +
+          (a.prompt ? '<div data-cg-pane="win"><h4>Windows · 提示词</h4><pre>' + esc(a.prompt) + '</pre></div>' : '') +
+          (a.prompt_ios ? '<div data-cg-pane="ios"' + (dual ? ' hidden' : '') + '><h4>iOS · 提示词</h4><pre>' + esc(a.prompt_ios) + '</pre></div>' : '') +
           (a.style ? '<h4>Style · 样式参数</h4><pre>' + esc(a.style) + '</pre>' : '') +
           '<button type="button" class="cg-copy" data-cg-copy="' + esc(a.id) + '">复制全部</button>' +
         '</div>';
@@ -7264,6 +7271,25 @@
     var grid = $('cgGrid');
     if(grid){
       grid.addEventListener('click', function(e){
+        var tabBtn = e.target.closest('[data-cg-tab]');
+        if(tabBtn){
+          var pw = tabBtn.closest('.cg-prompt');
+          if(pw){
+            var tabKey = tabBtn.getAttribute('data-cg-tab');
+            var tabBtns = pw.querySelectorAll('[data-cg-tab]');
+            for(var ti = 0; ti < tabBtns.length; ti++){
+              var on = tabBtns[ti] === tabBtn;
+              tabBtns[ti].classList.toggle('cg-btn-primary', on);
+              tabBtns[ti].classList.toggle('cg-btn-ghost', !on);
+            }
+            var panes = pw.querySelectorAll('[data-cg-pane]');
+            for(var pi = 0; pi < panes.length; pi++){
+              if(panes[pi].getAttribute('data-cg-pane') === tabKey) panes[pi].removeAttribute('hidden');
+              else panes[pi].setAttribute('hidden','');
+            }
+          }
+          return;
+        }
         var t = e.target.closest('[data-cg-toggle]');
         if(t){
           var card = t.closest('.cg-card');
