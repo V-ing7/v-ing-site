@@ -1,0 +1,18 @@
+{
+  "name": "ving-cg-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "微影 V-ing · 透明图层 CG 素材工程（Remotion）",
+  "scripts": {
+    "studio": "remotion studio src/index.jsx",
+    "render:webm": "remotion render src/index.jsx TitleBarGlass out/titlebar-glass.webm --codec=vp9 --pixel-format=yuva420p --image-format=png",
+    "render:frames": "remotion render src/index.jsx TitleBarGlass out/frames --sequence --image-format=png",
+    "render:still": "remotion still src/index.jsx TitleBarGlass out/titlebar-glass.png --frame=100 --image-format=png"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.0"
+  }
+}
