@@ -489,6 +489,16 @@
       var defaultVmi = getVmiDefault();
       renderVmi(defaultVmi);
     }
+
+    // Cgi 智能体（CG 素材库）
+    if(data.cgAgent){
+      if(_hasChanged('cgAgent', data.cgAgent)){
+        renderCgAgent(data.cgAgent);
+      }
+    } else {
+      var defaultCg = getCgDefault();
+      renderCgAgent(defaultCg);
+    }
   }
 
   /* ================================================================
@@ -679,6 +689,7 @@
       if(data.storyboardProjects) _lastAppliedSignatures.storyboardProjects = _getDataSignature(data.storyboardProjects);
       if(data.lingxiaopaoAgent) _lastAppliedSignatures.lingxiaopaoAgent = _getDataSignature(data.lingxiaopaoAgent);
       if(data.vmiAgent) _lastAppliedSignatures.vmiAgent = _getDataSignature(data.vmiAgent);
+      if(data.cgAgent) _lastAppliedSignatures.cgAgent = _getDataSignature(data.cgAgent);
 
       // Post-save verification: confirm data was saved correctly
       setTimeout(function(){
@@ -4558,6 +4569,281 @@
       if(!history[idx]) return;
       var h = history[idx];
       var display = document.getElementById('vmiPromptDisplay');
+      if(display){
+        display.textContent = h.prompt || '';
+        display.style.borderColor = '#7B61FF';
+        setTimeout(function(){ display.style.borderColor = ''; }, 1500);
+      }
+    });
+  }
+
+  /* ================================================================
+     Cgi 智能体（CG 素材库） — 存储在 data.cgAgent
+     ================================================================ */
+  var CG_DEFAULT_PROMPT = [
+    '你是「Cgi」—— 微影 V-ing 的 CG 素材工程师。职责：用 Remotion 在本地工程生产透明背景的视频包装素材（标题条、指针、数据卡、角标、转场等），渲染成片并上传到网站素材库。换 AI 接手时，把本提示词完整粘贴即可。',
+    '',
+    '# 环境与工程',
+    '- 工程目录：cg-studio（Remotion 4 + React 19）。Node 在 C:\\一心备份，每条命令前先 $env:Path = \'C:\\一心备份;\' + $env:Path。',
+    '- ffmpeg / ffprobe 位于 cg-studio\\node_modules\\@remotion\\compositor-win32-x64-msvc\\。',
+    '- 组合注册在 src/index.jsx；材质基座是 src/CursorFrost.jsx（CursorFrost 组件 + OUTER 轮廓路径）。',
+    '- 预览：npx remotion studio src/index.jsx。',
+    '- PowerShell 脚本含中文必须存成 UTF-8 BOM，否则 PS 5.1 按 ANSI 解析直接报错。',
+    '',
+    '# 材质配方（iOS 液态玻璃 · 素白变体）',
+    '- 本体：纵向半透白渐变 rgba(255,255,255,0.86) → rgba(247,251,255,0.78) → rgba(219,234,247,0.70)。',
+    '- 玻璃壁：渐变描边做斜面（0.92 白 → 0.30 → 0.04 → rgba(12,24,40,0.28) → 0.42），先虚化湿亮（blur ≈ 0.018h、透明度 .42）再压实线。',
+    '- 内侧霜边两层：0.16h@0.13、0.085h@0.22；高光细线 ≈0.008h@0.95；外沿白线 ≈0.0026h@0.85。',
+    '- 顶部内阴影、底部冷调折射 rgba(150,200,240,0→0.20)、底部反光（白 0→0.30）。',
+    '- 双层颗粒：feTurbulence 0.6 / 4oct 透明度 .11 + 1.4 / 2oct 透明度 .05。',
+    '- 面板类素材必须与指针同材质（PanelGlass 按面板高度取比例，宽度方向绝不拉伸质感）。',
+    '- 红线：不要平灰贴纸感、不要砂纸大颗粒、不要边缘硬切。',
+    '',
+    '# 交互细节（血泪教训，必须遵守）',
+    '- CSS rotate 正角 = 顺时针。光标朝向不确定时，先做 OrientationPicker 对照图（24 格，步长 15°）让用户指认编号，不要替用户猜朝向。',
+    '- 光标尖端坐标 = 原图关键点绕中心 (512,512) 旋转后归一化，例如 ROT=-90 时 TIP={x:0.0977, y:0.1016}。',
+    '- 「拉扯展开」类动画：面板 width/height 直接随拖拽插值增长，禁止 transform: scale（以左上为原点会把对角推移，破坏贴角）。',
+    '- 光标位置必须由被拖动的角反推；光标与面板各写一条插值曲线，中途必然错位（实测差 40~180px）。',
+    '- 圆角会切掉外接矩形的角：尖端对准弧上 45° 点，gripInset = radius × 0.2929。',
+    '- 投影随尺寸走：shadowK = 0.3 + 0.7 × grow，小卡阶段挂大偏移阴影会立刻穿帮。',
+    '',
+    '# 渲染命令',
+    '- Windows 透明 WebM：npx remotion render src/index.jsx <Comp> out/<name>.webm --codec=vp9 --pixel-format=yuva420p --image-format=png',
+    '- 海报帧：npx remotion still src/index.jsx <Comp> out/<name>.png --frame=<n> --image-format=png',
+    '- iOS 透明 MOV：npx remotion render src/index.jsx <Comp> out/<name>-ios.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png（ffmpeg 实际落为 yuva444p12le）。注意 --codec=prores-4444 是无效值，--pixel-format=yuva444p12le 也是无效值。',
+    '- 验证 alpha：ffprobe 的 pix_fmt 必须含 a（yuva…），再用 ffmpeg 抽帧确认 PNG 是 rgba。yuv420p / yuv444p10le 都是没有 alpha 的失败品，必须重渲。',
+    '',
+    '# 上线与入库',
+    '- 素材文件用 GitHub blob API 传仓库 assets/cg/，文件名带版本号（xxx-v1）；改版必须换文件名，因为 /assets/* 缓存 24h。',
+    '- 单文件上限：Cloudflare Pages 25MiB、GitHub 100MB；超出就走对象存储（R2/OSS），mov 字段填 https 地址。',
+    '- 走 PR + squash merge 到 main，Cloudflare Pages 与 GitHub Pages 双平台自动部署。',
+    '- 入库：PUT https://v-ing-site.pages.dev/api/v-ing-cg，请求头 X-Password。改数据前必须向用户要密码（提示是英文名）。分类白名单：标题条 / 数据卡 / 角标 / 指针 / 转场 / 其他。',
+    '- 每条素材的提示词分两份：prompt（Windows 版，交付 VP9 WebM + alpha + PNG 序列）与 prompt_ios（iOS 版，交付 HEVC hvc1 / ProRes 4444 alpha MOV，注明 iOS 不支持 VP9 alpha）。动效与材质段落两份保持一致，只改交付规格。',
+    '- 前端 app.js 靠 index.html 的 ?v= 日期号破缓存，每次改动必须递增。',
+    '',
+    '# 验证',
+    '- 浏览器复验必须用带随机 ?cb= 的新 URL 强制重新导航，不能信已打开的旧标签页（fetch 响应会被记住）。',
+    '- 先自查 API（Invoke-WebRequest /api/v-ing-cg 看条数与字段），再让浏览器子代理复核页面。',
+    '',
+    '# 输出风格',
+    '- 先给结论，再给命令，最后说验证结果。',
+    '- 每条素材交付时同时给出 Win / iOS 两份提示词文本，方便直接入库。'
+  ].join('\n');
+
+  var cgAgentData = null;
+  var cgAgentEditing = false;
+
+  function getCgDefault(){
+    var now = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+    var timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+    return {
+      name: 'Cgi',
+      tagline: '透明图层 CG 素材生产管线 · 换 AI 直接套用',
+      description: 'Cgi 是微影的 CG 素材工程师智能体，封装了 Remotion 透明素材的材质配方、交互细节、渲染命令与上线入库全流程，把提示词粘给任何 AI 即可接手生产。',
+      prompt: CG_DEFAULT_PROMPT,
+      versionHistory: [{
+        version: 'v1.0',
+        date: dateStr,
+        time: timeStr,
+        note: '初始创建：Cgi 智能体 v1.0',
+        prompt: CG_DEFAULT_PROMPT
+      }],
+      lastUpdated: now.toISOString()
+    };
+  }
+
+  function renderCgAgent(agentData){
+    if(!agentData) return;
+    cgAgentData = agentData;
+
+    var display = document.getElementById('cgAgentPromptDisplay');
+    var editor = document.getElementById('cgAgentPromptEditor');
+    var versionEl = document.getElementById('cgAgentVersion');
+    var updatedEl = document.getElementById('cgAgentUpdated');
+    var historyCountEl = document.getElementById('cgAgentHistoryCount');
+
+    var prompt = agentData.prompt || '';
+    if(display) display.textContent = prompt;
+    if(editor && !cgAgentEditing) editor.value = prompt;
+
+    var history = agentData.versionHistory || [];
+    var latest = history[history.length - 1];
+    if(versionEl) versionEl.textContent = (latest && latest.version) || 'v1.0';
+    if(historyCountEl) historyCountEl.textContent = history.length;
+    if(updatedEl){
+      if(agentData.lastUpdated){
+        try{
+          var d = new Date(agentData.lastUpdated);
+          updatedEl.textContent = d.getFullYear()+'-'+
+            String(d.getMonth()+1).padStart(2,'0')+'-'+
+            String(d.getDate()).padStart(2,'0')+' '+
+            String(d.getHours()).padStart(2,'0')+':'+
+            String(d.getMinutes()).padStart(2,'0');
+        }catch(e){ updatedEl.textContent = '—'; }
+      } else { updatedEl.textContent = '—'; }
+    }
+
+    var list = document.getElementById('cgAgentHistoryList');
+    if(list){
+      if(!history.length){
+        list.innerHTML = '<div class="agent-history-empty">暂无历史版本</div>';
+      } else {
+        var html = '';
+        for(var i=history.length-1;i>=0;i--){
+          var item = history[i];
+          html += '<div class="agent-history-item" data-idx="'+i+'">';
+          html += '<div class="agent-history-item-head">';
+          html += '<span class="agent-history-ver">'+escapeHtml(item.version||'')+'</span>';
+          html += '<span class="agent-history-date">'+escapeHtml((item.date||'')+' '+(item.time||''))+'</span>';
+          html += '</div>';
+          if(item.note) html += '<div class="agent-history-note">'+escapeHtml(item.note)+'</div>';
+          html += '</div>';
+        }
+        list.innerHTML = html;
+      }
+    }
+  }
+
+  function enterCgEdit(){
+    if(!cgAgentData) return;
+    cgAgentEditing = true;
+    var display = document.getElementById('cgAgentPromptDisplay');
+    var editor = document.getElementById('cgAgentPromptEditor');
+    var actions = document.getElementById('cgAgentEditActions');
+    var editBtn = document.getElementById('cgAgentEditBtn');
+    if(display) display.style.display = 'none';
+    if(editor){ editor.value = cgAgentData.prompt || ''; editor.style.display = 'block'; editor.focus(); }
+    if(actions) actions.style.display = 'flex';
+    if(editBtn) editBtn.style.display = 'none';
+  }
+
+  function cancelCgEdit(){
+    cgAgentEditing = false;
+    var display = document.getElementById('cgAgentPromptDisplay');
+    var editor = document.getElementById('cgAgentPromptEditor');
+    var actions = document.getElementById('cgAgentEditActions');
+    var editBtn = document.getElementById('cgAgentEditBtn');
+    if(display) display.style.display = 'block';
+    if(editor) editor.style.display = 'none';
+    if(actions) actions.style.display = 'none';
+    if(editBtn) editBtn.style.display = '';
+  }
+
+  function saveCgAgent(){
+    if(!cgAgentData) return;
+    var editor = document.getElementById('cgAgentPromptEditor');
+    var noteInput = document.getElementById('cgAgentNoteInput');
+    var newPrompt = editor ? editor.value : '';
+    var note = noteInput ? noteInput.value.trim() : '';
+
+    if(!newPrompt.trim()){
+      alert((lang==='zh'?'提示词不能为空':'Prompt cannot be empty'));
+      return;
+    }
+    if(newPrompt === cgAgentData.prompt){
+      cancelCgEdit();
+      return;
+    }
+
+    var now = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+    var timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+
+    var history = cgAgentData.versionHistory || [];
+    var lastVer = history.length ? history[history.length-1].version : 'v1.0';
+    var verNum = parseFloat(lastVer.replace('v','')) || 1.0;
+    var newVer = 'v'+(verNum + 0.1).toFixed(1);
+
+    cgAgentData.prompt = newPrompt;
+    cgAgentData.lastUpdated = now.toISOString();
+    if(!cgAgentData.versionHistory) cgAgentData.versionHistory = [];
+    cgAgentData.versionHistory.push({
+      version: newVer,
+      date: dateStr,
+      time: timeStr,
+      note: note || '手动修改',
+      prompt: newPrompt
+    });
+
+    if(window.__vingData){
+      window.__vingData.cgAgent = cgAgentData;
+      ghSave(window.__vingData);
+    }
+
+    if(noteInput) noteInput.value = '';
+    cgAgentEditing = false;
+    renderCgAgent(cgAgentData);
+
+    var display = document.getElementById('cgAgentPromptDisplay');
+    var editorEl = document.getElementById('cgAgentPromptEditor');
+    var actions = document.getElementById('cgAgentEditActions');
+    var editBtn = document.getElementById('cgAgentEditBtn');
+    if(display) display.style.display = 'block';
+    if(editorEl) editorEl.style.display = 'none';
+    if(actions) actions.style.display = 'none';
+    if(editBtn) editBtn.style.display = '';
+    setSyncStatus('saving');
+  }
+
+  function copyCgAgentPrompt(){
+    if(!cgAgentData) return;
+    var prompt = cgAgentData.prompt || '';
+    var btn = document.getElementById('cgAgentCopyBtn');
+    var done = function(){
+      if(btn){
+        var original = btn.textContent;
+        btn.textContent = lang==='zh' ? '✅ 已复制' : '✅ Copied';
+        btn.classList.add('agent-btn-copied');
+        setTimeout(function(){ btn.textContent = original; btn.classList.remove('agent-btn-copied'); }, 1800);
+      }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(prompt).then(done).catch(function(){
+        var ta = document.createElement('textarea');
+        ta.value = prompt; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta); done();
+      });
+    } else {
+      var ta2 = document.createElement('textarea');
+      ta2.value = prompt; document.body.appendChild(ta2); ta2.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta2); done();
+    }
+  }
+
+  var cgAgentEditBtn = document.getElementById('cgAgentEditBtn');
+  var cgAgentSaveBtn = document.getElementById('cgAgentSaveBtn');
+  var cgAgentCancelBtn = document.getElementById('cgAgentCancelBtn');
+  var cgAgentCopyBtn = document.getElementById('cgAgentCopyBtn');
+  var cgAgentHistoryToggle = document.getElementById('cgAgentHistoryToggle');
+
+  if(cgAgentEditBtn) cgAgentEditBtn.addEventListener('click', enterCgEdit);
+  if(cgAgentCancelBtn) cgAgentCancelBtn.addEventListener('click', cancelCgEdit);
+  if(cgAgentSaveBtn) cgAgentSaveBtn.addEventListener('click', saveCgAgent);
+  if(cgAgentCopyBtn) cgAgentCopyBtn.addEventListener('click', copyCgAgentPrompt);
+  if(cgAgentHistoryToggle){
+    cgAgentHistoryToggle.addEventListener('click', function(){
+      var list = document.getElementById('cgAgentHistoryList');
+      if(!list) return;
+      var isOpen = list.style.display !== 'none';
+      list.style.display = isOpen ? 'none' : 'block';
+      cgAgentHistoryToggle.classList.toggle('open', !isOpen);
+    });
+  }
+  var cgAgentHistoryList = document.getElementById('cgAgentHistoryList');
+  if(cgAgentHistoryList){
+    cgAgentHistoryList.addEventListener('click', function(e){
+      var item = e.target.closest('.agent-history-item');
+      if(!item || !cgAgentData) return;
+      var idx = parseInt(item.getAttribute('data-idx'), 10);
+      var history = cgAgentData.versionHistory || [];
+      if(!history[idx]) return;
+      var h = history[idx];
+      var display = document.getElementById('cgAgentPromptDisplay');
       if(display){
         display.textContent = h.prompt || '';
         display.style.borderColor = '#7B61FF';
