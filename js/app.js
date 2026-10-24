@@ -6986,10 +6986,11 @@
     if(!downloads.length) downloads.push('<span class="cg-meta">文件待上传</span>');
 
     var promptBlock = '';
-    if(a.prompt || a.style){
+    if(a.prompt || a.prompt_ios || a.style){
       promptBlock =
         '<div class="cg-prompt" hidden>' +
-          (a.prompt ? '<h4>Prompt · 提示词</h4><pre>' + esc(a.prompt) + '</pre>' : '') +
+          (a.prompt ? '<h4>Windows · 提示词</h4><pre>' + esc(a.prompt) + '</pre>' : '') +
+          (a.prompt_ios ? '<h4>iOS · 提示词</h4><pre>' + esc(a.prompt_ios) + '</pre>' : '') +
           (a.style ? '<h4>Style · 样式参数</h4><pre>' + esc(a.style) + '</pre>' : '') +
           '<button type="button" class="cg-copy" data-cg-copy="' + esc(a.id) + '">复制全部</button>' +
         '</div>';
@@ -7063,7 +7064,8 @@
         '<label class="full">ProRes 4444 MOV（可选，文件较大）<input name="mov" maxlength="300" placeholder="assets/cg/xxx.mov"></label>' +
         '<label class="full">封面图（可选）<input name="poster" maxlength="300" placeholder="assets/cg/xxx.png"></label>' +
         '<label class="full">标签（逗号分隔）<input name="tags" maxlength="200" placeholder="液态玻璃,标题,片头"></label>' +
-        '<label class="full">提示词 Prompt<textarea name="prompt" rows="5" placeholder="生成时用的提示词..."></textarea></label>' +
+        '<label class="full">提示词 Prompt · Windows<textarea name="prompt" rows="5" placeholder="Windows 版（VP9 WebM + alpha）的生成提示词..."></textarea></label>' +
+        '<label class="full">提示词 Prompt · iOS<textarea name="promptIos" rows="5" placeholder="iOS 版（HEVC with alpha）的生成提示词..."></textarea></label>' +
         '<label class="full">样式参数 Style（JSON）<textarea name="style" rows="5" class="mono" placeholder="{\"radius\":44,\"duration\":4}"></textarea></label>' +
         '<p class="cg-form-msg" id="cgFormMsg"></p>' +
         '<div class="cg-form-foot">' +
@@ -7164,6 +7166,7 @@
     el.poster.value = vals.poster || '';
     el.tags.value = vals.tags || '';
     el.prompt.value = vals.prompt || '';
+    el.promptIos.value = vals.prompt_ios || '';
     el.style.value = vals.style || '';
     var del = $('cgFormDelete');
     if(del) del.style.display = a ? '' : 'none';
@@ -7226,6 +7229,7 @@
         poster: el.poster.value.trim(),
         tags: el.tags.value.trim(),
         prompt: el.prompt.value.trim(),
+        prompt_ios: el.promptIos.value.trim(),
         style: styleRaw
       };
       var saveBtn = $('cgFormSave');
@@ -7275,7 +7279,8 @@
         if(c){
           var a = findAsset(c.getAttribute('data-cg-copy'));
           if(!a) return;
-          var text = (a.prompt ? 'Prompt:\n' + a.prompt + '\n\n' : '') +
+          var text = (a.prompt ? 'Windows Prompt:\n' + a.prompt + '\n\n' : '') +
+                     (a.prompt_ios ? 'iOS Prompt:\n' + a.prompt_ios + '\n\n' : '') +
                      (a.style ? 'Style:\n' + a.style : '');
           if(navigator.clipboard && navigator.clipboard.writeText){
             navigator.clipboard.writeText(text).then(function(){

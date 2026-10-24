@@ -92,12 +92,19 @@ async function ensureTable(env) {
       poster TEXT,
       tags TEXT,
       prompt TEXT,
+      prompt_ios TEXT,
       style TEXT,
       sort INTEGER DEFAULT 0,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     )`
   ).run();
+
+  // 老表没有 prompt_ios 列：CREATE TABLE IF NOT EXISTS 不会补列，只能单独 ADD。
+  // 已存在时 SQLite 会报 duplicate column，忽略即可。
+  try {
+    await env.DB.prepare(`ALTER TABLE ${TABLE} ADD COLUMN prompt_ios TEXT`).run();
+  } catch (e) { /* column already exists */ }
 }
 
 function str(v, max) {
@@ -145,6 +152,7 @@ function normalize(input) {
       poster: safePath(input.poster),
       tags: str(input.tags, 200),
       prompt: str(input.prompt, MAX_TEXT),
+      prompt_ios: str(input.prompt_ios != null ? input.prompt_ios : input.promptIos, MAX_TEXT),
       style: str(input.style, MAX_TEXT),
       sort
     }
@@ -164,6 +172,7 @@ function rowToAsset(row) {
     poster: row.poster || '',
     tags: row.tags || '',
     prompt: row.prompt || '',
+    prompt_ios: row.prompt_ios || '',
     style: row.style || '',
     sort: row.sort || 0
   };
@@ -223,8 +232,8 @@ export async function onRequestPut(context) {
     // created_at 只在首次插入时写入，更新时保留原值
     await env.DB.prepare(
       `INSERT INTO ${TABLE}
-         (id, title, category, size, duration, webm, frames, mov, poster, tags, prompt, style, sort, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         (id, title, category, size, duration, webm, frames, mov, poster, tags, prompt, prompt_ios, style, sort, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
          title = excluded.title,
          category = excluded.category,
@@ -236,13 +245,14 @@ export async function onRequestPut(context) {
          poster = excluded.poster,
          tags = excluded.tags,
          prompt = excluded.prompt,
+         prompt_ios = excluded.prompt_ios,
          style = excluded.style,
          sort = excluded.sort,
          updated_at = excluded.updated_at`
     ).bind(
       a.id, a.title, a.category, a.size, a.duration,
       a.webm, a.frames, a.mov, a.poster,
-      a.tags, a.prompt, a.style, a.sort,
+      a.tags, a.prompt, a.prompt_ios, a.style, a.sort,
       now, now
     ).run();
 
