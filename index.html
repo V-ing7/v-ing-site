@@ -2166,6 +2166,57 @@
           <span class="cg-spec"><b>WebM · PNG</b><i data-cn="交付格式" data-en="Delivery">交付格式</i></span>
         </div>
 
+        <!-- CG 智能体：把整套素材生产管线封装成提示词，换 AI 时粘贴即可接手 -->
+        <div class="agent-section reveal" id="cg-agent">
+          <div class="agent-head">
+            <div class="agent-head-info">
+              <h3 class="agent-name">Cgi <span class="agent-badge" data-cn="智能体" data-en="Agent">智能体</span></h3>
+              <p class="agent-tagline" data-cn="透明图层 CG 素材生产管线 · 换 AI 直接套用" data-en="Transparent-layer CG production pipeline · paste into any AI to take over">透明图层 CG 素材生产管线 · 换 AI 直接套用</p>
+            </div>
+            <div class="agent-actions">
+              <button class="agent-btn agent-btn-copy" id="cgAgentCopyBtn" data-cn="复制提示词" data-en="Copy Prompt">复制提示词</button>
+              <button class="agent-btn agent-btn-edit" id="cgAgentEditBtn" data-cn="编辑" data-en="Edit">编辑</button>
+            </div>
+          </div>
+
+          <div class="agent-meta">
+            <div class="agent-meta-item">
+              <span class="agent-meta-label" data-cn="当前版本" data-en="Version">当前版本</span>
+              <span class="agent-meta-value" id="cgAgentVersion">v1.0</span>
+            </div>
+            <div class="agent-meta-item">
+              <span class="agent-meta-label" data-cn="更新时间" data-en="Updated">更新时间</span>
+              <span class="agent-meta-value" id="cgAgentUpdated">—</span>
+            </div>
+            <div class="agent-meta-item">
+              <span class="agent-meta-label" data-cn="历史版本" data-en="History">历史版本</span>
+              <span class="agent-meta-value" id="cgAgentHistoryCount">0</span>
+            </div>
+          </div>
+
+          <div class="agent-prompt-wrap" id="cgAgentPromptWrap">
+            <div class="agent-prompt-toolbar">
+              <span class="agent-prompt-label" data-cn="智能提示词" data-en="System Prompt">智能提示词</span>
+              <span class="agent-prompt-hint" data-cn="点击「编辑」修改，保存后自动记录版本" data-en="Click Edit to modify, versions are auto-saved">点击「编辑」修改，保存后自动记录版本</span>
+            </div>
+            <pre class="agent-prompt-display" id="cgAgentPromptDisplay"></pre>
+            <textarea class="agent-prompt-editor" id="cgAgentPromptEditor" style="display:none;"></textarea>
+            <div class="agent-edit-actions" id="cgAgentEditActions" style="display:none;">
+              <input type="text" class="agent-note-input" id="cgAgentNoteInput" placeholder="本次修改说明（可选）" data-cn-placeholder="本次修改说明（可选）" data-en-placeholder="Change note (optional)" />
+              <button class="agent-btn agent-btn-cancel" id="cgAgentCancelBtn" data-cn="取消" data-en="Cancel">取消</button>
+              <button class="agent-btn agent-btn-save" id="cgAgentSaveBtn" data-cn="保存为新版本" data-en="Save as New Version">保存为新版本</button>
+            </div>
+          </div>
+
+          <div class="agent-history">
+            <button class="agent-history-toggle" id="cgAgentHistoryToggle">
+              <span data-cn="📜 版本历史" data-en="📜 Version History">📜 版本历史</span>
+              <span class="agent-history-arrow">▾</span>
+            </button>
+            <div class="agent-history-list" id="cgAgentHistoryList" style="display:none;"></div>
+          </div>
+        </div>
+
         <div class="cg-toolbar">
           <div class="cg-filters" id="cgFilters"></div>
           <button type="button" class="cg-btn cg-btn-ghost" id="cgManageBtn" data-cn="管理素材" data-en="Manage">管理素材</button>
@@ -2340,7 +2391,7 @@
 
   <!-- async：cdn.jsdelivr.net 拉不动时不能挡住后面 defer 的 app.js，否则整页脚本都不执行 -->
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" async></script>
-  <script src="js/app.js?v=20261024d" defer></script>
+  <script src="js/app.js?v=20261024e" defer></script>
 
 </body>
 </html>
