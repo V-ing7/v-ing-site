@@ -4608,10 +4608,18 @@
     '- 投影随尺寸走：shadowK = 0.3 + 0.7 × grow，小卡阶段挂大偏移阴影会立刻穿帮。',
     '',
     '# 渲染命令',
-    '- Windows 透明 WebM：npx remotion render src/index.jsx <Comp> out/<name>.webm --codec=vp9 --pixel-format=yuva420p --image-format=png',
+    '- Windows 透明 WebM（仅用于网页预览）：npx remotion render src/index.jsx <Comp> out/<name>.webm --codec=vp9 --pixel-format=yuva420p --image-format=png',
     '- 海报帧：npx remotion still src/index.jsx <Comp> out/<name>.png --frame=<n> --image-format=png',
-    '- iOS 透明 MOV：npx remotion render src/index.jsx <Comp> out/<name>-ios.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png（ffmpeg 实际落为 yuva444p12le）。注意 --codec=prores-4444 是无效值，--pixel-format=yuva444p12le 也是无效值。',
+    '- 达芬奇母版（4K ProRes 4444）：npx remotion render src/index.jsx <Comp> out/<name>-resolve.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png（ffmpeg 实际落为 yuva444p12le）。注意 --codec=prores-4444 是无效值，--pixel-format=yuva444p12le 也是无效值。',
     '- 验证 alpha：ffprobe 的 pix_fmt 必须含 a（yuva…），再用 ffmpeg 抽帧确认 PNG 是 rgba。yuv420p / yuv444p10le 都是没有 alpha 的失败品，必须重渲。',
+    '',
+    '# 交付规格（达芬奇统一标准，所有 CG 素材一律按此出货）',
+    '- 主交付：3840×2160 / 30fps / ProRes 4444（profile 4444）/ yuva444p12le 含 alpha / -vendor apl0，文件名 <name>-v1-resolve.mov。',
+    '- 渲染完必须无损重封装补色彩标记（-c copy，无二次压缩）：ffmpeg -i in.mov -c copy -color_primaries bt709 -color_trc bt709 -colorspace bt709 -color_range pc -movflags +write_colr out.mov。未标记时 ffprobe 的 color_* 全是 unknown，达芬奇会按项目默认猜色，白色玻璃会发灰。',
+    '- 达芬奇导入后必须手动设 Clip Attributes → Video → Alpha Mode = Straight：FFmpeg 写的是 straight alpha，达芬奇默认当 Premultiplied，不改透明边缘会出一圈黑边。然后放 V2 及以上轨道，Composite Mode 保持 Normal。',
+    '- 不要再把 VP9 WebM 当剪辑素材交付：达芬奇 Windows 版不解码其 alpha 通道，只能当黑底视频。WebM 仅用于网页预览。',
+    '- 不选 HEVC hvc1 alpha：本机 x265 不带 alpha（实测输出 yuv420p），且达芬奇对 hvc1 alpha 支持不稳。PNG 序列（RGBA）只作备份方案，405 个文件难管理。ProRes 4444 XQ 对本类矢量玻璃无可见收益，只增体积。',
+    '- 体积参考：4K / 13.5s 的 ProRes 4444 约 795MB，远超 Cloudflare Pages 25MiB 单文件上限，只做本地 / 网盘交付，不进 assets/cg。',
     '',
     '# 上线与入库',
     '- 素材文件用 GitHub blob API 传仓库 assets/cg/，文件名带版本号（xxx-v1）；改版必须换文件名，因为 /assets/* 缓存 24h。',
@@ -4648,6 +4656,12 @@
         date: dateStr,
         time: timeStr,
         note: '初始创建：Cgi 智能体 v1.0',
+        prompt: CG_DEFAULT_PROMPT
+      }, {
+        version: 'v1.1',
+        date: dateStr,
+        time: timeStr,
+        note: '新增达芬奇统一交付规格：4K ProRes 4444 + bt709 色彩标记 + Alpha Mode Straight',
         prompt: CG_DEFAULT_PROMPT
       }],
       lastUpdated: now.toISOString()
