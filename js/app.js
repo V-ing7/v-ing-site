@@ -6897,7 +6897,7 @@
     return 'https://v-ing-site.pages.dev';
   })();
   var PWD_KEY = 'v_ing_ws_pwd';
-  var CATEGORIES = ['标题条', '数据卡', '角标', '指针', '转场', '其他'];
+  var CATEGORIES = ['标题条', '数据卡', '角标', '转场', '其他'];
   var assets = [];
   var activeCat = '全部';
   var editingId = null;
