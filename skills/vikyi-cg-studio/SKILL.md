@@ -94,6 +94,17 @@ npx remotion ffmpeg -y -v error -ss 3.3 -c:v libvpx-vp9 -i out/asset.webm -pix_f
 | id | 文件 | 说明 |
 | --- | --- | --- |
 | `titlebar-glass` | `assets/cg/titlebar-glass-v4.webm` + `-v4.png` | 液态玻璃标题条，4K / 30fps / 4 秒，深色烟熏，无高光无扫光 |
+| `cursor-glass` | `assets/cg/cursor-glass-v1.webm` + `-v1.png` | 冰蓝玻璃指针（Bibata Modern Ice 同款观感），滑入 + 单击涟漪，透明底 |
+
+## 指针素材（CursorGlass）
+
+模板在 `assets/src/CursorGlass.jsx`，完整规格见 `references/cursor-spec.md`。
+
+- 参考 Bibata Modern Ice 的观感，但**矢量重绘**，不引用原 `.cur` / `.ani` 文件
+- 高度 = 画布宽 × 0.07（4K 下 269px）；所有细节尺寸乘 `u = 高度 / 132`
+- 冰蓝渐变 + 深色描边 + 左缘一条细白高光 + 投影；**没有扫光、没有高光带**
+- 动效：spring 滑入 → 压下回弹 → 双圈涟漪 → 静止
+- 分类用 `指针`（该分类已加入 API 与前端筛选白名单）
 
 ## 坑
 
