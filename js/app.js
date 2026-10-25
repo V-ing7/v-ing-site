@@ -4626,7 +4626,7 @@
     '- 单文件上限：Cloudflare Pages 25MiB、GitHub 100MB；超出就走对象存储（R2/OSS），mov 字段填 https 地址。',
     '- 走 PR + squash merge 到 main，Cloudflare Pages 与 GitHub Pages 双平台自动部署。',
     '- 入库：PUT https://v-ing-site.pages.dev/api/v-ing-cg，请求头 X-Password。改数据前必须向用户要密码（提示是英文名）。分类白名单：标题条 / 数据卡 / 角标 / 指针 / 转场 / 其他。',
-    '- 每条素材的提示词分两份：prompt（Windows 版，交付 VP9 WebM + alpha + PNG 序列）与 prompt_ios（iOS 版，交付 HEVC hvc1 / ProRes 4444 alpha MOV，注明 iOS 不支持 VP9 alpha）。动效与材质段落两份保持一致，只改交付规格。',
+    '- 提示词只写一份，不分 Win/iOS：动效与材质正文保持不变，输出段落统一为「主交付 ProRes 4444 达芬奇母版（含 bt709 色彩标记，达芬奇里 Alpha Mode 设 Straight）；VP9 WebM + PNG 海报帧仅作网页预览；PNG 序列（RGBA）作逐帧合成备份」。不要再写 prompt_ios，也不要再承诺 HEVC hvc1 alpha（本机 x265 编不出 alpha，实测输出 yuv420p）。',
     '- 前端 app.js 靠 index.html 的 ?v= 日期号破缓存，每次改动必须递增。',
     '',
     '# 验证',
@@ -4662,6 +4662,12 @@
         date: dateStr,
         time: timeStr,
         note: '新增达芬奇统一交付规格：4K ProRes 4444 + bt709 色彩标记 + Alpha Mode Straight',
+        prompt: CG_DEFAULT_PROMPT
+      }, {
+        version: 'v1.2',
+        date: dateStr,
+        time: timeStr,
+        note: '提示词不再分 Win/iOS：统一单份提示词 + ProRes 4444 达芬奇母版交付',
         prompt: CG_DEFAULT_PROMPT
       }],
       lastUpdated: now.toISOString()
@@ -7371,8 +7377,7 @@
         '<label class="full">ProRes 4444 MOV（可选，文件较大）<input name="mov" maxlength="300" placeholder="assets/cg/xxx.mov"></label>' +
         '<label class="full">封面图（可选）<input name="poster" maxlength="300" placeholder="assets/cg/xxx.png"></label>' +
         '<label class="full">标签（逗号分隔）<input name="tags" maxlength="200" placeholder="液态玻璃,标题,片头"></label>' +
-        '<label class="full">提示词 Prompt · Windows<textarea name="prompt" rows="5" placeholder="Windows 版（VP9 WebM + alpha）的生成提示词..."></textarea></label>' +
-        '<label class="full">提示词 Prompt · iOS<textarea name="promptIos" rows="5" placeholder="iOS 版（HEVC with alpha）的生成提示词..."></textarea></label>' +
+        '<label class="full">提示词 Prompt<textarea name="prompt" rows="5" placeholder="生成提示词（统一交付：ProRes 4444 达芬奇母版；WebM 仅网页预览）..."></textarea></label>' +
         '<label class="full">样式参数 Style（JSON）<textarea name="style" rows="5" class="mono" placeholder="{\"radius\":44,\"duration\":4}"></textarea></label>' +
         '<p class="cg-form-msg" id="cgFormMsg"></p>' +
         '<div class="cg-form-foot">' +
@@ -7473,7 +7478,6 @@
     el.poster.value = vals.poster || '';
     el.tags.value = vals.tags || '';
     el.prompt.value = vals.prompt || '';
-    el.promptIos.value = vals.prompt_ios || '';
     el.style.value = vals.style || '';
     var del = $('cgFormDelete');
     if(del) del.style.display = a ? '' : 'none';
@@ -7536,7 +7540,6 @@
         poster: el.poster.value.trim(),
         tags: el.tags.value.trim(),
         prompt: el.prompt.value.trim(),
-        prompt_ios: el.promptIos.value.trim(),
         style: styleRaw
       };
       var saveBtn = $('cgFormSave');
