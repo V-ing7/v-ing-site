@@ -3877,14 +3877,6 @@
         if(num1) num1.textContent = totalEdit;
         if(bar1) bar1.style.width = Math.round(totalEdit / grandTarget * 100) + '%';
       }
-      // Item 2: 整体完成率 (based on edit / target)
-      var rate = grandTarget > 0 ? Math.round(totalEdit / grandTarget * 100) : 0;
-      if(tsItems[2]){
-        var num2 = tsItems[2].querySelector('.ts-num');
-        var bar2 = tsItems[2].querySelector('.ts-bar span');
-        if(num2) num2.textContent = rate + '%';
-        if(bar2) bar2.style.width = rate + '%';
-      }
     }
   }
 
