@@ -3682,7 +3682,7 @@
     var leapCards = leapSection.querySelectorAll('.streamer-card');
     var totalShoot = 0, totalEdit = 0;
     var cardCount = leapCards.length;
-    var TARGET = 40; // 零跑 target per streamer
+    var TARGET = 60; // 零跑 target per streamer
 
     leapCards.forEach(function(card){
       var pcts = card.querySelectorAll('.sr-pct');
@@ -3724,11 +3724,11 @@
   // Get brand section target for a streamer
   function getStreamerTarget(key, data, brandSection){
     var section = brandSection;
-    // For 零跑: target 40, for 人设IP: target 20, for 中鑫之宝: use the streamer's own shoot value as max
+    // For 零跑: target 60, for 人设IP: target 20, for 中鑫之宝: use the streamer's own shoot value as max
     var brandHead = section.querySelector('.unified-brand-head h3');
     if(!brandHead) return 1;
     var brandText = brandHead.textContent.trim();
-    if(brandText.indexOf('零跑') > -1) return 40;
+    if(brandText.indexOf('零跑') > -1) return 60;
     if(brandText.indexOf('人设') > -1 || brandText.indexOf('IP') > -1) return 20;
     if(brandText.indexOf('中鑫') > -1){
       // No fixed target, use current shoot value
@@ -3792,7 +3792,7 @@
 
     // Determine brand target
     if(brandText.indexOf('零跑') > -1){
-      totalTarget = 40 * cards.length;
+      totalTarget = 60 * cards.length;
     } else if(brandText.indexOf('人设') > -1 || brandText.indexOf('IP') > -1){
       totalTarget = 20;
     } else {
@@ -3832,7 +3832,7 @@
       var text = head.textContent.trim();
       var cards = section.querySelectorAll('.streamer-card');
       if(text.indexOf('零跑') > -1){
-        grandTarget += 40 * cards.length;
+        grandTarget += 60 * cards.length;
       } else if(text.indexOf('人设') > -1 || text.indexOf('IP') > -1){
         grandTarget += 20;
       } else {
