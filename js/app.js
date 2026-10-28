@@ -3545,13 +3545,6 @@
   var editModeActive = false;
   var STORAGE_KEY = 'ving-unified-report-data';
 
-  // Set unified report toolbar date
-  var toolbarDate = document.getElementById('unifiedToolbarDate');
-  if(toolbarDate){
-    var now = new Date();
-    toolbarDate.textContent = (now.getMonth()+1) + '/' + now.getDate();
-  }
-
   // Load saved data from localStorage (fallback only)
   function loadReportData(){
     try{
@@ -4992,10 +4985,16 @@
       monthSelector.appendChild(opt);
     });
 
-    // Update current option text
+    // Current option follows the real calendar month, so it rolls forward automatically
     var currentOpt = monthSelector.querySelector('option[value="current"]');
     if(currentOpt){
-      currentOpt.textContent = lang === 'zh' ? '本月' : 'Current Month';
+      var today = new Date();
+      var curMonth = today.getMonth() + 1;
+      var curZh = today.getFullYear() + '年' + curMonth + '月';
+      var curEn = today.getFullYear() + '-' + String(curMonth).padStart(2, '0');
+      currentOpt.setAttribute('data-cn', curZh);
+      currentOpt.setAttribute('data-en', curEn);
+      currentOpt.textContent = lang === 'zh' ? curZh : curEn;
     }
 
     monthSelector.value = currentViewMonth;

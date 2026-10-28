@@ -2884,9 +2884,11 @@ body.ws-locked .blob{
   font-weight:700;
   letter-spacing:-.01em;
 }
-.unified-toolbar-date{
-  font-size:.75rem;
-  color:var(--text-tertiary);
+.unified-monthbar{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  margin-bottom:12px;
 }
 .unified-report-date{
   text-align:center;
@@ -3757,7 +3759,6 @@ body.ws-locked .blob{
   /* Unified report mobile */
   .unified-toolbar{margin-bottom:14px;padding-bottom:12px}
   .unified-toolbar-title{font-size:.9rem}
-  .unified-toolbar-date{font-size:.7rem}
   .ws-panel-toolbar{padding:10px 12px;margin-bottom:16px;border-radius:12px}
   .ws-panel-toolbar-title{font-size:.85rem}
   .ws-panel-toolbar-right .edit-toggle-btn,
@@ -3829,7 +3830,6 @@ body.ws-locked .blob{
   .unified-summary{padding:14px;margin-bottom:14px}
   /* Unified report - small screen */
   .unified-toolbar-title{font-size:.82rem}
-  .unified-toolbar-date{font-size:.65rem}
   .ws-panel-toolbar{padding:8px 10px;margin-bottom:14px;border-radius:10px}
   .ws-panel-toolbar-title{font-size:.8rem}
   .ws-panel-toolbar-right .edit-toggle-btn,
