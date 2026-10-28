@@ -141,7 +141,7 @@ function normalize(input) {
   }
   const title = str(input.title, MAX_TITLE);
   if (!title) return { error: 'Title is required' };
-  const category = str(input.category, 20) || '其他';
+  let category = str(input.category, 20) || '其他';
 
   // Reject if any Chinese-text field carries U+FFFD (decoded UTF-8 failure).
   // Short path — check the fields most likely to hold user-authored text
