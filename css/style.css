@@ -2888,6 +2888,14 @@ body.ws-locked .blob{
   font-size:.75rem;
   color:var(--text-tertiary);
 }
+.unified-report-date{
+  text-align:center;
+  font-size:1rem;
+  font-weight:600;
+  letter-spacing:.01em;
+  color:var(--text-secondary);
+  margin-bottom:14px;
+}
 .month-selector-wrap{
   display:flex;
   align-items:center;
