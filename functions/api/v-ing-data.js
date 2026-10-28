@@ -253,8 +253,16 @@ export async function onRequestPut(context) {
 
     await ensureTable(env);
 
+    // v6.1: guarantee the stored content carries its own top-level lastUpdated.
+    // External API writers (AI sessions, curl) may omit it — without a stamp,
+    // the frontend freshness check sees an empty dataTime and silently never
+    // applies the data. Keeps the D1 column and the content payload in sync.
+    if(!data.lastUpdated || typeof data.lastUpdated !== 'string'){
+      data.lastUpdated = new Date().toISOString();
+    }
+
     const content = JSON.stringify(data);
-    const lastUpdated = data.lastUpdated || new Date().toISOString();
+    const lastUpdated = data.lastUpdated;
 
     await env.DB.prepare(
       'INSERT OR REPLACE INTO site_data (id, content, last_updated, updated_at) VALUES (1, ?, ?, ?)'
