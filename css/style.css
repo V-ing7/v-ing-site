@@ -3836,6 +3836,9 @@ body.ws-locked .blob{
   /* Unified report - small screen */
   .unified-toolbar-title{font-size:.82rem}
   .unified-report-date{font-size:.85rem}
+  /* 窄屏：标题改回流式居中，避免与右侧按钮重叠 */
+  .unified-toolbar-left{position:static;transform:none;flex:1;justify-content:center;min-width:0}
+  .unified-toolbar-right{margin-left:0;flex-shrink:0}
   .ws-panel-toolbar{padding:8px 10px;margin-bottom:14px;border-radius:10px}
   .ws-panel-toolbar-title{font-size:.8rem}
   .ws-panel-toolbar-right .edit-toggle-btn,
