@@ -1212,12 +1212,9 @@
   var currentView='home';
   var isAnimating=false;
 
-  // Remember the last view (+ its scroll position) so reopening the app from
-  // the home-screen icon (start_url has no #hash) returns to the exact page and
-  // position the user left. The unlocked flag stays in sessionStorage on
-  // purpose, so a fresh launch still asks for the workspace password.
+  // Remember each view's scroll position so #hash deep links reopen at the same
+  // spot. The visited view itself is never persisted: every launch starts home.
   var VIEW_IDS=['home','about','works','collab','workspace','cg','contact'];
-  var LAST_VIEW_KEY='v-ing-last-view';
   var SCROLL_MAP_KEY='v-ing-view-scroll';
   var _restoreScrollY=null;
 
@@ -1389,7 +1386,6 @@
     },240);
 
     currentView=target;
-    try{ localStorage.setItem(LAST_VIEW_KEY,target); }catch(e){}
 
     // Pause cinema hero's infinite animations when not on home (saves GPU)
     document.body.classList.toggle('hero-paused', target!=='home');
@@ -1412,22 +1408,13 @@
     });
   });
 
-  // Restore the view on load: a valid URL #hash wins (deep links, refresh);
-  // otherwise fall back to the last view the user was on — e.g. relaunching the
-  // app from the home-screen icon, whose start_url carries no #hash.
+  // Every visit starts from the home view. Only an explicit #hash deep link
+  // (shared URL / hand-typed anchor) takes you straight to another view.
   function restoreViewOnLoad(){
     var hash=window.location.hash.replace('#','');
-    var target=null;
-    if(hash&&VIEW_IDS.indexOf(hash)>-1){
-      target=hash;
-    }else{
-      var saved=null;
-      try{ saved=localStorage.getItem(LAST_VIEW_KEY); }catch(e){}
-      if(saved&&VIEW_IDS.indexOf(saved)>-1)target=saved;
-    }
-    if(target&&target!=='home'){
-      _restoreScrollY=savedScrollFor(target);
-      switchView(target);
+    if(hash&&VIEW_IDS.indexOf(hash)>-1&&hash!=='home'){
+      _restoreScrollY=savedScrollFor(hash);
+      switchView(hash);
     }
   }
 
