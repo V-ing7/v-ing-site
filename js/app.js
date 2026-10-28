@@ -1177,6 +1177,20 @@
 
     // Update document title
     document.title=lang==='zh'?'微影 V-ing | 影视创作工作室':'V-ing | Film & Video Creation Studio';
+
+    // Update unified report top date
+    updateUnifiedReportDate();
+  }
+
+  /* ---------- Unified Report Date (top, centered) ---------- */
+  function updateUnifiedReportDate(){
+    var el=document.getElementById('unifiedReportDate');
+    if(!el)return;
+    var d=new Date();
+    var zhWd=['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+    var enWd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+    var full=formatDate(d).full;
+    el.textContent=lang==='zh'?full+' '+zhWd:enWd+', '+full;
   }
   function setLang(next){
     lang=next==='en'?'en':'zh';
