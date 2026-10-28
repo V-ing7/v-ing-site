@@ -120,6 +120,20 @@ function safePath(v) {
   return '';
 }
 
+// --- Anti-mojibake guard ------------------------------------------------
+// Any legitimate text going through request.json() is valid UTF-8. If we
+// find the Unicode replacement character (U+FFFD, emitted by the JS engine
+// when it can't decode a byte sequence) we know the PUT body already came
+// corrupted — reject it rather than storing garbage in D1.
+function _checkMojibake(fieldName, value) {
+  if (typeof value !== 'string') return null;
+  const idx = value.indexOf('\uFFFD');
+  if (idx >= 0) {
+    return `${fieldName} contains invalid UTF-8 (U+FFFD at position ${idx}); please fix encoding before saving`;
+  }
+  return null;
+}
+
 function normalize(input) {
   const id = str(input.id, 64);
   if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(id)) {
@@ -127,8 +141,18 @@ function normalize(input) {
   }
   const title = str(input.title, MAX_TITLE);
   if (!title) return { error: 'Title is required' };
+  const category = str(input.category, 20) || '其他';
 
-  let category = str(input.category, 20) || '其他';
+  // Reject if any Chinese-text field carries U+FFFD (decoded UTF-8 failure).
+  // Short path — check the fields most likely to hold user-authored text
+  // (title / category / tags / prompt / style) without validating every
+  // single byte; a 1-char replacement is plenty of evidence.
+  const textFields = { title, category, tags: input.tags, prompt: input.prompt, style: input.style };
+  for (const [k, v] of Object.entries(textFields)) {
+    const bad = _checkMojibake(k, v);
+    if (bad) return { error: bad };
+  }
+
   if (!ALLOWED_CATEGORIES.includes(category)) category = '其他';
 
   const durationRaw = input.duration;
