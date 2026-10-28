@@ -2873,25 +2873,12 @@ body.ws-locked .blob{
   align-items:center;
   gap:8px;
 }
-.unified-toolbar-center{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
 .unified-dot{
   width:8px;height:8px;
   border-radius:50%;
   background:#FF9F0A;
   box-shadow:0 0 8px rgba(255,159,10,.5);
   flex-shrink:0;
-}
-.unified-toolbar-title{
-  font-size:1rem;
-  font-weight:700;
-  letter-spacing:-.01em;
 }
 .unified-monthbar{
   display:flex;
@@ -2938,7 +2925,6 @@ body.ws-locked .blob{
   letter-spacing:.5px;
 }
 .unified-toolbar-right{
-  margin-left:auto;
   display:flex;
   align-items:center;
   gap:8px;
@@ -3767,7 +3753,6 @@ body.ws-locked .blob{
   .unified-summary{padding:16px;margin-bottom:16px}
   /* Unified report mobile */
   .unified-toolbar{margin-bottom:14px;padding-bottom:12px}
-  .unified-toolbar-title{font-size:.9rem}
   .unified-report-date{font-size:.9rem}
   .ws-panel-toolbar{padding:10px 12px;margin-bottom:16px;border-radius:12px}
   .ws-panel-toolbar-title{font-size:.85rem}
@@ -3839,11 +3824,7 @@ body.ws-locked .blob{
   .ts-label{font-size:.58rem}
   .unified-summary{padding:14px;margin-bottom:14px}
   /* Unified report - small screen */
-  .unified-toolbar-title{font-size:.82rem}
   .unified-report-date{font-size:.85rem}
-  /* 窄屏：标题改回流式居中，避免与右侧按钮重叠 */
-  .unified-toolbar-center{position:static;transform:none;flex:1;justify-content:center;min-width:0}
-  .unified-toolbar-right{margin-left:0;flex-shrink:0}
   .ws-panel-toolbar{padding:8px 10px;margin-bottom:14px;border-radius:10px}
   .ws-panel-toolbar-title{font-size:.8rem}
   .ws-panel-toolbar-right .edit-toggle-btn,
