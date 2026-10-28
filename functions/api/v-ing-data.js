@@ -253,8 +253,33 @@ export async function onRequestPut(context) {
 
     await ensureTable(env);
 
-    const content = JSON.stringify(data);
-    const lastUpdated = data.lastUpdated || new Date().toISOString();
+    // === MERGE PROTECTION: keep any top-level keys the PUT body omits ===
+    // Without this, a buggy client that only sends a partial object (e.g.
+    // {vmiAgent}) would wipe streamers / operationLog / reportHistory etc.
+    // The merge is a shallow copy at top level — each key is either the
+    // new value (if present in PUT) or the old one (otherwise). Arrays like
+    // operationLog come wholly from PUT (the client already merges before
+    // sending); we never append here.
+    let finalData = data;
+    try {
+      const existing = await env.DB.prepare(
+        'SELECT content FROM site_data WHERE id = 1'
+      ).first();
+      if (existing) {
+        const oldData = JSON.parse(existing.content);
+        const merged = { ...oldData };
+        for (const key of Object.keys(data)) {
+          merged[key] = data[key];
+        }
+        finalData = merged;
+      }
+    } catch (e) {
+      // If merge fails for any reason, fall back to raw data — better than
+      // blocking a save, and the old data will be preserved on the next write.
+    }
+
+    const content = JSON.stringify(finalData);
+    const lastUpdated = finalData.lastUpdated || new Date().toISOString();
 
     await env.DB.prepare(
       'INSERT OR REPLACE INTO site_data (id, content, last_updated, updated_at) VALUES (1, ?, ?, ?)'

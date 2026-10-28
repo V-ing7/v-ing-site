@@ -618,6 +618,43 @@
     _executeSave(latest.data);
   }
 
+  // Top-level keys that should never be missing from a save payload.
+  // If any of these are absent, the in-memory __vingData is stale/broken
+  // and we must pull the full current state from D1 before writing.
+  var _REQUIRED_TOP_KEYS = ['streamers', 'operationLog', 'reportHistory', 'kanbanTasks'];
+
+  // Pull any missing top-level keys from D1 right before PUT.
+  // Prevents the "partial object overwrite" scenario that once wiped
+  // streamers/operationLog entirely when only vmiAgent was in memory.
+  function _patchFromD1IfNeeded(data){
+    var missing = _REQUIRED_TOP_KEYS.filter(function(k){
+      return !(k in data) || data[k] == null;
+    });
+    if(missing.length === 0) return Promise.resolve(data);
+
+    _log('Save payload missing keys [' + missing.join(',') + '] — patching from D1', 'warn');
+    return fetchWithTimeout(WORKER_API + '/api/v-ing-data?p=' + Date.now(), {}, 5000)
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(json){
+        if(json && json.data){
+          missing.forEach(function(k){
+            if(k in json.data){
+              data[k] = json.data[k];
+            }
+          });
+          // Also copy any other top-level key we don't have
+          Object.keys(json.data).forEach(function(k){
+            if(!(k in data)) data[k] = json.data[k];
+          });
+          _log('✓ Patched missing keys from D1');
+        } else {
+          _log('D1 patch fetch failed, saving with current data anyway', 'warn');
+        }
+        return data;
+      })
+      .catch(function(){ return data; });
+  }
+
   // Execute a single save with retry logic
   function _executeSave(data){
     // Check if password is available before attempting save
@@ -632,6 +669,19 @@
       return;
     }
 
+    // === Front-end merge protection ===
+    // Patch any missing top-level keys from D1 before writing.
+    _patchFromD1IfNeeded(data).then(function(safeData){
+      // Keep the caller's reference (window.__vingData) in sync with the
+      // patched version so subsequent saves don't repeat the patch.
+      if(window.__vingData === data){
+        window.__vingData = safeData;
+      }
+      _reallyExecuteSave(safeData);
+    });
+  }
+
+  function _reallyExecuteSave(data){
     _saveInProgress = true;
     setSyncStatus('saving');
 
