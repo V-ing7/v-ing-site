@@ -2885,23 +2885,18 @@ body.ws-locked .blob{
   letter-spacing:-.01em;
 }
 .unified-monthbar{
-  position:relative;
   display:flex;
   justify-content:flex-end;
   align-items:center;
-  min-height:34px;
   margin-bottom:12px;
 }
 .unified-report-date{
-  position:absolute;
-  left:0;
-  right:0;
   text-align:center;
   font-size:1rem;
   font-weight:600;
   letter-spacing:.01em;
   color:var(--text-secondary);
-  pointer-events:none;
+  margin:-2px 0 16px;
 }
 .month-selector-wrap{
   display:flex;
