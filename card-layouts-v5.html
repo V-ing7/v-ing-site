@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>微影 V-ing · 名片排版 5 款预览</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0b0b0c;
+    --surface:#1a1a1a;
+    --surface-2:#202020;
+    --label:#e6be8a;
+    --label-2:#C9A96E;
+    --dim:#86868b;
+    --hair:rgba(201,169,110,.14);
+    --hair-2:rgba(201,169,110,.26);
+  }
+  body{
+    font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;
+    background:#000;color:var(--label);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:48px 20px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(800px 460px at 50% 22%,rgba(72,72,74,.18),transparent 62%);
+  }
+  .wrap{position:relative;z-index:1;display:flex;flex-direction:column;gap:52px;align-items:center}
+  .page-title{font-size:11px;letter-spacing:4px;color:var(--dim);text-transform:uppercase;font-weight:500}
+  .page-note{font-size:11px;letter-spacing:1px;color:#5f5f63;margin-top:10px;text-align:center}
+  .item{display:flex;flex-direction:column;gap:12px}
+  .item-label{display:flex;align-items:baseline;gap:10px;font-size:11px;letter-spacing:3px;color:var(--label-2);font-weight:600;text-transform:uppercase}
+  .item-label .idx{color:#fff}
+  .item-label .cn{color:var(--dim);letter-spacing:1px;font-weight:400;text-transform:none}
+
+  /* ==== 卡片基座：100×50mm 按 2 倍显示 ==== */
+  .card{
+    position:relative;width:760px;height:380px;
+    background:var(--surface);border-radius:26px;overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.62),0 0 40px rgba(201,169,110,.05);
+    font-feature-settings:'tnum';
+  }
+  .card::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(135deg,rgba(201,169,110,.05),transparent 32%,transparent 68%,rgba(201,169,110,.03));
+  }
+  .logo{color:var(--label)}
+  .logo svg{display:block;width:100%;height:100%}
+  .wm-cn{font-weight:700;letter-spacing:.5px;color:var(--label)}
+  .wm-en{font-weight:500;letter-spacing:3.2px;color:var(--label-2);font-size:9px}
+
+  /* ================= V1 · 票根横版 ================= */
+  .v1{display:flex}
+  .v1-main{width:532px;padding:34px 30px 26px;display:flex;flex-direction:column}
+  .v1-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .v1-brand{display:flex;gap:10px;align-items:center}
+  .v1-brand .logo{width:30px;height:25px}
+  .v1-brand .wm-cn{font-size:17px}
+  .v1-brand .wm-en{margin-top:2px}
+  .no{font-size:9px;letter-spacing:2px;color:var(--label-2);border:1px solid var(--hair-2);border-radius:10px;padding:3px 8px}
+  .v1-mid{margin-top:auto;margin-bottom:auto}
+  .v1-mid .name{font-family:'Noto Sans SC';font-size:34px;font-weight:700;letter-spacing:4px;line-height:1.1}
+  .v1-mid .en{font-size:11px;letter-spacing:3px;color:var(--label-2);margin-top:7px}
+  .v1-mid .role{font-size:10px;letter-spacing:2px;color:var(--dim);margin-top:12px}
+  .v1-mid .slogan{font-family:'Noto Sans SC';font-size:10px;letter-spacing:3px;color:rgba(230,190,138,.55);margin-top:5px}
+  .v1-foot{display:flex;align-items:center;gap:9px;padding-top:16px;border-top:1px solid var(--hair)}
+  .v1-foot .wx{width:16px;height:16px;color:var(--label);opacity:.8}
+  .v1-foot .wx svg{width:100%;height:100%;display:block}
+  .v1-foot .v{font-size:16px;font-weight:600;letter-spacing:.6px}
+  .v1-perf{width:0;border-left:1px dashed var(--hair-2);margin:26px 0;position:relative}
+  .v1-perf::before,.v1-perf::after{content:'';position:absolute;left:-9px;width:19px;height:19px;border-radius:50%;background:#000}
+  .v1-perf::before{top:-35px}
+  .v1-perf::after{bottom:-35px}
+  .v1-stub{width:228px;display:flex;flex-direction:column;align-items:center;padding:30px 0 24px}
+  .v1-stub .s-head{font-size:9px;letter-spacing:4px;color:var(--label);padding-bottom:10px;position:relative}
+  .v1-stub .s-head::after{content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:28px;height:1px;background:var(--label)}
+  .v1-stub .s-head .cn{display:block;font-size:7px;letter-spacing:3px;color:var(--label-2);margin-top:5px}
+  .v1-stub .qr{width:84px;height:84px;margin:auto;border-radius:8px;overflow:hidden}
+  .v1-stub .qr img{width:100%;height:100%;display:block}
+  .v1-stub .s-foot{font-size:9px;letter-spacing:3px;color:var(--label-2)}
+
+  /* ================= V2 · 中轴对称 ================= */
+  .v2{display:flex;flex-direction:column;align-items:center;padding:30px 44px}
+  .v2-frame{position:absolute;inset:16px;border:1px solid var(--hair);border-radius:18px;pointer-events:none}
+  .v2-frame::before{content:'';position:absolute;inset:5px;border:.5px solid rgba(201,169,110,.08);border-radius:14px}
+  .v2-brand{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .v2-brand .logo{width:34px;height:28px}
+  .v2-brand .wm-cn{font-size:17px;letter-spacing:1px}
+  .v2-brand .wm-en{font-size:8px;letter-spacing:4px;margin-top:3px;text-align:center}
+  .v2-rule{width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--hair-2),transparent);margin:20px 0 18px}
+  .v2-name{font-family:'Noto Sans SC';font-size:38px;font-weight:700;letter-spacing:12px;text-indent:12px}
+  .v2-en{font-size:11px;letter-spacing:5px;color:var(--label-2);margin-top:9px}
+  .v2-role{font-size:9px;letter-spacing:3px;color:var(--dim);margin-top:10px}
+  .v2-slogan{font-family:'Noto Sans SC';font-size:9px;letter-spacing:4px;color:rgba(230,190,138,.5);margin-top:6px}
+  .v2-foot{margin-top:auto;display:flex;align-items:center;gap:9px}
+  .v2-foot .wx{width:15px;height:15px;color:var(--label);opacity:.8}
+  .v2-foot .wx svg{width:100%;height:100%;display:block}
+  .v2-foot .v{font-size:15px;font-weight:600;letter-spacing:.6px}
+  .v2-no{position:absolute;right:26px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:center;font-size:9px;letter-spacing:3px;color:var(--label-2)}
+
+  /* ================= V3 · 左侧竖栏 ================= */
+  .v3{display:flex}
+  .v3-rail{width:62px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;border-right:1px solid var(--hair)}
+  .v3-rail span{transform:rotate(-90deg);white-space:nowrap;font-size:9px;letter-spacing:6px;color:var(--label-2);font-weight:600}
+  .v3-body{flex:1;padding:32px 32px 26px;display:flex;flex-direction:column;position:relative}
+  .v3-top{display:flex;justify-content:space-between;align-items:center}
+  .v3-top .logo{width:26px;height:22px}
+  .v3-top .no{font-size:9px;letter-spacing:2px;color:var(--label-2)}
+  .v3-main{display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto}
+  .v3-name{font-family:'Noto Sans SC';font-size:40px;font-weight:700;letter-spacing:3px;line-height:1}
+  .v3-en{font-size:11px;letter-spacing:3px;color:var(--label-2);margin-top:9px}
+  .v3-role{display:inline-block;font-size:9px;letter-spacing:2px;color:var(--dim);border:1px solid var(--hair-2);border-radius:2px;padding:3px 8px;margin-top:14px}
+  .v3-qr{width:78px;height:78px;border-radius:6px;overflow:hidden;border:1px solid var(--hair-2);padding:4px}
+  .v3-qr img{width:100%;height:100%;display:block}
+  .v3-foot{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--hair);margin-top:auto}
+  .v3-foot .wx-row{display:flex;align-items:center;gap:8px}
+  .v3-foot .wx{width:15px;height:15px;color:var(--label);opacity:.8}
+  .v3-foot .wx svg{width:100%;height:100%;display:block}
+  .v3-foot .v{font-size:15px;font-weight:600;letter-spacing:.6px}
+  .v3-foot .slogan{font-family:'Noto Sans SC';font-size:9px;letter-spacing:3px;color:rgba(230,190,138,.45)}
+
+  /* ================= V4 · 巨字编辑风 ================= */
+  .v4{padding:34px 40px;display:flex;flex-direction:column}
+  .v4-top{display:flex;justify-content:space-between;align-items:center}
+  .v4-brand{display:flex;align-items:center;gap:9px}
+  .v4-brand .logo{width:24px;height:20px}
+  .v4-brand .wm-cn{font-size:13px;letter-spacing:.5px}
+  .v4-brand .wm-en{font-size:7.5px;letter-spacing:3px}
+  .v4-kicker{font-size:9px;letter-spacing:4px;color:var(--label-2);margin-top:28px}
+  .v4-name{font-family:'Noto Sans SC';font-size:92px;font-weight:900;letter-spacing:0;line-height:.9;margin-top:6px;color:var(--label)}
+  .v4-line{display:flex;align-items:center;gap:14px;margin-top:14px}
+  .v4-line .bar{height:1px;width:46px;background:var(--label-2)}
+  .v4-line .en{font-size:11px;letter-spacing:4px;color:var(--label-2)}
+  .v4-line .role{font-size:9px;letter-spacing:3px;color:var(--dim)}
+  .v4-right{position:absolute;right:34px;top:34px;bottom:34px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between}
+  .v4-studio{transform:rotate(90deg);transform-origin:right center;font-size:8px;letter-spacing:5px;color:rgba(201,169,110,.4);position:absolute;right:0;top:170px}
+  .v4-qr{width:66px;height:66px;border-radius:4px;overflow:hidden;opacity:.92}
+  .v4-qr img{width:100%;height:100%;display:block}
+  .v4-big-no{font-size:64px;font-weight:300;line-height:.8;color:transparent;-webkit-text-stroke:.8px rgba(201,169,110,.35);letter-spacing:-2px}
+  .v4-foot{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:1px solid var(--hair);margin-top:auto;width:calc(100% - 110px)}
+  .v4-foot .wx{width:15px;height:15px;color:var(--label);opacity:.8}
+  .v4-foot .wx svg{width:100%;height:100%;display:block}
+  .v4-foot .v{font-size:15px;font-weight:600;letter-spacing:.6px}
+  .v4-foot .slogan{margin-left:auto;font-family:'Noto Sans SC';font-size:9px;letter-spacing:3px;color:rgba(230,190,138,.45)}
+
+  /* ================= V5 · 网格三分 ================= */
+  .v5{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:118px 1fr;padding:0}
+  .v5 > div{padding:24px 28px;position:relative}
+  .v5 .cell-tl{display:flex;flex-direction:column;justify-content:center;gap:6px;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .v5 .cell-tl .logo{width:26px;height:22px}
+  .v5 .cell-tl .wm-cn{font-size:15px}
+  .v5 .cell-tl .wm-en{font-size:7.5px;letter-spacing:3px}
+  .v5 .cell-tr{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:7px;border-bottom:1px solid var(--hair)}
+  .v5 .cell-tr .no{font-size:9px;letter-spacing:2.5px;color:var(--label-2)}
+  .v5 .cell-tr .wx-row{display:flex;align-items:center;gap:8px}
+  .v5 .cell-tr .wx{width:15px;height:15px;color:var(--label);opacity:.8}
+  .v5 .cell-tr .wx svg{width:100%;height:100%;display:block}
+  .v5 .cell-tr .v{font-size:15px;font-weight:600;letter-spacing:.6px}
+  .v5 .cell-bl{display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--hair)}
+  .v5 .cell-bl .name{font-family:'Noto Sans SC';font-size:40px;font-weight:700;letter-spacing:5px;line-height:1}
+  .v5 .cell-bl .en{font-size:11px;letter-spacing:3.5px;color:var(--label-2);margin-top:9px}
+  .v5 .cell-bl .role{font-size:9px;letter-spacing:3px;color:var(--dim);margin-top:10px}
+  .v5 .cell-br{display:flex;align-items:center;justify-content:center;gap:20px}
+  .v5 .cell-br .qr{width:80px;height:80px;border-radius:6px;overflow:hidden}
+  .v5 .cell-br .qr img{width:100%;height:100%;display:block}
+  .v5 .cell-br .side{display:flex;flex-direction:column;gap:8px}
+  .v5 .cell-br .slogan{writing-mode:vertical-rl;font-family:'Noto Sans SC';font-size:9px;letter-spacing:3px;color:rgba(230,190,138,.5)}
+
+  @media(max-width:860px){
+    body{padding:32px 12px 60px}
+    .card{width:520px;height:260px;border-radius:18px}
+    .v1-main{width:364px;padding:22px 20px 18px}
+    .v1-stub{width:156px}
+    .v1-mid .name{font-size:24px}
+    .v1-stub .qr{width:58px;height:58px}
+    .v1-brand .wm-cn{font-size:13px}
+    .v2-name{font-size:26px;letter-spacing:8px}
+    .v3-name{font-size:27px}
+    .v3-rail{width:42px}
+    .v3-qr{width:54px;height:54px}
+    .v3-body{padding:20px}
+    .v4{padding:22px 24px}
+    .v4-name{font-size:62px}
+    .v4-qr{width:48px;height:48px}
+    .v4-big-no{font-size:42px}
+    .v4-foot{width:calc(100% - 78px)}
+    .v5{grid-template-rows:82px 1fr}
+    .v5 > div{padding:16px 18px}
+    .v5 .cell-bl .name{font-size:26px}
+    .v5 .cell-br{gap:12px}
+    .v5 .cell-br .qr{width:56px;height:56px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div style="text-align:center">
+    <div class="page-title">微影 V-ing · 名片排版 5 款</div>
+    <div class="page-note">按 100 × 50 mm 等比放大 2 倍预览 · 配色 / 字体 / 内容均与现有名片一致</div>
+  </div>
+
+  <!-- V1 -->
+  <div class="item">
+    <div class="item-label"><span class="idx">V1</span>票根横版 <span class="cn">当前方案 · 主券 + 齿孔 + 副券（二维码）</span></div>
+    <div class="card v1">
+      <div class="v1-main">
+        <div class="v1-top">
+          <div class="v1-brand">
+            <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+            <div>
+              <div class="wm-cn">微影<span style="opacity:.6">.</span>ing</div>
+              <div class="wm-en">V-ING STUDIO</div>
+            </div>
+          </div>
+          <div class="no">No.001</div>
+        </div>
+        <div class="v1-mid">
+          <div class="name">林威</div>
+          <div class="en">Vikyi L.</div>
+          <div class="role">摄影剪辑</div>
+          <div class="slogan">我们正在进行时</div>
+        </div>
+        <div class="v1-foot">
+          <div class="wx"><svg viewBox="0 0 35 35" fill="currentColor"><path d="M29.81,31.3a2,2,0,0,1-.34,0l-2.81-.54a11.53,11.53,0,0,1-2.41.25c-5.7,0-10.34-4.17-10.34-9.29s4.64-9.29,10.34-9.29S34.6,16.57,34.6,21.69A8.76,8.76,0,0,1,31.82,28l-.17,1.62h0a1.85,1.85,0,0,1-1.84,1.66Zm-3.24-.59h0Zm.17,0Zm3.82-1.18h0Zm-3.91-1a2,2,0,0,1,.34,0L29.5,29l.14-1.37a1.83,1.83,0,0,1,.58-1.15,6.58,6.58,0,0,0,2.18-4.82c0-3.91-3.65-7.09-8.15-7.09s-8.14,3.18-8.14,7.09,3.65,7.09,8.14,7.09a9,9,0,0,0,2-.22A1.72,1.72,0,0,1,26.65,28.52Z"/><path d="M6.26,26.15a1.83,1.83,0,0,1-.88-.23,1.86,1.86,0,0,1-1-1.59l0-2.25a10.14,10.14,0,0,1-4-7.91C.4,8.32,5.75,3.56,12.32,3.56A12.09,12.09,0,0,1,23,9.39a1.1,1.1,0,1,1-1.91,1.09,9.91,9.91,0,0,0-8.73-4.72C7,5.76,2.6,9.53,2.6,14.17a8,8,0,0,0,3.25,6.28,1.81,1.81,0,0,1,.72,1.42l0,1.81,1.88-1.15a1.83,1.83,0,0,1,1.37-.22,10.71,10.71,0,0,0,1.38.22A1.1,1.1,0,1,1,11,24.72a13.16,13.16,0,0,1-1.51-.24L7.23,25.87A1.85,1.85,0,0,1,6.26,26.15Z"/><circle cx="8.48" cy="12.17" r="1.24"/><circle cx="15.77" cy="12.17" r="1.24"/><circle cx="20.09" cy="19.2" r="1.08"/><circle cx="26.79" cy="19.2" r="1.08"/></svg></div>
+          <span class="v">Vking071</span>
+        </div>
+      </div>
+      <div class="v1-perf"></div>
+      <div class="v1-stub">
+        <div class="s-head">STUDIO<span class="cn">工作室</span></div>
+        <div class="qr"><img src="assets/card-qr.png" alt="微信二维码" loading="lazy"></div>
+        <div class="s-foot">001</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V2 -->
+  <div class="item">
+    <div class="item-label"><span class="idx">V2</span>中轴对称 <span class="cn">仪式感 · 双线内框 · 全部居中</span></div>
+    <div class="card v2">
+      <div class="v2-frame"></div>
+      <div class="v2-no">No.001</div>
+      <div class="v2-brand">
+        <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+        <div style="text-align:center">
+          <div class="wm-cn">微影<span style="opacity:.6">.</span>ing</div>
+          <div class="wm-en">V-ING STUDIO</div>
+        </div>
+      </div>
+      <div class="v2-rule"></div>
+      <div class="v2-name">林威</div>
+      <div class="v2-en">VIKYI L.</div>
+      <div class="v2-role">摄 影 剪 辑</div>
+      <div class="v2-slogan">我们正在进行时</div>
+      <div class="v2-foot">
+        <div class="wx"><svg viewBox="0 0 35 35" fill="currentColor"><path d="M29.81,31.3a2,2,0,0,1-.34,0l-2.81-.54a11.53,11.53,0,0,1-2.41.25c-5.7,0-10.34-4.17-10.34-9.29s4.64-9.29,10.34-9.29S34.6,16.57,34.6,21.69A8.76,8.76,0,0,1,31.82,28l-.17,1.62h0a1.85,1.85,0,0,1-1.84,1.66Zm-3.24-.59h0Zm.17,0Zm3.82-1.18h0Zm-3.91-1a2,2,0,0,1,.34,0L29.5,29l.14-1.37a1.83,1.83,0,0,1,.58-1.15,6.58,6.58,0,0,0,2.18-4.82c0-3.91-3.65-7.09-8.15-7.09s-8.14,3.18-8.14,7.09,3.65,7.09,8.14,7.09a9,9,0,0,0,2-.22A1.72,1.72,0,0,1,26.65,28.52Z"/><path d="M6.26,26.15a1.83,1.83,0,0,1-.88-.23,1.86,1.86,0,0,1-1-1.59l0-2.25a10.14,10.14,0,0,1-4-7.91C.4,8.32,5.75,3.56,12.32,3.56A12.09,12.09,0,0,1,23,9.39a1.1,1.1,0,1,1-1.91,1.09,9.91,9.91,0,0,0-8.73-4.72C7,5.76,2.6,9.53,2.6,14.17a8,8,0,0,0,3.25,6.28,1.81,1.81,0,0,1,.72,1.42l0,1.81,1.88-1.15a1.83,1.83,0,0,1,1.37-.22,10.71,10.71,0,0,0,1.38.22A1.1,1.1,0,1,1,11,24.72a13.16,13.16,0,0,1-1.51-.24L7.23,25.87A1.85,1.85,0,0,1,6.26,26.15Z"/><circle cx="8.48" cy="12.17" r="1.24"/><circle cx="15.77" cy="12.17" r="1.24"/><circle cx="20.09" cy="19.2" r="1.08"/><circle cx="26.79" cy="19.2" r="1.08"/></svg></div>
+        <span class="v">Vking071</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- V3 -->
+  <div class="item">
+    <div class="item-label"><span class="idx">V3</span>左侧竖栏 <span class="cn">结构化 · 竖向 STUDIO 栏 + 右侧信息 + 二维码</span></div>
+    <div class="card v3">
+      <div class="v3-rail"><span>V-ING STUDIO</span></div>
+      <div class="v3-body">
+        <div class="v3-top">
+          <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+          <div class="no">No.001</div>
+        </div>
+        <div class="v3-main">
+          <div>
+            <div class="v3-name">林威</div>
+            <div class="v3-en">VIKYI L.</div>
+            <div class="v3-role">摄影剪辑</div>
+          </div>
+          <div class="v3-qr"><img src="assets/card-qr.png" alt="微信二维码" loading="lazy"></div>
+        </div>
+        <div class="v3-foot">
+          <div class="wx-row">
+            <div class="wx"><svg viewBox="0 0 35 35" fill="currentColor"><path d="M29.81,31.3a2,2,0,0,1-.34,0l-2.81-.54a11.53,11.53,0,0,1-2.41.25c-5.7,0-10.34-4.17-10.34-9.29s4.64-9.29,10.34-9.29S34.6,16.57,34.6,21.69A8.76,8.76,0,0,1,31.82,28l-.17,1.62h0a1.85,1.85,0,0,1-1.84,1.66Zm-3.24-.59h0Zm.17,0Zm3.82-1.18h0Zm-3.91-1a2,2,0,0,1,.34,0L29.5,29l.14-1.37a1.83,1.83,0,0,1,.58-1.15,6.58,6.58,0,0,0,2.18-4.82c0-3.91-3.65-7.09-8.15-7.09s-8.14,3.18-8.14,7.09,3.65,7.09,8.14,7.09a9,9,0,0,0,2-.22A1.72,1.72,0,0,1,26.65,28.52Z"/><path d="M6.26,26.15a1.83,1.83,0,0,1-.88-.23,1.86,1.86,0,0,1-1-1.59l0-2.25a10.14,10.14,0,0,1-4-7.91C.4,8.32,5.75,3.56,12.32,3.56A12.09,12.09,0,0,1,23,9.39a1.1,1.1,0,1,1-1.91,1.09,9.91,9.91,0,0,0-8.73-4.72C7,5.76,2.6,9.53,2.6,14.17a8,8,0,0,0,3.25,6.28,1.81,1.81,0,0,1,.72,1.42l0,1.81,1.88-1.15a1.83,1.83,0,0,1,1.37-.22,10.71,10.71,0,0,0,1.38.22A1.1,1.1,0,1,1,11,24.72a13.16,13.16,0,0,1-1.51-.24L7.23,25.87A1.85,1.85,0,0,1,6.26,26.15Z"/><circle cx="8.48" cy="12.17" r="1.24"/><circle cx="15.77" cy="12.17" r="1.24"/><circle cx="20.09" cy="19.2" r="1.08"/><circle cx="26.79" cy="19.2" r="1.08"/></svg></div>
+            <span class="v">Vking071</span>
+          </div>
+          <div class="slogan">我们正在进行时</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V4 -->
+  <div class="item">
+    <div class="item-label"><span class="idx">V4</span>巨字编辑风 <span class="cn">强视觉 · 超大姓名 + 描边编号 + 右侧二维码</span></div>
+    <div class="card v4">
+      <div class="v4-top">
+        <div class="v4-brand">
+          <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+          <div>
+            <div class="wm-cn">微影<span style="opacity:.6">.</span>ing</div>
+            <div class="wm-en">V-ING STUDIO</div>
+          </div>
+        </div>
+        <div class="v4-kicker" style="margin-top:0">摄影剪辑 / PORTRAIT</div>
+      </div>
+      <div class="v4-name">林威</div>
+      <div class="v4-line"><span class="bar"></span><span class="en">VIKYI L.</span><span class="role">摄 影 剪 辑</span></div>
+      <div class="v4-foot">
+        <div class="wx"><svg viewBox="0 0 35 35" fill="currentColor"><path d="M29.81,31.3a2,2,0,0,1-.34,0l-2.81-.54a11.53,11.53,0,0,1-2.41.25c-5.7,0-10.34-4.17-10.34-9.29s4.64-9.29,10.34-9.29S34.6,16.57,34.6,21.69A8.76,8.76,0,0,1,31.82,28l-.17,1.62h0a1.85,1.85,0,0,1-1.84,1.66Zm-3.24-.59h0Zm.17,0Zm3.82-1.18h0Zm-3.91-1a2,2,0,0,1,.34,0L29.5,29l.14-1.37a1.83,1.83,0,0,1,.58-1.15,6.58,6.58,0,0,0,2.18-4.82c0-3.91-3.65-7.09-8.15-7.09s-8.14,3.18-8.14,7.09,3.65,7.09,8.14,7.09a9,9,0,0,0,2-.22A1.72,1.72,0,0,1,26.65,28.52Z"/><path d="M6.26,26.15a1.83,1.83,0,0,1-.88-.23,1.86,1.86,0,0,1-1-1.59l0-2.25a10.14,10.14,0,0,1-4-7.91C.4,8.32,5.75,3.56,12.32,3.56A12.09,12.09,0,0,1,23,9.39a1.1,1.1,0,1,1-1.91,1.09,9.91,9.91,0,0,0-8.73-4.72C7,5.76,2.6,9.53,2.6,14.17a8,8,0,0,0,3.25,6.28,1.81,1.81,0,0,1,.72,1.42l0,1.81,1.88-1.15a1.83,1.83,0,0,1,1.37-.22,10.71,10.71,0,0,0,1.38.22A1.1,1.1,0,1,1,11,24.72a13.16,13.16,0,0,1-1.51-.24L7.23,25.87A1.85,1.85,0,0,1,6.26,26.15Z"/><circle cx="8.48" cy="12.17" r="1.24"/><circle cx="15.77" cy="12.17" r="1.24"/><circle cx="20.09" cy="19.2" r="1.08"/><circle cx="26.79" cy="19.2" r="1.08"/></svg></div>
+        <span class="v">Vking071</span>
+        <span class="slogan">我们正在进行时</span>
+      </div>
+      <div class="v4-right">
+        <div class="v4-big-no">001</div>
+        <div class="v4-qr"><img src="assets/card-qr.png" alt="微信二维码" loading="lazy"></div>
+      </div>
+      <div class="v4-studio">STUDIO · 微影 · V-ING</div>
+    </div>
+  </div>
+
+  <!-- V5 -->
+  <div class="item">
+    <div class="item-label"><span class="idx">V5</span>网格三分 <span class="cn">秩序感 · 四宫格发丝线分隔 · 信息分区</span></div>
+    <div class="card v5">
+      <div class="cell-tl">
+        <div class="logo"><svg viewBox="0 0 354.9 295.83" xmlns="http://www.w3.org/2000/svg"><path d="M321.7,4.36c1.21-1.89-.15-4.36-2.39-4.36h-97.07c-5.69,0-11,2.84-14.15,7.57l-31.45,47.17c-1.12,1.68-3.59,1.68-4.72,0l-31.45-47.17c-3.15-4.73-8.46-7.57-14.15-7.57H56.17C27.33,0,5.97,14.04.12,34.05c-.53,1.83.82,3.66,2.72,3.66h109.67c.95,0,1.85.48,2.37,1.28l59.45,90.51c1.12,1.7,3.62,1.7,4.74,0l59.45-90.51c.52-.8,1.41-1.28,2.37-1.28h12.24c2.25,0,3.6,2.49,2.38,4.38l-64.95,100.02h0l-11.49,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.49-17.24h0l-56.23-86.59c-.52-.81-1.42-1.29-2.38-1.29H4.56c-2.23,0-3.59,2.46-2.4,4.34l136.23,216.39c17.91,27.87,58.51,27.79,76.54,0l130.39-201.26c15.19-23.42,11.28-45.45-4.39-59.22-1.28-1.13-3.28-.82-4.22.61l-146.15,224.9h0l-11.5,17.24c-1.12,1.68-3.59,1.68-4.72,0l-11.5-17.24L69.31,96.17c-1.23-1.89.13-4.38,2.38-4.38h11.93c.95,0,1.84.48,2.37,1.28l88.31,134.28c1.13,1.72,3.65,1.7,4.76-.03L321.71,4.36h0Z" fill="currentColor"/></svg></div>
+        <div>
+          <div class="wm-cn">微影<span style="opacity:.6">.</span>ing</div>
+          <div class="wm-en">V-ING STUDIO</div>
+        </div>
+      </div>
+      <div class="cell-tr">
+        <div class="no">No.001</div>
+        <div class="wx-row">
+          <div class="wx"><svg viewBox="0 0 35 35" fill="currentColor"><path d="M29.81,31.3a2,2,0,0,1-.34,0l-2.81-.54a11.53,11.53,0,0,1-2.41.25c-5.7,0-10.34-4.17-10.34-9.29s4.64-9.29,10.34-9.29S34.6,16.57,34.6,21.69A8.76,8.76,0,0,1,31.82,28l-.17,1.62h0a1.85,1.85,0,0,1-1.84,1.66Zm-3.24-.59h0Zm.17,0Zm3.82-1.18h0Zm-3.91-1a2,2,0,0,1,.34,0L29.5,29l.14-1.37a1.83,1.83,0,0,1,.58-1.15,6.58,6.58,0,0,0,2.18-4.82c0-3.91-3.65-7.09-8.15-7.09s-8.14,3.18-8.14,7.09,3.65,7.09,8.14,7.09a9,9,0,0,0,2-.22A1.72,1.72,0,0,1,26.65,28.52Z"/><path d="M6.26,26.15a1.83,1.83,0,0,1-.88-.23,1.86,1.86,0,0,1-1-1.59l0-2.25a10.14,10.14,0,0,1-4-7.91C.4,8.32,5.75,3.56,12.32,3.56A12.09,12.09,0,0,1,23,9.39a1.1,1.1,0,1,1-1.91,1.09,9.91,9.91,0,0,0-8.73-4.72C7,5.76,2.6,9.53,2.6,14.17a8,8,0,0,0,3.25,6.28,1.81,1.81,0,0,1,.72,1.42l0,1.81,1.88-1.15a1.83,1.83,0,0,1,1.37-.22,10.71,10.71,0,0,0,1.38.22A1.1,1.1,0,1,1,11,24.72a13.16,13.16,0,0,1-1.51-.24L7.23,25.87A1.85,1.85,0,0,1,6.26,26.15Z"/><circle cx="8.48" cy="12.17" r="1.24"/><circle cx="15.77" cy="12.17" r="1.24"/><circle cx="20.09" cy="19.2" r="1.08"/><circle cx="26.79" cy="19.2" r="1.08"/></svg></div>
+          <span class="v">Vking071</span>
+        </div>
+      </div>
+      <div class="cell-bl">
+        <div class="name">林威</div>
+        <div class="en">VIKYI L.</div>
+        <div class="role">摄影剪辑</div>
+      </div>
+      <div class="cell-br">
+        <div class="qr"><img src="assets/card-qr.png" alt="微信二维码" loading="lazy"></div>
+        <div class="side"><div class="slogan">我们正在进行时</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-note">配色沿用：主文字 #e6be8a · 辅文字 #C9A96E · 底 #1a1a1a</div>
+</div>
+</body>
+</html>
