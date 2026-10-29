@@ -5947,16 +5947,16 @@ textarea.sb-cell-desc{
 }
 .vc-brand .vc-wordmark .vc-main-cn{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter','Noto Sans SC',sans-serif;
-  font-size:11px;font-weight:700;
+  font-size:9.6px;font-weight:700;
   color:var(--vc-label);
   letter-spacing:-0.01em;line-height:1;
 }
 .vc-brand .vc-wordmark .vc-main-cn .dot{color:var(--vc-label-2)}
 .vc-brand .vc-wordmark .vc-sub-en{
   font-family:'Inter',sans-serif;
-  font-size:6.5px;font-weight:500;
+  font-size:5.6px;font-weight:500;
   color:var(--vc-label-2);
-  letter-spacing:2px;line-height:1;
+  letter-spacing:1.7px;line-height:1;
   text-transform:uppercase;
 }
 .vc-no{
