@@ -6000,11 +6000,9 @@ textarea.sb-cell-desc{
   border-top:0.2mm solid var(--vc-hairline);
 }
 .vc-foot .vc-wx{display:flex;align-items:center;gap:1.6mm}
-.vc-foot .vc-wx .vc-ico{
-  width:4mm;height:4mm;border-radius:1.1mm;
-  background:var(--vc-label);
-  color:#2b2b30;font-size:3.4px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
+.vc-foot .vc-wx .vc-wx-label{
+  color:var(--vc-label);opacity:.72;
+  font-weight:600;font-size:7.5px;letter-spacing:0.6px;
   font-family:'Noto Sans SC',sans-serif;
 }
 .vc-foot .vc-wx .vc-v{
