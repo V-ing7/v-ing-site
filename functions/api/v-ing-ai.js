@@ -54,7 +54,7 @@ const VIEW_LABELS = {
   home: '首页', about: '关于', works: '作品', links: '联动', workspace: '工作台', contact: '联系'
 };
 const TAB_LABELS = {
-  plan: '计划表', unified: '日报', storyboard: '摄影表', console: '指令', agent: '智能体', card: '名片',
+  plan: '计划表', unified: '日报', storyboard: '影视创作', console: '指令', agent: '智能体', card: '名片',
   settings: '设置'
 };
 
@@ -111,7 +111,7 @@ const ALLOWED_TOOLS = [
       parameters: {
         type: 'object',
         properties: {
-          tab: { type: 'string', enum: WS_TABS, description: 'plan 计划表、unified 日报、storyboard 摄影表、console 指令、agent 智能体、card 名片、settings 设置' }
+          tab: { type: 'string', enum: WS_TABS, description: 'plan 计划表、unified 日报、storyboard 影视创作、console 指令、agent 智能体、card 名片、settings 设置' }
         },
         required: ['tab']
       }
