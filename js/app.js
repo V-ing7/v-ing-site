@@ -2596,7 +2596,7 @@
   var AI_VIEWS=['home','about','works','links','workspace','cg','contact'];
   var AI_VIEW_LABELS={home:'首页',about:'关于',works:'作品',links:'联动',workspace:'工作台',cg:'CG素材',contact:'联系'};
   var AI_TABS=['plan','unified','storyboard','console','agent','card','settings'];
-  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'摄影表',console:'指令',agent:'智能体',card:'名片',settings:'设置'};
+  var AI_TAB_LABELS={plan:'计划表',unified:'日报',storyboard:'影视创作',console:'指令',agent:'智能体',card:'名片',settings:'设置'};
   var AI_MAX_TOOL_ROUNDS=2;
   var AI_STREAMER_HISTORY=[];
   var AI_MAX_STREAMER_HISTORY=10;
